@@ -14,7 +14,9 @@
 
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '../../.env') });
-process.env.NODE_ENV = 'development';
+// Respect NODE_ENV already set in the environment (e.g. Docker: production).
+// Default to 'development' only when running locally without an explicit value.
+if (!process.env.NODE_ENV) process.env.NODE_ENV = 'development';
 
 const mongoose = require('mongoose');
 const { connectDB } = require('../config/db');

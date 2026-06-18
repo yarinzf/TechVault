@@ -3,13 +3,14 @@ import {
   HardDrive, Gamepad2, Package2, Smartphone, Tablet,
   Speaker, Wifi, Home, CircuitBoard, MemoryStick,
   BatteryCharging, Wind, MousePointer2, Mic,
-  Printer, Network, Zap,
+  Printer, Network, Zap, Server,
 } from 'lucide-react';
 
 export const CATEGORY_META = [
-  { slug: 'monitors',    labelKey: 'cat.monitors',    heLabel: 'מסכים',         Icon: Monitor        },
-  { slug: 'laptops',     labelKey: 'cat.laptops',     heLabel: 'מחשבים',        Icon: Laptop         },
-  { slug: 'components',  labelKey: 'cat.components',  heLabel: 'רכיבים',        Icon: Cpu            },
+  { slug: 'monitors',    labelKey: 'cat.monitors',    heLabel: 'מסכים',           Icon: Monitor        },
+  { slug: 'laptops',     labelKey: 'cat.laptops',     heLabel: 'מחשבים ניידים',  Icon: Laptop         },
+  { slug: 'desktops',    labelKey: 'cat.desktops',    heLabel: 'מחשבים שולחניים', Icon: Server        },
+  { slug: 'components',  labelKey: 'cat.components',  heLabel: 'רכיבים',          Icon: Cpu           },
   { slug: 'keyboards',   labelKey: 'cat.keyboards',   heLabel: 'מקלדות',        Icon: Keyboard       },
   { slug: 'mice',        labelKey: 'cat.mice',        heLabel: 'עכברים',        Icon: Mouse          },
   { slug: 'headphones',  labelKey: 'cat.headphones',  heLabel: 'אוזניות',       Icon: Headphones     },
@@ -28,10 +29,11 @@ export const MODAL_SECTIONS = [
   {
     title: 'מחשבים ורכיבים',
     items: [
-      { slug: 'monitors',   heLabel: 'מסכים',         Icon: Monitor,         count: null },
-      { slug: 'components', heLabel: 'רכיבים',        Icon: Cpu,             count: null },
-      { slug: 'laptops',    heLabel: 'מחשבים ניידים', Icon: Laptop,          count: null },
-      { slug: 'storage',    heLabel: 'אחסון ו-SSD',   Icon: HardDrive,       count: null },
+      { slug: 'monitors',   heLabel: 'מסכים',             Icon: Monitor,         count: null },
+      { slug: 'desktops',   heLabel: 'מחשבים שולחניים',   Icon: Server,          count: null },
+      { slug: 'laptops',    heLabel: 'מחשבים ניידים',     Icon: Laptop,          count: null },
+      { slug: 'components', heLabel: 'רכיבים',             Icon: Cpu,             count: null },
+      { slug: 'storage',    heLabel: 'אחסון ו-SSD',        Icon: HardDrive,       count: null },
       { slug: 'components', heLabel: 'לוחות אם',      Icon: CircuitBoard,    count: null, subSlug: 'motherboards' },
       { slug: 'components', heLabel: 'זיכרון RAM',    Icon: MemoryStick,     count: null, subSlug: 'ram' },
       { slug: 'components', heLabel: 'ספקי כוח',      Icon: BatteryCharging, count: null, subSlug: 'psu' },
@@ -67,5 +69,5 @@ export const MODAL_SECTIONS = [
   },
 ];
 
-// Primary 9 shown in the sticky category nav bar
-export const NAV_CATEGORIES = CATEGORY_META.slice(0, 9);
+// Primary categories shown in the sticky nav bar (overflow-x: auto handles extras)
+export const NAV_CATEGORIES = CATEGORY_META.slice(0, 10);
