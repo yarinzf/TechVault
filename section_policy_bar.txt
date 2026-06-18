@@ -1,0 +1,22 @@
+<!-- POLICY BAR -->\
+<div class="policy-bar">\
+  <div class="policy-inner">\
+    <div class="policy-item">\
+      <div class="policy-icon-wrap"><i data-lucide="truck"></i></div>\
+      <div><div class="policy-title">\uc0\u1502 \u1513 \u1500 \u1493 \u1495  \u1495 \u1497 \u1504 \u1501  \u1502 -\u8362 299</div><div class="policy-desc">\u1506 \u1491  48 \u1513 \u1506 \u1493 \u1514  \u1500 \u1499 \u1500  \u1492 \u1488 \u1512 \u1509 </div></div>\
+    </div>\
+    <div class="policy-item">\
+      <div class="policy-icon-wrap"><i data-lucide="refresh-ccw"></i></div>\
+      <div><div class="policy-title">\uc0\u1492 \u1495 \u1494 \u1512 \u1492  \u1489 -30 \u1497 \u1493 \u1501 </div><div class="policy-desc">\u1500 \u1500 \u1488  \u1513 \u1488 \u1500 \u1493 \u1514 , \u1492 \u1495 \u1494 \u1512  \u1502 \u1500 \u1488 </div></div>\
+    </div>\
+    <div class="policy-item">\
+      <div class="policy-icon-wrap"><i data-lucide="shield-check"></i></div>\
+      <div><div class="policy-title">\uc0\u1488 \u1495 \u1512 \u1497 \u1493 \u1514  \u1497 \u1510 \u1512 \u1503 </div><div class="policy-desc">\u1506 \u1500  \u1499 \u1500  \u1492 \u1502 \u1493 \u1510 \u1512 \u1497 \u1501  \u1489 \u1495 \u1504 \u1493 \u1514 </div></div>\
+    </div>\
+    <div class="policy-item">\
+      <div class="policy-icon-wrap"><i data-lucide="headset"></i></div>\
+      <div><div class="policy-title">\uc0\u1514 \u1502 \u1497 \u1499 \u1492  24/7</div><div class="policy-desc">\u1510 '\u1488 \u1496 , \u1496 \u1500 \u1508 \u1493 \u1503  \u1493 \u1488 \u1497 \u1502 \u1497 \u1497 \u1500 </div></div>\
+    </div>\
+  </div>\
+</div>\
+\

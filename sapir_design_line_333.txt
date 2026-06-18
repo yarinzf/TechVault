@@ -1,0 +1,311 @@
+This session is being continued from a previous conversation that ran out of context. The summary below covers the earlier portion of the conversation.
+
+Summary:
+1. Primary Request and Intent:
+
+**Phase 1 (carried from previous session):** Migrate Sapir's static HTML/CSS/JS TechVault design into the existing React project as a one-to-one visual match. The user's critical constraint (verbatim):
+> "I do NOT want you to reinterpret the design or improve it based on your own taste. The goal is to match Sapir's attached design as closely as possible — one-to-one visually. Use the attached HTML/CSS/JS design as the source of truth for: colors, spacing, layout, navbar, promo bar, category bar, hero section, cards, buttons, typography, visual hierarchy, animations. Do not invent new layouts. Still preserve all existing React logic: routes, API calls, auth, cart, wishlist, theme/language/accessibility, admin/warehouse untouched."
+
+**Phase 2 (current session):** Redesign login/register auth screens to exactly match Sapir's design, including ALL elements:
+- Login/Register tab behavior exactly like Sapir's design
+- Email/password login
+- SMS/phone login option with toggle
+- Country prefix selector with flag and dialing code (🇮🇱 +972)
+- Google login button (with real Google SVG logo)
+- Apple login button (with real Apple SVG logo)
+- SMS button/option that toggles phone field
+- Terms/privacy links exactly where Sapir placed them
+- Same modal/card structure, spacing, borders, colors, button styles, input styles
+- Architecture prepared for real future integrations (Google OAuth, Apple Sign In, SMS auth)
+- Existing email/password login must still call the real login API
+- Do NOT change AuthProvider, auth.service.js, API routes, JWT logic
+
+2. Key Technical Concepts:
+- React 18.3 with React Router DOM 6.24 (SPA, client-side routing)
+- Vite 5 build tool (dev server port 3000, proxy `/api` → port 5000)
+- CSS Modules (primary for components) + CSS Custom Properties in `variables.css`
+- RTL/LTR internationalization via LanguageProvider + translations.js
+- JWT-based authentication (existing, must not be duplicated)
+- lucide-react for icons
+- Sapir's design CSS variables: `--sv-blue: #2563EB`, `--sv-mint: #00FFCC`, `--sv-violet: #9E6EF1`, `--sv-card: #1a1a1e`, `--sv-surface: #141416`, `--sv-bg: #0d0d0f`, `--sv-muted: #64748B`, `--sv-text: #E2E8F0`
+- `@keyframes sv-pulse` and `@keyframes sv-floatY` for animations
+- Google OAuth (future integration), Apple Sign In (future), SMS/Phone auth (future)
+- Country dialing code system with emoji flags
+
+**Sapir's exact modal/auth CSS classes:**
+- `.modal-overlay`: fixed overlay, blur(8px), opacity transition
+- `.modal`: max-width 420px, border-radius 20px, padding 36px, `translateY(16px)` → `translateY(0)` entrance
+- `.modal::before`: gradient top border line (transparent → blue → violet → transparent)
+- `.modal-tabs`: pill-style switcher with `background: var(--surface)`, active tab has `background: var(--blue)`
+- `.modal-input`: `background: var(--surface)`, `border: 1px solid rgba(255,255,255,0.08)`, border-radius 10px, padding 11px 14px
+- `.modal-btn`: full-width blue button, border-radius 10px, padding 13px, 15px font-size
+- `.modal-oauth`: flex row with Google, Apple, SMS buttons
+- `.modal-oauth-btn`: surface background, same border as inputs, flex 1
+- `.modal-forgot`: `color: var(--blue)`, float: left, font-size 12px
+- `.modal-divider`: "או המשך עם" with hr lines on each side
+- `.modal-terms`: 11px, centered, links to terms and privacy in blue
+- `.modal-panel`: `display: none` / `.modal-panel.active`: `display: block`
+
+3. Files and Code Sections:
+
+**Already implemented (previous work in this session):**
+
+- **`client/src/styles/variables.css`** — Added `--sv-*` Sapir token block:
+```css
+:root {
+  --sv-bg: #0d0d0f; --sv-surface: #141416; --sv-card: #1a1a1e; --sv-card2: #1f1f25;
+  --sv-border: rgba(255,255,255,0.07);
+  --sv-blue: #2563EB; --sv-blue-d: rgba(37,99,235,0.13); --sv-blue-b: rgba(37,99,235,0.3);
+  --sv-violet: #9E6EF1; --sv-mint: #00FFCC;
+  --sv-text: #E2E8F0; --sv-muted: #64748B; --sv-dim: #2a2a35;
+  --sv-success: #22c55e; --sv-gold: #F59E0B; --sv-red: #ef4444;
+  --sv-max: 1440px; --sv-pad: 64px;
+  --sv-nav-h: 68px; --sv-cat-h: 46px; --sv-promo-h: 36px;
+}
+```
+
+- **`client/src/styles/global.css`** — Added keyframes:
+```css
+@keyframes sv-pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .35; transform: scale(.7); } }
+@keyframes sv-floatY { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+```
+
+- **`client/src/constants/categories.js`** — New shared file with CATEGORY_META array (14 categories: laptops, smartphones, tablets, gaming, monitors, keyboards, mice, headphones, speakers, storage, components, networking, smart-home, accessories)
+
+- **`client/src/components/layout/customer/PromoBar.jsx`** — 3-slide rotating promo bar, 4s rotation, closeable; slides: "משלוח חינם", "מבצע", "חדש"
+
+- **`client/src/components/layout/customer/PromoBar.module.css`** — 36px height, `background: #0a0a0c`, blue border, `.slide.active` opacity transition
+
+- **`client/src/components/layout/customer/CategoryNavBar.jsx`** — Sticky at `top: var(--sv-nav-h)`, 46px height, all 14 categories, "כל המוצרים" all-link
+
+- **`client/src/components/layout/customer/CategoryNavBar.module.css`** — `border-inline-end` for RTL-safe separator
+
+- **`client/src/components/layout/customer/CustomerLayout.jsx`**:
+```jsx
+import PromoBar from './PromoBar';
+import CategoryNavBar from './CategoryNavBar';
+// ...
+return (
+  <div>
+    <PromoBar />
+    <CustomerNavbar onOpenCart={() => setCartOpen(true)} />
+    <CategoryNavBar />
+    <CartDrawer ... />
+    <main><Outlet /></main>
+    <ToastContainer />
+  </div>
+);
+```
+
+- **`client/src/components/layout/customer/CustomerNavbar.jsx`** — Complete restyle with inline SVG TechVaultLogo, 68px height, blue cart button, bordered 36×36 icon buttons, blue search submit button, all existing hooks/ARIA/logic preserved
+
+- **`client/src/components/layout/customer/CustomerNavbar.module.css`** — Full restyle: `rgba(13,13,15,0.96)` background, `--sv-*` colors throughout, `.cartBtn` has `background: var(--sv-blue)`, `.iconBtn` has border, `.loginBtn` has bordered style
+
+- **`client/src/features/products/components/ProductCard.jsx`** — Added optional `rank` prop with gold/silver/bronze/blue badge; changed price to `₪`; `rank != null` check
+
+- **`client/src/features/products/components/ProductCard.module.css`** — Sapir scheme: `var(--sv-card)` background, `height: 170px` image area, mint price, blue rank badges, blue hover glow, `.cartBtn` uses `--sv-blue-d/blue-b`
+
+- **`client/src/pages/customer/HomePage.jsx`** — New hero with `HERO_SLIDES` (Monitor/Keyboard/Cpu), `heroVisible` fade state, `DealCountdown` component, `ProductSection` with `showRanks` prop, Deal Banner, all 4 API fetches preserved
+
+- **`client/src/pages/customer/HomePage.module.css`** — Grid background `.heroBg`, radial `.heroGlow`, `.heroInner { grid-template-columns: 1fr 380px }`, `.heroPCard::before` gradient top border, `.dealBanner`, `.countdown` with `.cblock/.cnum/.clabel`
+
+**Auth pages (first attempt — user rejected):**
+
+- **`client/src/pages/shared/LoginPage.module.css`** — Partially correct: dark card, gradient top border, tabs, blue inputs/button, mint links. BUT MISSING: SMS toggle, OAuth buttons, country selector, terms
+
+- **`client/src/pages/shared/LoginPage.jsx`** — Basic tab switcher, SVG logo, email/password form. MISSING: Google/Apple/SMS buttons, phone field with country code, terms
+
+- **`client/src/pages/shared/RegisterPage.jsx`** — Basic tab switcher, 4 fields. MISSING: country phone selector, OAuth buttons, terms
+
+**Design file data extracted from transcript (for correct implementation):**
+
+Sapir's login modal HTML structure (exact):
+```html
+<!-- Login Panel -->
+<div class="modal-panel active" id="loginPanel">
+  <!-- emailFields (shown by default) -->
+  <div id="emailFields">
+    <div class="modal-field">
+      <label class="modal-label">סיסמה</label>
+      <input class="modal-input" type="password" placeholder="••••••••">
+      <span class="modal-forgot">שכחתי סיסמה</span>
+    </div>
+  </div>
+  <!-- smsFields (hidden by default) -->
+  <div id="smsFields" style="display:none;">
+    <div class="modal-field">
+      <label class="modal-label">מספר טלפון</label>
+      <div style="display:flex; gap:8px; direction:ltr;">
+        <select class="modal-input" style="width:100px; flex-shrink:0; direction:ltr;">
+          <option>🇮🇱 +972</option>
+          <option>🇺🇸 +1</option>
+          <option>🇬🇧 +44</option>
+        </select>
+        <input class="modal-input" type="tel" placeholder="05X-XXXXXXX" style="flex:1; direction:ltr; text-align:left;">
+      </div>
+    </div>
+  </div>
+  <button class="modal-btn" id="loginMainBtn">
+    <i data-lucide="log-in"></i>
+    <span id="loginBtnText">כניסה לחשבון</span>
+  </button>
+  <div class="modal-divider">או המשך עם</div>
+  <div class="modal-oauth">
+    <!-- Google SVG button -->
+    <button class="modal-oauth-btn">[Google SVG] Google</button>
+    <!-- Apple SVG button -->
+    <button class="modal-oauth-btn">[Apple SVG] Apple</button>
+    <!-- SMS toggle button -->
+    <button class="modal-oauth-btn" id="smsBtn" onclick="toggleSMSLogin()">
+      <i data-lucide="smartphone"></i> SMS
+    </button>
+  </div>
+  <div class="modal-terms">
+    בכניסה אתם מסכימים ל<a>תנאי השימוש</a> ו<a>מדיניות הפרטיות</a>
+  </div>
+</div>
+
+<!-- Register Panel -->
+<div class="modal-panel" id="registerPanel">
+  <div class="modal-field">
+    <label class="modal-label">שם מלא</label>
+    <input class="modal-input" type="text" placeholder="ישראל ישראלי">
+  </div>
+  <div class="modal-field">
+    <label class="modal-label">אימייל</label>
+    <input class="modal-input" type="email" placeholder="your@email.com">
+  </div>
+  <div class="modal-field">
+    <label class="modal-label">מספר טלפון</label>
+    <div style="display:flex; gap:8px; direction:ltr;">
+      <select class="modal-input" style="width:100px; flex-shrink:0; direction:ltr;">
+        <option>🇮🇱 +972</option><option>🇺🇸 +1</option><option>🇬🇧 +44</option>
+      </select>
+      <input class="modal-input" type="tel" placeholder="05X-XXXXXXX" style="flex:1; direction:ltr">
+    </div>
+  </div>
+  <div class="modal-field">
+    <label class="modal-label">סיסמה</label>
+    <input class="modal-input" type="password" placeholder="••••••••">
+  </div>
+</div>
+```
+
+**toggleSMSLogin() JS (Sapir's exact logic):**
+```js
+function toggleSMSLogin() {
+  const emailFields = document.getElementById('emailFields');
+  const smsFields = document.getElementById('smsFields');
+  const btnText = document.getElementById('loginBtnText');
+  const smsBtn = document.getElementById('smsBtn');
+  const isSMS = smsFields.style.display === 'none';
+  
+  emailFields.style.transition = 'opacity 0.2s ease';
+  emailFields.style.opacity = '0';
+  
+  setTimeout(() => {
+    emailFields.style.display = isSMS ? 'none' : 'block';
+    smsFields.style.display = isSMS ? 'block' : 'none';
+    btnText.textContent = isSMS ? 'שלח קוד אימות' : 'כניסה לחשבון';
+    smsBtn.style.borderColor = isSMS ? 'var(--blue)' : '';
+    smsBtn.style.color = isSMS ? 'var(--blue)' : '';
+    
+    const target = isSMS ? smsFields : emailFields;
+    target.style.opacity = '0';
+    target.style.transition = 'opacity 0.25s ease';
+    requestAnimationFrame(() => { target.style.opacity = '1'; });
+    lucide.createIcons();
+  }, 200);
+}
+```
+
+**Google SVG (exact from design file):**
+```html
+<svg viewBox="0 0 24 24" fill="currentColor">
+  <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+  <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+  <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+  <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+</svg>
+```
+
+**Apple SVG (exact from design file):**
+```html
+<svg viewBox="0 0 24 24" fill="#fff">
+  <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+</svg>
+```
+
+4. Errors and Fixes:
+
+- **First auth page attempt rejected by user**: I implemented a basic redesign that didn't include Google/Apple/SMS buttons, phone country selector, terms links, or the SMS toggle behavior. User said: "Stop. This is not what I asked for." Fix: Read the actual design file from the conversation transcript to extract the exact HTML/CSS/JS spec.
+
+- **`border-inline-start` vs `border-inline-end` in CategoryNavBar**: Initial implementation used `border-inline-start` for the "All Products" separator which would place it on the wrong visual side in RTL. Fixed to `border-inline-end` which correctly places the separator between "All Products" and the first category in both RTL and LTR.
+
+- **`overflow: hidden` on hero clipping float badges**: `.hero` had `overflow: hidden` which would clip the absolute-positioned float badges extending outside `.heroPCard`. Fixed to `isolation: isolate` to contain the stacking context without clipping content.
+
+- **Unused imports in HomePage.jsx**: `Truck, ShieldCheck, RotateCcw, Headphones` imported but not used (trust strip removed). Cleaned up. Also `CATEGORY_META` imported but not used in HomePage (categories moved to CategoryNavBar). Removed.
+
+- **Build verification**: All changes verified with `npx vite build --mode development` — `✓ 2470 modules transformed`, zero errors.
+
+5. Problem Solving:
+
+- **Extracting design file from transcript**: The original Sapir design file was attached in a previous session that got compacted. The file wasn't saved to disk. Successfully located the transcript at `C:\Users\yarin\.claude\projects\c--Studies-AntiGravity-TechVault\9168fd31-909f-41be-8a07-2a89bf219b6d.jsonl` and used Python to search and extract the auth modal CSS, HTML, and JS from within the JSONL content.
+
+- **Countries list**: Sapir uses three countries: 🇮🇱 +972 (Israel, default), 🇺🇸 +1 (USA), 🇬🇧 +44 (UK). These are the exact options from the design.
+
+- **Auth mode architecture**: The design uses a single modal with panels. For React with separate routes (/login and /register), the approach is: keep separate routes but use the same visual card with tab switcher where the active tab corresponds to the current route. Login page has Login tab active; Register page has Register tab active.
+
+- **SMS toggle in React**: Sapir's JS uses DOM manipulation. In React, this becomes `useState` for `loginMode` ('email' | 'sms') with conditional rendering and CSS transitions.
+
+6. All User Messages:
+
+- **Message 1 (previous session)**: Attached Sapir's design file with instructions to migrate it visually to React, starting only with CustomerNavbar, HomePage, Hero section, Product cards. DO NOT: replace app with static HTML, remove existing logic, break routes, remove API calls, duplicate authentication, overwrite working components.
+
+- **Message 2 (previous session)**: "I do NOT want you to reinterpret the design or improve it based on your own taste. The goal is to match Sapir's attached design as closely as possible — one-to-one visually... Do not invent new layouts. Do not make it 'KSP-like' unless Sapir's design already does that... Still preserve all existing React logic: routes, API calls, auth, cart, wishlist, theme/language/accessibility, admin/warehouse untouched. Proceed with the migration only if you can translate Sapir's design into React components as accurately as possible."
+
+- **Message 3**: "You did not update the login/register screens. Sapir's attached design also includes the login/register design, and I want those screens to visually match it as closely as possible too. Task: Redesign the existing React auth screens... Important: Do NOT create a new auth system. Do NOT create a fake static modal that bypasses our real JWT login/register. Do NOT change auth.service.js, AuthProvider, routes, API calls, or validation logic unless absolutely required. Preserve: real login API, real register API, form state, error handling, navigation after login/register, RTL/LTR, dark/light mode, accessibility. Only change: JSX visual structure, CSS styling, layout, inputs/buttons visual design. Use Sapir's attached login/register design as the source of truth: same dark modal/card feeling, same tabs/section style if relevant, same blue/mint color language, same spacing, typography, borders, rounded corners, same input/button visual style."
+
+- **Message 4** (CRITICAL — user rejected first attempt): "Stop. This is not what I asked for. I do NOT want an inspired redesign. I want the login/register/auth experience to match Sapir's attached design as closely as possible, including all elements you omitted. You must re-read Sapir's attached HTML/CSS/JS design and implement the auth UI one-to-one. Required: Login/Register tab behavior exactly like Sapir's design / Email/password login / SMS/phone login option exactly as in Sapir's design / Google login button / Apple login button / SMS button/option / Country prefix selector with flag and dialing code (Example: Israel 🇮🇱 +972) / Terms / privacy / site policy button or link exactly where Sapir placed it / Same modal/card structure / Same text hierarchy / Same spacing / Same borders / Same colors / Same button styles / Same input styles / Same icons where possible / Same animations/transitions where possible. Architecture requirement: Build the UI now exactly like Sapir's design. Prepare the frontend architecture for real integrations. If backend/provider setup is still missing, create the proper integration layer/TODO structure instead of fake buttons. Future integrations that should be prepared correctly: Google OAuth / Apple Sign In / SMS/Phone authentication / Country dialing code system with flags / Terms/privacy modal/pages. Preserve existing real auth: Existing email/password login must still call the real login API. Existing register must still call the real register API. Existing routes must remain /login and /register. Do not change AuthProvider, auth.service.js, API routes, JWT logic, or backend unless required for proper auth provider integration. Implementation instructions: 1. Re-read Sapir's attached design file line by line. 2. Find the exact login/register section in her HTML/CSS/JS. 3. Map every relevant class/style/element into the React LoginPage/RegisterPage. 4. Do not omit features because they are not fully connected yet. 5. Structure the code professionally for future real auth integrations. After editing, run: cd 'c:/Studies/AntiGravity/TechVault/client' && npx vite build --mode development"
+
+7. Pending Tasks:
+
+- **Complete auth pages implementation** (CURRENT PRIORITY): Rewrite LoginPage.jsx, RegisterPage.jsx, and LoginPage.module.css to exactly match Sapir's design with:
+  - SMS login toggle (email ↔ phone mode)
+  - Country selector (🇮🇱 +972, 🇺🇸 +1, 🇬🇧 +44)
+  - Google OAuth button (with exact 4-color SVG)
+  - Apple Sign In button (with exact white SVG)
+  - SMS toggle button (with Smartphone icon)
+  - "או המשך עם" divider
+  - Terms "בכניסה אתם מסכימים ל<תנאי השימוש> ו<מדיניות הפרטיות>"
+  - Fade transition when toggling SMS mode (200ms out → swap → 250ms in)
+  - Architecture hooks for future Google/Apple/SMS integrations (TODO comments or stub handlers)
+  - Register panel with phone + country selector
+  - Run build verification after
+
+8. Current Work:
+
+I was in the middle of implementing the correct auth pages after extracting Sapir's exact design from the conversation transcript. I had successfully extracted:
+1. Full CSS for the modal (`.modal-overlay`, `.modal`, `.modal-tabs`, `.modal-tab.active`, `.modal-input`, `.modal-btn`, `.modal-oauth`, `.modal-oauth-btn`, `.modal-terms`, `.modal-panel`, etc.)
+2. HTML structure for both login panel (emailFields, smsFields with country selector, OAuth row with Google/Apple/SMS) and register panel (full name, email, phone+country, password)
+3. The exact `toggleSMSLogin()` JavaScript function with its fade animation
+4. The Google and Apple SVG icons verbatim
+
+I had NOT yet written the new implementation of the auth pages — the conversation was summarized before I could write the code.
+
+9. Optional Next Step:
+
+Immediately implement the correct auth pages using the extracted design specs from Sapir's file. This is exactly what the user requested in their last message:
+
+> "You must re-read Sapir's attached HTML/CSS/JS design and implement the auth UI one-to-one."
+> "Implementation instructions: 1. Re-read Sapir's attached design file line by line. 2. Find the exact login/register section in her HTML/CSS/JS. 3. Map every relevant class/style/element into the React LoginPage/RegisterPage."
+
+I have now read the design (extracted from transcript). The next step is to write:
+1. `LoginPage.module.css` — Full CSS matching Sapir's modal styles exactly
+2. `LoginPage.jsx` — Login page with tab switcher, email/SMS toggle, Google/Apple/SMS OAuth buttons, terms text, country selector
+3. `RegisterPage.jsx` — Register page with tab switcher, full name/email/phone(+country)/password fields
+4. Optionally create `client/src/features/auth/constants/authProviders.js` and `client/src/features/auth/hooks/useOAuthProviders.js` for integration architecture
+5. Run `cd "c:/Studies/AntiGravity/TechVault/client" && npx vite build --mode development`
+
+If you need specific details from before compaction (like exact code snippets, error messages, or content you generated), read the full transcript at: C:\Users\yarin\.claude\projects\c--Studies-AntiGravity-TechVault\9168fd31-909f-41be-8a07-2a89bf219b6d.jsonl
+Continue the conversation from where it left off without asking the user any further questions. Resume directly — do not acknowledge the summary, do not recap what was happening, do not preface with "I'll continue" or similar. Pick up the last task as if the break never happened.

@@ -1,0 +1,288 @@
+This session is being continued from a previous conversation that ran out of context. The summary below covers the earlier portion of the conversation.
+
+Summary:
+1. Primary Request and Intent:
+
+The user attached a static HTML/CSS/JS design file ("מסך ראשי + התחברות.txt") created by "Sapir" for TechVault — a Hebrew-language RTL gaming/tech ecommerce storefront. The user's goal is to use this design as **the source of truth** for a one-to-one visual migration of the existing React TechVault project.
+
+**Critical user correction (verbatim):**
+> "I do NOT want you to reinterpret the design or improve it based on your own taste. The goal is to match Sapir's attached design as closely as possible — one-to-one visually. Use the attached HTML/CSS/JS design as the source of truth for: colors, spacing, layout, navbar, promo bar, category bar, hero section, cards, buttons, typography, visual hierarchy, animations. Do not invent new layouts. Do not make it 'KSP-like' unless Sapir's design already does that. Do not simplify or redesign creatively. Do not replace elements with your own ideas. Still preserve all existing React logic: routes, API calls, auth, cart, wishlist, theme/language/accessibility, admin/warehouse untouched."
+
+**Absolute constraints (must never be violated):**
+- DO NOT replace the app with a static HTML page
+- DO NOT remove existing logic
+- DO NOT break routes
+- DO NOT remove API calls
+- DO NOT duplicate authentication — the login modal from Sapir's design must NOT be implemented; existing `/login` JWT route must be preserved
+- DO NOT overwrite working components
+- Admin/warehouse layouts and pages must NOT be touched
+- Preserve ALL existing functionality: routes, API calls, auth, cart, wishlist, theme/language/accessibility
+
+**Scope for this task:** Start ONLY with:
+1. CustomerNavbar
+2. HomePage
+3. Hero section
+4. Product cards
+
+2. Key Technical Concepts:
+- React 18.3 with React Router DOM 6.24 (SPA, client-side routing)
+- Vite 5 build tool (dev server port 3000, proxy `/api` → port 5000)
+- Hybrid styling: CSS Modules (primary for components) + CSS Custom Properties (design tokens in `variables.css`) + Tailwind CSS utilities (admin pages only)
+- CSS `data-theme` attribute on `<html>` for dark/light mode via `ThemeContext`
+- Context-based state: AuthProvider, CartProvider, WishlistProvider, UserContext, LanguageContext, AccessibilityContext
+- JWT-based authentication (existing, must not be duplicated)
+- lucide-react for icons (both existing project and Sapir's design use it)
+- RTL/LTR internationalization via LanguageProvider + translations.js
+- WCAG 2.1 AA accessibility
+- Sapir's design: Inter font (body), Neuropol font (logo/headings — base64-embedded custom font), blue `#2563EB` primary, `#00FFCC` mint accent, `#9E6EF1` violet
+- Current project: purple `#8A2BE2` brand, Assistant/Rajdhani fonts
+
+**Sapir's Design CSS Variables (exact):**
+```css
+:root {
+  --bg:       #0d0d0f;
+  --surface:  #141416;
+  --card:     #1a1a1e;
+  --card2:    #1f1f25;
+  --border:   rgba(255,255,255,0.07);
+  --blue:     #2563EB;
+  --blue-d:   rgba(37,99,235,0.13);
+  --blue-b:   rgba(37,99,235,0.3);
+  --violet:   #9E6EF1;
+  --mint:     #00FFCC;
+  --text:     #E2E8F0;
+  --muted:    #64748B;
+  --dim:      #2a2a35;
+  --success:  #22c55e;
+  --gold:     #F59E0B;
+  --red:      #ef4444;
+  --fb: 'Inter', sans-serif;
+  --max: 1440px;
+  --pad: 64px;
+}
+```
+
+**Sapir's Animations:**
+```css
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.35;transform:scale(.7)} }
+@keyframes floatY { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-7px)} }
+```
+
+**Sapir's Logo SVG paths (exact):**
+```
+path1: "M0 18.31L65.56 0L132.46 18.31L125.47 40.53L66.23 23.86L59.86 25.51L61.66 30.58L67.83 44.02L74 55.95L79.71 66.65L67.88 88.04L58.03 73L50.16 58.81L43.76 45.15L38.48 31.49L7.2 39.91L0 17.28" fill="#2563EB"
+path2: "M10.57 48.52L32.89 42.45L36.13 50.48L42.45 63.43L48.16 73.92L58.03 89.97L68.06 104.16L77.62 89.5L83.49 79.17L90.43 65.59L96.91 52.02L100.76 42.45L122.67 48.78L116.5 64.05L106.47 84.88L94.44 105.86L80.4 126.37L68.83 141.34L51.71 121.44L41.1 106.32L31.96 91.9L24.86 79.01L15.45 59.11L10.57 48.52Z" fill="#2563EB"
+```
+
+3. Files and Code Sections:
+
+- **`client/src/components/layout/customer/CustomerNavbar.jsx`** (fully read, 380 lines)
+  - Current: sticky nav, Zap icon logo, search with autocomplete, wishlist + cart icon buttons, user profile dropdown menu with avatar initials, theme toggle, language toggle, mobile hamburger
+  - All hooks: useAuth, useCart, useWishlist, productService.autocomplete
+  - All routes: /products, /wishlist, /orders, /profile, /admin, /admin/inventory, /login
+  - Key logic: scroll detection, outside-click handler, autocomplete debounce 200ms, mobile menu toggle
+
+  ```jsx
+  export default function CustomerNavbar({ onOpenCart = () => {} }) {
+    const { user, logout }  = useAuth();
+    const { totalItems }    = useCart();
+    const { ids: wishIds }  = useWishlist();
+    // ... scroll, autocomplete, menu logic preserved
+  }
+  ```
+
+- **`client/src/components/layout/customer/CustomerNavbar.module.css`** (fully read, 556 lines)
+  - Current: purple brand, `--primary` (#8A2BE2) throughout, radius-full login button, gradient logo accent
+  - Nav height: `var(--navbar-h)`, max-width: `var(--content-max)`, padding: `var(--space-6)`
+  - Will need complete visual restyle to match Sapir's: 68px height, blue brand, 36px icon buttons with border, Neuropol logo font
+
+- **`client/src/styles/variables.css`** (first 80 lines read)
+  - Current brand: `--primary: #8A2BE2`, `--font-heading: 'Rajdhani'`, `--font-sans: 'Assistant'`
+  - Sapir's new tokens must be ADDED alongside, not replacing existing tokens (admin uses `--admin-*` prefix)
+
+- **`client/src/pages/customer/HomePage.jsx`** (first 80 lines read)
+  - CATEGORY_META array (14 categories with slugs + emoji icons)
+  - ProductSection component (with loading skeletons, error states)
+  - Data fetching: `productService.list({ featured })`, `productService.list({ onSale })`, `productService.getTrending(8)`, `productService.getBestSellers(8)`
+
+- **`client/src/features/products/components/ProductCard.jsx`** (first 60 lines read)
+  - useCart (addItem), useWishlist (isInWishlist, toggle), useToast, useTranslation
+  - Discount logic: `hasDiscount`, `displayPrice`, `discount`
+  - handleAddToCart: async, setAdding state, toast on success/error
+  - Navigate to `/products/${product.slug}` on card click
+
+**Sapir's design structural details for implementation:**
+
+**Promo Bar (new component):**
+- Background: `#0a0a0c`, border-bottom: `1px solid rgba(37,99,235,0.2)`, padding: `7px 0`
+- 3 slides rotating every 4000ms via setInterval
+- promo-tag: `background rgba(37,99,235,0.15)`, border `rgba(37,99,235,0.3)`, border-radius `100px`, padding `1px 10px`, font-size `10px`, font-weight `700`, color `var(--blue)`
+- promo-cta: color `var(--mint)`, font-weight `700`, font-size `11px`
+- Close button: absolute, left: `var(--pad)` (RTL right side visually)
+
+**Nav (exact measurements):**
+- sticky, top 0, z-index 999, background `rgba(13,13,15,0.96)`, backdrop-filter `blur(20px)`, border-bottom `1px solid var(--border)`
+- inner: max-width 1440px, height **68px**, flex, gap 24px, padding `0 64px`
+- Logo text: Neuropol font, 20px, letter-spacing 0.05em
+- Search: flex 1, max-width 580px, border-radius 10px, border 1.5px solid var(--border)
+- Search button: background var(--blue), border-radius `0 8px 8px 0`, width 16px icon
+- nav-icon-btn: border `1px solid var(--border)`, border-radius `8px`, **36×36px**, color var(--muted)
+  - hover: border-color var(--blue), color var(--text), background `rgba(37,99,235,0.06)`
+  - tooltip via `::after` pseudo-element, bottom -30px
+- nav-divider: width 1px, height 22px, background var(--border)
+- nav-lang-btn: height 36px, padding `0 10px`, font-size 12px, font-weight 600
+- nav-user-btn: height 36px, padding `0 14px`, font-size 13px, font-weight 500
+  - hover: border-color var(--blue), color var(--blue)
+- nav-cart: **background var(--blue)**, border-radius 8px, height 36px, padding `0 16px`, font-weight 600
+  - cart-count badge: bg #ef4444, position absolute, top -9px, left -9px, border `2px solid var(--bg)`
+
+**Nav button order (RTL, right to left visually):**
+1. Heart icon button (wishlist) - data-tip tooltip
+2. Compare icon button - data-tip tooltip
+3. Divider
+4. Language button (globe + text)
+5. Accessibility icon button
+6. Theme toggle icon button (moon)
+7. Divider
+8. User button ("כניסה" text + user icon)
+9. Cart button (blue bg + count)
+
+**Category Nav Bar:**
+- background: var(--surface), sticky top: **68px**, z-index: 998, height: **46px**
+- cat-nav-item: padding `0 16px`, font-size 13px, font-weight 500, color var(--muted), border-bottom `2px solid transparent`
+  - hover: color var(--text), background `rgba(255,255,255,0.04)`
+  - active: color #fff, border-bottom-color var(--blue)
+- cat-nav-all: padding `0 18px`, font-size 13px, font-weight 600, color var(--blue), border-left `1px solid var(--border)`
+
+**Hero:**
+- grid: `1fr 380px`, gap 64px, min-height 560px
+- hero-bg: grid lines `rgba(37,99,235,0.035)`, 48px×48px
+- hero-glow: radial-gradient, top -150px, right 20%, 700×700px
+- hero-eyebrow: bg `rgba(0,255,204,0.06)`, border `rgba(0,255,204,0.18)`, border-radius 100px, color var(--mint), font-size 12px, margin-bottom 24px
+- eyebrow-dot: 6px, bg var(--mint), animation pulse 2s
+- hero-title: Inter, 58px, font-weight 800, line-height 1.1, letter-spacing -0.025em
+- hero-desc: 16px, color var(--muted), max-width 480px, line-height 1.75
+- btn-primary: bg var(--blue), border-radius 10px, padding `13px 26px`, font-size 15px, font-weight 600
+- btn-secondary: transparent, border `1.5px solid rgba(255,255,255,0.1)`, same padding
+- slide transition: opacity 0.65s cubic-bezier(0.4, 0, 0.2, 1)
+- slide-dot active: bg var(--blue), width 22px, border-radius 4px
+- hero-stats: flex, gap 32px, margin-top 40px, border-top `1px solid rgba(255,255,255,0.07)`
+- Auto-rotate: `setInterval` every **5000ms**
+
+**Hero Product Card (right panel):**
+- bg var(--card), border `1px solid rgba(255,255,255,0.08)`, border-radius **18px**, padding 24px
+- box-shadow: `0 24px 64px rgba(0,0,0,0.4)`
+- ::before: top gradient line (transparent → blue → violet → mint → transparent)
+- hero-product-img: height 180px, bg #0e0e12, border-radius 10px
+- hero-product-price: font-size 26px, color var(--mint)
+- float badges: position absolute, animation floatY 3.5s, f1 top 20% right -80px, f2 bottom 22% left -80px
+
+**Product Cards (.pc — Best Sellers style):**
+- bg var(--card), border `1px solid var(--border)`, border-radius **14px**, overflow hidden
+- hover: border-color `rgba(37,99,235,0.45)`, translateY(-4px), box-shadow `0 16px 48px rgba(37,99,235,0.1)`
+- pc-rank: absolute top 10px, right 10px, 26×26px, border-radius 50%, font-size 12px, font-weight 700
+  - default: bg var(--blue) | .gold: bg #F59E0B | .silver: bg #94a3b8 | .bronze: bg #c97c3a
+- pc-img: height 170px, bg #111115
+- badge b-sale: bg var(--red) | b-new: bg `rgba(0,255,204,0.1)`, color var(--mint)
+- pc-brand: font-size 10px, color var(--blue), font-weight 700, letter-spacing .08em
+- pc-name: font-size 13px, font-weight 500, line-height 1.4
+- pc-price: font-size 22px, font-weight 700, color **var(--mint)**
+- pc-add button: bg var(--blue-d), border var(--blue-b), border-radius 8px, color var(--blue), padding 9px
+  - hover: bg var(--blue), color #fff
+
+**Deal Banner:**
+- background: `linear-gradient(135deg, #0a1628 0%, #0e0e20 55%, #091318 100%)`
+- border-top/bottom: `1px solid rgba(37,99,235,0.2)`
+- ::after: top 1px gradient line
+- Countdown: cblock (bg `rgba(255,255,255,0.04)`, border-radius 6px, padding `5px 10px`)
+- cnum: font-size 18px, font-weight 600
+
+**Hero JS slide data (exact):**
+```js
+const slideProducts = [
+  { icon:'monitor', label:'NEW', labelColor:'#2563EB', brand:'ASUS ROG', name:'Swift PG27AQDM 27" OLED 240Hz', price:'₪3,299', old:'₪4,199', discount:'-22%' },
+  { icon:'keyboard', label:'NEW', labelColor:'#2563EB', brand:'Razer', name:'BlackWidow V4 Pro Optical Green', price:'₪699', old:'', discount:'' },
+  { icon:'cpu', label:'SALE', labelColor:'#ef4444', brand:'NVIDIA', name:'GeForce RTX 4070 Ti Super 16GB', price:'₪2,999', old:'₪3,649', discount:'-18%' }
+]
+```
+
+**Hero slide transition (exact JS logic):**
+```js
+// Fade out both (0.32s) → swap content → fade in both together (0.5s)
+slides[prev].style.opacity = '0'; productCard.style.opacity = '0';
+setTimeout(() => {
+  slides[prev].classList.remove('active');
+  slides[current].classList.add('active');
+  updateProductCard(current);
+  // double rAF for paint
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    slides[current].style.opacity = '1'; productCard.style.opacity = '1';
+  }));
+  setTimeout(() => { /* clear inline styles */ }, 520);
+}, 340);
+```
+
+**Promo bar rotation (exact JS):**
+```js
+setInterval(() => {
+  promoSlides[promoIdx].classList.remove('active');
+  promoIdx = (promoIdx + 1) % promoSlides.length;
+  promoSlides[promoIdx].classList.add('active');
+}, 4000);
+```
+
+**Countdown (exact JS):**
+```js
+let total = 7 * 3600 + 43 * 60;
+setInterval(() => {
+  if (total <= 0) return; total--;
+  // update h/m/s display
+}, 1000);
+```
+
+4. Errors and fixes:
+- **Design file lost after context compaction**: The attached HTML file was lost when the conversation context was compacted in the previous session. I searched the filesystem for the file and couldn't find it. Fixed by asking the user to re-share the file, which they did.
+- **No other errors encountered yet** — implementation has not started; still in the file-reading phase.
+
+5. Problem Solving:
+- **Current problem**: Need to faithfully translate Sapir's static HTML/CSS/JS into React components without losing any existing functionality
+- **Key challenge**: Existing project uses purple brand (#8A2BE2) and Assistant/Rajdhani fonts; Sapir's design uses blue (#2563EB) and Inter/Neuropol — must add new tokens additively, apply them only in customer-facing component CSS modules
+- **Category nav integration**: Sapir's design has a sticky category bar below the main nav — existing CATEGORY_META array in HomePage.jsx has the 14 categories with slugs, these will be reused
+- **Login modal**: Sapir's design shows a login modal — explicitly excluded; existing /login JWT route stays
+- **Neuropol font**: base64-embedded in the HTML — will need to extract and reference from public/fonts/ or keep inline in global.css
+- **Navbar height increase**: When PromoBar + CategoryBar are added, total sticky height increases from ~64px to ~150px+ — CustomerLayout padding must adjust
+
+6. All user messages:
+- **Message 1** (previous session): Attached "מסך ראשי + התחברות.txt" — the full TechVault storefront design in Hebrew by Sapir
+- **Message 2** (previous session): "I am attaching a static HTML/CSS/JS design created by Sapir for TechVault. This is NOT a new project. Important: We already have a large React ecommerce system (TechVault) with: Customer store, Admin system, Warehouse system, JWT auth, Cart, Orders, Checkout, Multi-role system, Dark/light mode, RTL/LTR, Language switching, Accessibility, Existing API logic. Goal: Use the attached design ONLY as a visual/UI inspiration and transform its design language into our existing project. DO NOT: replace the app with a static HTML page / remove existing logic / break routes / remove API calls / duplicate authentication / overwrite working components. Instead: Analyze the attached code and extract: color system / spacing / navbar design / hero layout / category styling / cards / buttons / typography / overall visual language. Convert those ideas into reusable React components. Start ONLY with: 1. CustomerNavbar 2. HomePage 3. Hero section 4. Product cards. Before editing anything: Inspect current React structure and tell me: files you plan to edit / components affected / risks / migration plan. Preserve all existing functionality. Visual redesign only."
+- **Message 3** (current session — critical correction): "Correction before approval: I do NOT want you to reinterpret the design or improve it based on your own taste. The goal is to match Sapir's attached design as closely as possible — one-to-one visually. Use the attached HTML/CSS/JS design as the source of truth for: colors, spacing, layout, navbar, promo bar, category bar, hero section, cards, buttons, typography, visual hierarchy, animations. Do not invent new layouts. Do not make it 'KSP-like' unless Sapir's design already does that. Do not simplify or redesign creatively. Do not replace elements with your own ideas. Still preserve all existing React logic: routes, API calls, auth, cart, wishlist, theme/language/accessibility, admin/warehouse untouched. Proceed with the migration only if you can translate Sapir's design into React components as accurately as possible."
+- **Message 4** (current session): Re-attached the design file ("מסך ראשי + התחברות.txt") with the full HTML/CSS/JS content after I asked for it again
+
+7. Pending Tasks:
+- Read remaining current project files: `HomePage.jsx` (full), `HomePage.module.css`, `ProductCard.jsx` (full), `ProductCard.module.css`, `CustomerLayout.jsx`, `variables.css` (full), `global.css`
+- **Phase 0**: Add Sapir's design tokens to `variables.css` (additive only — new token block alongside existing `--primary` purple tokens)
+- **Phase 0**: Add `@font-face` for Neuropol (from base64) + `@keyframes pulse` + `@keyframes floatY` to `global.css`
+- **Phase 1**: Create `client/src/components/layout/customer/PromoBar.jsx` + `PromoBar.module.css`
+- **Phase 2**: Restyle `CustomerNavbar.jsx` + `CustomerNavbar.module.css` to match Sapir's design exactly — keeping all existing hooks (useAuth, useCart, useWishlist), all ARIA labels, keyboard navigation, autocomplete logic, mobile menu
+- **Phase 3**: Restyle `HomePage.jsx` + `HomePage.module.css` — hero with 3-slide auto-rotation, hero product card panel, deal banner, brands grid (6 brands), reviews section, gamer club section, policy bar — all existing API calls and data fetching preserved
+- **Phase 4**: Restyle `ProductCard.jsx` + `ProductCard.module.css` — rank badge support, new hover glow, blue/mint color scheme — all hooks and click handlers preserved
+
+8. Current Work:
+Immediately before this summary request, I was in the **file-reading phase** — I had just finished reading:
+- `CustomerNavbar.jsx` (full, 380 lines) 
+- `CustomerNavbar.module.css` (full, 556 lines)
+
+I had previously read partial content of:
+- `variables.css` (lines 1-80)
+- `HomePage.jsx` (lines 1-80)
+- `ProductCard.jsx` (lines 1-60)
+
+The user had just re-shared Sapir's full design file and I had extracted all design specifications from it. I was about to continue reading the remaining project files (`HomePage.jsx` full, `HomePage.module.css`, `ProductCard.jsx` full, `ProductCard.module.css`, `CustomerLayout.jsx`, `variables.css` full, `global.css`) before beginning implementation.
+
+9. Optional Next Step:
+Continue reading the remaining current project files before making any edits, then begin Phase 0 implementation (adding Sapir's design tokens to `variables.css` and font/keyframes to `global.css`).
+
+The user's most recent explicit intent: "Proceed with the migration only if you can translate Sapir's design into React components as accurately as possible." I confirmed readiness and was in the process of reading all current files before touching anything. The next action is to read the remaining files (`HomePage.jsx` full, `HomePage.module.css`, `ProductCard.jsx` full, `ProductCard.module.css`, `CustomerLayout.jsx`, `variables.css` full, `global.css`) and then begin implementing Phase 0.
+
+If you need specific details from before compaction (like exact code snippets, error messages, or content you generated), read the full transcript at: C:\Users\yarin\.claude\projects\c--Studies-AntiGravity-TechVault\9168fd31-909f-41be-8a07-2a89bf219b6d.jsonl
+Continue the conversation from where it left off without asking the user any further questions. Resume directly — do not acknowledge the summary, do not recap what was happening, do not preface with "I'll continue" or similar. Pick up the last task as if the break never happened.

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="he">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="TechVault — Modern tech e-commerce" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <title>TechVault</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Assistant:wght@200;300;400;500;600;700;800&family=Rajdhani:wght@500;600;700&display=swap"
+    rel="stylesheet">
+
+  <style>
+    html,
+    body,
+    #root {
+      width: 100%;
+      min-height: 100%;
+    }
+
+    body {
+      margin: 0;
+    }
+  </style>
+
+  <!-- OAuth SDKs -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js" async></script>
+
+  <!-- Anti-flash: apply persisted settings synchronously before React mounts -->
+  <script>
+    (function () {
+      try {
+        // Theme
+        var theme = localStorage.getItem('techvault_theme') || 'dark';
+        document.documentElement.dataset.theme = theme;
+
+        // Language + direction
+        var lang = localStorage.getItem('techvault_lang') || 'he';
+        document.documentElement.lang = lang;
+        document.documentElement.dir = lang === 'en' ? 'ltr' : 'rtl';
+
+        // Accessibility
+        var raw = localStorage.getItem('techvault_a11y');
+        if (raw) {
+          var a11y = JSON.parse(raw);
+          if (a11y.fontScale)       document.documentElement.style.fontSize = (16 + a11y.fontScale * 2) + 'px';
+          if (a11y.highContrast)   document.documentElement.classList.add('a11y-high-contrast');
+          if (a11y.grayscale)      document.documentElement.classList.add('a11y-grayscale');
+          if (a11y.underlineLinks) document.documentElement.classList.add('a11y-underline-links');
+          if (a11y.reduceMotion)   document.documentElement.classList.add('a11y-reduce-motion');
+        }
+      } catch (e) {}
+    })();
+  </script>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
+</body>
+
+</html>

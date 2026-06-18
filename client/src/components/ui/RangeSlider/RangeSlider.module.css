@@ -1,0 +1,86 @@
+.wrap {
+  width: 100%;
+  padding: 0 4px;
+}
+
+/* ── Track ───────────────────────────────────────────────────────────────────── */
+.track {
+  position: relative;
+  height: 4px;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-full);
+  margin: 20px 0 8px;
+}
+
+.fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: var(--gradient-brand);
+  border-radius: var(--radius-full);
+  pointer-events: none;
+}
+
+/* ── Range inputs (overlaid on the track) ────────────────────────────────────── */
+.input {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 100%;
+  height: 4px;
+  margin: 0;
+  padding: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  pointer-events: none;
+  outline: none;
+}
+
+/* The thumb is the only interactive part */
+.input::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--bg-base);
+  border: 2.5px solid var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-light);
+  cursor: pointer;
+  pointer-events: all;
+  transition: box-shadow var(--t-base), border-color var(--t-base);
+}
+
+.input::-webkit-slider-thumb:hover {
+  box-shadow: 0 0 0 5px var(--primary-light);
+}
+
+.input::-webkit-slider-thumb:active {
+  box-shadow: 0 0 0 6px var(--primary-light);
+  border-color: var(--accent);
+}
+
+.input::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--bg-base);
+  border: 2.5px solid var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-light);
+  cursor: pointer;
+  pointer-events: all;
+}
+
+/* Push max thumb above min thumb so both are always draggable */
+.inputMin { z-index: 3; }
+.inputMax { z-index: 4; }
+
+/* ── Labels ──────────────────────────────────────────────────────────────────── */
+.labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  margin-top: 4px;
+}

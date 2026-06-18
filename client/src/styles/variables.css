@@ -1,0 +1,236 @@
+:root {
+  /* ── Backgrounds ─────────────────────────────────────────────────────────── */
+  --bg-base:     #121212;
+  --bg-surface:  #1E1E1E;
+  --bg-elevated: #252525;
+  --bg-hover:    #2A2A2A;
+  --bg-active:   #303030;
+
+  /* ── Brand ───────────────────────────────────────────────────────────────── */
+  --primary:        #8A2BE2;
+  --primary-hover:  #7B1FA2;
+  --primary-light:  rgba(138, 43, 226, 0.15);
+  --primary-border: rgba(138, 43, 226, 0.35);
+  --accent:         #C4B5FD;
+  --accent-dim:     rgba(196, 181, 253, 0.7);
+
+  /* ── Gradients ───────────────────────────────────────────────────────────── */
+  --gradient-brand:    linear-gradient(135deg, #8A2BE2 0%, #A78BFA 100%);
+  --gradient-brand-r:  linear-gradient(135deg, #A78BFA 0%, #8A2BE2 100%);
+  --gradient-card:     linear-gradient(180deg, rgba(255,255,255,0.03) 0%, transparent 100%);
+  --gradient-hero:     radial-gradient(ellipse 80% 60% at 60% 40%, rgba(138,43,226,0.18) 0%, rgba(167,139,250,0.06) 60%, transparent 100%);
+
+  /* ── Glows ───────────────────────────────────────────────────────────────── */
+  --glow-purple: rgba(138, 43, 226, 0.20);
+  --glow-cyan:   rgba(167, 139, 250, 0.12);
+
+  /* ── Semantic colours ────────────────────────────────────────────────────── */
+  --success:       #10b981;
+  --success-light: rgba(16, 185, 129, 0.15);
+  --warning:       #f59e0b;
+  --warning-light: rgba(245, 158, 11, 0.15);
+  --error:         #ef4444;
+  --error-light:   rgba(239, 68, 68, 0.15);
+  --info:          #38bdf8;
+  --info-light:    rgba(56, 189, 248, 0.15);
+
+  /* ── Text ────────────────────────────────────────────────────────────────── */
+  --text-primary:   #E0E0E0;
+  --text-secondary: #9E9E9E;
+  --text-muted:     #616161;
+  --text-inverse:   #121212;
+
+  /* ── Borders ─────────────────────────────────────────────────────────────── */
+  --border:        rgba(255, 255, 255, 0.07);
+  --border-strong: rgba(255, 255, 255, 0.13);
+  --border-focus:  rgba(138, 43, 226, 0.6);
+
+  /* ── Radii ───────────────────────────────────────────────────────────────── */
+  --radius-xs:   4px;
+  --radius-sm:   6px;
+  --radius-md:   10px;
+  --radius-lg:   16px;
+  --radius-xl:   24px;
+  --radius-full: 9999px;
+
+  /* ── Shadows ─────────────────────────────────────────────────────────────── */
+  --shadow-sm:       0 1px 3px rgba(0, 0, 0, 0.5);
+  --shadow-md:       0 4px 16px rgba(0, 0, 0, 0.6);
+  --shadow-lg:       0 8px 32px rgba(0, 0, 0, 0.7);
+  --shadow-glow:     0 0 12px rgba(138, 43, 226, 0.18);
+  --shadow-glow-cyan:0 0 10px rgba(167, 139, 250, 0.15);
+
+  /* ── Spacing ─────────────────────────────────────────────────────────────── */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* ── Typography ──────────────────────────────────────────────────────────── */
+  --font-sans:    'Assistant', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-heading: 'Rajdhani', 'Assistant', 'Segoe UI', system-ui, sans-serif;
+  --font-mono:    'JetBrains Mono', 'Fira Code', monospace;
+
+  --text-xs:   0.75rem;
+  --text-sm:   0.875rem;
+  --text-base: 1rem;
+  --text-lg:   1.125rem;
+  --text-xl:   1.25rem;
+  --text-2xl:  1.5rem;
+  --text-3xl:  1.875rem;
+  --text-4xl:  2.25rem;
+
+  --font-normal:   400;
+  --font-medium:   500;
+  --font-semibold: 600;
+  --font-bold:     700;
+
+  /* ── Layout ──────────────────────────────────────────────────────────────── */
+  --navbar-h:   64px;
+  --sidebar-w:  240px;
+  --content-max:1280px;
+
+  /* ── Transitions ─────────────────────────────────────────────────────────── */
+  --t-fast:   100ms ease;
+  --t-base:   150ms ease;
+  --t-slow:   250ms ease;
+  --t-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* ── Z-layers ────────────────────────────────────────────────────────────── */
+  --z-base:    0;
+  --z-above:   10;
+  --z-sticky:  100;
+  --z-overlay: 200;
+  --z-drawer:  280;
+  --z-modal:   300;
+  --z-toast:   400;
+
+  /* ── Navbar backdrop (used by CustomerNavbar) ───────────────────────────── */
+  --nav-bg:         rgba(18, 18, 18, 0.82);
+  --nav-bg-scrolled:rgba(18, 18, 18, 0.95);
+
+  /* ── Admin / workspace theme (untouched) ─────────────────────────────────── */
+  --admin-bg-base:      #0a0a0f;
+  --admin-bg-sidebar:   #0f0f16;
+  --admin-bg-card:      #15151d;
+  --admin-bg-secondary: #1a1a24;
+  --admin-bg-muted:     #1a1a24;
+  --admin-bg-input:     #1a1a24;
+
+  --admin-text-primary:   #e5e5ea;
+  --admin-text-secondary: #8b8b99;
+  --admin-text-muted:     #6b7280;
+  --admin-text-inverse:   #0a0a0f;
+
+  --admin-primary:       #2563eb;
+  --admin-primary-light: rgba(37, 99, 235, 0.15);
+  --admin-primary-border:rgba(37, 99, 235, 0.35);
+
+  --admin-accent:       #7c3aed;
+  --admin-accent-light: rgba(124, 58, 237, 0.15);
+
+  --admin-success:       #10b981;
+  --admin-success-light: rgba(16, 185, 129, 0.15);
+
+  --admin-warning:       #fbbf24;
+  --admin-warning-light: rgba(251, 191, 36, 0.15);
+
+  --admin-error:       #ef4444;
+  --admin-error-light: rgba(239, 68, 68, 0.15);
+
+  --admin-info:       #06b6d4;
+  --admin-info-light: rgba(6, 182, 212, 0.15);
+
+  --admin-border:       rgba(255, 255, 255, 0.08);
+  --admin-border-strong:rgba(255, 255, 255, 0.14);
+
+  --admin-chart-blue:   #2563eb;
+  --admin-chart-purple: #7c3aed;
+  --admin-chart-red:    #ef4444;
+  --admin-chart-yellow: #fbbf24;
+  --admin-chart-cyan:   #06b6d4;
+
+  --admin-radius-sm: 6px;
+  --admin-radius-md: 10px;
+  --admin-radius-lg: 16px;
+  --admin-radius-xl: 24px;
+}
+
+/* ── Sapir / customer storefront tokens ─────────────────────────────────────── */
+/* Scoped to customer-facing components only. Admin keeps --admin-* prefix.    */
+:root {
+  --sv-bg:      #0d0d0f;
+  --sv-surface: #141416;
+  --sv-card:    #1a1a1e;
+  --sv-card2:   #1f1f25;
+  --sv-border:  rgba(255,255,255,0.07);
+
+  --sv-blue:    #2563EB;
+  --sv-blue-d:  rgba(37,99,235,0.13);
+  --sv-blue-b:  rgba(37,99,235,0.3);
+  --sv-violet:  #9E6EF1;
+  --sv-mint:    #00FFCC;
+
+  --sv-text:    #E2E8F0;
+  --sv-muted:   #64748B;
+  --sv-dim:     #2a2a35;
+
+  --sv-success: #22c55e;
+  --sv-gold:    #F59E0B;
+  --sv-red:     #ef4444;
+
+  --sv-max:     1440px;
+  --sv-pad:     64px;
+
+  --sv-nav-h:   68px;
+  --sv-cat-h:   46px;
+  --sv-promo-h: 36px;
+}
+
+/* ── Light theme overrides ───────────────────────────────────────────────────── */
+[data-theme="light"] {
+  --bg-base:     #f5f5f5;
+  --bg-surface:  #ffffff;
+  --bg-elevated: #efefef;
+  --bg-hover:    #e5e5e5;
+  --bg-active:   #dcdcdc;
+
+  --primary:        #7B1FA2;
+  --primary-hover:  #6A1B9A;
+  --primary-light:  rgba(123, 31, 162, 0.1);
+  --primary-border: rgba(123, 31, 162, 0.25);
+
+  --accent:     #7C3AED;
+  --accent-dim: rgba(124, 58, 237, 0.7);
+
+  --gradient-brand:   linear-gradient(135deg, #7B1FA2 0%, #9C4DCC 100%);
+  --gradient-brand-r: linear-gradient(135deg, #9C4DCC 0%, #7B1FA2 100%);
+  --gradient-hero:    radial-gradient(ellipse 80% 60% at 60% 40%, rgba(123,31,162,0.1) 0%, rgba(156,77,204,0.04) 60%, transparent 100%);
+
+  --glow-purple: rgba(123, 31, 162, 0.15);
+  --glow-cyan:   rgba(124, 58, 237, 0.08);
+
+  --text-primary:   #1a1a1a;
+  --text-secondary: #3d3d3d;
+  --text-muted:     #757575;
+  --text-inverse:   #f5f5f5;
+
+  --border:        rgba(0, 0, 0, 0.09);
+  --border-strong: rgba(0, 0, 0, 0.16);
+  --border-focus:  rgba(123, 31, 162, 0.55);
+
+  --shadow-sm:        0 1px 3px  rgba(0, 0, 0, 0.10);
+  --shadow-md:        0 4px 16px rgba(0, 0, 0, 0.10);
+  --shadow-lg:        0 8px 32px rgba(0, 0, 0, 0.12);
+  --shadow-glow:      0 0 12px  rgba(123, 31, 162, 0.15);
+  --shadow-glow-cyan: 0 0 10px  rgba(124, 58, 237, 0.10);
+
+  --nav-bg:          rgba(255, 255, 255, 0.85);
+  --nav-bg-scrolled: rgba(255, 255, 255, 0.97);
+}

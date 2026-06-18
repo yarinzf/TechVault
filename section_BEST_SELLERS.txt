@@ -1,0 +1,10 @@
+<!-- BEST SELLERS -->\
+<section class="bestsellers-section">\
+  <div class="section-inner">\
+    <div class="section-header">\
+      <h2 class="section-title">\uc0\u1492 \u1504 \u1502 \u1499 \u1512 \u1497 \u1501  <span>\u1489 \u1497 \u1493 \u1514 \u1512 </span></h2>\
+      <span class="section-link">\uc0\u1499 \u1500  \u1492 \u1502 \u1493 \u1510 \u1512 \u1497 \u1501  <i data-lucide="chevron-left"></i></span>\
+    </div>\
+    <div class="products-row">\
+\
+      

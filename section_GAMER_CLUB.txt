@@ -1,0 +1,31 @@
+<!-- GAMER CLUB -->\
+<section class="club-section">\
+  <div class="section-inner">\
+    <div class="club-banner">\
+      <div>\
+        <div class="club-badge"><i data-lucide="star"></i> \uc0\u1502 \u1493 \u1506 \u1491 \u1493 \u1503  TechVault</div>\
+        <div class="club-title">\uc0\u1492 \u1510 \u1496 \u1512 \u1507  \u1500 <span>\u1502 \u1493 \u1506 \u1491 \u1493 \u1503 </span><br>\u1492 \u1490 \u1497 \u1497 \u1502 \u1512 \u1497 \u1501  \u1513 \u1500 \u1504 \u1493 </div>\
+        <p class="club-desc">\uc0\u1511 \u1489 \u1500  \u1492 \u1504 \u1495 \u1493 \u1514  \u1489 \u1500 \u1506 \u1491 \u1497 \u1493 \u1514 , \u1490 \u1497 \u1513 \u1492  \u1502 \u1493 \u1511 \u1491 \u1502 \u1514  \u1500 \u1502 \u1493 \u1510 \u1512 \u1497 \u1501  \u1495 \u1491 \u1513 \u1497 \u1501 , \u1504 \u1497 \u1511 \u1493 \u1491  \u1506 \u1500  \u1499 \u1500  \u1511 \u1504 \u1497 \u1497 \u1492  \u1493 \u1506 \u1493 \u1491  \u1492 \u1496 \u1489 \u1493 \u1514  \u1502 \u1508 \u1514 \u1497 \u1506 \u1493 \u1514 .</p>\
+        <div class="club-perks">\
+          <div class="club-perk"><i data-lucide="check-circle"></i> \uc0\u1506 \u1491  10% \u1504 \u1497 \u1511 \u1493 \u1491  \u1495 \u1494 \u1512 \u1492  \u1506 \u1500  \u1499 \u1500  \u1511 \u1504 \u1497 \u1497 \u1492 </div>\
+          <div class="club-perk"><i data-lucide="check-circle"></i> \uc0\u1502 \u1513 \u1500 \u1493 \u1495  \u1495 \u1497 \u1504 \u1501  \u1500 \u1500 \u1488  \u1502 \u1497 \u1504 \u1497 \u1502 \u1493 \u1501 </div>\
+          <div class="club-perk"><i data-lucide="check-circle"></i> \uc0\u1490 \u1497 \u1513 \u1492  \u1502 \u1493 \u1511 \u1491 \u1502 \u1514  \u1500 \u1505 \u1497 \u1497 \u1500 \u1497 \u1501  \u1493 \u1502 \u1493 \u1510 \u1512 \u1497 \u1501  \u1495 \u1491 \u1513 \u1497 \u1501 </div>\
+          <div class="club-perk"><i data-lucide="check-circle"></i> \uc0\u1514 \u1502 \u1497 \u1499 \u1492  \u1502 \u1493 \u1506 \u1491 \u1508 \u1514  24/7</div>\
+        </div>\
+        <div class="club-cta">\
+          <button class="club-btn-primary"><i data-lucide="user-plus"></i> \uc0\u1492 \u1510 \u1496 \u1512 \u1507  \u1489 \u1495 \u1497 \u1504 \u1501 </button>\
+          <button class="club-btn-sec">\uc0\u1511 \u1512 \u1488  \u1506 \u1493 \u1491 </button>\
+        </div>\
+      </div>\
+      <div class="club-stats">\
+        <div class="club-stat"><div class="club-stat-num">50K<span>+</span></div><div class="club-stat-lbl">\uc0\u1495 \u1489 \u1512 \u1497 \u1501  \u1508 \u1506 \u1497 \u1500 \u1497 \u1501 </div></div>\
+        <div class="club-stat"><div class="club-stat-num">\uc0\u8362 <span>150</span></div><div class="club-stat-lbl">\u1495 \u1497 \u1505 \u1499 \u1493 \u1503  \u1502 \u1502 \u1493 \u1510 \u1506 </div></div>\
+        <div class="club-stat"><div class="club-stat-num">4.9<span>\uc0\u9733 </span></div><div class="club-stat-lbl">\u1513 \u1489 \u1497 \u1506 \u1493 \u1514  \u1512 \u1510 \u1493 \u1503 </div></div>\
+        <div class="club-stat"><div class="club-stat-num">3<span>X</span></div><div class="club-stat-lbl">\uc0\u1504 \u1511 \u1493 \u1491 \u1493 \u1514  \u1499 \u1508 \u1493 \u1500 \u1493 \u1514 </div></div>\
+        <div class="club-stat"><div class="club-stat-num">Free<span>+</span></div><div class="club-stat-lbl">\uc0\u1502 \u1513 \u1500 \u1493 \u1495  \u1495 \u1497 \u1504 \u1501 </div></div>\
+        <div class="club-stat"><div class="club-stat-num">24<span>/7</span></div><div class="club-stat-lbl">\uc0\u1514 \u1502 \u1497 \u1499 \u1492  VIP</div></div>\
+      </div>\
+    </div>\
+  </div>\
+</section>\
+\

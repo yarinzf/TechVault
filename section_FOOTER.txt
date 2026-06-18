@@ -1,0 +1,253 @@
+<!-- FOOTER -->\
+<footer>\
+  <div class="footer-inner">\
+    <div class="footer-grid">\
+      <div>\
+        <div class="footer-brand-wrap">\
+          <svg class="footer-brand-icon" viewBox="0 0 133 142" fill="none">\
+            <path d="M0 18.31L65.56 0L132.46 18.31L125.47 40.53L66.23 23.86L59.86 25.51L61.66 30.58L67.83 44.02L74 55.95L79.71 66.65L67.88 88.04L58.03 73L50.16 58.81L43.76 45.15L38.48 31.49L7.2 39.91L0 17.28" fill="#2563EB"/>\
+            <path d="M10.57 48.52L32.89 42.45L36.13 50.48L42.45 63.43L48.16 73.92L58.03 89.97L68.06 104.16L77.62 89.5L83.49 79.17L90.43 65.59L96.91 52.02L100.76 42.45L122.67 48.78L116.5 64.05L106.47 84.88L94.44 105.86L80.4 126.37L68.83 141.34L51.71 121.44L41.1 106.32L31.96 91.9L24.86 79.01L15.45 59.11L10.57 48.52Z" fill="#2563EB"/>\
+          </svg>\
+          <span class="footer-brand-text">TechVault</span>\
+        </div>\
+        <p class="footer-desc">\uc0\u1492 \u1495 \u1504 \u1493 \u1514  \u1492 \u1502 \u1493 \u1489 \u1497 \u1500 \u1492  \u1500 \u1510 \u1497 \u1493 \u1491  \u1490 \u1497 \u1497 \u1502 \u1497 \u1504 \u1490  \u1493 \u1514 \u1513 \u1514 \u1497 \u1493 \u1514  \u1496 \u1499 \u1504 \u1493 \u1500 \u1493 \u1490 \u1497 \u1493 \u1514 . \u1488 \u1500 \u1508 \u1497  \u1502 \u1493 \u1510 \u1512 \u1497 \u1501 , \u1502 \u1495 \u1497 \u1512 \u1497 \u1501  \u1514 \u1495 \u1512 \u1493 \u1514 \u1497 \u1497 \u1501 , \u1513 \u1497 \u1512 \u1493 \u1514  \u1502 \u1492 \u1497 \u1512 .</p>\
+      </div>\
+      <div>\
+        <div class="footer-col-title">\uc0\u1511 \u1496 \u1490 \u1493 \u1512 \u1497 \u1493 \u1514 </div>\
+        <span class="footer-link">\uc0\u1502 \u1505 \u1499 \u1497  \u1490 \u1497 \u1497 \u1502 \u1497 \u1504 \u1490 </span>\
+        <span class="footer-link">\uc0\u1499 \u1512 \u1496 \u1497 \u1505 \u1497  \u1502 \u1505 \u1498 </span>\
+        <span class="footer-link">\uc0\u1502 \u1511 \u1500 \u1491 \u1493 \u1514  \u1493 \u1506 \u1499 \u1489 \u1512 \u1497 \u1501 </span>\
+        <span class="footer-link">\uc0\u1488 \u1493 \u1494 \u1504 \u1497 \u1493 \u1514 </span>\
+        <span class="footer-link">\uc0\u1511 \u1493 \u1504 \u1505 \u1493 \u1500 \u1493 \u1514 </span>\
+        <span class="footer-link">\uc0\u1502 \u1495 \u1513 \u1489 \u1497 \u1501  \u1504 \u1497 \u1497 \u1491 \u1497 \u1501 </span>\
+      </div>\
+      <div>\
+        <div class="footer-col-title">\uc0\u1513 \u1497 \u1512 \u1493 \u1514  \u1500 \u1511 \u1493 \u1495 \u1493 \u1514 </div>\
+        <span class="footer-link">\uc0\u1510 \u1493 \u1512  \u1511 \u1513 \u1512 </span>\
+        <span class="footer-link">\uc0\u1502 \u1491 \u1497 \u1504 \u1497 \u1493 \u1514  \u1492 \u1495 \u1494 \u1512 \u1493 \u1514 </span>\
+        <span class="footer-link">\uc0\u1488 \u1495 \u1512 \u1497 \u1493 \u1514  \u1493 \u1514 \u1497 \u1511 \u1493 \u1504 \u1497 \u1501 </span>\
+        <span class="footer-link">\uc0\u1513 \u1488 \u1500 \u1493 \u1514  \u1504 \u1508 \u1493 \u1510 \u1493 \u1514 </span>\
+        <span class="footer-link">\uc0\u1506 \u1502 \u1491 \u1493 \u1514  \u1513 \u1497 \u1512 \u1493 \u1514 </span>\
+      </div>\
+      <div>\
+        <div class="footer-col-title">\uc0\u1495 \u1513 \u1489 \u1493 \u1503  \u1513 \u1500 \u1497 </div>\
+        <span class="footer-link">\uc0\u1492 \u1514 \u1495 \u1489 \u1512 \u1493 \u1514  / \u1492 \u1512 \u1513 \u1502 \u1492 </span>\
+        <span class="footer-link">\uc0\u1492 \u1494 \u1502 \u1504 \u1493 \u1514  \u1513 \u1500 \u1497 </span>\
+        <span class="footer-link">\uc0\u1502 \u1493 \u1506 \u1491 \u1508 \u1497 \u1501 </span>\
+        <span class="footer-link">\uc0\u1502 \u1493 \u1506 \u1491 \u1493 \u1503  TechVault</span>\
+        <span class="footer-link">\uc0\u1492 \u1490 \u1491 \u1512 \u1493 \u1514  \u1495 \u1513 \u1489 \u1493 \u1503 </span>\
+      </div>\
+    </div>\
+    <div class="footer-bottom">\
+      <div class="footer-copy">\'a9 2025 TechVault. \uc0\u1499 \u1500  \u1492 \u1494 \u1499 \u1493 \u1497 \u1493 \u1514  \u1513 \u1502 \u1493 \u1512 \u1493 \u1514 .</div>\
+      <div class="footer-socials">\
+        <button class="social-btn"><i data-lucide="twitter"></i></button>\
+        <button class="social-btn"><i data-lucide="instagram"></i></button>\
+        <button class="social-btn"><i data-lucide="youtube"></i></button>\
+        <button class="social-btn"><i data-lucide="linkedin"></i></button>\
+      </div>\
+    </div>\
+  </div>\
+</footer>\
+\
+<script>\
+// Promo bar rotation\
+const promoSlides = document.querySelectorAll('.promo-slide');\
+let promoIdx = 0;\
+if (promoSlides.length) \{\
+  setInterval(() => \{\
+    promoSlides[promoIdx].classList.remove('active');\
+    promoIdx = (promoIdx + 1) % promoSlides.length;\
+    promoSlides[promoIdx].classList.add('active');\
+  \}, 4000);\
+\}\
+\
+lucide.createIcons();\
+\
+// Theme toggle\
+function toggleTheme(btn) \{\
+  const root = document.documentElement;\
+  const isLight = root.classList.toggle('light-mode');\
+  btn.querySelector('i').setAttribute('data-lucide', isLight ? 'sun' : 'moon');\
+  btn.setAttribute('data-tip', isLight ? '\uc0\u1502 \u1510 \u1489  \u1499 \u1492 \u1492 ' : '\u1502 \u1510 \u1489  \u1489 \u1492 \u1497 \u1512 ');\
+  if (isLight) \{\
+    root.style.setProperty('--bg', '#f8fafc');\
+    root.style.setProperty('--surface', '#f1f5f9');\
+    root.style.setProperty('--card', '#ffffff');\
+    root.style.setProperty('--border', 'rgba(0,0,0,0.08)');\
+    root.style.setProperty('--text', '#0f172a');\
+    root.style.setProperty('--muted', '#64748b');\
+    root.style.setProperty('--dim', '#e2e8f0');\
+  \} else \{\
+    root.style.setProperty('--bg', '#0d0d0f');\
+    root.style.setProperty('--surface', '#141416');\
+    root.style.setProperty('--card', '#1a1a1e');\
+    root.style.setProperty('--border', 'rgba(255,255,255,0.07)');\
+    root.style.setProperty('--text', '#E2E8F0');\
+    root.style.setProperty('--muted', '#64748B');\
+    root.style.setProperty('--dim', '#2a2a35');\
+  \}\
+  lucide.createIcons();\
+\}\
+\
+// Language toggle\
+function toggleLang(btn) \{\
+  const isHeb = btn.textContent.trim().startsWith('\uc0\u1506 ');\
+  const globeSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>';\
+  btn.innerHTML = isHeb ? globeSvg + ' EN' : globeSvg + ' \uc0\u1506 \u1489 ';\
+\}\
+\
+// Hero slides + product sync\
+let current = 0;\
+const slides = document.querySelectorAll('.hero-slide');\
+const dots = document.querySelectorAll('.slide-dot');\
+const productCard = document.querySelector('.hero-product-card');\
+\
+const slideProducts = [\
+  \{\
+    icon: 'monitor',\
+    label: 'NEW',\
+    labelColor: '#2563EB',\
+    brand: 'ASUS ROG',\
+    name: 'Swift PG27AQDM 27" OLED 240Hz',\
+    stars: '\uc0\u9733 \u9733 \u9733 \u9733 \u9733 ',\
+    rcount: '(847 \uc0\u1489 \u1497 \u1511 \u1493 \u1512 \u1493 \u1514 )',\
+    price: '\uc0\u8362 3,299',\
+    old: '\uc0\u8362 4,199',\
+    discount: '\uc0\u8722 22%',\
+    float1: \{ label: '\uc0\u1511 \u1510 \u1489  \u1512 \u1506 \u1504 \u1493 \u1503 ', val: '240Hz', icon: 'zap' \},\
+    float2: \{ label: '\uc0\u1494 \u1502 \u1503  \u1514 \u1490 \u1493 \u1489 \u1492 ', val: '0.03ms', icon: 'target' \}\
+  \},\
+  \{\
+    icon: 'keyboard',\
+    label: 'NEW',\
+    labelColor: '#2563EB',\
+    brand: 'Razer',\
+    name: 'BlackWidow V4 Pro Optical Green',\
+    stars: '\uc0\u9733 \u9733 \u9733 \u9733 \u9734 ',\
+    rcount: '(1.2K \uc0\u1489 \u1497 \u1511 \u1493 \u1512 \u1493 \u1514 )',\
+    price: '\uc0\u8362 699',\
+    old: '',\
+    discount: '',\
+    float1: \{ label: '\uc0\u1505 \u1493 \u1490  \u1502 \u1514 \u1490 ', val: '\u1488 \u1493 \u1508 \u1496 \u1497 ', icon: 'cpu' \},\
+    float2: \{ label: '\uc0\u1514 \u1488 \u1493 \u1512 \u1492 ', val: 'RGB \u1502 \u1500 \u1488 ', icon: 'sparkles' \}\
+  \},\
+  \{\
+    icon: 'cpu',\
+    label: 'SALE',\
+    labelColor: '#ef4444',\
+    brand: 'NVIDIA',\
+    name: 'GeForce RTX 4070 Ti Super 16GB',\
+    stars: '\uc0\u9733 \u9733 \u9733 \u9733 \u9733 ',\
+    rcount: '(289 \uc0\u1489 \u1497 \u1511 \u1493 \u1512 \u1493 \u1514 )',\
+    price: '\uc0\u8362 2,999',\
+    old: '\uc0\u8362 3,649',\
+    discount: '\uc0\u8722 18%',\
+    float1: \{ label: 'VRAM', val: '16GB GDDR6X', icon: 'hard-drive' \},\
+    float2: \{ label: '\uc0\u1489 \u1497 \u1510 \u1493 \u1506 \u1497 \u1501 ', val: '4K Ready', icon: 'monitor' \}\
+  \}\
+];\
+\
+function updateProductCard(n) \{\
+  const p = slideProducts[n];\
+  const card = document.querySelector('.hero-product-card');\
+\
+  // Update icon - replace entire img content (lucide converts <i> to <svg>)\
+  const imgWrap = card.querySelector('.hero-product-img');\
+  imgWrap.innerHTML = `\
+    <i data-lucide="$\{p.icon\}" style="width:80px;height:80px;stroke:var(--blue);stroke-width:1.2;position:relative;z-index:1;"></i>\
+    <span class="hero-product-img-label" style="background:$\{p.labelColor\}">$\{p.label\}</span>\
+  `;\
+\
+  // Update text\
+  card.querySelector('.hero-product-brand').textContent = p.brand;\
+  card.querySelector('.hero-product-name').textContent = p.name;\
+  card.querySelector('.hero-product-stars').textContent = p.stars;\
+  card.querySelector('.hero-product-rcount').textContent = p.rcount;\
+  card.querySelector('.hero-product-price').textContent = p.price;\
+  card.querySelector('.hero-product-old').textContent = p.old;\
+  const disc = card.querySelector('.hero-product-discount');\
+  disc.textContent = p.discount;\
+  disc.style.display = p.discount ? '' : 'none';\
+\
+  // Update float badges\
+  const floats = card.querySelectorAll('.hero-float-badge');\
+  floats[0].querySelector('.float-lbl').textContent = p.float1.label;\
+  floats[0].querySelector('.float-val').innerHTML = `<i data-lucide="$\{p.float1.icon\}" style="width:12px;height:12px;stroke:var(--mint);"></i> $\{p.float1.val\}`;\
+  floats[1].querySelector('.float-lbl').textContent = p.float2.label;\
+  floats[1].querySelector('.float-val').innerHTML = `<i data-lucide="$\{p.float2.icon\}" style="width:12px;height:12px;stroke:var(--mint);"></i> $\{p.float2.val\}`;\
+\
+  // Transition handled by goSlide\
+  lucide.createIcons();\
+\}\
+\
+function goSlide(n) \{\
+  if (n === current) return;\
+  const prev = current;\
+  current = n;\
+  dots[prev].classList.remove('active');\
+  dots[current].classList.add('active');\
+\
+  // Fade out both simultaneously\
+  slides[prev].style.transition = 'opacity 0.32s ease';\
+  slides[prev].style.opacity = '0';\
+  productCard.style.transition = 'opacity 0.32s ease';\
+  productCard.style.opacity = '0';\
+\
+  // After fade out - swap content and fade in both together\
+  setTimeout(() => \{\
+    slides[prev].classList.remove('active');\
+    slides[prev].style.opacity = '';\
+    slides[prev].style.transition = '';\
+\
+    slides[current].classList.add('active');\
+    updateProductCard(current);\
+\
+    // Fade in both together\
+    slides[current].style.transition = 'opacity 0.5s ease';\
+    slides[current].style.opacity = '0';\
+    productCard.style.opacity = '0';\
+\
+    requestAnimationFrame(() => \{\
+      requestAnimationFrame(() => \{\
+        slides[current].style.opacity = '1';\
+        productCard.style.opacity = '1';\
+        productCard.style.transition = 'opacity 0.5s ease';\
+      \});\
+    \});\
+\
+    setTimeout(() => \{\
+      slides[current].style.transition = '';\
+      slides[current].style.opacity = '';\
+      productCard.style.transition = '';\
+      productCard.style.opacity = '';\
+    \}, 520);\
+\
+  \}, 340);\
+\}\
+\
+setInterval(() => goSlide((current + 1) % slides.length), 5000);\
+\
+// Countdown\
+let total = 7 * 3600 + 43 * 60;\
+setInterval(() => \{\
+  if (total <= 0) return; total--;\
+  document.getElementById('h').textContent = String(Math.floor(total / 3600)).padStart(2,'0');\
+  document.getElementById('m').textContent = String(Math.floor((total % 3600) / 60)).padStart(2,'0');\
+  document.getElementById('s').textContent = String(total % 60).padStart(2,'0');\
+\}, 1000);\
+\
+// Add to cart\
+document.querySelectorAll('.pc-add, .hero-product-btn').forEach(btn => \{\
+  btn.addEventListener('click', e => \{\
+    e.stopPropagation();\
+    const orig = btn.innerHTML;\
+    btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> \uc0\u1504 \u1493 \u1505 \u1507 !';\
+    btn.style.background = 'rgba(34,197,94,0.15)';\
+    btn.style.borderColor = 'rgba(34,197,94,0.3)';\
+    btn.style.color = '#22c55e';\
+    setTimeout(() => \{ btn.innerHTML = orig; btn.style.cssText = ''; lucide.createIcons(); \}, 1800);\
+  \});\
+\});\
+</script>\
+\

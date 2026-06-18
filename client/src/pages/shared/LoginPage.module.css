@@ -1,0 +1,346 @@
+/* ── Page shell ── */
+.page {
+  position: relative;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Real storefront rendered behind the overlay */
+.bgLayer {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  user-select: none;
+  overflow: hidden;
+}
+
+/* Dark blur overlay — Sapir's .modal-overlay */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.70);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 1;
+}
+
+/* Card centering wrapper — sits above the overlay */
+.cardWrap {
+  position: relative;
+  z-index: 2;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+/* ── Card ── */
+.card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--sv-card);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 20px;
+  padding: 36px;
+  position: relative;
+  animation: authCardIn 0.35s ease;
+}
+
+@keyframes authCardIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+/* Gradient top border line */
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--sv-blue)   30%,
+    var(--sv-violet) 60%,
+    transparent
+  );
+  border-radius: 20px 20px 0 0;
+}
+
+/* ── Logo ── */
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--font-heading);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--sv-text);
+  margin-bottom: 24px;
+  text-decoration: none;
+  transition: opacity 0.15s ease;
+}
+.logo:hover     { opacity: 0.85; }
+.logoAccent     { color: var(--sv-blue); }
+
+/* ── Tabs — pill style ── */
+.tabs {
+  display: flex;
+  background: var(--sv-surface);
+  border-radius: 10px;
+  padding: 4px;
+  margin-bottom: 28px;
+  gap: 4px;
+}
+
+.tab {
+  flex: 1;
+  padding: 8px 0;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--sv-muted);
+  border-radius: 7px;
+  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  transition: color 0.15s ease, background 0.15s ease;
+}
+.tab:hover { color: var(--sv-text); }
+
+.tabActive {
+  background: var(--sv-blue);
+  color: #fff;
+}
+
+/* ── Form ── */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Panel (animated swap area) */
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: opacity 0.25s ease;
+}
+.panelHidden { opacity: 0; pointer-events: none; }
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--sv-muted);
+}
+
+.input {
+  width: 100%;
+  padding: 11px 14px;
+  background: var(--sv-surface);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  color: var(--sv-text);
+  font-size: 14px;
+  font-family: var(--font-sans);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.input::placeholder { color: var(--sv-muted); }
+.input:focus {
+  outline: none;
+  border-color: var(--sv-blue);
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+}
+
+/* Phone row */
+.phoneRow {
+  display: flex;
+  gap: 8px;
+  direction: ltr;
+}
+
+.countrySelect {
+  width: 108px;
+  flex-shrink: 0;
+  direction: ltr;
+  cursor: pointer;
+}
+
+.phoneInput {
+  flex: 1;
+  direction: ltr;
+  text-align: left;
+}
+
+/* Forgot password */
+.forgot {
+  display: block;
+  text-align: left;
+  font-size: 12px;
+  color: var(--sv-blue);
+  text-decoration: none;
+  margin-top: 2px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: var(--font-sans);
+  transition: opacity 0.15s;
+}
+.forgot:hover { opacity: 0.8; }
+
+/* ── Submit ── */
+.submit {
+  width: 100%;
+  padding: 13px 24px;
+  background: var(--sv-blue);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+.submit:hover:not(:disabled) { background: #1d4ed8; transform: translateY(-1px); }
+.submit:active:not(:disabled) { transform: translateY(0); }
+.submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+/* ── Error banner ── */
+.error {
+  background: rgba(239,68,68,0.1);
+  border: 1px solid rgba(239,68,68,0.3);
+  color: var(--sv-red);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* ── Divider "או המשך עם" ── */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+  color: var(--sv-muted);
+  margin: 8px 0;
+}
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(255,255,255,0.08);
+}
+
+/* ── OAuth row ── */
+.oauth {
+  display: flex;
+  gap: 8px;
+}
+
+.oauthBtn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 8px;
+  background: var(--sv-surface);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  color: var(--sv-text);
+  font-size: 13px;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  white-space: nowrap;
+}
+.oauthBtn:hover { background: rgba(255,255,255,0.05); }
+
+.oauthBtnActive {
+  border-color: var(--sv-blue);
+  color: var(--sv-blue);
+}
+
+.oauthBtnDisabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.oauthBtnDisabled:hover { background: var(--sv-surface); }
+
+/* Google renderButton overlay — invisible real button sits on top of our styled button */
+.oauthGoogleWrap {
+  flex: 1;
+  position: relative;
+}
+.gsiOverlay {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  opacity: 0.001;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+/* ── Terms ── */
+.terms {
+  text-align: center;
+  margin-top: 14px;
+  font-size: 11px;
+  color: var(--sv-muted);
+  line-height: 1.7;
+}
+.terms a {
+  color: var(--sv-blue);
+  text-decoration: none;
+}
+.terms a:hover { text-decoration: underline; }
+
+/* ── Footer link row ── */
+.footer {
+  text-align: center;
+  margin-top: 16px;
+  font-size: 13px;
+  color: var(--sv-muted);
+}
+
+.link {
+  color: var(--sv-blue);
+  font-weight: 600;
+  text-decoration: none;
+}
+.link:hover { text-decoration: underline; }
+
+/* ── Dev hint block ── */
+.devHint {
+  margin-top: 20px;
+  padding: 12px 14px;
+  background: rgba(37,99,235,0.06);
+  border: 1px solid rgba(37,99,235,0.15);
+  border-radius: 8px;
+  font-size: 11px;
+  color: var(--sv-muted);
+  line-height: 1.8;
+}
+.devHint strong { color: var(--sv-text); }

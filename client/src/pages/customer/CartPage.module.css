@@ -1,0 +1,166 @@
+.heading {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-6);
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: var(--space-8);
+  align-items: start;
+}
+@media (max-width: 768px) {
+  .layout { grid-template-columns: 1fr; }
+}
+
+/* ── Items ── */
+.items { display: flex; flex-direction: column; gap: var(--space-3); }
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  transition: border-color var(--t-base), box-shadow var(--t-base), transform var(--t-base);
+}
+.item:hover {
+  border-color: var(--primary-border);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  transform: translateY(-1px);
+}
+
+.img {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+  background: var(--bg-elevated);
+}
+
+.itemLink {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex: 1;
+  min-width: 0;
+  text-decoration: none;
+  color: inherit;
+}
+.itemLink:hover .itemName { color: var(--primary); }
+
+.itemBody { flex: 1; min-width: 0; }
+.itemName {
+  font-size: var(--text-base);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.itemMeta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.unitPrice { font-size: var(--text-sm); color: var(--text-secondary); }
+.strikePrice {
+  text-decoration: line-through;
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+}
+
+/* Actions block: qty + total + remove, always at the end */
+.itemActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex-shrink: 0;
+}
+
+.qtyCtrl { display: flex; align-items: center; gap: var(--space-2); }
+.qBtn {
+  width: 30px;
+  height: 30px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: var(--text-base);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--t-fast), color var(--t-fast), transform var(--t-fast);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.qBtn:not(:disabled):hover { background: var(--bg-hover); color: var(--text-primary); }
+.qBtn:not(:disabled):active { transform: scale(0.88); }
+.qBtn:disabled { opacity: 0.4; cursor: not-allowed; }
+.qty {
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  min-width: 24px;
+  text-align: center;
+  color: var(--text-primary);
+}
+
+.lineTotal {
+  font-size: var(--text-base);
+  font-weight: var(--font-bold);
+  color: var(--text-primary);
+  min-width: 72px;
+  text-align: left;
+  flex-shrink: 0;
+}
+
+.removeBtn {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  padding: 6px;
+  border-radius: var(--radius-sm);
+  transition: color var(--t-fast), background var(--t-fast);
+}
+.removeBtn:hover { color: var(--error); background: rgba(239,68,68,0.08); }
+
+/* ── Summary ── */
+.summary {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  position: sticky;
+  top: calc(var(--navbar-h) + var(--space-4));
+}
+.summaryTitle {
+  font-size: var(--text-lg);
+  font-weight: var(--font-bold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-5);
+}
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-3);
+}
+.free { color: var(--success); font-weight: var(--font-medium); }
+.divider { height: 1px; background: var(--border); margin: var(--space-4) 0; }
+.total {
+  font-size: var(--text-lg);
+  font-weight: var(--font-bold);
+  color: var(--text-primary);
+}
+
+.continueShopping {
+  display: block;
+  text-align: center;
+  margin-top: var(--space-4);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  transition: color var(--t-fast);
+}
+.continueShopping:hover { color: var(--text-secondary); }

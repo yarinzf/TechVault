@@ -1,0 +1,9 @@
+<!-- REVIEWS -->\
+<section class="reviews-section">\
+  <div class="section-inner">\
+    <div class="section-header">\
+      <h2 class="section-title">\uc0\u1502 \u1492  \u1492 \u1500 \u1511 \u1493 \u1495 \u1493 \u1514  <span>\u1488 \u1493 \u1502 \u1512 \u1497 \u1501 </span></h2>\
+      <span class="section-link">\uc0\u1499 \u1500  \u1492 \u1489 \u1497 \u1511 \u1493 \u1512 \u1493 \u1514  <i data-lucide="chevron-left"></i></span>\
+    </div>\
+\
+    

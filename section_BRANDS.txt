@@ -1,0 +1,10 @@
+<!-- BRANDS -->\
+<section class="brands-section">\
+  <div class="section-inner">\
+    <div class="section-header">\
+      <h2 class="section-title">\uc0\u1502 \u1493 \u1514 \u1490 \u1497 \u1501  <span>\u1502 \u1493 \u1489 \u1497 \u1500 \u1497 \u1501 </span></h2>\
+      <span class="section-link">\uc0\u1499 \u1500  \u1492 \u1502 \u1493 \u1514 \u1490 \u1497 \u1501  <i data-lucide="chevron-left"></i></span>\
+    </div>\
+            <div class="brands-grid">\
+\
+      

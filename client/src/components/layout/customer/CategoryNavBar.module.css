@@ -1,0 +1,93 @@
+/* ── Cat nav bar ─────────────────────────────────────────────────────────────── */
+.bar {
+  background: #15151D;
+  border-bottom: 1px solid rgba(40,40,47,0.9);
+  position: sticky;
+  top: var(--sv-nav-h);
+  z-index: 1000;
+  height: var(--sv-cat-h);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* ── Inner row ───────────────────────────────────────────────────────────────── */
+.inner {
+  max-width: var(--sv-max);
+  margin: 0 auto;
+  padding: 0 var(--sv-pad);
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  height: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+  gap: 0;
+}
+
+.inner::-webkit-scrollbar { display: none; }
+
+/* ── "כל הקטגוריות" button ───────────────────────────────────────────────────── */
+.catNavAll {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 18px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #3B82F6;
+  cursor: pointer;
+  white-space: nowrap;
+  border-left: 1px solid rgba(40,40,47,0.9);
+  position: relative;
+  z-index: 1001;
+  background: none;
+  border-top: none;
+  border-right: none;
+  border-bottom: none;
+  font-family: 'Inter', sans-serif;
+  height: 100%;
+  flex-shrink: 0;
+}
+
+/* ── Divider (Sapir's .cat-nav-divider) ─────────────────────────────────────── */
+.divider {
+  width: 1px;
+  background: rgba(40,40,47,0.9);
+  margin: 8px 0;
+  flex-shrink: 0;
+}
+
+/* ── Category nav item ───────────────────────────────────────────────────────── */
+.item {
+  flex-shrink: 0;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #94A3BB;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all .18s;
+  position: relative;
+}
+
+.item:hover {
+  color: #3B82F6;
+  background: rgba(37,99,235,0.08);
+}
+
+.item.active {
+  color: #3B82F6;
+  border-bottom-color: #2563EB;
+  font-weight: 600;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .inner { padding: 0 12px; justify-content: flex-start; }
+  .catNavAll { border-left: none; }
+}

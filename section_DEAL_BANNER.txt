@@ -1,0 +1,19 @@
+<!-- DEAL BANNER -->\
+<div class="deal-banner">\
+  <div class="deal-inner">\
+    <span class="deal-badge"><i data-lucide="zap"></i> \uc0\u1508 \u1500 \u1488 \u1513  \u1505 \u1497 \u1497 \u1500 </span>\
+    <div class="deal-text">\
+      <div class="deal-title">\uc0\u1502 \u1489 \u1510 \u1506  \u1492 \u1513 \u1489 \u1493 \u1506  \'97 \u1499 \u1512 \u1496 \u1497 \u1505 \u1497  \u1502 \u1505 \u1498  \u1506 \u1491  30% \u1492 \u1504 \u1495 \u1492 </div>\
+      <div class="deal-sub">RTX 4090, RX 7900 XTX, \uc0\u1493 \u1506 \u1493 \u1491  \'b7 \u1502 \u1500 \u1488 \u1497  \u1502 \u1493 \u1490 \u1489 \u1500 </div>\
+    </div>\
+    <div class="countdown" dir="ltr">\
+      <div class="cblock"><span class="cnum" id="h">07</span><div class="clbl">\uc0\u1513 \u1506 \u1493 \u1514 </div></div>\
+      <span class="csep">:</span>\
+      <div class="cblock"><span class="cnum" id="m">43</span><div class="clbl">\uc0\u1491 \u1511 \u1493 \u1514 </div></div>\
+      <span class="csep">:</span>\
+      <div class="cblock"><span class="cnum" id="s">00</span><div class="clbl">\uc0\u1513 \u1504 \u1497 \u1493 \u1514 </div></div>\
+    </div>\
+    <button class="deal-cta"><i data-lucide="arrow-left"></i> \uc0\u1500 \u1499 \u1500  \u1492 \u1502 \u1489 \u1510 \u1506 \u1497 \u1501 </button>\
+  </div>\
+</div>\
+\

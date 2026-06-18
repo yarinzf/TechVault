@@ -1,0 +1,78 @@
+.root {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* ── Display (readonly) ──────────────────────────────────────────────────────── */
+.displayWrap {
+  position: relative;
+  display: inline-flex;
+  line-height: 1;
+}
+
+.emptyLayer,
+.filledLayer {
+  display: flex;
+  align-items: center;
+}
+
+.filledLayer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.starEmpty path {
+  fill: var(--bg-elevated);
+  stroke: var(--bg-active);
+  stroke-width: 1.5;
+}
+
+.starFilled path {
+  fill: #FBBF24;
+  stroke: #F59E0B;
+  stroke-width: 0.5;
+}
+
+/* ── Picker (interactive) ────────────────────────────────────────────────────── */
+.pickerWrap {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.pickBtn {
+  padding: 2px;
+  border-radius: var(--radius-xs);
+  color: var(--bg-active);
+  transition: transform var(--t-fast), color var(--t-fast);
+  display: flex;
+  align-items: center;
+}
+
+.pickBtn path {
+  fill: var(--bg-elevated);
+  stroke: var(--bg-active);
+  stroke-width: 1.5;
+  transition: fill var(--t-base), stroke var(--t-base);
+}
+
+.pickBtn:hover:not(:disabled) {
+  transform: scale(1.15);
+}
+
+.pickBtn:disabled {
+  cursor: default;
+  opacity: 0.7;
+}
+
+.pickActive path {
+  fill: #FBBF24;
+  stroke: #F59E0B;
+  stroke-width: 0.5;
+}
+
+.pickBtn:active:not(:disabled) {
+  transform: scale(0.92);
+}

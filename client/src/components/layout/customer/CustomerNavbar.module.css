@@ -1,0 +1,484 @@
+/* ── Nav shell ─────────────────────────────────────────────────────────────── */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  background: rgba(10,10,15,0.96);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(40,40,47,0.9);
+  transition: box-shadow 0.25s ease;
+}
+
+.scrolled {
+  box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+}
+
+/* ── Inner row ─────────────────────────────────────────────────────────────── */
+.inner {
+  max-width: var(--sv-max);
+  margin: 0 auto;
+  padding: 0 var(--sv-pad);
+  height: 68px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+/* ── Logo ──────────────────────────────────────────────────────────────────── */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  text-decoration: none;
+}
+
+.logoText {
+  font-family: 'Neuropol', 'Rajdhani', sans-serif;
+  font-size: 20px;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  color: #fff;
+  white-space: nowrap;
+}
+
+/* ── Search wrap (Sapir's .nav-search-wrap) ────────────────────────────────── */
+.searchWrap {
+  position: relative;
+  flex: 1;
+  max-width: 580px;
+}
+
+/* Sapir's .nav-search */
+.navSearch {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  background: #15151D;
+  border: 1.5px solid rgba(40,40,47,0.9);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: border-color .18s;
+}
+
+.navSearch:focus-within {
+  border-color: #2563EB;
+}
+
+/* Sapir's .nav-search input */
+.navSearchInput {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  padding: 10px 16px;
+  color: #F9FAFB;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  direction: rtl;
+  text-align: right;
+  min-width: 0;
+}
+
+.navSearchInput::placeholder { color: #94A3BB; }
+
+/* Sapir's .nav-search-btn */
+.navSearchBtn {
+  background: #2563EB;
+  border: none;
+  color: #fff;
+  padding: 0 16px;
+  height: 100%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .18s;
+  flex-shrink: 0;
+  border-radius: 0 8px 8px 0;
+}
+
+.navSearchBtn:hover { background: #1D4ED8; }
+.navSearchBtn svg { width: 17px; height: 17px; }
+
+/* ── Search suggestions ────────────────────────────────────────────────────── */
+.searchSuggestions {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  left: 0;
+  background: #181821;
+  border: 1px solid rgba(40,40,47,0.9);
+  border-radius: 12px;
+  z-index: 1000;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.4);
+  overflow: hidden;
+}
+
+.suggestionItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: background .15s;
+  font-size: 13px;
+  font-family: 'Inter', sans-serif;
+}
+
+.suggestionItem:hover { background: rgba(255,255,255,0.04); }
+
+.sugIcon {
+  width: 32px;
+  height: 32px;
+  background: rgba(37,99,235,0.13);
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #3B82F6;
+}
+
+.sugText { flex: 1; }
+
+.sugName {
+  color: #F9FAFB;
+  font-weight: 500;
+}
+
+.sugCat {
+  font-size: 11px;
+  color: #94A3BB;
+}
+
+.sugPrice {
+  color: #00FFCC;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.sugAll {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 16px;
+  font-size: 12px;
+  color: #94A3BB;
+  border-top: 1px solid rgba(40,40,47,0.9);
+  text-align: right;
+  transition: background .15s, color .15s;
+  font-family: 'Inter', sans-serif;
+  background: none;
+  border-right: none;
+  border-left: none;
+  border-bottom: none;
+  cursor: pointer;
+}
+
+.sugAll:hover {
+  background: rgba(37,99,235,0.07);
+  color: #3B82F6;
+}
+
+/* ── Nav actions (Sapir's .nav-actions) ────────────────────────────────────── */
+.navActions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-right: auto;
+}
+
+/* ── Divider ───────────────────────────────────────────────────────────────── */
+.navDivider {
+  width: 1px;
+  height: 22px;
+  background: rgba(40,40,47,0.9);
+  flex-shrink: 0;
+}
+
+/* ── Icon button (Sapir's .nav-icon-btn) ───────────────────────────────────── */
+.navIconBtn {
+  background: none;
+  border: 1px solid rgba(40,40,47,0.9);
+  border-radius: 8px;
+  color: #94A3BB;
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .18s;
+  flex-shrink: 0;
+  position: relative;
+  text-decoration: none;
+}
+
+.navIconBtn svg { width: 16px; height: 16px; stroke-width: 1.8; }
+.navUserBtn svg { width: 15px; height: 15px; }
+.navCart svg { width: 16px; height: 16px; }
+
+.navIconBtn:hover {
+  border-color: #2563EB;
+  color: #F9FAFB;
+  background: rgba(37,99,235,0.06);
+}
+
+/* Tooltip via data-tip */
+.navIconBtn::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #181821;
+  color: #F9FAFB;
+  font-size: 11px;
+  font-family: 'Inter', sans-serif;
+  padding: 3px 8px;
+  border-radius: 5px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .15s;
+  border: 1px solid rgba(40,40,47,0.9);
+  z-index: 100;
+}
+
+.navIconBtn:hover::after { opacity: 1; }
+
+/* ── Language button (Sapir's .nav-lang-btn) ───────────────────────────────── */
+.navLangBtn {
+  background: none;
+  border: 1px solid rgba(40,40,47,0.9);
+  border-radius: 8px;
+  color: #94A3BB;
+  padding: 0 10px;
+  height: 36px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  transition: all .18s;
+  flex-shrink: 0;
+}
+
+.navLangBtn:hover {
+  border-color: #2563EB;
+  color: #F9FAFB;
+}
+.navLangBtn svg { width: 13px; height: 13px; }
+
+/* ── User button (Sapir's .nav-user-btn) ───────────────────────────────────── */
+.navUserBtn {
+  background: none;
+  border: 1px solid rgba(40,40,47,0.9);
+  border-radius: 8px;
+  color: #F9FAFB;
+  padding: 0 14px;
+  height: 36px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all .18s;
+  flex-shrink: 0;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.navUserBtn:hover {
+  border-color: #2563EB;
+  color: #3B82F6;
+  background: rgba(37,99,235,0.06);
+}
+
+/* ── User dropdown wrapper ─────────────────────────────────────────────────── */
+.userMenuWrap { position: relative; }
+
+.chevron {
+  color: #94A3BB;
+  transition: transform 0.15s ease;
+  flex-shrink: 0;
+}
+
+.chevronOpen { transform: rotate(180deg); }
+
+/* ── Dropdown menu ─────────────────────────────────────────────────────────── */
+.dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  min-width: 190px;
+  background: #181821;
+  border: 1px solid rgba(37,99,235,0.2);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+  overflow: hidden;
+  z-index: 1010;
+  animation: dropIn 150ms ease both;
+}
+
+@keyframes dropIn {
+  from { opacity: 0; transform: translateY(-6px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.dropdownItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  color: #94A3BB;
+  font-size: 13px;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease;
+  text-decoration: none;
+  width: 100%;
+  text-align: right;
+  background: none;
+  border: none;
+}
+
+.dropdownItem:hover { background: rgba(37,99,235,0.07); color: #F9FAFB; }
+.danger:hover { color: #ef4444; }
+
+.dropdownDivider { height: 1px; background: rgba(40,40,47,0.9); margin: 4px 0; }
+
+/* ── Cart button (Sapir's .nav-cart) ──────────────────────────────────────── */
+.navCart {
+  background: #2563EB;
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  padding: 0 16px;
+  height: 36px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all .18s;
+  flex-shrink: 0;
+  white-space: nowrap;
+  position: relative;
+}
+
+.navCart:hover { background: #1D4ED8; }
+
+/* ── Cart/wishlist count badge (Sapir's .cart-count) ──────────────────────── */
+.cartCount {
+  background: #ef4444;
+  color: #fff;
+  border-radius: 10px;
+  min-width: 22px;
+  height: 22px;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+  flex-shrink: 0;
+  position: absolute;
+  top: -9px;
+  left: -9px;
+  border: 2px solid #0A0A0F;
+  box-shadow: 0 0 0 1px rgba(239,68,68,0.3);
+  pointer-events: none;
+}
+
+/* ── Hamburger (mobile only) ───────────────────────────────────────────────── */
+.hamburger {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid rgba(40,40,47,0.9);
+  color: #94A3BB;
+  background: none;
+  cursor: pointer;
+  transition: all .18s;
+}
+
+.hamburger:hover {
+  border-color: #2563EB;
+  color: #F9FAFB;
+  background: rgba(37,99,235,0.06);
+}
+
+/* ── Mobile panel ──────────────────────────────────────────────────────────── */
+.mobilePanel {
+  border-top: 1px solid rgba(40,40,47,0.9);
+  padding: 8px 16px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: rgba(10,10,15,0.99);
+  animation: mobileIn 180ms ease both;
+}
+
+@keyframes mobileIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.mobilePanelLink {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #94A3BB;
+  text-decoration: none;
+  transition: background 0.12s ease, color 0.12s ease;
+  font-family: 'Inter', sans-serif;
+  width: 100%;
+  text-align: right;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.mobilePanelLink:hover { background: rgba(37,99,235,0.07); color: #F9FAFB; }
+
+.mobileDivider { height: 1px; background: rgba(40,40,47,0.9); margin: 4px 0; }
+
+.mobileLogout:hover { color: #ef4444; background: rgba(239,68,68,0.07); }
+
+.mobileLoginLink { color: #3B82F6; font-weight: 600; }
+
+/* ── Responsive ────────────────────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .inner { padding: 0 16px; gap: 10px; }
+  .hamburger { display: flex; }
+  .navActions > *:not(.navCart):not(.hamburger) { display: none; }
+  .navActions .navCart { display: flex; }
+  .navActions .hamburger { display: flex; }
+  .searchWrap { flex: 1; }
+}
+
+@media (min-width: 768px) {
+  .hamburger   { display: none; }
+  .mobilePanel { display: none; }
+}
+
+@media (max-width: 1024px) {
+  .inner { padding: 0 32px; }
+}

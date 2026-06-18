@@ -1,0 +1,35 @@
+/*
+  Tailwind utilities — added to support new admin pages.
+  Import this file in client/src/main.jsx (after global.css).
+  We import ONLY utilities (no base/reset) to avoid conflicts with existing global.css.
+*/
+@tailwind utilities;
+
+/* ── Admin/Warehouse: light-mode overrides ───────────────────────────────────
+   Tailwind config uses hardcoded hex values, so Tailwind classes don't respond
+   to our CSS variable system. These selectors override the generated utilities
+   when [data-theme="light"] is active on <html>.
+   Placed after @tailwind utilities so cascade order guarantees they win.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+/* Backgrounds */
+[data-theme="light"] .bg-background    { background-color: #f5f5f5; }
+[data-theme="light"] .bg-card          { background-color: #ffffff; }
+[data-theme="light"] .bg-secondary     { background-color: #ebebf0; }
+[data-theme="light"] .bg-secondary\/50 { background-color: rgba(235, 235, 240, 0.5); }
+[data-theme="light"] .bg-sidebar       { background-color: #f7f7fb; }
+
+/* Text */
+[data-theme="light"] .text-foreground       { color: #1a1a1a; }
+[data-theme="light"] .text-muted-foreground { color: #5a5a70; }
+[data-theme="light"] .text-sidebar-foreground { color: #2a2a3a; }
+
+/* Borders */
+[data-theme="light"] .border-border         { border-color: rgba(0, 0, 0, 0.10); }
+[data-theme="light"] .border-sidebar-border { border-color: rgba(0, 0, 0, 0.10); }
+
+/* Hover states */
+[data-theme="light"] .hover\:bg-secondary:hover     { background-color: #e0e0e8; }
+[data-theme="light"] .hover\:bg-sidebar-accent:hover { background-color: #e0e0e8; }
+[data-theme="light"] .hover\:bg-secondary\/50:hover  { background-color: rgba(224, 224, 232, 0.5); }
+
