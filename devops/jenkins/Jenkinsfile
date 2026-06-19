@@ -1,0 +1,238 @@
+// TechVault — Jenkins Deployment Pipeline
+//
+// Pipeline job configuration:
+//   Definition  : Pipeline script from SCM
+//   SCM         : Git  →  https://github.com/yarinzf/TechVault.git
+//   Script Path : devops/jenkins/Jenkinsfile
+//
+// Required Jenkins credentials (Manage Jenkins → Credentials → Global):
+//
+//   ID                              Kind                          Notes
+//   ──────────────────────────────  ────────────────────────────  ─────────────────────────────
+//   AWS_CREDENTIALS_ID              Amazon Web Services           Access key + secret key
+//   SSH_KEY_CREDENTIALS_ID          SSH Username with private key  username=ubuntu, key=.pem file
+//   TECHVAULT_JWT_ACCESS_SECRET     Secret text                   min 32 chars
+//   TECHVAULT_JWT_REFRESH_SECRET    Secret text                   min 32 chars
+//   TECHVAULT_COOKIE_SECRET         Secret text                   min 32 chars
+//
+// Required tools on the Jenkins agent:
+//   - terraform  >= 1.6
+//   - ansible    >= 2.14
+//   - node       >= 20
+//   - npm        >= 10
+
+pipeline {
+    agent any
+
+    environment {
+        GITHUB_REPO_URL            = 'https://github.com/yarinzf/TechVault.git'
+        TF_DIR                     = 'devops/terraform'
+        ANSIBLE_DIR                = 'devops/ansible'
+        // ── Credential IDs — must match entries in Jenkins → Manage Credentials ──
+        AWS_CREDENTIALS_ID         = 'AWS_CREDENTIALS_ID'
+        SSH_KEY_CREDENTIALS_ID     = 'SSH_KEY_CREDENTIALS_ID'
+        JWT_ACCESS_SECRET_ID       = 'TECHVAULT_JWT_ACCESS_SECRET'
+        JWT_REFRESH_SECRET_ID      = 'TECHVAULT_JWT_REFRESH_SECRET'
+        COOKIE_SECRET_ID           = 'TECHVAULT_COOKIE_SECRET'
+    }
+
+    options {
+        timestamps()
+        timeout(time: 40, unit: 'MINUTES')
+        buildDiscarder(logRotator(numToKeepStr: '10'))
+        ansiColor('xterm')
+    }
+
+    stages {
+
+        // ── 1. Checkout ───────────────────────────────────────────────────────
+        stage('Checkout') {
+            steps {
+                checkout scm
+                sh 'echo "Branch: ${GIT_BRANCH}  Commit: ${GIT_COMMIT}"'
+            }
+        }
+
+        // ── 2. Validate Project ───────────────────────────────────────────────
+        stage('Validate Project') {
+            steps {
+                sh '''
+                    echo "── Checking required project files ──"
+                    MISSING=0
+                    for f in \
+                        Dockerfile \
+                        docker-compose.yml \
+                        .env.docker.example \
+                        client/Dockerfile \
+                        client/nginx.conf \
+                        devops/terraform/main.tf \
+                        devops/terraform/variables.tf \
+                        devops/ansible/deploy.yml \
+                        devops/ansible/inventory.example.ini; do
+                        if [ -f "$f" ]; then
+                            echo "  OK  $f"
+                        else
+                            echo "  MISSING  $f"
+                            MISSING=1
+                        fi
+                    done
+                    [ "$MISSING" -eq 0 ] || exit 1
+                    echo "── docker compose config ──"
+                    docker compose config --quiet
+                    echo "All validations passed."
+                '''
+            }
+        }
+
+        // ── 3. Run Tests ──────────────────────────────────────────────────────
+        stage('Run Tests') {
+            steps {
+                sh 'npm ci'
+                sh 'npm test'
+            }
+        }
+
+        // ── 4. Terraform Init & Plan ──────────────────────────────────────────
+        stage('Terraform Init & Plan') {
+            steps {
+                withCredentials([[
+                    $class:            'AmazonWebServicesCredentialsBinding',
+                    credentialsId:     env.AWS_CREDENTIALS_ID,
+                    accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                    secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                ]]) {
+                    dir(env.TF_DIR) {
+                        sh 'terraform init  -input=false'
+                        sh 'terraform validate'
+                        sh 'terraform plan  -input=false -out=tfplan'
+                    }
+                }
+            }
+        }
+
+        // ── 5. Terraform Apply (manual gate) ──────────────────────────────────
+        stage('Terraform Apply') {
+            input {
+                message 'Review the plan above. Apply Terraform to create/update cloud resources?'
+                ok      'Apply'
+            }
+            steps {
+                withCredentials([[
+                    $class:            'AmazonWebServicesCredentialsBinding',
+                    credentialsId:     env.AWS_CREDENTIALS_ID,
+                    accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                    secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                ]]) {
+                    dir(env.TF_DIR) {
+                        sh 'terraform apply -input=false tfplan'
+                    }
+                }
+            }
+        }
+
+        // ── 6. Read Terraform Output ──────────────────────────────────────────
+        stage('Read Terraform Output') {
+            steps {
+                withCredentials([[
+                    $class:            'AmazonWebServicesCredentialsBinding',
+                    credentialsId:     env.AWS_CREDENTIALS_ID,
+                    accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                    secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                ]]) {
+                    dir(env.TF_DIR) {
+                        script {
+                            env.SERVER_IP = sh(
+                                script:        'terraform output -raw public_ip',
+                                returnStdout:  true
+                            ).trim()
+                            env.FRONTEND_URL = "http://${env.SERVER_IP}:3000"
+                            env.HEALTH_URL   = "http://${env.SERVER_IP}:5000/api/v1/health"
+                            echo "Server IP    : ${env.SERVER_IP}"
+                            echo "Frontend URL : ${env.FRONTEND_URL}"
+                        }
+                    }
+                }
+            }
+        }
+
+        // ── 7. Generate Ansible Inventory ─────────────────────────────────────
+        stage('Generate Ansible Inventory') {
+            steps {
+                sh """
+                    cat > ${env.ANSIBLE_DIR}/inventory.ini << 'EOF'
+[techvault]
+${env.SERVER_IP} ansible_user=ubuntu
+
+[techvault:vars]
+ansible_python_interpreter=/usr/bin/python3
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+EOF
+                    echo "Inventory written for ${env.SERVER_IP}"
+                """
+            }
+        }
+
+        // ── 8. Ansible Deploy ─────────────────────────────────────────────────
+        stage('Ansible Deploy') {
+            steps {
+                withCredentials([
+                    sshUserPrivateKey(
+                        credentialsId:   env.SSH_KEY_CREDENTIALS_ID,
+                        keyFileVariable: 'SSH_KEY_FILE'
+                    ),
+                    string(credentialsId: env.JWT_ACCESS_SECRET_ID,  variable: 'JWT_ACCESS_SECRET'),
+                    string(credentialsId: env.JWT_REFRESH_SECRET_ID, variable: 'JWT_REFRESH_SECRET'),
+                    string(credentialsId: env.COOKIE_SECRET_ID,       variable: 'COOKIE_SECRET'),
+                ]) {
+                    sh """
+                        ansible-playbook \
+                            -i ${env.ANSIBLE_DIR}/inventory.ini \
+                            --private-key=\$SSH_KEY_FILE \
+                            ${env.ANSIBLE_DIR}/deploy.yml \
+                            -e "jwt_access_secret=\$JWT_ACCESS_SECRET" \
+                            -e "jwt_refresh_secret=\$JWT_REFRESH_SECRET" \
+                            -e "cookie_secret=\$COOKIE_SECRET"
+                    """
+                }
+            }
+        }
+
+        // ── 9. Validate Website Health ────────────────────────────────────────
+        stage('Validate Website Health') {
+            steps {
+                sh """
+                    echo "── Backend health check ──"
+                    curl -sf "${env.HEALTH_URL}" | grep -q '"status".*"ok"'
+                    echo "  Backend: OK"
+
+                    echo "── Frontend reachability ──"
+                    STATUS=\$(curl -so /dev/null -w '%{http_code}' "${env.FRONTEND_URL}")
+                    [ "\$STATUS" = "200" ] || { echo "Frontend returned HTTP \$STATUS"; exit 1; }
+                    echo "  Frontend: OK (HTTP \$STATUS)"
+
+                    echo ""
+                    echo "======================================="
+                    echo "  TechVault is live!"
+                    echo "  Frontend : ${env.FRONTEND_URL}"
+                    echo "  API      : http://${env.SERVER_IP}:5000/api/v1"
+                    echo "  API Docs : http://${env.SERVER_IP}:5000/api-docs"
+                    echo "  Health   : ${env.HEALTH_URL}"
+                    echo "======================================="
+                """
+            }
+        }
+    }
+
+    post {
+        always {
+            // Remove generated inventory so IPs don't linger in the workspace
+            sh "rm -f ${env.ANSIBLE_DIR}/inventory.ini || true"
+        }
+        success {
+            echo "Pipeline SUCCESS — TechVault is deployed and healthy."
+        }
+        failure {
+            echo "Pipeline FAILED — review the stage logs above."
+        }
+    }
+}

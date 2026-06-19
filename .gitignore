@@ -30,3 +30,16 @@ Thumbs.db
 
 # Docker
 docker-data/
+
+# Terraform — never commit real state or variable values
+devops/terraform/.terraform/
+devops/terraform/.terraform.lock.hcl
+devops/terraform/terraform.tfstate
+devops/terraform/terraform.tfstate.backup
+devops/terraform/tfplan
+devops/terraform/*.tfvars
+!devops/terraform/*.tfvars.example
+
+# Ansible — never commit real inventory or vault passwords
+devops/ansible/inventory.ini
+devops/ansible/.vault_password
