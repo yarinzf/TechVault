@@ -22,6 +22,7 @@ const COOKIE_OPTIONS = {
   secure:   process.env.NODE_ENV === 'production',
   sameSite: 'lax',
   maxAge:   SESSION_DURATION_MS,
+  ...(process.env.COOKIE_DOMAIN ? { domain: process.env.COOKIE_DOMAIN } : {}),
 };
 
 const setRefreshCookie = (res, token) => res.cookie('refreshToken', token, COOKIE_OPTIONS);

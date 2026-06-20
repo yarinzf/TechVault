@@ -48,8 +48,8 @@ async function request(path, options = {}) {
     credentials: 'include',
   });
 
-  // ── 401: try silent refresh once ─────────────────────────────────────────────
-  if (res.status === 401 && !_retry) {
+  // ── 401: try silent refresh once (only if we had a token — skip for unauthenticated calls) ──
+  if (res.status === 401 && !_retry && token) {
     try {
       await silentRefresh();
       return request(path, { ...options, _retry: true });

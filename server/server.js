@@ -53,6 +53,10 @@ const start = async () => {
       logger.info(`   API:     http://localhost:${PORT}/api/${env.API_VERSION}`);
       logger.info(`   Docs:    http://localhost:${PORT}/api-docs`);
       logger.info(`   Sockets: ws://localhost:${PORT}/admin`);
+
+      if (!process.env.GOOGLE_CLIENT_ID) {
+        logger.warn('GOOGLE_CLIENT_ID is not set — Google Sign-In will be disabled');
+      }
     });
   } catch (err) {
     logger.error('Failed to start server', { err: err.message });

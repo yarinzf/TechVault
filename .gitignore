@@ -40,6 +40,11 @@ devops/terraform/tfplan
 devops/terraform/*.tfvars
 !devops/terraform/*.tfvars.example
 
+# Terraform state files (extra safety)
+*.tfstate
+*.tfstate.*
+.terraform/
+
 # Ansible — never commit real inventory or vault passwords
 devops/ansible/inventory.ini
 devops/ansible/.vault_password

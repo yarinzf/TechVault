@@ -28,17 +28,26 @@ const verifyGoogleToken = async (idToken) => {
     throw new AppError('Google Sign In is not configured', StatusCodes.SERVICE_UNAVAILABLE, 'GOOGLE_NOT_CONFIGURED');
   }
 
-  const ticket = await getClient().verifyIdToken({
-    idToken,
-    audience: process.env.GOOGLE_CLIENT_ID,
-  });
+  let ticket;
+  try {
+    ticket = await getClient().verifyIdToken({
+      idToken,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+  } catch (err) {
+    const { AppError } = require('../../middleware/errorHandler');
+    const { StatusCodes } = require('http-status-codes');
+    const logger = require('../../config/logger');
+    logger.warn('Google token verification failed', { reason: err.message });
+    throw new AppError('Google token verification failed', StatusCodes.BAD_REQUEST, 'INVALID_GOOGLE_TOKEN');
+  }
 
   const payload = ticket.getPayload();
 
   if (!payload) {
     const { AppError } = require('../../middleware/errorHandler');
     const { StatusCodes } = require('http-status-codes');
-    throw new AppError('Invalid Google token', StatusCodes.UNAUTHORIZED, 'INVALID_GOOGLE_TOKEN');
+    throw new AppError('Invalid Google token payload', StatusCodes.BAD_REQUEST, 'INVALID_GOOGLE_TOKEN');
   }
 
   return {

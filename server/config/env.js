@@ -114,6 +114,12 @@ const schema = Joi.object({
 
   // Monitoring
   METRICS_PATH: Joi.string().default('/metrics'),
+
+  // OAuth — optional; features degrade gracefully when not set
+  GOOGLE_CLIENT_ID: Joi.string().optional().allow(''),
+
+  // Cookie domain — set to '.yourdomain.com' for cross-subdomain cookies (e.g. www + apex)
+  COOKIE_DOMAIN: Joi.string().optional().allow(''),
 }).unknown(true); // allow OS / CI env vars
 
 const { error, value } = schema.validate(process.env, { abortEarly: false });

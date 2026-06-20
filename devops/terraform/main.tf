@@ -15,12 +15,10 @@ data "aws_ami" "ubuntu" {
 }
 
 # ── Security Group ────────────────────────────────────────────────────────────
-# Uses the default VPC — no VPC/subnet resources needed for a class project.
 resource "aws_security_group" "techvault" {
   name        = "${var.app_name}-sg"
-  description = "TechVault: SSH + frontend + backend API"
+  description = "TechVault: SSH + public web access"
 
-  # SSH — restricted to operator IP
   ingress {
     description = "SSH"
     from_port   = 22
@@ -29,25 +27,31 @@ resource "aws_security_group" "techvault" {
     cidr_blocks = [var.allowed_ssh_cidr]
   }
 
-  # React/Nginx frontend (docker-compose maps container :80 → host :3000)
   ingress {
-    description = "Frontend"
+    description = "HTTP"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "HTTPS"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # Temporary demo port because current docker-compose exposes frontend as 3000:80.
+  ingress {
+    description = "Frontend demo port"
     from_port   = 3000
     to_port     = 3000
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # Express backend API (direct access — useful for debugging)
-  ingress {
-    description = "Backend API"
-    from_port   = 5000
-    to_port     = 5000
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  # All outbound — needed for apt-get, docker pull, npm install, etc.
   egress {
     from_port   = 0
     to_port     = 0
