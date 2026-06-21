@@ -48,3 +48,9 @@ devops/terraform/*.tfvars
 # Ansible — never commit real inventory or vault passwords
 devops/ansible/inventory.ini
 devops/ansible/.vault_password
+
+# Backups — never commit database dumps
+backups/
+*.dump
+*.dump.gz
+devops/scripts/*.log
