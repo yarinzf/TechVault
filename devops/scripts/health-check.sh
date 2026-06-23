@@ -66,27 +66,24 @@ HEALTH_HTTP=$(curl -sf --max-time 10 -o "$HEALTH_TMP" -w "%{http_code}" "$HEALTH
 if [ "$HEALTH_HTTP" = "000" ] || [ ! -s "$HEALTH_TMP" ]; then
     critical "Backend health endpoint unreachable: ${HEALTH_URL}"
 else
-    PARSED=$(node -e "
-        const fs = require('fs');
-        try {
-            const d = JSON.parse(fs.readFileSync(process.argv[1], 'utf8')).data;
-            const lines = [
-                d.status,
-                (d.mongodb && d.mongodb.status) || 'unknown',
-                String(d.uptime || 0),
-                d.version || '?',
-                (d.memory && d.memory.heapUsedPct || '0%').replace('%', ''),
-                String(d.memory && d.memory.warning === true),
-            ].join('\n');
-            process.stdout.write(lines);
-        } catch(e) {
-            process.stdout.write('parse-error');
-            process.exit(1);
-        }
-    " "$HEALTH_TMP" 2>/dev/null || echo "parse-error")
+    PARSED=$(python3 -c '
+import json, sys
+try:
+    d = json.load(open(sys.argv[1]))["data"]
+    m = d.get("memory", {})
+    print(d.get("status", "unknown"))
+    print(d.get("mongodb", {}).get("status", "unknown"))
+    print(d.get("uptime", 0))
+    print(d.get("version", "?"))
+    print(m.get("heapUsedPct", "0%").rstrip("%"))
+    print(str(m.get("warning", False)).lower())
+except Exception:
+    print("parse-error")
+    sys.exit(1)
+' "$HEALTH_TMP" 2>/dev/null || echo "parse-error")
 
-    if [ "$PARSED" = "parse-error" ]; then
-        PREVIEW=$(head -c 300 "$HEALTH_TMP" 2>/dev/null || true)
+    if [ "$(echo "$PARSED" | sed -n '1p')" = "parse-error" ]; then
+        PREVIEW=$(head -c 500 "$HEALTH_TMP" 2>/dev/null || true)
         critical "Backend returned invalid JSON: ${PREVIEW}"
     else
         APP_STATUS=$(echo "$PARSED" | sed -n '1p')
