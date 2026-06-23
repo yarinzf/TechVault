@@ -81,14 +81,14 @@ if ! gzip -t "$BACKUP_FILE" 2>/dev/null; then
 fi
 log "gzip integrity check passed"
 
-DUMP_COLLECTIONS=$(grep -oP "done dumping ${DB_NAME}\.\K\S+" "$DUMP_LOG" 2>/dev/null || true)
+DUMP_COLLECTIONS=$(grep -oP "done dumping \`${DB_NAME}\.\K[^\`]+" "$DUMP_LOG" 2>/dev/null || true)
 DUMP_COLLECTION_COUNT=$(echo "$DUMP_COLLECTIONS" | grep -c . 2>/dev/null || true)
-DUMP_DOC_TOTAL=$(grep -oP '\((\d+) document' "$DUMP_LOG" 2>/dev/null | grep -oP '\d+' | paste -sd+ | bc 2>/dev/null || echo "0")
+DUMP_DOC_TOTAL=$(grep -oP "done dumping \`${DB_NAME}\.[^\`]+\` \(\K\d+" "$DUMP_LOG" 2>/dev/null | awk '{s+=$1} END {print s+0}' || echo "0")
 
 if [ "$DUMP_COLLECTION_COUNT" -gt 0 ]; then
     log "Backup verified: ${DUMP_COLLECTION_COUNT} collection(s), ${DUMP_DOC_TOTAL} document(s) total"
     echo "$DUMP_COLLECTIONS" | while read -r col; do
-        COL_DOCS=$(grep "done dumping ${DB_NAME}\.${col}" "$DUMP_LOG" | grep -oP '\(\K\d+' || echo "?")
+        COL_DOCS=$(grep -oP "done dumping \`${DB_NAME}\.${col}\` \(\K\d+" "$DUMP_LOG" || echo "?")
         log "  - ${col}: ${COL_DOCS} document(s)"
     done
 else
