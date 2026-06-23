@@ -1,0 +1,83 @@
+name: Deploy to Production
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy to EC2
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts 2>/dev/null
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+
+      - name: Pre-deploy MongoDB backup
+        run: |
+          ssh -i ~/.ssh/deploy_key -o ConnectTimeout=10 \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} \
+            'sudo /opt/techvault/devops/scripts/backup-mongo.sh'
+
+      - name: Sync to origin/main
+        run: |
+          ssh -i ~/.ssh/deploy_key -o ConnectTimeout=10 \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
+            cd /opt/techvault &&
+            git fetch origin &&
+            git reset --hard origin/main
+          '
+
+      - name: Build and restart containers
+        run: |
+          ssh -i ~/.ssh/deploy_key -o ConnectTimeout=10 \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
+            cd /opt/techvault &&
+            docker compose up -d --build
+          '
+
+      - name: Wait for containers to stabilize
+        run: sleep 15
+
+      - name: Verify deployment
+        run: |
+          ssh -i ~/.ssh/deploy_key -o ConnectTimeout=10 \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
+            echo "=== Container status ===" &&
+            cd /opt/techvault &&
+            docker compose ps &&
+            echo "" &&
+            echo "=== Health endpoint ===" &&
+            curl -sf --max-time 10 http://localhost:5000/api/v1/health | python3 -c "
+          import sys, json
+          d = json.load(sys.stdin)[\"data\"]
+          print(\"Status:  \", d[\"status\"])
+          print(\"MongoDB: \", d[\"mongodb\"][\"status\"])
+          print(\"Version: \", d[\"version\"])
+          print(\"Uptime:  \", d[\"uptime\"], \"seconds\")
+          if d[\"status\"] != \"healthy\":
+              print(\"DEPLOY VERIFICATION FAILED: status is\", d[\"status\"])
+              sys.exit(1)
+          print(\"Deploy verified: healthy\")
+          "
+          '
+
+      - name: Post-deploy health check
+        run: |
+          ssh -i ~/.ssh/deploy_key -o ConnectTimeout=10 \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} \
+            'sudo /opt/techvault/devops/scripts/health-check.sh'
+
+      - name: Cleanup SSH key
+        if: always()
+        run: rm -f ~/.ssh/deploy_key
