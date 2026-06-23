@@ -11,13 +11,18 @@ beforeAll(async () => {
 });
 
 describe('GET /api/v1/health', () => {
-  it('returns 200 with status ok and db connected', async () => {
+  it('returns 200 with healthy status and mongodb connected', async () => {
     const res = await request(app).get('/api/v1/health');
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
-    expect(res.body.data.status).toBe('ok');
-    expect(res.body.data.db).toBe('connected');
+    expect(res.body.data.status).toBe('healthy');
+    expect(res.body.data.mongodb.status).toBe('connected');
+    expect(res.body.data.mongodb.readyState).toBe(1);
     expect(typeof res.body.data.uptime).toBe('number');
+    expect(res.body.data.environment).toBeDefined();
+    expect(res.body.data.version).toBeDefined();
+    expect(res.body.data.memory.rss).toBeDefined();
+    expect(res.body.data.timestamp).toBeDefined();
   });
 });
 
