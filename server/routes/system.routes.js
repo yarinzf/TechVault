@@ -26,9 +26,9 @@ const formatBytes = (bytes) => {
  *     tags: [System]
  *     responses:
  *       200:
- *         description: Service is healthy or degraded
+ *         description: Service is healthy
  *       503:
- *         description: Service is unhealthy
+ *         description: Service is unhealthy (MongoDB disconnected)
  */
 router.get('/health', async (req, res) => {
   const dbReadyState = mongoose.connection.readyState;
@@ -36,9 +36,7 @@ router.get('/health', async (req, res) => {
   const mem = process.memoryUsage();
   const heapUsedPct = mem.heapUsed / mem.heapTotal;
 
-  let status = 'healthy';
-  if (!dbConnected) status = 'unhealthy';
-  else if (heapUsedPct > 0.9) status = 'degraded';
+  const status = dbConnected ? 'healthy' : 'unhealthy';
 
   const body = {
     status,
@@ -56,6 +54,7 @@ router.get('/health', async (req, res) => {
       heapTotal: formatBytes(mem.heapTotal),
       external: formatBytes(mem.external),
       heapUsedPct: `${(heapUsedPct * 100).toFixed(1)}%`,
+      warning: heapUsedPct > 0.9,
     },
     timestamp: new Date().toISOString(),
   };

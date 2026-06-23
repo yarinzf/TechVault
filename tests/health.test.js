@@ -22,6 +22,7 @@ describe('GET /api/v1/health', () => {
     expect(res.body.data.environment).toBeDefined();
     expect(res.body.data.version).toBeDefined();
     expect(res.body.data.memory.rss).toBeDefined();
+    expect(typeof res.body.data.memory.warning).toBe('boolean');
     expect(res.body.data.timestamp).toBeDefined();
   });
 });

@@ -49,8 +49,9 @@ No authentication required. Used by Docker Compose healthcheck internally.
 | Status | HTTP Code | Meaning |
 |--------|-----------|---------|
 | `healthy` | 200 | All systems operational |
-| `degraded` | 200 | Running but heap usage >90% |
 | `unhealthy` | 503 | MongoDB disconnected |
+
+The `memory.warning` field is `true` when heap usage exceeds 90%. This is informational only — it does not affect the `status` field.
 
 ### Quick Check from EC2
 

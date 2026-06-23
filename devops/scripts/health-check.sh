@@ -63,31 +63,54 @@ HEALTH_RESPONSE=$(curl -sf --max-time 10 "$HEALTH_URL" 2>/dev/null || true)
 if [ -z "$HEALTH_RESPONSE" ]; then
     critical "Backend health endpoint unreachable: ${HEALTH_URL}"
 else
-    APP_STATUS=$(echo "$HEALTH_RESPONSE" | grep -oP '"status"\s*:\s*"\K[^"]+' || echo "unknown")
-    DB_STATUS=$(echo "$HEALTH_RESPONSE" | grep -oP '"mongodb".*?"status"\s*:\s*"\K[^"]+' || echo "unknown")
-    UPTIME=$(echo "$HEALTH_RESPONSE" | grep -oP '"uptime"\s*:\s*\K\d+' || echo "0")
-    VERSION=$(echo "$HEALTH_RESPONSE" | grep -oP '"version"\s*:\s*"\K[^"]+' || echo "?")
-    HEAP_PCT=$(echo "$HEALTH_RESPONSE" | grep -oP '"heapUsedPct"\s*:\s*"\K[^%]+' || echo "0")
+    PARSED=$(echo "$HEALTH_RESPONSE" | node -e "
+        const chunks = [];
+        process.stdin.on('data', c => chunks.push(c));
+        process.stdin.on('end', () => {
+            try {
+                const d = JSON.parse(chunks.join('')).data;
+                const lines = [
+                    d.status,
+                    (d.mongodb && d.mongodb.status) || 'unknown',
+                    String(d.uptime || 0),
+                    d.version || '?',
+                    (d.memory && d.memory.heapUsedPct || '0%').replace('%', ''),
+                    String((d.memory && d.memory.warning) || false),
+                ].join('\n');
+                process.stdout.write(lines);
+            } catch(e) { process.stdout.write('parse-error'); process.exit(1); }
+        });
+    " 2>/dev/null || echo "parse-error")
 
-    if [ "$APP_STATUS" = "healthy" ]; then
-        ok "Status: ${APP_STATUS} (v${VERSION}, uptime: ${UPTIME}s)"
-    elif [ "$APP_STATUS" = "degraded" ]; then
-        warn "Status: ${APP_STATUS} (v${VERSION}, uptime: ${UPTIME}s)"
+    if [ "$PARSED" = "parse-error" ]; then
+        critical "Backend returned invalid JSON"
     else
-        critical "Status: ${APP_STATUS} (v${VERSION})"
-    fi
+        APP_STATUS=$(echo "$PARSED" | sed -n '1p')
+        DB_STATUS=$(echo "$PARSED" | sed -n '2p')
+        UPTIME=$(echo "$PARSED" | sed -n '3p')
+        VERSION=$(echo "$PARSED" | sed -n '4p')
+        HEAP_PCT=$(echo "$PARSED" | sed -n '5p')
+        MEM_WARNING=$(echo "$PARSED" | sed -n '6p')
 
-    if [ "$DB_STATUS" = "connected" ]; then
-        ok "MongoDB: ${DB_STATUS}"
-    else
-        critical "MongoDB: ${DB_STATUS}"
-    fi
+        if [ "$APP_STATUS" = "healthy" ]; then
+            ok "Status: ${APP_STATUS} (v${VERSION}, uptime: ${UPTIME}s)"
+        elif [ "$APP_STATUS" = "degraded" ]; then
+            warn "Status: ${APP_STATUS} (v${VERSION}, uptime: ${UPTIME}s)"
+        else
+            critical "Status: ${APP_STATUS} (v${VERSION})"
+        fi
 
-    HEAP_INT=${HEAP_PCT%.*}
-    if [ "${HEAP_INT:-0}" -ge 90 ]; then
-        warn "Heap usage: ${HEAP_PCT}%"
-    else
-        ok "Heap usage: ${HEAP_PCT}%"
+        if [ "$DB_STATUS" = "connected" ]; then
+            ok "MongoDB: ${DB_STATUS}"
+        else
+            critical "MongoDB: ${DB_STATUS}"
+        fi
+
+        if [ "$MEM_WARNING" = "true" ]; then
+            warn "Heap usage: ${HEAP_PCT}% (memory.warning flagged)"
+        else
+            ok "Heap usage: ${HEAP_PCT}%"
+        fi
     fi
 fi
 
