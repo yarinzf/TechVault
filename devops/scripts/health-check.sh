@@ -59,31 +59,35 @@ done
 echo ""
 echo "Backend Health Endpoint:"
 
-HEALTH_RESPONSE=$(curl -sf --max-time 10 "$HEALTH_URL" 2>/dev/null || true)
-if [ -z "$HEALTH_RESPONSE" ]; then
+HEALTH_TMP=$(mktemp)
+trap "rm -f $HEALTH_TMP" EXIT
+
+HEALTH_HTTP=$(curl -sf --max-time 10 -o "$HEALTH_TMP" -w "%{http_code}" "$HEALTH_URL" 2>/dev/null || echo "000")
+if [ "$HEALTH_HTTP" = "000" ] || [ ! -s "$HEALTH_TMP" ]; then
     critical "Backend health endpoint unreachable: ${HEALTH_URL}"
 else
-    PARSED=$(echo "$HEALTH_RESPONSE" | node -e "
-        const chunks = [];
-        process.stdin.on('data', c => chunks.push(c));
-        process.stdin.on('end', () => {
-            try {
-                const d = JSON.parse(chunks.join('')).data;
-                const lines = [
-                    d.status,
-                    (d.mongodb && d.mongodb.status) || 'unknown',
-                    String(d.uptime || 0),
-                    d.version || '?',
-                    (d.memory && d.memory.heapUsedPct || '0%').replace('%', ''),
-                    String((d.memory && d.memory.warning) || false),
-                ].join('\n');
-                process.stdout.write(lines);
-            } catch(e) { process.stdout.write('parse-error'); process.exit(1); }
-        });
-    " 2>/dev/null || echo "parse-error")
+    PARSED=$(node -e "
+        const fs = require('fs');
+        try {
+            const d = JSON.parse(fs.readFileSync(process.argv[1], 'utf8')).data;
+            const lines = [
+                d.status,
+                (d.mongodb && d.mongodb.status) || 'unknown',
+                String(d.uptime || 0),
+                d.version || '?',
+                (d.memory && d.memory.heapUsedPct || '0%').replace('%', ''),
+                String(d.memory && d.memory.warning === true),
+            ].join('\n');
+            process.stdout.write(lines);
+        } catch(e) {
+            process.stdout.write('parse-error');
+            process.exit(1);
+        }
+    " "$HEALTH_TMP" 2>/dev/null || echo "parse-error")
 
     if [ "$PARSED" = "parse-error" ]; then
-        critical "Backend returned invalid JSON"
+        PREVIEW=$(head -c 300 "$HEALTH_TMP" 2>/dev/null || true)
+        critical "Backend returned invalid JSON: ${PREVIEW}"
     else
         APP_STATUS=$(echo "$PARSED" | sed -n '1p')
         DB_STATUS=$(echo "$PARSED" | sed -n '2p')
