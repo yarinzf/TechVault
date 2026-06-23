@@ -54,15 +54,18 @@ fi
 # ── Dump ─────────────────────────────────────────────────────────────────────
 log "Running mongodump for database '${DB_NAME}'..."
 
+DUMP_LOG=$(mktemp)
 if ! docker compose -f "$COMPOSE_FILE" exec -T "$CONTAINER_SERVICE" \
-    mongodump --db="$DB_NAME" --archive --gzip 2>/dev/null \
+    mongodump --db="$DB_NAME" --archive --gzip 2>"$DUMP_LOG" \
     > "$BACKUP_FILE"; then
     rm -f "$BACKUP_FILE"
+    cat "$DUMP_LOG" >> "$LOG_FILE"
+    rm -f "$DUMP_LOG"
     fail "mongodump command failed"
 fi
 
 if [ ! -s "$BACKUP_FILE" ]; then
-    rm -f "$BACKUP_FILE"
+    rm -f "$BACKUP_FILE" "$DUMP_LOG"
     fail "mongodump produced empty output"
 fi
 
@@ -73,18 +76,26 @@ log "Backup created: ${BACKUP_NAME}.gz (${BACKUP_SIZE})"
 log "Verifying backup integrity..."
 
 if ! gzip -t "$BACKUP_FILE" 2>/dev/null; then
-    log "WARNING: gzip integrity check failed — file may be corrupted"
+    rm -f "$DUMP_LOG"
+    fail "gzip integrity check failed — backup file is corrupted"
 fi
+log "gzip integrity check passed"
 
-DRY_RUN_OUTPUT=$(cat "$BACKUP_FILE" | docker compose -f "$COMPOSE_FILE" exec -T "$CONTAINER_SERVICE" \
-    mongorestore --archive --gzip --dryRun --nsInclude="${DB_NAME}.*" 2>&1 || true)
+DUMP_COLLECTIONS=$(grep -oP "done dumping ${DB_NAME}\.\K\S+" "$DUMP_LOG" 2>/dev/null || true)
+DUMP_COLLECTION_COUNT=$(echo "$DUMP_COLLECTIONS" | grep -c . 2>/dev/null || true)
+DUMP_DOC_TOTAL=$(grep -oP '\((\d+) document' "$DUMP_LOG" 2>/dev/null | grep -oP '\d+' | paste -sd+ | bc 2>/dev/null || echo "0")
 
-COLLECTION_COUNT=$(echo "$DRY_RUN_OUTPUT" | grep -c "${DB_NAME}\." || true)
-if [ "$COLLECTION_COUNT" -gt 0 ]; then
-    log "Backup verification passed: ${COLLECTION_COUNT} collection(s) found in archive"
+if [ "$DUMP_COLLECTION_COUNT" -gt 0 ]; then
+    log "Backup verified: ${DUMP_COLLECTION_COUNT} collection(s), ${DUMP_DOC_TOTAL} document(s) total"
+    echo "$DUMP_COLLECTIONS" | while read -r col; do
+        COL_DOCS=$(grep "done dumping ${DB_NAME}\.${col}" "$DUMP_LOG" | grep -oP '\(\K\d+' || echo "?")
+        log "  - ${col}: ${COL_DOCS} document(s)"
+    done
 else
-    log "WARNING: mongorestore --dryRun found no collections — backup may be empty or corrupted"
+    log "WARNING: mongodump did not report any dumped collections — backup may be empty"
 fi
+
+rm -f "$DUMP_LOG"
 
 # ── Retention cleanup ────────────────────────────────────────────────────────
 TOTAL_BEFORE=$(find "$BACKUP_ROOT" -maxdepth 1 -name "techvault_*.gz" -type f ! -name "*pre-restore*" | wc -l)

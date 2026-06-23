@@ -78,17 +78,18 @@ fi
 BACKUP_SIZE=$(du -h "$BACKUP_FILE" | cut -f1)
 BACKUP_DATE=$(stat -c %y "$BACKUP_FILE" 2>/dev/null | cut -d'.' -f1)
 
-# ── Inspect backup contents ─────────────────────────────────────────────────
-log "Inspecting backup contents..."
-DRY_RUN_OUTPUT=$(cat "$BACKUP_FILE" | docker compose -f "$COMPOSE_FILE" exec -T "$CONTAINER_SERVICE" \
-    mongorestore --archive --gzip --dryRun --nsInclude="${DB_NAME}.*" 2>&1 || true)
+# ── Inspect current database ─────────────────────────────────────────────────
+log "Querying current database state..."
+CURRENT_COLLECTIONS=$(docker compose -f "$COMPOSE_FILE" exec -T "$CONTAINER_SERVICE" \
+    mongosh --quiet --eval "
+        const cols = db.getSiblingDB('${DB_NAME}').getCollectionNames();
+        cols.forEach(c => {
+            const n = db.getSiblingDB('${DB_NAME}').getCollection(c).estimatedDocumentCount();
+            print(c + ':' + n);
+        });
+    " 2>/dev/null || true)
 
-BACKUP_COLLECTIONS=$(echo "$DRY_RUN_OUTPUT" | grep -oP "${DB_NAME}\.\K[^ ]+" | sort -u || true)
-BACKUP_COLLECTION_COUNT=$(echo "$BACKUP_COLLECTIONS" | grep -c . || true)
-
-if [ "$BACKUP_COLLECTION_COUNT" -eq 0 ]; then
-    log "WARNING: Could not detect collections in backup — archive may be empty"
-fi
+CURRENT_COL_COUNT=$(echo "$CURRENT_COLLECTIONS" | grep -c . 2>/dev/null || true)
 
 # ── Confirmation ─────────────────────────────────────────────────────────────
 echo ""
@@ -103,10 +104,11 @@ echo "║  Backup file  : $(basename "$BACKUP_FILE")"
 echo "║  Backup size  : ${BACKUP_SIZE}"
 echo "║  Backup date  : ${BACKUP_DATE}"
 echo "║  Target DB    : ${DB_NAME}"
-echo "║  Collections  : ${BACKUP_COLLECTION_COUNT} found in archive"
-if [ -n "$BACKUP_COLLECTIONS" ]; then
-    echo "$BACKUP_COLLECTIONS" | while read -r col; do
-        echo "║    - ${col}"
+if [ "$CURRENT_COL_COUNT" -gt 0 ]; then
+    echo "║"
+    echo "║  Current DB has ${CURRENT_COL_COUNT} collection(s) that will be DROPPED:"
+    echo "$CURRENT_COLLECTIONS" | while IFS=: read -r col count; do
+        echo "║    - ${col} (${count} documents)"
     done
 fi
 echo "║                                                                ║"

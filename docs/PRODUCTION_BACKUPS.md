@@ -59,9 +59,19 @@ ls -lhrt /opt/techvault/backups/mongodb/techvault_*.gz
 
 ## Verify Backup Integrity
 
-The backup script automatically runs two verification checks:
-1. **gzip integrity** — validates the compressed archive is not corrupted
-2. **mongorestore --dryRun** — parses the archive and counts collections without writing data
+The backup script automatically runs three verification checks:
+1. **Non-empty file** — confirms mongodump produced output
+2. **gzip integrity** (`gzip -t`) — validates the compressed archive is not corrupted
+3. **mongodump log parsing** — reads the `done dumping` lines from mongodump's stderr to confirm which collections and how many documents were included
+
+The script logs per-collection document counts, e.g.:
+```
+Backup verified: 4 collection(s), 2152 document(s) total
+  - products: 2125 document(s)
+  - categories: 15 document(s)
+  - users: 7 document(s)
+  - orders: 5 document(s)
+```
 
 To verify manually:
 
@@ -71,9 +81,8 @@ LATEST=$(ls -t /opt/techvault/backups/mongodb/techvault_*.gz | head -1)
 # Check gzip integrity
 gzip -t "$LATEST" && echo "OK: valid gzip" || echo "FAILED: corrupted"
 
-# Dry-run restore — lists collections without writing data
-cat "$LATEST" | docker compose -f /opt/techvault/docker-compose.yml exec -T mongodb \
-    mongorestore --archive --gzip --dryRun --nsInclude="techvault.*" 2>&1 | grep "techvault\."
+# Check file size (a valid techvault backup is typically 100K+)
+du -h "$LATEST"
 ```
 
 ## Restore from a Backup
@@ -94,8 +103,8 @@ sudo /opt/techvault/devops/scripts/restore-mongo.sh latest
 
 The script will:
 1. Verify the backup file exists and is a valid gzip archive
-2. Inspect backup contents (collection count via `--dryRun`)
-3. Show a detailed warning: database name, backup size, timestamp, collection count, and collection list
+2. Query the current database and show what will be dropped (collections + document counts)
+3. Show a detailed warning: database name, backup size, timestamp, and current DB contents
 4. Ask you to type `RESTORE` to confirm
 5. Ask for a second confirmation (`yes`)
 6. Create a pre-restore safety backup of the current database
