@@ -49,13 +49,13 @@ No secrets needed — tests use `mongodb-memory-server` and hardcoded test env v
 ### How It Works
 
 ```
-Manual trigger → Pre-deploy backup → git pull → docker compose build → Health verification
+Manual trigger → git reset --hard → chmod +x → backup → docker compose build → Health verification
 ```
 
 The deploy workflow:
 1. Connects to EC2 via SSH
-2. Runs `backup-mongo.sh` **(mandatory — every deploy is backed up)**
-3. Syncs EC2 to `origin/main` via `git reset --hard origin/main`
+2. Syncs EC2 to `origin/main` via `git reset --hard origin/main` and restores script permissions with `chmod +x`
+3. Runs `backup-mongo.sh` **(mandatory — every deploy is backed up, using the freshly synced script)**
 4. Rebuilds and restarts all containers
 5. Waits 15 seconds for containers to stabilize
 6. Verifies the health endpoint returns `healthy`

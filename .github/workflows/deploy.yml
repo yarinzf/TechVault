@@ -23,20 +23,21 @@ jobs:
         env:
           EC2_HOST: ${{ secrets.EC2_HOST }}
 
-      - name: Pre-deploy MongoDB backup
-        run: |
-          ssh -i ~/.ssh/deploy_key -o ConnectTimeout=10 \
-            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} \
-            'sudo /opt/techvault/devops/scripts/backup-mongo.sh'
-
       - name: Sync to origin/main
         run: |
           ssh -i ~/.ssh/deploy_key -o ConnectTimeout=10 \
             ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
             cd /opt/techvault &&
             git fetch origin &&
-            git reset --hard origin/main
+            git reset --hard origin/main &&
+            chmod +x devops/scripts/*.sh
           '
+
+      - name: Pre-deploy MongoDB backup
+        run: |
+          ssh -i ~/.ssh/deploy_key -o ConnectTimeout=10 \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} \
+            'sudo /opt/techvault/devops/scripts/backup-mongo.sh'
 
       - name: Build and restart containers
         run: |
