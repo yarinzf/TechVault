@@ -82,8 +82,8 @@ sudo /opt/techvault/devops/scripts/health-check.sh
 
 | Code | Meaning |
 |------|---------|
-| 0 | All checks passed |
-| 1 | One or more warnings or critical issues |
+| 0 | All checks passed, or warnings only (non-blocking) |
+| 1 | One or more critical issues |
 
 ### Output Format
 

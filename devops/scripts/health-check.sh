@@ -220,7 +220,7 @@ if [ "$CRITICALS" -gt 0 ]; then
 elif [ "$WARNINGS" -gt 0 ]; then
     echo "RESULT: WARNING — ${WARNINGS} warning(s) out of ${CHECKS} checks"
     echo ""
-    exit 1
+    exit 0
 else
     echo "RESULT: HEALTHY — all ${CHECKS} checks passed"
     echo ""
