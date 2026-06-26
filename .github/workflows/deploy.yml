@@ -7,6 +7,9 @@ concurrency:
   group: production-deploy
   cancel-in-progress: false
 
+env:
+  SSH_KEY_PATH: /home/runner/.ssh/deploy_key
+
 jobs:
   deploy:
     name: Deploy to EC2
@@ -16,16 +19,26 @@ jobs:
     steps:
       - name: Configure SSH
         run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/deploy_key
-          chmod 600 ~/.ssh/deploy_key
-          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts 2>/dev/null
-        env:
-          EC2_HOST: ${{ secrets.EC2_HOST }}
+          echo "HOME=$HOME"
+          pwd
+          ls -ld "$HOME"
+
+          if [ -z "${{ secrets.EC2_HOST }}" ]; then echo "::error::EC2_HOST secret is missing"; exit 1; fi
+          if [ -z "${{ secrets.EC2_USER }}" ]; then echo "::error::EC2_USER secret is missing"; exit 1; fi
+          if [ -z "${{ secrets.EC2_SSH_KEY }}" ]; then echo "::error::EC2_SSH_KEY secret is missing"; exit 1; fi
+
+          mkdir -p "$HOME/.ssh"
+          printf '%s\n' "${{ secrets.EC2_SSH_KEY }}" > "$SSH_KEY_PATH"
+          chmod 600 "$SSH_KEY_PATH"
+
+          ssh-keyscan -H "${{ secrets.EC2_HOST }}" >> "$HOME/.ssh/known_hosts" 2>/dev/null
+
+          echo "SSH key configured ($(wc -c < "$SSH_KEY_PATH") bytes)"
+          echo "known_hosts entries: $(wc -l < "$HOME/.ssh/known_hosts")"
 
       - name: Sync to origin/main
         run: |
-          ssh -i ~/.ssh/deploy_key -o ConnectTimeout=10 \
+          ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
             ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
             cd /opt/techvault &&
             git fetch origin &&
@@ -35,13 +48,13 @@ jobs:
 
       - name: Pre-deploy MongoDB backup
         run: |
-          ssh -i ~/.ssh/deploy_key -o ConnectTimeout=10 \
+          ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
             ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} \
             'sudo /opt/techvault/devops/scripts/backup-mongo.sh'
 
       - name: Build and restart containers
         run: |
-          ssh -i ~/.ssh/deploy_key -o ConnectTimeout=10 \
+          ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
             ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
             cd /opt/techvault &&
             docker compose up -d --build
@@ -52,7 +65,7 @@ jobs:
 
       - name: Verify deployment
         run: |
-          ssh -i ~/.ssh/deploy_key -o ConnectTimeout=10 \
+          ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
             ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
             echo "=== Container status ===" &&
             cd /opt/techvault &&
@@ -75,10 +88,10 @@ jobs:
 
       - name: Post-deploy health check
         run: |
-          ssh -i ~/.ssh/deploy_key -o ConnectTimeout=10 \
+          ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
             ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} \
             'sudo /opt/techvault/devops/scripts/health-check.sh'
 
       - name: Cleanup SSH key
         if: always()
-        run: rm -f ~/.ssh/deploy_key
+        run: rm -f "$SSH_KEY_PATH"
