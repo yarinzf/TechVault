@@ -4,8 +4,10 @@
 
 Production monitoring for TechVault consists of:
 1. **Health endpoint** — `GET /api/v1/health` returns live application + database status
-2. **Health-check script** — `devops/scripts/health-check.sh` checks all production components
-3. **Hourly cron** (optional) — writes health reports to `/opt/techvault/logs/health-check.log`
+2. **Admin System Status page** — `GET /api/v1/admin/system/status` returns full server/backup/disk details (admin only)
+3. **Health-check script** — `devops/scripts/health-check.sh` checks all production components
+4. **Hourly cron** (optional) — writes health reports to `/opt/techvault/logs/health-check.log`
+5. **Admin dashboard** — Admin → סטטוס מערכת — visual read-only dashboard with auto-refresh
 
 ## Health Endpoint
 
@@ -58,6 +60,25 @@ The `memory.warning` field is `true` when heap usage exceeds 90%. This is inform
 ```bash
 curl -s http://localhost:5000/api/v1/health | python3 -m json.tool
 ```
+
+## Admin System Status Page
+
+### Endpoint
+
+```
+GET /api/v1/admin/system/status
+Authorization: Bearer <admin-token>
+```
+
+Requires `admin` or `superadmin` role. Returns backend health, MongoDB status, memory, disk, backup info, S3 status, and latest health-check result.
+
+### UI
+
+Navigate to **Admin → סטטוס מערכת** (System Status) in the admin sidebar. The page:
+- Auto-refreshes every 30 seconds
+- Shows status badges: תקין (OK) / אזהרה (Warning) / תקלה (Critical)
+- Displays cards for: Backend, MongoDB, Node.js Memory, Server (RAM/disk), Local Backups, S3 Backups, Health Check, Server Time
+- Is fully read-only — no actions, no buttons that modify state
 
 ## Health-Check Script
 

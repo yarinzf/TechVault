@@ -34,6 +34,7 @@ import AdminActivityPage from './pages/admin/AdminActivityPage';
 import AdminInventoryPage from './pages/admin/AdminInventoryPage';
 import AdminUsersPage from './pages/admin/AdminUsersPage';
 import AdminReturnsPage from './pages/admin/AdminReturnsPage';
+import AdminSystemStatusPage from './pages/admin/AdminSystemStatusPage';
 import WarehouseAlertsPage from './pages/warehouse/WarehouseAlertsPage';
 import WarehouseProductsPage from './pages/warehouse/WarehouseProductsPage';
 import WarehouseOrdersPage from './pages/warehouse/WarehouseOrdersPage';
@@ -123,6 +124,7 @@ export default function App() {
           <Route path="settings" element={<AdminSettingsPage />} />
           <Route path="audit-log" element={<AdminActivityPage />} />
           <Route path="users" element={<AdminUsersPage />} />
+          <Route path="system-status" element={<AdminSystemStatusPage />} />
         </Route>
 
         {/* ── Inventory workspace (warehouse + admin + superadmin) ── */}

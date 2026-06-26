@@ -18,6 +18,7 @@ import {
   Tag,
   Ticket,
   RotateCcw,
+  Server,
 } from 'lucide-react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../../hooks/useAuth';
@@ -40,8 +41,9 @@ export default function AdminSidebar() {
     { icon: Tag,             label: t('sidebar.campaigns'),  path: '/admin/campaigns' },
     { icon: Ticket,          label: t('sidebar.coupons'),    path: '/admin/coupons' },
     { icon: RotateCcw,       label: t('sidebar.returns'),    path: '/admin/returns' },
-    { icon: BarChart3,       label: t('sidebar.reports'),    path: '/admin/analytics' },
-    { icon: Settings,        label: t('sidebar.settings'),   path: '/admin/settings' },
+    { icon: BarChart3,       label: t('sidebar.reports'),        path: '/admin/analytics' },
+    { icon: Server,          label: t('sidebar.system_status'), path: '/admin/system-status' },
+    { icon: Settings,        label: t('sidebar.settings'),      path: '/admin/settings' },
   ];
 
   const SUPERADMIN_ITEMS = [

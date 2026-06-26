@@ -15,6 +15,7 @@ const notifCtrl         = require('../controllers/adminNotification.controller')
 const insightsCtrl      = require('../controllers/insights.controller');
 const reviewCtrl        = require('../controllers/review.controller');
 const jobsCtrl          = require('../controllers/jobs.controller');
+const systemStatusCtrl  = require('../controllers/systemStatus.controller');
 const { moderateReviewSchema } = require('../validators/review.validator');
 const { authenticate, authorize } = require('../middleware/auth');
 const { validate } = require('../middleware/validate');
@@ -409,6 +410,9 @@ router.get('/reports/inventory',       authorize(...ADMIN_ROLES), reportCtrl.get
 router.get('/reports/returns',         authorize(...ADMIN_ROLES), reportCtrl.getReturnsReport);
 router.get('/reports/coupons',         authorize(...ADMIN_ROLES), reportCtrl.getCouponsReport);
 router.get('/reports/purchase-orders', authorize(...ADMIN_ROLES), reportCtrl.getPurchaseOrdersReport);
+
+// ─── System status (read-only) ────────────────────────────────────────────────
+router.get('/system/status', authorize(...ADMIN_ROLES), systemStatusCtrl.getSystemStatus);
 
 // ─── Background jobs ──────────────────────────────────────────────────────────
 // Status: any admin role; manual trigger: superadmin only

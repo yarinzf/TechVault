@@ -358,4 +358,9 @@ export const adminService = {
       return [];
     }
   },
+
+  async getSystemStatus() {
+    const { data } = await api.get('/admin/system/status');
+    return data;
+  },
 };
