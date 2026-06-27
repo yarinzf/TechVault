@@ -63,7 +63,7 @@ services:
     ports:
       - "3000:80"
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost/ || exit 1"]
+      test: ["CMD-SHELL", "curl -sf http://localhost/ > /dev/null || exit 1"]
       interval: 15s
       timeout: 5s
       retries: 3
