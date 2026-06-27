@@ -23,9 +23,11 @@ jobs:
           pwd
           ls -ld "$HOME"
 
-          if [ -z "${{ secrets.EC2_HOST }}" ]; then echo "::error::EC2_HOST secret is missing"; exit 1; fi
-          if [ -z "${{ secrets.EC2_USER }}" ]; then echo "::error::EC2_USER secret is missing"; exit 1; fi
-          if [ -z "${{ secrets.EC2_SSH_KEY }}" ]; then echo "::error::EC2_SSH_KEY secret is missing"; exit 1; fi
+          MISSING=0
+          if [ -n "${{ secrets.EC2_HOST }}" ];    then echo "EC2_HOST: present";    else echo "::error::EC2_HOST: MISSING";    MISSING=1; fi
+          if [ -n "${{ secrets.EC2_USER }}" ];    then echo "EC2_USER: present";    else echo "::error::EC2_USER: MISSING";    MISSING=1; fi
+          if [ -n "${{ secrets.EC2_SSH_KEY }}" ]; then echo "EC2_SSH_KEY: present"; else echo "::error::EC2_SSH_KEY: MISSING"; MISSING=1; fi
+          if [ "$MISSING" -eq 1 ]; then echo "::error::One or more required secrets are missing — configure them in Settings → Secrets → Actions"; exit 1; fi
 
           mkdir -p "$HOME/.ssh"
           printf '%s\n' "${{ secrets.EC2_SSH_KEY }}" > "$SSH_KEY_PATH"
