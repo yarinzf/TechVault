@@ -18,22 +18,25 @@ jobs:
 
     steps:
       - name: Configure SSH
+        env:
+          _HOST: ${{ secrets.EC2_HOST }}
+          _USER: ${{ secrets.EC2_USER }}
+          _KEY:  ${{ secrets.EC2_SSH_KEY }}
         run: |
           echo "HOME=$HOME"
-          pwd
-          ls -ld "$HOME"
 
           MISSING=0
-          if [ -n "${{ secrets.EC2_HOST }}" ];    then echo "EC2_HOST: present";    else echo "::error::EC2_HOST: MISSING";    MISSING=1; fi
-          if [ -n "${{ secrets.EC2_USER }}" ];    then echo "EC2_USER: present";    else echo "::error::EC2_USER: MISSING";    MISSING=1; fi
-          if [ -n "${{ secrets.EC2_SSH_KEY }}" ]; then echo "EC2_SSH_KEY: present"; else echo "::error::EC2_SSH_KEY: MISSING"; MISSING=1; fi
+          if [ -n "$_HOST" ]; then echo "EC2_HOST: present";    else echo "::error::EC2_HOST: MISSING";    MISSING=1; fi
+          if [ -n "$_USER" ]; then echo "EC2_USER: present";    else echo "::error::EC2_USER: MISSING";    MISSING=1; fi
+          if [ -n "$_KEY" ];  then echo "EC2_SSH_KEY: present"; else echo "::error::EC2_SSH_KEY: MISSING"; MISSING=1; fi
           if [ "$MISSING" -eq 1 ]; then echo "::error::One or more required secrets are missing — configure them in Settings → Secrets → Actions"; exit 1; fi
+          echo "Secret validation passed"
 
           mkdir -p "$HOME/.ssh"
-          printf '%s\n' "${{ secrets.EC2_SSH_KEY }}" > "$SSH_KEY_PATH"
+          printf '%s\n' "$_KEY" > "$SSH_KEY_PATH"
           chmod 600 "$SSH_KEY_PATH"
 
-          ssh-keyscan -H "${{ secrets.EC2_HOST }}" >> "$HOME/.ssh/known_hosts" 2>/dev/null
+          ssh-keyscan -H "$_HOST" >> "$HOME/.ssh/known_hosts" 2>/dev/null
 
           echo "SSH key configured ($(wc -c < "$SSH_KEY_PATH") bytes)"
           echo "known_hosts entries: $(wc -l < "$HOME/.ssh/known_hosts")"
