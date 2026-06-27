@@ -25,8 +25,14 @@ services:
       - .env.docker
     environment:
       NODE_ENV: production
-      # Override: always point to the compose mongodb service
       MONGO_URI_PROD: mongodb://mongodb:27017/techvault
+      BACKUP_ROOT: /data/backups/mongodb
+      BACKUP_LOG: /data/backups/backup.log
+      HEALTH_LOG: /data/logs/health-check.log
+      S3_BACKUP_BUCKET: ${S3_BACKUP_BUCKET:-}
+    volumes:
+      - /opt/techvault/backups:/data/backups:ro
+      - /opt/techvault/logs:/data/logs:ro
     depends_on:
       mongodb:
         condition: service_healthy

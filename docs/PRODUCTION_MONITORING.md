@@ -3,65 +3,33 @@
 ## Overview
 
 Production monitoring for TechVault consists of:
-1. **Health endpoint** — `GET /api/v1/health` returns live application + database status
-2. **Admin System Status page** — `GET /api/v1/admin/system/status` returns full server/backup/disk details (admin only)
-3. **Health-check script** — `devops/scripts/health-check.sh` checks all production components
-4. **Hourly cron** (optional) — writes health reports to `/opt/techvault/logs/health-check.log`
+1. **Health endpoint** — `GET /api/v1/health` — lightweight, unauthenticated, used by Docker healthcheck
+2. **Admin System Status** — `GET /api/v1/admin/system/status` — full server/backup/S3/health-check details (admin only)
+3. **Health-check script** — `devops/scripts/health-check.sh` — checks all production components from the host
+4. **Hourly cron** — writes health reports to `/opt/techvault/logs/health-check.log`
 5. **Admin dashboard** — Admin → סטטוס מערכת — visual read-only dashboard with auto-refresh
 
-## Health Endpoint
+---
 
-### Request
+## Health Endpoint
 
 ```
 GET /api/v1/health
 ```
 
-No authentication required. Used by Docker Compose healthcheck internally.
+No authentication required. Returns 200 (healthy) or 503 (unhealthy = MongoDB disconnected).
 
-### Response (200 OK)
+The `memory.warning` flag is `true` only when RSS > 512 MB **and** system RAM > 90%. High V8 heap percentage alone does not trigger it.
 
-```json
-{
-  "success": true,
-  "data": {
-    "status": "healthy",
-    "uptime": 86400,
-    "environment": "production",
-    "version": "1.0.0",
-    "node": "v20.11.0",
-    "mongodb": {
-      "status": "connected",
-      "readyState": 1
-    },
-    "memory": {
-      "rss": "95.2 MB",
-      "heapUsed": "42.1 MB",
-      "heapTotal": "65.3 MB",
-      "external": "3.8 MB",
-      "heapUsedPct": "64.5%"
-    },
-    "timestamp": "2026-06-23T12:00:00.000Z"
-  }
-}
-```
-
-### Status Values
-
-| Status | HTTP Code | Meaning |
-|--------|-----------|---------|
-| `healthy` | 200 | All systems operational |
-| `unhealthy` | 503 | MongoDB disconnected |
-
-The `memory.warning` field is `true` when heap usage exceeds 90%. This is informational only — it does not affect the `status` field.
-
-### Quick Check from EC2
+### Quick Check
 
 ```bash
 curl -s http://localhost:5000/api/v1/health | python3 -m json.tool
 ```
 
-## Admin System Status Page
+---
+
+## Admin System Status Dashboard
 
 ### Endpoint
 
@@ -70,15 +38,95 @@ GET /api/v1/admin/system/status
 Authorization: Bearer <admin-token>
 ```
 
-Requires `admin` or `superadmin` role. Returns backend health, MongoDB status, memory, disk, backup info, S3 status, and latest health-check result.
+Requires `admin` or `superadmin` role.
 
-### UI
+### Docker Architecture
 
-Navigate to **Admin → סטטוס מערכת** (System Status) in the admin sidebar. The page:
-- Auto-refreshes every 30 seconds
-- Shows status badges: תקין (OK) / אזהרה (Warning) / תקלה (Critical)
-- Displays cards for: Backend, MongoDB, Node.js Memory, Server (RAM/disk), Local Backups, S3 Backups, Health Check, Server Time
-- Is fully read-only — no actions, no buttons that modify state
+The backend container reads host data via **read-only volume mounts**:
+
+| Host Path | Container Path | Env Var | Purpose |
+|-----------|---------------|---------|---------|
+| `/opt/techvault/backups` | `/data/backups:ro` | `BACKUP_ROOT=/data/backups/mongodb` | Backup .gz files |
+| `/opt/techvault/backups` | `/data/backups:ro` | `BACKUP_LOG=/data/backups/backup.log` | Backup log |
+| `/opt/techvault/logs` | `/data/logs:ro` | `HEALTH_LOG=/data/logs/health-check.log` | Health-check log |
+| (host env) | (container env) | `S3_BACKUP_BUCKET` | S3 bucket name |
+
+All mounts are `:ro` — the backend cannot modify backup or log files.
+
+### Overall Status Derivation
+
+The dashboard computes an overall status from component statuses:
+
+| Overall | Condition |
+|---------|-----------|
+| **critical** | MongoDB disconnected, or local backup very stale (>48h in production), or health-check reports CRITICAL |
+| **warning** | Backup slightly stale (>26h), or S3 configured but no recent upload, or memory pressure, or health-check WARNING |
+| **healthy** | MongoDB connected, recent backup, no critical/warning signals |
+
+Optional data sources (health-check log, S3) report `unavailable` when not mounted/configured — this does **not** degrade the overall status.
+
+### Memory Status Rules
+
+| Status | Condition |
+|--------|-----------|
+| **healthy** | Normal operation |
+| **warning** | System RAM > 90%, or free RAM < 200 MB, or RSS > 512 MB with RAM > 85% |
+| **critical** | System RAM > 95%, or free RAM < 100 MB |
+
+V8 `heapUsedPct` is reported for informational purposes only — high heap ratios are normal because V8 dynamically resizes `heapTotal`.
+
+### Backup Status Rules
+
+| Status | Condition |
+|--------|-----------|
+| **healthy** | Latest backup exists and is ≤ 26 hours old |
+| **warning** | Latest backup is 26–48 hours old, or no backups in production |
+| **critical** | Latest backup is > 48 hours old |
+| **unavailable** | Backup directory not mounted (e.g. local development) |
+
+### S3 Backup Status Rules
+
+| Status | Condition |
+|--------|-----------|
+| **healthy** | `S3_BACKUP_BUCKET` set and "S3 upload complete" confirmed in backup.log within 26h |
+| **warning** | Configured but no recent upload confirmation in log |
+| **unavailable** | `S3_BACKUP_BUCKET` not set |
+
+The `lastUploadConfirmed` field indicates whether any successful S3 upload was found in the backup log. `lastUploadTime` contains the parsed timestamp. The backend does **not** call AWS CLI — all S3 status is derived from log parsing.
+
+### Health-Check Freshness Rules
+
+| Status | Condition |
+|--------|-----------|
+| **healthy** | Last run ≤ 90 minutes ago and result was HEALTHY |
+| **warning** | Last run 90 min–6 hours ago, or result was WARNING |
+| **critical** | Last run > 6 hours ago, or result was CRITICAL |
+| **unavailable** | Health-check log not mounted or empty |
+
+The stricter of the result severity and the age-based staleness is used.
+
+### Health-Check Status Rules
+
+| Status | Condition |
+|--------|-----------|
+| **healthy** | Last RESULT line contains "HEALTHY" |
+| **warning** | Last RESULT line contains "WARNING" |
+| **critical** | Last RESULT line contains "CRITICAL" |
+| **unavailable** | Health-check log not mounted or empty |
+
+Includes `lastRunTime` timestamp and `ageMinutes` since last run.
+
+### UI Status Badges
+
+| Badge | Hebrew | Meaning |
+|-------|--------|---------|
+| healthy | תקין | All good |
+| info | מידע | Informational |
+| warning | אזהרה | Needs attention |
+| critical | תקלה | Action required |
+| unavailable | לא זמין | Data source not mounted / not configured |
+
+---
 
 ## Health-Check Script
 
@@ -106,116 +154,71 @@ sudo /opt/techvault/devops/scripts/health-check.sh
 | 0 | All checks passed, or warnings only (non-blocking) |
 | 1 | One or more critical issues |
 
-### Output Format
-
-```
-TechVault Production Health Check
-2026-06-23 12:00:00
-────────────────────────────────────────────────────
-Docker Containers:
-  [OK]       mongodb: running (healthy)
-  [OK]       backend: running (healthy)
-  [OK]       frontend: running (healthy)
-
-Backend Health Endpoint:
-  [OK]       Status: healthy (v1.0.0, uptime: 86400s)
-  [OK]       MongoDB: connected
-  [OK]       Heap usage: 64.5%
-...
-────────────────────────────────────────────────────
-RESULT: HEALTHY — all 14 checks passed
-```
-
-## Hourly Cron (Optional)
+## Hourly Cron
 
 ```bash
-# Install: run health check every hour, log results
 (sudo crontab -l 2>/dev/null; echo "0 * * * * /opt/techvault/devops/scripts/health-check.sh >> /opt/techvault/logs/health-check.log 2>&1") | sudo crontab -
-```
-
-Create the log directory:
-```bash
 sudo mkdir -p /opt/techvault/logs
 ```
 
-View recent results:
-```bash
-tail -50 /opt/techvault/logs/health-check.log
-```
+---
 
-## Troubleshooting Common Production Issues
+## Troubleshooting
 
 ### Container won't start
 
 ```bash
-# Check logs for the failing service
 docker compose -f /opt/techvault/docker-compose.yml logs --tail=50 backend
 docker compose -f /opt/techvault/docker-compose.yml logs --tail=50 mongodb
-
-# Restart all services
 cd /opt/techvault && docker compose up -d
 ```
 
 ### MongoDB disconnected
 
 ```bash
-# Check MongoDB container health
 docker compose -f /opt/techvault/docker-compose.yml exec mongodb mongosh --eval "db.adminCommand('ping')"
-
-# Check MongoDB logs
-docker compose -f /opt/techvault/docker-compose.yml logs --tail=30 mongodb
-
-# Restart MongoDB only
 docker compose -f /opt/techvault/docker-compose.yml restart mongodb
+```
+
+### Dashboard shows "לא זמין" for backups/health-check
+
+Verify volume mounts are working:
+```bash
+docker compose -f /opt/techvault/docker-compose.yml exec backend ls -la /data/backups/mongodb/
+docker compose -f /opt/techvault/docker-compose.yml exec backend ls -la /data/logs/
+```
+
+If empty, verify host paths exist:
+```bash
+ls -la /opt/techvault/backups/mongodb/
+ls -la /opt/techvault/logs/health-check.log
+```
+
+### Dashboard shows S3 "לא זמין"
+
+Verify `S3_BACKUP_BUCKET` is set in the host environment and passed to docker compose:
+```bash
+echo $S3_BACKUP_BUCKET
+docker compose -f /opt/techvault/docker-compose.yml exec backend printenv S3_BACKUP_BUCKET
 ```
 
 ### High disk usage
 
 ```bash
-# Check what's consuming space
 du -sh /opt/techvault/backups/mongodb/
-du -sh /var/lib/docker/
 docker system df
-
-# Clean unused Docker resources (safe)
 docker system prune -f
-```
-
-### High memory usage
-
-```bash
-# Check per-container memory
-docker stats --no-stream
-
-# Check system memory
-free -h
-
-# Restart services to reclaim memory
-cd /opt/techvault && docker compose restart
 ```
 
 ### Backend returning 503
 
-The health endpoint returns 503 when MongoDB is disconnected. Check MongoDB first:
 ```bash
 docker compose -f /opt/techvault/docker-compose.yml exec mongodb mongosh --eval "db.adminCommand('ping')"
 ```
 
-### Backup not running
-
-```bash
-# Verify cron is installed
-sudo crontab -l | grep backup
-
-# Check backup log
-tail -20 /opt/techvault/backups/backup.log
-
-# Run backup manually
-sudo /opt/techvault/devops/scripts/backup-mongo.sh
-```
-
-### Check Docker status at a glance
+### Check status at a glance
 
 ```bash
 docker compose -f /opt/techvault/docker-compose.yml ps
+curl -s http://localhost:5000/api/v1/health | python3 -m json.tool
 ```

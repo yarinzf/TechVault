@@ -36,6 +36,10 @@ router.get('/health', async (req, res) => {
   const mem = process.memoryUsage();
   const heapUsedPct = mem.heapUsed / mem.heapTotal;
 
+  const os = require('os');
+  const totalMem = os.totalmem();
+  const freeMem = os.freemem();
+  const ramUsedPct = (totalMem - freeMem) / totalMem;
   const status = dbConnected ? 'healthy' : 'unhealthy';
 
   const body = {
@@ -54,7 +58,7 @@ router.get('/health', async (req, res) => {
       heapTotal: formatBytes(mem.heapTotal),
       external: formatBytes(mem.external),
       heapUsedPct: `${(heapUsedPct * 100).toFixed(1)}%`,
-      warning: heapUsedPct > 0.9,
+      warning: mem.rss > 512 * 1024 * 1024 && ramUsedPct > 0.9,
     },
     timestamp: new Date().toISOString(),
   };
