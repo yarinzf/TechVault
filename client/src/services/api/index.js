@@ -53,8 +53,8 @@ async function request(path, options = {}) {
     try {
       await silentRefresh();
       return request(path, { ...options, _retry: true });
-    } catch (e) {
-      console.error('Refresh failed:', e);
+    } catch {
+      // Refresh failed — session is genuinely expired. Clean up silently.
     }
 
     clearToken();
