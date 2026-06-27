@@ -95,10 +95,47 @@ function PriceRangeSlider({ min, max, step, value, onChange, onCommit }) {
   );
 }
 
-// Brand logo card — white card with logo image + name label
+const BRAND_ICON_SLUGS = {
+  'acer': 'acer',
+  'amazon': 'amazon',
+  'amd': 'amd',
+  'apple': 'apple',
+  'asus': 'asus',
+  'beats': 'beats',
+  'benq': 'benq',
+  'corsair': 'corsair',
+  'dell': 'dell',
+  'google': 'google',
+  'hp': 'hp',
+  'intel': 'intel',
+  'jbl': 'jbl',
+  'kingston': 'kingston',
+  'lenovo': 'lenovo',
+  'lg': 'lg',
+  'logitech': 'logitech',
+  'microsoft': 'microsoft',
+  'msi': 'msi',
+  'nintendo': 'nintendo',
+  'nvidia': 'nvidia',
+  'oneplus': 'oneplus',
+  'philips': 'philips',
+  'razer': 'razer',
+  'samsung': 'samsung',
+  'seagate': 'seagate',
+  'sennheiser': 'sennheiser',
+  'sony': 'sony',
+  'steelseries': 'steelseries',
+  'synology': 'synology',
+  'tplink': 'tplink',
+  'ubiquiti': 'ubiquiti',
+  'westerndigital': 'westerndigital',
+  'xiaomi': 'xiaomi',
+};
+
 function BrandCard({ name, selected, onClick }) {
   const [imgError, setImgError] = useState(false);
-  const slug = name.toLowerCase().replace(/\s+/g, '').replace(/[^a-z0-9]/g, '');
+  const key = name.toLowerCase().replace(/\s+/g, '').replace(/[^a-z0-9]/g, '');
+  const slug = BRAND_ICON_SLUGS[key] || (key === 'wd' ? 'westerndigital' : null);
 
   return (
     <div
@@ -106,10 +143,10 @@ function BrandCard({ name, selected, onClick }) {
       onClick={onClick}
     >
       <div className={s.brandLogo}>
-        {!imgError ? (
+        {slug && !imgError ? (
           <img
             src={`https://cdn.simpleicons.org/${slug}/1a1a1a`}
-            alt={name}
+            alt=""
             style={{ maxWidth: '72px', maxHeight: '36px', objectFit: 'contain' }}
             onError={() => setImgError(true)}
           />
