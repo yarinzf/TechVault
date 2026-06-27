@@ -59,7 +59,6 @@ purchaseOrderSchema.pre('save', async function (next) {
 
 purchaseOrderSchema.index({ supplier: 1, createdAt: -1 });
 purchaseOrderSchema.index({ status: 1, createdAt: -1 });
-purchaseOrderSchema.index({ poNumber: 1 }, { unique: true });
 purchaseOrderSchema.index({ createdBy: 1 });
 purchaseOrderSchema.index({ createdAt: -1 });
 

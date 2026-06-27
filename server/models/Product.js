@@ -85,8 +85,6 @@ productSchema.pre('save', function (next) {
 // ─── Text index for search ────────────────────────────────────────────────────
 productSchema.index({ name: 'text', description: 'text', brand: 'text', tags: 'text' });
 productSchema.index({ category: 1 });
-productSchema.index({ slug: 1 },       { unique: true });
-productSchema.index({ sku: 1 },        { unique: true });
 productSchema.index({ isDeleted: 1 });
 productSchema.index({ salesCount: -1 });
 

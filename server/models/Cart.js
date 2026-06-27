@@ -31,6 +31,4 @@ cartSchema.virtual('subtotal').get(function () {
 cartSchema.set('toJSON',   { virtuals: true });
 cartSchema.set('toObject', { virtuals: true });
 
-cartSchema.index({ user: 1 }, { unique: true });
-
 module.exports = mongoose.model('Cart', cartSchema);

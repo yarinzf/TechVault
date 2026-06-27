@@ -122,7 +122,6 @@ orderSchema.index({ user: 1, createdAt: -1 });
 orderSchema.index({ status: 1, createdAt: -1 });
 orderSchema.index({ paymentStatus: 1 });
 orderSchema.index({ status: 1, expiresAt: 1 }); // for expiry cancellation job
-orderSchema.index({ orderNumber: 1 }, { unique: true });
 orderSchema.index({ createdAt: -1 }); // unfiltered admin list
 
 module.exports = mongoose.model('Order', orderSchema);

@@ -138,7 +138,6 @@ userSchema.methods.resetLoginAttempts = async function () {
 };
 
 // ─── Indexes ──────────────────────────────────────────────────────────────────
-userSchema.index({ email: 1 },    { unique: true });
 userSchema.index({ googleId: 1 }, { unique: true, sparse: true });
 userSchema.index({ appleId: 1 },  { unique: true, sparse: true });
 
