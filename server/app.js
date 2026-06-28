@@ -37,6 +37,7 @@ const app = express();
 // ─── Trust proxy (nginx / Docker reverse proxy) ─────────────────────────────
 // Required for correct req.ip, X-Forwarded-Proto awareness, and secure cookies.
 app.set('trust proxy', 1);
+app.disable('x-powered-by');
 
 // ─── Correlation ID — must be first so every layer has req.correlationId ─────
 app.use(correlationId);
