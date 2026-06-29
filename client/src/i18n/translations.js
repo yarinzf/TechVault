@@ -1301,6 +1301,12 @@ export const translations = {
     'admin.alert_page.actions':      'פעולות נדרשות',
     'admin.alert_page.mark_done':    'סמן כטופל',
     'admin.alert_page.new_alerts':   'התראות חדשות',
+
+    /* ── 404 / Errors ────────────────────────────────────────────────── */
+    'notfound.title':    'הדף לא נמצא',
+    'notfound.body':     'הדף שחיפשת אינו קיים או שהכתובת השתנתה.',
+    'notfound.go_back':  'חזור',
+    'notfound.go_home':  'דף הבית',
   },
 
   en: {
@@ -2605,5 +2611,11 @@ export const translations = {
     'admin.alert_page.actions':      'Required Actions',
     'admin.alert_page.mark_done':    'Mark as Resolved',
     'admin.alert_page.new_alerts':   'new alerts',
+
+    /* ── 404 / Errors ────────────────────────────────────────────────── */
+    'notfound.title':    'Page Not Found',
+    'notfound.body':     'The page you\'re looking for doesn\'t exist or has been moved.',
+    'notfound.go_back':  'Go Back',
+    'notfound.go_home':  'Home',
   },
 };

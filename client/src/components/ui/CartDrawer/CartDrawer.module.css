@@ -24,9 +24,10 @@
   right: 0;
   width: min(420px, 100vw);
   height: 100dvh;
-  background: var(--bg-surface);
-  border-left: 1px solid var(--border-strong);
-  box-shadow: -8px 0 40px rgba(0, 0, 0, 0.5);
+  background: var(--sv-card);
+  border-left: 1px solid var(--sv-border);
+  border-radius: 16px 0 0 16px;
+  box-shadow: -12px 0 40px rgba(0, 0, 0, 0.45);
   z-index: var(--z-drawer);
   display: flex;
   flex-direction: column;

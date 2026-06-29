@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from './hooks/useAuth';
+import ErrorBoundary from './components/ErrorBoundary';
 
 import CustomerLayout from './components/layout/customer/CustomerLayout';
 import HomePage from './pages/customer/HomePage';
@@ -21,6 +22,7 @@ const OrdersPage         = lazy(() => import('./pages/customer/OrdersPage'));
 const OrderSuccessPage   = lazy(() => import('./pages/customer/OrderSuccessPage'));
 const ProfilePage        = lazy(() => import('./pages/customer/ProfilePage'));
 const WishlistPage       = lazy(() => import('./pages/customer/WishlistPage'));
+const ComparePage        = lazy(() => import('./pages/customer/ComparePage'));
 const TermsPage          = lazy(() => import('./pages/shared/TermsPage'));
 const PrivacyPage        = lazy(() => import('./pages/shared/PrivacyPage'));
 
@@ -84,14 +86,15 @@ const GuestOnly = ({ children }) => {
 };
 
 const PageLoader = () => (
-  <div className="flex items-center justify-center h-screen bg-background">
-    <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+  <div className="flex flex-col items-center justify-center h-screen bg-background gap-3" role="status">
+    <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+    <span className="text-sm text-muted-foreground">טוען...</span>
   </div>
 );
 
 export default function App() {
   return (
-    <>
+    <ErrorBoundary>
       <Suspense fallback={<PageLoader />}>
         <Routes>
           {/* ── Public auth routes ── */}
@@ -118,6 +121,7 @@ export default function App() {
             <Route path="/orders" element={<RequireAuth><OrdersPage /></RequireAuth>} />
             <Route path="/profile" element={<RequireAuth><ProfilePage /></RequireAuth>} />
             <Route path="/wishlist" element={<RequireAuth><WishlistPage /></RequireAuth>} />
+            <Route path="/compare" element={<ComparePage />} />
           </Route>
 
           {/* ── Warehouse ── canonical workspace is /admin/inventory ── */}
@@ -125,7 +129,7 @@ export default function App() {
           <Route path="/warehouse/*" element={<Navigate to="/admin/inventory" replace />} />
 
           {/* ── Admin panel ── */}
-          <Route path="/admin" element={<RequireAdmin><AdminLayout /></RequireAdmin>}>
+          <Route path="/admin" element={<RequireAdmin><ErrorBoundary title="שגיאה בפאנל ניהול"><AdminLayout /></ErrorBoundary></RequireAdmin>}>
             <Route index element={<AdminDashboardPage />} />
             <Route path="orders" element={<AdminOrdersPage />} />
             <Route path="products" element={<AdminProductsPage />} />
@@ -142,7 +146,7 @@ export default function App() {
           </Route>
 
           {/* ── Inventory workspace (warehouse + admin + superadmin) ── */}
-          <Route path="/admin/inventory" element={<RequireWarehouse><AdminLayout /></RequireWarehouse>}>
+          <Route path="/admin/inventory" element={<RequireWarehouse><ErrorBoundary title="שגיאה באזור המחסן"><AdminLayout /></ErrorBoundary></RequireWarehouse>}>
             <Route index element={<AdminInventoryPage />} />
             <Route path="orders" element={<WarehouseOrdersPage />} />
             <Route path="manage" element={<WarehouseInventoryPage />} />
@@ -159,6 +163,6 @@ export default function App() {
       </Suspense>
 
       <AccessibilityWidget />
-    </>
+    </ErrorBoundary>
   );
 }

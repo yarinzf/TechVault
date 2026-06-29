@@ -145,9 +145,8 @@ function BrandCard({ name, selected, onClick }) {
       <div className={s.brandLogo}>
         {slug && !imgError ? (
           <img
-            src={`https://cdn.simpleicons.org/${slug}/1a1a1a`}
+            src={`https://cdn.simpleicons.org/${slug}/ffffff`}
             alt=""
-            style={{ maxWidth: '72px', maxHeight: '36px', objectFit: 'contain' }}
             onError={() => setImgError(true)}
           />
         ) : (
@@ -537,7 +536,7 @@ export default function CatalogPage() {
     const items = [];
     products.forEach((p, i) => {
       items.push({ type: 'product', product: p, key: p._id });
-      if (i > 0 && (i + 1) % 6 === 0 && i + 1 < products.length) {
+      if (i > 0 && (i + 1) % 8 === 0 && i + 1 < products.length) {
         items.push({ type: 'club', key: `cb-${i}` });
       }
     });

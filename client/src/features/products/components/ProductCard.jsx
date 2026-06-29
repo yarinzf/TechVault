@@ -60,6 +60,45 @@ export default function ProductCard({ product, rank }) {
   const starStr    = '★'.repeat(Math.min(starCount, 5)) + (starCount < 5 ? '☆' : '');
   const hasRating  = product.ratings?.count > 0;
 
+  // Spec chips — show up to 4 short, meaningful spec values
+  const specChips = (() => {
+    const raw = product.specs;
+    if (!raw || typeof raw !== 'object') return [];
+    const entries = raw instanceof Map ? [...raw.entries()] : Object.entries(raw);
+    // Keys worth showing as chips, in priority order
+    const CHIP_KEYS = [
+      'Screen Size', 'Resolution', 'Refresh Rate', 'Panel Type',
+      'Keyboard Type', 'Connection', 'Layout', 'Switch Type',
+      'Driver Size', 'Noise Cancellation', 'Connectivity',
+      'Sensor', 'DPI', 'Form Factor',
+    ];
+    const SKIP_VALUES = new Set(['true', 'false', 'N/A', 'n/a', '', 'none']);
+    const MAX_LEN = 20;
+
+    const picked = [];
+    const seen = new Set();
+    for (const key of CHIP_KEYS) {
+      if (picked.length >= 4) break;
+      const match = entries.find(([k]) => k === key);
+      if (!match) continue;
+      const val = String(match[1]).trim();
+      if (SKIP_VALUES.has(val) || val.length > MAX_LEN || seen.has(val)) continue;
+      seen.add(val);
+      picked.push(val);
+    }
+    // If priority keys didn't fill 4, grab remaining short values
+    if (picked.length < 4) {
+      for (const [, v] of entries) {
+        if (picked.length >= 4) break;
+        const val = String(v).trim();
+        if (SKIP_VALUES.has(val) || val.length > MAX_LEN || seen.has(val)) continue;
+        seen.add(val);
+        picked.push(val);
+      }
+    }
+    return picked;
+  })();
+
   return (
     <article
       className={s.card}
@@ -69,7 +108,7 @@ export default function ProductCard({ product, rank }) {
       <div className={s.imageWrap}>
         <img
           className={s.image}
-          src={product.images?.[0] || 'https://picsum.photos/400/300'}
+          src={product.images?.[0] || ''}
           alt={product.name}
           loading="lazy"
         />
@@ -122,6 +161,15 @@ export default function ProductCard({ product, rank }) {
           <div className={s.rating}>
             <span className={s.stars}>{starStr}</span>
             <span className={s.rcount}>({product.ratings.count})</span>
+          </div>
+        )}
+
+        {/* Spec chips (.pc-chips) — short spec highlights */}
+        {specChips.length > 0 && (
+          <div className={s.chips}>
+            {specChips.map((v, i) => (
+              <span key={i} className={s.chip}>{v}</span>
+            ))}
           </div>
         )}
 

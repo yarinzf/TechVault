@@ -1,7 +1,5 @@
 /**
- * Sample homepage reviews.
- * TODO: replace with real review API data — show highest-rated reviews here,
- *       "show all" links to /reviews with good/bad filter support.
+ * Sample homepage reviews displayed on the storefront landing page.
  */
 export const HOMEPAGE_REVIEWS = [
   {

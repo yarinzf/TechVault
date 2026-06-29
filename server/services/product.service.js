@@ -212,8 +212,37 @@ const getStockHistory = async (id) => {
   return { product, movements };
 };
 
+const getProductsByIds = async (ids) => {
+  const objectIds = ids
+    .filter(id => mongoose.Types.ObjectId.isValid(id))
+    .map(id => new mongoose.Types.ObjectId(id));
+
+  if (objectIds.length === 0) return [];
+
+  const products = await Product
+    .find({ _id: { $in: objectIds }, ...PUBLIC_FILTER })
+    .populate('category', 'name slug')
+    .lean();
+
+  const discountMap = await getActiveDiscountMap();
+
+  const enriched = products.map(p => {
+    const discount = discountMap.get(p._id.toString());
+    if (!discount) return p;
+    return {
+      ...p,
+      discountedPrice: Math.round(p.price * (1 - discount / 100) * 100) / 100,
+      discountPercent: discount,
+    };
+  });
+
+  // Preserve the caller's requested order
+  const byId = new Map(enriched.map(p => [p._id.toString(), p]));
+  return ids.map(id => byId.get(id)).filter(Boolean);
+};
+
 module.exports = {
-  listProducts, listCategories, getProduct,
+  listProducts, listCategories, getProduct, getProductsByIds,
   createProduct, updateProduct, deleteProduct,
   autocomplete, updateStock, getStockHistory,
 };

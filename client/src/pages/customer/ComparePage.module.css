@@ -1,0 +1,125 @@
+/* ── Compare Page — Sapir design ────────────────────────────────── */
+
+/* Page wrapper */
+.pageWrap { min-height: 100vh; background: var(--sv-bg); }
+
+.cmpPage { max-width: 1440px; margin: 0 auto; padding: 24px 48px 80px; }
+@media (max-width: 640px) { .cmpPage { padding: 16px 16px 48px; } }
+
+/* ── Breadcrumb ────────────────────────────────────────────────── */
+.breadcrumb { background: var(--sv-surface); border-bottom: 1px solid var(--sv-border); padding: 10px 0; }
+.bcInner { max-width: 1440px; margin: 0 auto; padding: 0 48px; display: flex; align-items: center; gap: 8px; font-size: 13px; }
+.bcLink { color: var(--sv-muted); cursor: pointer; background: none; border: none; font-family: var(--sv-font); font-size: 13px; display: flex; align-items: center; gap: 4px; transition: color .18s; padding: 0; text-decoration: none; }
+.bcLink:hover { color: var(--sv-blue-l); }
+.bcSep { color: var(--sv-dim); }
+.bcCurrent { color: var(--sv-text); font-size: 13px; font-weight: 500; }
+
+/* ── Title ─────────────────────────────────────────────────────── */
+.title { font-size: 24px; font-weight: 800; color: var(--sv-text); margin-bottom: 4px; }
+.sub { font-size: 13px; color: var(--sv-muted); margin-bottom: 24px; }
+
+/* ── Product slots container ───────────────────────────────────── */
+.slots { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 28px; align-items: stretch; justify-content: center; }
+
+/* ── "Add product" slot (dashed) ───────────────────────────────── */
+.slotAdd { flex: 0 1 280px; min-width: 180px; max-width: 280px; border: 2px dashed rgba(37,99,235,.25); border-radius: 14px; padding: 28px 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; cursor: pointer; transition: all .2s; color: var(--sv-muted); background: rgba(37,99,235,.03); }
+.slotAdd:hover { border-color: var(--sv-blue-l); color: var(--sv-blue-l); background: rgba(37,99,235,.06); }
+.slotAddIcon { width: 44px; height: 44px; border-radius: 12px; background: rgba(37,99,235,.1); display: flex; align-items: center; justify-content: center; }
+.slotAddLabel { font-size: 12px; font-weight: 600; }
+
+/* ── Product slot card ─────────────────────────────────────────── */
+.slot { flex: 0 1 280px; min-width: 180px; max-width: 280px; }
+.slotCard { background: var(--sv-card); border: 1px solid var(--sv-border); border-radius: 14px; overflow: hidden; }
+.slotHeader { padding: 14px; text-align: center; }
+.slotImg { background: linear-gradient(135deg, #0d0d14, #12121e); border-radius: 10px; height: 90px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; position: relative; border: 1px solid rgba(255,255,255,.05); overflow: hidden; }
+.slotImg img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.slotImg svg { width: 44px; height: 44px; stroke: var(--sv-blue-l); stroke-width: 1.2; }
+.slotDisc { position: absolute; top: 6px; right: 6px; background: var(--sv-red); color: #fff; font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 4px; z-index: 1; }
+.slotBrand { font-size: 9px; font-weight: 700; color: var(--sv-blue-l); text-transform: uppercase; letter-spacing: .07em; margin-bottom: 2px; }
+.slotName { font-size: 12px; font-weight: 700; color: var(--sv-text); line-height: 1.35; margin-bottom: 5px; }
+.slotStars { color: var(--sv-gold); font-size: 11px; margin-bottom: 3px; }
+.slotPrice { font-size: 18px; font-weight: 800; color: var(--sv-text); margin-bottom: 10px; }
+.slotPriceBest { font-size: 18px; font-weight: 800; color: var(--sv-blue-l); margin-bottom: 10px; }
+.slotPriceOld { font-size: 10px; color: var(--sv-muted); text-decoration: line-through; margin-left: 4px; }
+.slotAddCart { background: linear-gradient(135deg, var(--sv-blue), var(--sv-blue-dk)); color: #fff; border: none; border-radius: 7px; padding: 8px; font-size: 11px; font-weight: 600; font-family: var(--sv-font); cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 5px; transition: opacity .18s; margin-bottom: 5px; }
+.slotAddCart:hover { opacity: .9; }
+.slotRemove { background: none; border: 1px solid rgba(255,255,255,.08); color: var(--sv-muted); border-radius: 7px; padding: 6px; font-size: 10px; font-family: var(--sv-font); cursor: pointer; width: 100%; transition: all .15s; }
+.slotRemove:hover { border-color: var(--sv-red); color: var(--sv-red); }
+
+/* ── Spec accordion ────────────────────────────────────────────── */
+.slotSpecs { border-top: 1px solid rgba(255,255,255,.06); }
+.specSec { border-top: 1px solid rgba(255,255,255,.04); }
+.specSec:first-child { border-top: none; }
+.specHdr { display: flex; align-items: center; justify-content: space-between; padding: 9px 14px; cursor: pointer; transition: background .15s; }
+.specHdr:hover { background: rgba(255,255,255,.025); }
+.specHdrTitle { font-size: 10px; font-weight: 700; color: var(--sv-blue-l); text-transform: uppercase; letter-spacing: .06em; }
+.specHdrArrow { width: 13px; height: 13px; stroke: var(--sv-muted); transition: transform .2s; }
+.specHdrArrowOpen { transform: rotate(180deg); }
+.specBody { display: none; padding: 0 14px 8px; }
+.specBodyOpen { display: block; }
+.specRow { display: flex; justify-content: space-between; padding: 5px 0; font-size: 11px; border-bottom: 1px solid rgba(255,255,255,.03); }
+.specRow:last-child { border-bottom: none; }
+.specKey { color: var(--sv-muted); }
+.specVal { color: var(--sv-text); font-weight: 500; }
+
+/* ── Recommendation badges ─────────────────────────────────────── */
+.recs { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 20px; }
+.rec { background: var(--sv-card); border: 1px solid var(--sv-border); border-radius: 12px; padding: 12px 14px; display: flex; gap: 10px; }
+.recEmoji { font-size: 18px; flex-shrink: 0; }
+.recType { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 2px; }
+.recTypeGaming { color: var(--sv-blue-l); }
+.recTypeValue { color: var(--sv-success); }
+.recTypeBest { color: var(--sv-gold); }
+.recName { font-size: 12px; font-weight: 700; color: var(--sv-text); }
+.recWhy { font-size: 10px; color: var(--sv-muted); margin-top: 2px; }
+
+/* ── Key differences card ──────────────────────────────────────── */
+.diffCard { background: var(--sv-card); border: 1px solid var(--sv-border); border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+.diffTitle { font-size: 10px; font-weight: 700; color: var(--sv-blue-l); text-transform: uppercase; letter-spacing: .07em; margin-bottom: 12px; }
+.diffRow { padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,.04); }
+.diffRow:last-child { border-bottom: none; }
+.diffRowLabel { font-size: 10px; color: var(--sv-muted); font-weight: 600; margin-bottom: 6px; }
+.diffVals { display: flex; gap: 8px; flex-wrap: wrap; }
+.diffVal { background: rgba(255,255,255,.03); border-radius: 6px; padding: 5px 10px; font-size: 12px; display: flex; align-items: center; gap: 6px; flex: 1; min-width: 100px; }
+.diffValBest { background: rgba(37,99,235,.07); border: 1px solid rgba(37,99,235,.15); }
+.diffValBrand { font-size: 9px; color: var(--sv-muted); white-space: nowrap; }
+.diffValSpec { font-weight: 600; color: var(--sv-text); }
+.diffValBestSpec { font-weight: 600; color: var(--sv-blue-l); }
+.diffBadge { color: var(--sv-blue-l); font-size: 10px; font-weight: 700; }
+
+/* ── Empty state ───────────────────────────────────────────────── */
+.empty { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 24px; text-align: center; }
+.emptyIcon { width: 80px; height: 80px; border-radius: 20px; background: rgba(37,99,235,.08); display: flex; align-items: center; justify-content: center; margin-bottom: 18px; }
+.emptyTitle { font-size: 22px; font-weight: 800; color: var(--sv-text); margin-bottom: 6px; }
+.emptySub { font-size: 14px; color: var(--sv-muted); margin-bottom: 20px; max-width: 340px; }
+.emptyCta { background: linear-gradient(135deg, var(--sv-blue), var(--sv-blue-dk)); color: #fff; border: none; border-radius: 10px; padding: 12px 28px; font-size: 14px; font-weight: 700; font-family: var(--sv-font); cursor: pointer; display: flex; align-items: center; gap: 8px; transition: opacity .18s; text-decoration: none; }
+.emptyCta:hover { opacity: .9; }
+
+/* ── Loading state ─────────────────────────────────────────────── */
+.loading { display: flex; align-items: center; justify-content: center; padding: 120px 24px; }
+.spinner { width: 36px; height: 36px; border: 3px solid rgba(37,99,235,.15); border-top-color: var(--sv-blue-l); border-radius: 50%; animation: spin .7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Product selector modal ────────────────────────────────────── */
+.selOverlay { position: fixed; inset: 0; z-index: 10000; background: rgba(0,0,0,.75); backdrop-filter: blur(8px); display: flex; align-items: flex-start; justify-content: center; padding: 20px; padding-top: 160px; overflow-y: auto; }
+.selModal { background: var(--sv-card); border: 1px solid var(--sv-border); border-radius: 16px; width: 100%; max-width: 520px; max-height: calc(100vh - 200px); display: flex; flex-direction: column; overflow: hidden; }
+.selHead { padding: 16px 18px; border-bottom: 1px solid var(--sv-border); display: flex; align-items: center; justify-content: space-between; }
+.selTitle { font-size: 15px; font-weight: 700; color: var(--sv-text); }
+.selClose { background: none; border: none; color: var(--sv-muted); cursor: pointer; font-size: 18px; padding: 0; line-height: 1; }
+.selClose:hover { color: var(--sv-text); }
+.selSearchWrap { padding: 12px 18px; border-bottom: 1px solid var(--sv-border); }
+.selSearch { background: var(--sv-surface); border: 1px solid var(--sv-border); border-radius: 8px; padding: 8px 12px; color: var(--sv-text); font-size: 13px; font-family: var(--sv-font); outline: none; width: 100%; transition: border-color .18s; }
+.selSearch:focus { border-color: var(--sv-blue-l); }
+.selSearch::placeholder { color: var(--sv-dim); }
+.selBody { padding: 14px 18px; overflow-y: auto; flex: 1; }
+.selProds { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+.selProd { background: var(--sv-surface); border: 1px solid var(--sv-border); border-radius: 10px; padding: 12px; cursor: pointer; transition: all .18s; text-align: center; }
+.selProd:hover { border-color: var(--sv-blue-l); background: rgba(37,99,235,.04); }
+.selProdDisabled { opacity: .4; pointer-events: none; }
+.selProdImg { height: 52px; display: flex; align-items: center; justify-content: center; margin-bottom: 6px; }
+.selProdImg img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.selProdBrand { font-size: 8px; font-weight: 700; color: var(--sv-blue-l); text-transform: uppercase; margin-bottom: 2px; }
+.selProdName { font-size: 10px; color: var(--sv-text); font-weight: 600; line-height: 1.3; margin-bottom: 3px; }
+.selProdPrice { font-size: 12px; font-weight: 700; color: var(--sv-text); }
+.selLoading { text-align: center; padding: 32px; color: var(--sv-muted); font-size: 13px; }
+.selEmpty { text-align: center; padding: 32px; color: var(--sv-muted); font-size: 13px; }

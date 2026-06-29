@@ -165,32 +165,35 @@
 /* ── Sapir / customer storefront tokens ─────────────────────────────────────── */
 /* Scoped to customer-facing components only. Admin keeps --admin-* prefix.    */
 :root {
-  --sv-bg:      #0d0d0f;
-  --sv-surface: #141416;
-  --sv-card:    #1a1a1e;
-  --sv-card2:   #1f1f25;
-  --sv-border:  rgba(255,255,255,0.07);
+  --sv-bg:      #0A0A0F;
+  --sv-surface: #15151D;
+  --sv-card:    #181821;
+  --sv-card2:   #181821;
+  --sv-border:  rgba(40,40,47,0.9);
 
   --sv-blue:    #2563EB;
+  --sv-blue-l:  #3B82F6;
+  --sv-blue-dk: #1D4ED8;
   --sv-blue-d:  rgba(37,99,235,0.13);
   --sv-blue-b:  rgba(37,99,235,0.3);
   --sv-violet:  #9E6EF1;
   --sv-mint:    #00FFCC;
 
-  --sv-text:    #E2E8F0;
-  --sv-muted:   #64748B;
-  --sv-dim:     #2a2a35;
+  --sv-text:    #F9FAFB;
+  --sv-muted:   #94A3BB;
+  --sv-dim:     #28282F;
 
-  --sv-success: #22c55e;
+  --sv-success: #10B981;
   --sv-gold:    #F59E0B;
   --sv-red:     #ef4444;
 
+  --sv-font:    'Inter', sans-serif;
   --sv-max:     1440px;
   --sv-pad:     64px;
 
-  --sv-nav-h:   68px;
+  --sv-nav-h:   60px;
   --sv-cat-h:   46px;
-  --sv-promo-h: 36px;
+  --sv-promo-h: 30px;
 }
 
 /* ── Light theme overrides ───────────────────────────────────────────────────── */

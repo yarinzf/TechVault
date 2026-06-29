@@ -102,4 +102,15 @@ const listCategories = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
-module.exports = { list, getOne, create, update, remove, autocomplete, updateStock, stockHistory, listCategories };
+const compare = async (req, res, next) => {
+  try {
+    const { ids } = req.body;
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return sendSuccess(res, { products: [] }, 'No IDs provided');
+    }
+    const products = await productService.getProductsByIds(ids.slice(0, 10));
+    sendSuccess(res, { products }, 'Products retrieved for comparison');
+  } catch (err) { next(err); }
+};
+
+module.exports = { list, getOne, create, update, remove, autocomplete, updateStock, stockHistory, listCategories, compare };

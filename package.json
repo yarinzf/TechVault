@@ -34,7 +34,9 @@
     "debug:headphones": "node server/scripts/debugHeadphones.js",
     "audit:headphone-prices": "node server/scripts/auditHeadphonePrices.js",
     "cleanup:mock-products": "node server/scripts/cleanupMockProducts.js",
-    "lint": "eslint server/ tests/"
+    "lint": "eslint server/ tests/",
+    "load:smoke": "node devops/load-tests/public-smoke.js",
+    "load:test": "node devops/load-tests/public-load.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -65,6 +67,7 @@
     "winston-daily-rotate-file": "^5.0.0"
   },
   "devDependencies": {
+    "autocannon": "^8.0.0",
     "cross-env": "^7.0.3",
     "eslint": "^8.57.0",
     "jest": "^29.7.0",
@@ -76,9 +79,14 @@
     "testEnvironment": "node",
     "testTimeout": 30000,
     "verbose": true,
-    "globalSetup":    "./tests/helpers/globalSetup.js",
+    "globalSetup": "./tests/helpers/globalSetup.js",
     "globalTeardown": "./tests/helpers/globalTeardown.js",
-    "setupFiles":     ["./tests/helpers/testEnv.js"],
-    "testPathIgnorePatterns": ["/node_modules/", "/client/"]
+    "setupFiles": [
+      "./tests/helpers/testEnv.js"
+    ],
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/client/"
+    ]
   }
 }

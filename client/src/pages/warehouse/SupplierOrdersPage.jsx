@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { adminService } from '../../features/admin/api/admin.service';
 import { warehouseService } from '../../features/warehouse/api/warehouse.service';
+import { useToast } from '../../hooks/useToast';
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -567,6 +568,7 @@ function PORow({ po, expanded, onToggle, onUpdated, onReceive }) {
 // ── Main page ─────────────────────────────────────────────────────────────────
 
 export default function SupplierOrdersPage() {
+  const { toast } = useToast();
   const [orders,       setOrders]       = useState([]);
   const [ordersMeta,   setOrdersMeta]   = useState(null);
   const [suppliers,    setSuppliers]    = useState([]);
@@ -616,7 +618,7 @@ export default function SupplierOrdersPage() {
   const handleSupplierDelete = async (s) => {
     if (!window.confirm(`למחוק את ספק "${s.name}"?`)) return;
     try { await adminService.deleteSupplier(s._id); setSuppliers(prev => prev.filter(sup => sup._id !== s._id)); }
-    catch (e) { alert(e.message || 'שגיאה במחיקת ספק'); }
+    catch (e) { toast.error(e.message || 'שגיאה במחיקת ספק'); }
   };
 
   const totalPages = ordersMeta?.totalPages ?? 1;

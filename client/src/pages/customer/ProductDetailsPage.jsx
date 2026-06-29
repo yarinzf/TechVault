@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback, Fragment } from 'react';
 import { useParams, useNavigate, Link }              from 'react-router-dom';
 import {
-  Heart, ShoppingCart, Loader,
-  Truck, ShieldCheck, RotateCcw, CreditCard,
+  Heart, ShoppingCart, Loader, Minus, Plus,
+  Truck, ShieldCheck, RotateCcw, Lock,
+  CheckCircle, CreditCard, GitCompare,
 } from 'lucide-react';
 import { productService } from '../../features/products/api/product.service';
 import { reviewService }  from '../../features/reviews/api/review.service';
@@ -10,6 +11,7 @@ import { useCart }            from '../../hooks/useCart';
 import { useToast }           from '../../hooks/useToast';
 import { useAuth }            from '../../hooks/useAuth';
 import { useWishlist }        from '../../hooks/useWishlist';
+import { useCompare }        from '../../features/compare/context/CompareProvider';
 import { useRecentlyViewed }  from '../../hooks/useRecentlyViewed';
 import { useTranslation }     from '../../context/LanguageContext';
 import StarRating             from '../../components/ui/StarRating/StarRating';
@@ -124,7 +126,7 @@ function FrequentlyBoughtSection({ currentProduct, companions, onAddAll, adding 
               <div className={`${s.fbtCard}${i === 0 ? ' ' + s.fbtCardCurrent : ''}`}>
                 <div className={s.fbtImgWrap}>
                   <img
-                    src={p.images?.[0] || 'https://picsum.photos/120/90'}
+                    src={p.images?.[0] || ''}
                     alt={p.name}
                     className={s.fbtImg}
                     loading="lazy"
@@ -405,6 +407,7 @@ export default function ProductPage() {
   const { slug }                 = useParams();
   const { addItem }              = useCart();
   const { isInWishlist, toggle } = useWishlist();
+  const { items: compareIds, addProduct: addToCompare } = useCompare();
   const { toast }                = useToast();
   const { track }                = useRecentlyViewed();
   const t                        = useTranslation();
@@ -487,7 +490,7 @@ export default function ProductPage() {
   if (loading) return <PageSpinner />;
   if (!product) return null;
 
-  const images              = product.images?.length ? product.images : ['https://picsum.photos/600/450'];
+  const images              = product.images?.length ? product.images : [];
   const hasCampaignDiscount = product.discountedPrice != null && product.discountedPrice < product.price;
   const hasStaticDiscount   = !hasCampaignDiscount && product.compareAtPrice != null && product.compareAtPrice > product.price;
   const hasDiscount         = hasCampaignDiscount || hasStaticDiscount;
@@ -518,7 +521,7 @@ export default function ProductPage() {
   };
 
   return (
-    <div className="page">
+    <div className={s.page}>
       <Breadcrumb items={crumbs} className={s.breadcrumb} />
 
       {/* ── Gallery + Buy Box ── */}
@@ -615,45 +618,73 @@ export default function ProductPage() {
             )}
           </div>
 
-          {/* Qty + Add to Cart + Wishlist */}
-          <div className={s.addRow}>
+          {/* Qty row */}
+          <div className={s.qtyRow}>
+            <span className={s.qtyLabel}>{t('product.qty_label') || 'כמות:'}</span>
             <div className={s.qtyCtrl}>
               <button
                 className={s.qtyBtn}
                 onClick={() => setQty(q => Math.max(1, q - 1))}
                 disabled={qty <= 1}
                 aria-label={t('product.decrease_qty')}
-              >−</button>
+              ><Minus size={14} /></button>
               <span className={s.qtyVal}>{qty}</span>
               <button
                 className={s.qtyBtn}
                 onClick={() => setQty(q => Math.min(product.stock, q + 1))}
                 disabled={qty >= product.stock}
                 aria-label={t('product.increase_qty')}
-              >+</button>
+              ><Plus size={14} /></button>
             </div>
+          </div>
 
-            <Button
-              size="lg"
-              full
+          {/* CTA buttons */}
+          <div className={s.addRow}>
+            <button
+              className={s.addCartBtn}
               onClick={handleAddToCart}
               disabled={adding || product.stock === 0}
             >
               {adding
-                ? <><Loader size={16} className={s.spin} /> {t('product.adding')}</>
+                ? <><Loader size={17} className={s.spin} /> {t('product.adding')}</>
                 : product.stock === 0
                 ? t('product.out_of_stock')
-                : <><ShoppingCart size={16} /> {t('product.add_to_cart_btn')}</>
+                : <><ShoppingCart size={17} /> {t('product.add_to_cart_btn')}</>
               }
-            </Button>
-
+            </button>
             <button
-              className={`${s.wishBtn}${wished ? ' ' + s.wishBtnActive : ''}`}
+              className={s.buyNowBtn}
+              onClick={() => { handleAddToCart(); navigate('/cart'); }}
+              disabled={adding || product.stock === 0}
+            >
+              <CreditCard size={17} /> {t('product.buy_now') || 'קנה עכשיו'}
+            </button>
+          </div>
+
+          {/* Secondary actions: compare + wishlist */}
+          <div className={s.secondaryActions}>
+            <button
+              className={s.secondaryBtn}
+              onClick={() => {
+                if (compareIds.includes(String(product._id))) {
+                  navigate('/compare');
+                } else if (compareIds.length >= 4) {
+                  toast.info('ניתן להשוות עד 4 מוצרים');
+                } else {
+                  addToCompare(String(product._id));
+                  toast.success('המוצר נוסף להשוואה');
+                }
+              }}
+            >
+              <GitCompare size={15} /> {t('product.compare') || 'השוואה'}
+            </button>
+            <button
+              className={`${s.secondaryBtn}${wished ? ' ' + s.secondaryBtnActive : ''}`}
               onClick={() => toggle(product._id)}
               aria-label={wished ? t('product.remove_from_wishlist') : t('product.add_to_wishlist')}
               aria-pressed={wished}
             >
-              <Heart size={20} fill={wished ? '#f43f5e' : 'none'} stroke={wished ? '#f43f5e' : 'currentColor'} />
+              <Heart size={15} fill={wished ? '#f43f5e' : 'none'} stroke={wished ? '#f43f5e' : 'currentColor'} /> {t('product.wishlist_btn') || 'מועדפים'}
             </button>
           </div>
 

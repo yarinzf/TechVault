@@ -16,6 +16,7 @@ import { ImageWithFallback } from '../../components/ui/ImageWithFallback';
 import { adminService } from '../../features/admin/api/admin.service';
 import { warehouseService } from '../../features/warehouse/api/warehouse.service';
 import { productService } from '../../features/products/api/product.service';
+import { useToast } from '../../hooks/useToast';
 
 function deriveStatus(product) {
     if (!product.isPublished) return 'draft';
@@ -52,6 +53,7 @@ const BLANK_FORM = {
 };
 
 export default function AdminProductsPage() {
+    const { toast } = useToast();
     const [products, setProducts]             = useState([]);
     const [loading, setLoading]               = useState(true);
     const [error, setError]                   = useState('');
@@ -200,7 +202,7 @@ export default function AdminProductsPage() {
             await adminService.deleteProduct(product._id);
             setProducts(prev => prev.filter(p => p._id !== product._id));
         } catch (err) {
-            alert(err.message || 'מחיקה נכשלה');
+            toast.error(err.message || 'מחיקה נכשלה');
         }
     };
 

@@ -11,10 +11,12 @@ export default function CustomerLayout() {
 
   // dir is driven globally by LanguageProvider on <html> — no hardcoded dir here
   return (
-    <div>
-      <PromoBar />
-      <CustomerNavbar onOpenCart={() => setCartOpen(true)} />
-      <CategoryNavBar />
+    <div style={{ fontFamily: 'var(--sv-font)' }}>
+      <header style={{ position: 'sticky', top: 0, zIndex: 9999, background: 'var(--sv-bg)' }}>
+        <PromoBar />
+        <CustomerNavbar onOpenCart={() => setCartOpen(true)} />
+        <CategoryNavBar />
+      </header>
       <CartDrawer isOpen={cartOpen} onClose={() => setCartOpen(false)} />
       <main>
         <Outlet />

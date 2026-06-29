@@ -89,4 +89,9 @@ export const productService = {
       return [];
     }
   },
+
+  async compare(ids) {
+    const { data } = await api.post('/products/compare', { ids });
+    return data?.products ?? [];
+  },
 };

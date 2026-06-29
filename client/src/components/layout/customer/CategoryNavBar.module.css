@@ -1,9 +1,8 @@
 /* ── Cat nav bar ─────────────────────────────────────────────────────────────── */
 .bar {
-  background: #15151D;
-  border-bottom: 1px solid rgba(40,40,47,0.9);
-  position: sticky;
-  top: var(--sv-nav-h);
+  background: var(--sv-surface);
+  border-bottom: 1px solid var(--sv-border);
+  position: relative;
   z-index: 1000;
   height: var(--sv-cat-h);
   overflow: hidden;
@@ -34,7 +33,7 @@
   padding: 0 18px;
   font-size: 13px;
   font-weight: 600;
-  color: #3B82F6;
+  color: #F9FAFB;
   cursor: pointer;
   white-space: nowrap;
   border-left: 1px solid rgba(40,40,47,0.9);

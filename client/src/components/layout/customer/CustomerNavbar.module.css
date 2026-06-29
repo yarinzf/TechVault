@@ -1,12 +1,11 @@
 /* ── Nav shell ─────────────────────────────────────────────────────────────── */
 .nav {
-  position: sticky;
-  top: 0;
-  z-index: 999;
+  position: relative;
   background: rgba(10,10,15,0.96);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid rgba(40,40,47,0.9);
+  overflow: visible;
   transition: box-shadow 0.25s ease;
 }
 
@@ -19,10 +18,11 @@
   max-width: var(--sv-max);
   margin: 0 auto;
   padding: 0 var(--sv-pad);
-  height: 68px;
+  height: var(--sv-nav-h);
   display: flex;
   align-items: center;
   gap: 24px;
+  overflow: visible;
 }
 
 /* ── Logo ──────────────────────────────────────────────────────────────────── */

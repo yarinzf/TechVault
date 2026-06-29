@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { adminService } from '../../features/admin/api/admin.service';
 import { useTranslation } from '../../context/LanguageContext';
+import { useToast } from '../../hooks/useToast';
 
 function getStatusColor(status) {
     switch (status) {
@@ -60,6 +61,7 @@ function formatDate(dateStr) {
 
 export default function AdminOrdersPage() {
     const t = useTranslation();
+    const { toast } = useToast();
     const [orders, setOrders]               = useState([]);
     const [loading, setLoading]             = useState(true);
     const [error, setError]                 = useState('');
@@ -170,7 +172,7 @@ export default function AdminOrdersPage() {
             const updated = await adminService.updateOrderStatus(order._id, 'cancelled');
             handleOrderUpdate(updated);
         } catch (err) {
-            alert(err.message || t('admin.orders.cancel_failed'));
+            toast.error(err.message || t('admin.orders.cancel_failed'));
         }
     };
 

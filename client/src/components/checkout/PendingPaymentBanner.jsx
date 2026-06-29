@@ -66,7 +66,7 @@ export default function PendingPaymentBanner({
   return (
     <div className={s.retryBanner} role="alert">
       <ShieldCheck size={16} style={{ flexShrink: 0 }} />
-      <div style={{ flex: 1, fontSize: 'var(--text-sm)' }}>
+      <div style={{ flex: 1, fontSize: 14 }}>
         {t('checkout.timer_title')}{' '}
         <strong>
           {t('checkout.retry_order')} {pendingOrderNum}

@@ -59,7 +59,10 @@ export default function PaymentForm({
 
   return (
     <section className={s.card}>
-      <h2 className={s.sectionTitle}>{t('checkout.payment_title')}</h2>
+      <div className={s.sectionHeader}>
+        <div className={s.sectionNum}>3</div>
+        <h2 className={s.sectionTitle}>{t('checkout.payment_title')}</h2>
+      </div>
       <div className={s.demoBanner}>{t('checkout.demo_banner')}</div>
 
       <div className={s.optionList}>
@@ -77,8 +80,9 @@ export default function PaymentForm({
               checked={payment === m.id}
               onChange={() => { if (!m.disabled) onPaymentChange(m.id); }}
               disabled={placing || m.disabled}
-              className={s.radio}
+              style={{ display: 'none' }}
             />
+            <div className={s.radioDot}><div className={s.radioDotInner} /></div>
             <div style={{ flex: 1 }}>
               <div className={s.optionLabel}>{m.label}</div>
               <div className={s.optionDesc}>{m.desc}</div>

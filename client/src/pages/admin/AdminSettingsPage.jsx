@@ -12,6 +12,7 @@ import {
     Save,
     RotateCcw,
 } from 'lucide-react';
+import { useToast } from '../../hooks/useToast';
 
 const defaultThresholds = {
     criticalStock: 5,
@@ -41,6 +42,7 @@ function ToggleButton({ checked, onClick, label }) {
 }
 
 export default function AdminSettingsPage() {
+    const { toast } = useToast();
     const [darkMode, setDarkMode] = useState(true);
 
     const [notifications, setNotifications] = useState({
@@ -67,7 +69,7 @@ export default function AdminSettingsPage() {
     };
 
     const handleSave = () => {
-        alert('ההגדרות נשמרו בהצלחה!');
+        toast.success('ההגדרות נשמרו בהצלחה');
     };
 
     const handleReset = () => {

@@ -8,6 +8,7 @@ import { AccessibilityProvider } from './context/AccessibilityContext';
 import { AuthProvider }         from './app/providers/AuthProvider';
 import { CartProvider }         from './features/cart/context/CartProvider';
 import { WishlistProvider }     from './features/wishlist/context/WishlistProvider';
+import { CompareProvider }      from './features/compare/context/CompareProvider';
 import { ToastProvider }        from './app/providers/ToastProvider';
 import { UserProvider }         from './context/UserContext';
 import './styles/variables.css';
@@ -24,9 +25,11 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               <CartProvider>
                 <ToastProvider>
                   <WishlistProvider>
-                    <UserProvider>
-                      <App />
-                    </UserProvider>
+                    <CompareProvider>
+                      <UserProvider>
+                        <App />
+                      </UserProvider>
+                    </CompareProvider>
                   </WishlistProvider>
                 </ToastProvider>
               </CartProvider>

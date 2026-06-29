@@ -13,7 +13,10 @@ export default function DeliverySelector({ value, error, disabled, onChange, sub
 
   return (
     <section className={s.card}>
-      <h2 className={s.sectionTitle}>{t('checkout.delivery_title')}</h2>
+      <div className={s.sectionHeader}>
+        <div className={s.sectionNum}>2</div>
+        <h2 className={s.sectionTitle}>{t('checkout.delivery_title')}</h2>
+      </div>
       <div className={s.optionList}>
         {OPTIONS.map(({ id, Icon, labelKey, descKey }) => (
           <label
@@ -31,8 +34,9 @@ export default function DeliverySelector({ value, error, disabled, onChange, sub
               checked={value === id}
               onChange={() => onChange(id)}
               disabled={disabled}
-              className={s.radio}
+              style={{ display: 'none' }}
             />
+            <div className={s.radioDot}><div className={s.radioDotInner} /></div>
             <span className={s.deliveryIcon}><Icon size={18} /></span>
             <div style={{ flex: 1 }}>
               <div className={s.optionLabel}>{t(labelKey)}</div>

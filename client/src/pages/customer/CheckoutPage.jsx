@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { CheckCircle, Loader2 } from 'lucide-react';
-import { useNavigate }          from 'react-router-dom';
+import { Loader2, ArrowRight, ShoppingCart, Monitor, Check } from 'lucide-react';
+import { useNavigate, Link }    from 'react-router-dom';
 import { useCart }              from '../../hooks/useCart';
 import { useToast }             from '../../hooks/useToast';
 import { useTranslation }       from '../../context/LanguageContext';
@@ -9,7 +9,6 @@ import { paymentService }       from '../../features/payments/api/payment.servic
 import { couponService }        from '../../features/coupons/api/coupon.service';
 import { locationService }      from '../../features/locations/api/location.service';
 import { useCurrency }          from '../../features/currency/hooks/useCurrency';
-import Button                   from '../../components/ui/Button/Button';
 import SearchableSelect         from '../../components/ui/SearchableSelect/SearchableSelect';
 import PendingPaymentBanner     from '../../components/checkout/PendingPaymentBanner';
 import DeliverySelector         from '../../components/checkout/DeliverySelector';
@@ -392,59 +391,96 @@ export default function CheckoutPage() {
   // ── Empty cart guard ─────────────────────────────────────────────────────
   if (items.length === 0 && !pendingOrderId) {
     return (
-      <div className="page">
-        <div className="empty-state">
-          <div className="icon">🛒</div>
-          <h3>{t('checkout.cart_empty')}</h3>
-          <p>{t('checkout.cart_empty_sub')}</p>
-          <Button onClick={() => navigate('/products')}>{t('checkout.discover')}</Button>
+      <div className={s.checkoutPage}>
+        <div className={s.breadcrumb}>
+          <div className={s.breadcrumbInner}>
+            <Link to="/" className={s.bcLink}><ArrowRight size={13} /> עמוד ראשי</Link>
+            <span className={s.bcSep}>›</span>
+            <Link to="/cart" className={s.bcLink}>{t('cart.page_title')}</Link>
+            <span className={s.bcSep}>›</span>
+            <span className={s.bcCurrent}>{t('checkout.heading')}</span>
+          </div>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '80px 20px', textAlign: 'center' }}>
+          <div style={{ width: 72, height: 72, background: 'rgba(37,99,235,0.08)', border: '1px solid rgba(37,99,235,0.15)', borderRadius: 18, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20, color: 'var(--sv-blue-l)' }}>
+            <ShoppingCart size={36} />
+          </div>
+          <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--sv-text)', marginBottom: 8 }}>{t('checkout.cart_empty')}</div>
+          <div style={{ fontSize: 14, color: 'var(--sv-muted)', marginBottom: 24 }}>{t('checkout.cart_empty_sub')}</div>
+          <button
+            onClick={() => navigate('/products')}
+            style={{ background: 'linear-gradient(135deg, var(--sv-blue), var(--sv-violet))', color: '#fff', border: 'none', borderRadius: 10, padding: '11px 26px', fontSize: 14, fontWeight: 600, fontFamily: 'var(--sv-font)', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8, transition: 'all .18s' }}
+          >
+            <Monitor size={16} /> {t('checkout.discover')}
+          </button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="page">
-      <button className={s.back} onClick={() => navigate('/cart')} disabled={placing}>
-        {t('checkout.back')}
-      </button>
-      <h1 className={s.heading}>{t('checkout.heading')}</h1>
-
-      {/* Progress indicator */}
-      <div className={s.progressWrap} aria-label={t('checkout.progress_label')}>
-        <div className={`${s.progressStep} ${s.progressDone}`}>
-          <div className={s.progressDot}><CheckCircle size={13} /></div>
-          <span className={s.progressLabel}>{t('checkout.progress_cart')}</span>
-        </div>
-        <div className={s.progressLine} />
-        <div className={`${s.progressStep} ${s.progressCurrent}`}>
-          <div className={s.progressDot}>
-            {placing ? <Loader2 size={13} className={s.spinIcon} /> : <span>2</span>}
-          </div>
-          <span className={s.progressLabel}>{t('checkout.progress_payment')}</span>
-        </div>
-        <div className={s.progressLine} />
-        <div className={s.progressStep}>
-          <div className={s.progressDot}><span>3</span></div>
-          <span className={s.progressLabel}>{t('checkout.progress_confirm')}</span>
+    <div className={s.checkoutPage}>
+      {/* Breadcrumb */}
+      <div className={s.breadcrumb}>
+        <div className={s.breadcrumbInner}>
+          <Link to="/" className={s.bcLink}><ArrowRight size={13} /> עמוד ראשי</Link>
+          <span className={s.bcSep}>›</span>
+          <Link to="/cart" className={s.bcLink}>{t('cart.page_title')}</Link>
+          <span className={s.bcSep}>›</span>
+          <span className={s.bcCurrent}>{t('checkout.heading')}</span>
         </div>
       </div>
 
-      {/* Pending payment banner (retry or expired) */}
-      <PendingPaymentBanner
-        pendingOrderNum={pendingOrderNum}
-        expiresAt={expiresAt}
-        expired={orderExpired}
-        onExpired={() => setOrderExpired(true)}
-      />
+      {/* Page header */}
+      <div className={s.header}>
+        <h1 className={s.heading}>{t('checkout.heading')}</h1>
+        <p className={s.subtitle}>{t('checkout.subtitle') || 'השלימו את הפרטים והשלימו הזמנה'}</p>
+      </div>
+
+      {/* Progress steps — 4-step card bar */}
+      <div className={s.stepsWrap} aria-label={t('checkout.progress_label')}>
+        <div className={s.stepsInner}>
+          <div className={`${s.step} ${s.stepDone}`}>
+            <div className={s.stepNum}><Check size={11} /></div>
+            <span className={s.stepLabel}>{t('checkout.step_details') || 'פרטי לקוח'}</span>
+          </div>
+          <div className={s.stepSep} />
+          <div className={`${s.step} ${s.stepActive}`}>
+            <div className={s.stepNum}>{placing ? <Loader2 size={11} className={s.spinIcon} /> : '2'}</div>
+            <span className={s.stepLabel}>{t('checkout.step_shipping') || 'משלוח'}</span>
+          </div>
+          <div className={s.stepSep} />
+          <div className={s.step}>
+            <div className={s.stepNum}>3</div>
+            <span className={s.stepLabel}>{t('checkout.step_payment') || 'תשלום'}</span>
+          </div>
+          <div className={s.stepSep} />
+          <div className={s.step}>
+            <div className={s.stepNum}>4</div>
+            <span className={s.stepLabel}>{t('checkout.step_confirm') || 'אישור'}</span>
+          </div>
+        </div>
+      </div>
 
       <div className={s.layout}>
+        {/* Pending payment banner (retry or expired) — spans full width */}
+        <div style={{ gridColumn: '1 / -1' }}>
+          <PendingPaymentBanner
+            pendingOrderNum={pendingOrderNum}
+            expiresAt={expiresAt}
+            expired={orderExpired}
+            onExpired={() => setOrderExpired(true)}
+          />
+        </div>
         {/* ── Left column ── */}
         <div className={s.left}>
 
           {/* Shipping details */}
           <section className={s.card}>
-            <h2 className={s.sectionTitle}>{t('checkout.shipping_title')}</h2>
+            <div className={s.sectionHeader}>
+              <div className={s.sectionNum}>1</div>
+              <h2 className={s.sectionTitle}>{t('checkout.shipping_title')}</h2>
+            </div>
             <div className={s.grid}>
               <Field id="firstName" label={t('checkout.first_name')} required error={errors.firstName}>
                 <input {...inp('firstName')} placeholder={t('checkout.ph.first_name')} />

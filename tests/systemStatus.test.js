@@ -1,8 +1,14 @@
 'use strict';
 
+const os       = require('os');
 const request  = require('supertest');
 const mongoose = require('mongoose');
 const { connect, clearAll } = require('./helpers/db');
+
+// Mock os.totalmem/freemem to stable values representing a healthy 4 GB machine
+// with 2 GB free — well within healthy thresholds regardless of actual test host.
+jest.spyOn(os, 'totalmem').mockReturnValue(4 * 1024 * 1024 * 1024);
+jest.spyOn(os, 'freemem').mockReturnValue(2 * 1024 * 1024 * 1024);
 
 let app;
 const AUTH     = '/api/v1/auth';
@@ -74,9 +80,9 @@ describe('GET /admin/system/status — response shape', () => {
     expect(d.memory.heapTotal).toMatch(/MB$/);
     expect(d.memory.heapUsedPct).toMatch(/%$/);
 
-    expect(d.system.ramTotal).toMatch(/MB$/);
-    expect(d.system.ramFree).toMatch(/MB$/);
-    expect(d.system.ramUsedPct).toMatch(/%$/);
+    expect(d.system.ramTotal).toBe('4096.0 MB');
+    expect(d.system.ramFree).toBe('2048.0 MB');
+    expect(d.system.ramUsedPct).toBe('50.0%');
     expect(d.system.cpus).toBeGreaterThan(0);
 
     expect(d.backups.local).toBeDefined();
@@ -147,7 +153,7 @@ describe('GET /admin/system/status — status derivation', () => {
     expect(d.status).toBe('healthy');
   });
 
-  it('memory status is healthy under normal test conditions', async () => {
+  it('memory status is healthy under normal conditions', async () => {
     const { body: { data: d } } = await adminGet();
     expect(d.memory.status).toBe('healthy');
   });
