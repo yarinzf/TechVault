@@ -40,14 +40,27 @@
   min-height: 560px;
 }
 
-.heroLeft {
+/* .hero-slides — wraps the fading slide content + static stats + static dots */
+.heroSlides {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
   padding: 64px 0;
+  min-height: 380px;
+}
+
+.heroSlide {
+  opacity: 0;
   transition: opacity 0.65s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.heroRight {
+.heroSlideActive { opacity: 1; }
+
+.heroClubPanel,
+.heroProductPanel {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -64,11 +77,13 @@
   background: rgba(0,255,204,0.06);
   border: 1px solid rgba(0,255,204,0.18);
   border-radius: 100px;
-  padding: 5px 14px;
+  padding: 5px 16px;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--sv-mint);
   margin-bottom: 24px;
+  width: fit-content;
+  letter-spacing: 0.02em;
 }
 
 .eyebrowDot {
@@ -80,24 +95,31 @@
 }
 
 .heroTitle {
-  font-family: 'Inter', var(--font-heading);
-  font-size: clamp(32px, 4vw, 58px);
+  font-family: 'Inter', sans-serif;
+  font-size: 58px;
   font-weight: 800;
   line-height: 1.1;
   letter-spacing: -0.025em;
   color: #fff;
   margin-bottom: 20px;
 }
+.heroTitleAccent {
+  background: linear-gradient(135deg, var(--sv-blue), var(--sv-violet));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
 
 .heroDesc {
   font-size: 16px;
+  font-weight: 400;
   color: var(--sv-muted);
   max-width: 480px;
   line-height: 1.75;
   margin-bottom: 32px;
 }
 
-.heroActions {
+.heroCta {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -105,6 +127,9 @@
 }
 
 .heroBtnPrimary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   padding: 13px 26px;
   background: var(--sv-blue);
   color: #fff;
@@ -113,11 +138,16 @@
   font-weight: 600;
   border: none;
   cursor: pointer;
-  transition: background 0.15s ease, transform 0.1s ease;
+  white-space: nowrap;
+  transition: all .18s;
 }
 .heroBtnPrimary:hover  { background: #1d4ed8; transform: translateY(-1px); }
+.heroBtnPrimary:active { transform: scale(.98); }
 
 .heroBtnSecondary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   padding: 13px 26px;
   background: transparent;
   color: var(--sv-text);
@@ -126,7 +156,8 @@
   font-size: 15px;
   font-weight: 500;
   cursor: pointer;
-  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+  white-space: nowrap;
+  transition: all .18s;
 }
 .heroBtnSecondary:hover {
   border-color: var(--sv-blue);
@@ -134,19 +165,19 @@
   background: rgba(37,99,235,0.06);
 }
 
-.heroDots { display: flex; gap: 7px; margin-top: 24px; align-items: center; }
+.slideDots { display: flex; gap: 7px; align-items: center; margin-top: 32px; }
 
-.heroDot {
+.slideDot {
   width: 7px; height: 7px;
   border-radius: 50%;
   background: rgba(255,255,255,0.15);
   border: none;
   cursor: pointer;
-  transition: background 0.25s ease, width 0.25s ease;
+  transition: all .25s;
   padding: 0;
 }
-.heroDotActive { background: var(--sv-blue); width: 22px; border-radius: 4px; }
-.heroDot:hover:not(.heroDotActive) { background: rgba(255,255,255,0.3); }
+.slideDotActive { background: var(--sv-blue); width: 22px; border-radius: 4px; }
+.slideDot:hover:not(.slideDotActive) { background: rgba(255,255,255,0.3); }
 
 .heroStats {
   display: flex;
@@ -157,9 +188,56 @@
   flex-wrap: wrap;
 }
 
-.statNum    { font-size: 26px; font-weight: 700; color: #fff; line-height: 1; }
-.statAccent { color: var(--sv-mint); }
-.statLabel  { font-size: 12px; color: var(--sv-muted); margin-top: 3px; }
+.statNum   { font-size: 26px; font-weight: 700; color: #fff; line-height: 1; }
+.statNum span { color: var(--sv-mint); }
+.statLbl   { font-size: 12px; color: var(--sv-muted); margin-top: 3px; }
+
+/* ── Hero club panel (slide 1) ───────────────────────────────────────────── */
+.heroClubCard {
+  background: var(--sv-card);
+  border: 1px solid rgba(37,99,235,0.3);
+  border-radius: 18px;
+  padding: 28px;
+  width: 100%;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.4);
+}
+.heroClubCard::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--sv-blue), var(--sv-violet), transparent);
+  border-radius: 18px 18px 0 0;
+}
+.heroClubIcon {
+  width: 64px; height: 64px; border-radius: 18px;
+  background: rgba(37,99,235,0.12);
+  border: 1px solid rgba(37,99,235,0.25);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 16px;
+  color: var(--sv-blue-l);
+}
+.heroClubTitle { font-size: 18px; font-weight: 700; color: #F9FAFB; margin-bottom: 16px; }
+.heroClubPerks { display: flex; flex-direction: column; gap: 9px; margin-bottom: 18px; text-align: right; }
+.heroClubPerk {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px; color: var(--sv-muted);
+  background: rgba(37,99,235,0.05);
+  border: 1px solid rgba(37,99,235,0.1);
+  border-radius: 8px; padding: 7px 10px;
+}
+.heroClubPerk svg { stroke: var(--sv-success); flex-shrink: 0; }
+.heroClubPrice { font-size: 14px; color: var(--sv-muted); margin-bottom: 16px; }
+.heroClubPrice span { font-size: 26px; font-weight: 700; color: var(--sv-mint); }
+.heroClubBtn {
+  background: linear-gradient(135deg, var(--sv-blue), var(--sv-violet));
+  color: #fff; border: none; border-radius: 9px;
+  padding: 11px; width: 100%; font-size: 14px; font-weight: 600;
+  cursor: pointer; display: flex;
+  align-items: center; justify-content: center; gap: 8px;
+  transition: all .18s;
+}
+.heroClubBtn:hover { opacity: 0.9; transform: translateY(-1px); }
 
 /* Right product card */
 .heroPCard {
@@ -167,6 +245,8 @@
   border: 1px solid rgba(255,255,255,0.08);
   border-radius: 18px;
   padding: 24px;
+  width: 100%;
+  text-align: center;
   position: relative;
   box-shadow: 0 24px 64px rgba(0,0,0,0.4);
   overflow: visible;
@@ -177,7 +257,7 @@
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--sv-blue) 30%, var(--sv-violet) 60%, var(--sv-mint) 85%, transparent);
+  background: linear-gradient(90deg, transparent, var(--sv-blue), var(--sv-violet), var(--sv-mint), transparent);
   border-radius: 18px 18px 0 0;
 }
 
@@ -191,8 +271,9 @@
 }
 
 .heroPImg {
+  width: 100%;
   height: 180px;
-  background: #0e0e12;
+  background: #0a0a0f;
   border-radius: 10px;
   display: flex;
   align-items: center;
@@ -238,13 +319,13 @@
   background: var(--sv-blue);
   color: #fff;
   border: none;
-  border-radius: 10px;
+  border-radius: 9px;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.15s ease;
+  transition: all .18s;
 }
-.heroPAddBtn:hover { background: #1d4ed8; }
+.heroPAddBtn:hover { background: #1d4ed8; transform: translateY(-1px); }
 
 .floatBadge1, .floatBadge2 {
   position: absolute;
@@ -263,7 +344,7 @@
 .floatBadge2 { bottom: 22%; left: -80px; animation-delay: 1.8s; }
 
 .floatLbl { font-size: 10px; color: var(--sv-muted); margin-bottom: 2px; }
-.floatVal { font-size: 13px; font-weight: 700; color: var(--sv-mint); display: flex; align-items: center; gap: 4px; }
+.floatVal { font-size: 13px; font-weight: 700; color: var(--sv-mint); display: flex; align-items: center; gap: 4px; white-space: nowrap; }
 
 /* ── Deal banner (strip only) ─────────────────────────────────────────────── */
 .dealStrip {
@@ -295,7 +376,7 @@
 .dealStripInner {
   max-width: var(--sv-max);
   margin: 0 auto;
-  padding: 24px var(--sv-pad);
+  padding: 28px var(--sv-pad);
   display: flex;
   align-items: center;
   gap: 28px;
@@ -322,7 +403,7 @@
 }
 
 .dealText  { flex: 1; min-width: 160px; }
-.dealTitle { font-size: 20px; font-weight: 700; color: #fff; line-height: 1.3; }
+.dealTitle { font-family: 'Inter', sans-serif; font-size: 22px; font-weight: 700; color: #F9FAFB; }
 .dealSub   { font-size: 13px; color: var(--sv-muted); margin-top: 3px; }
 
 .countdown {
@@ -364,31 +445,35 @@
 }
 .dealCta:hover { background: #1d4ed8; transform: translateY(-1px); }
 
-/* ── Main content wrapper ─────────────────────────────────────────────────── */
-.main {
+/* ── Section wrappers (Sapir gives each section its own full-width bg) ────── */
+.brandsWrap    { padding: 48px 0; background: var(--sv-bg); }
+.sellersWrap   { padding: 48px 0; background: var(--sv-surface); border-bottom: 1px solid var(--sv-border); }
+.recentWrap    { padding: 48px 0; background: var(--sv-surface); border-bottom: 1px solid var(--sv-border); }
+.clubWrap      { background: var(--sv-bg); border-bottom: 1px solid var(--sv-border); }
+.clubWrapInner { max-width: var(--sv-max); margin: 0 auto; padding: 48px var(--sv-pad); }
+.reviewsWrap   { padding: 56px 0; background: var(--sv-bg); border-bottom: 1px solid var(--sv-border); }
+
+.sectionInner {
   max-width: var(--sv-max);
   margin: 0 auto;
-  padding: 64px var(--sv-pad);
-  display: flex;
-  flex-direction: column;
-  gap: 72px;
+  padding: 0 var(--sv-pad);
 }
 
 /* ── Section shared ───────────────────────────────────────────────────────── */
 .sectionHead {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 28px;
-  gap: 12px;
+  align-items: baseline;
+  gap: 16px;
+  margin-bottom: 24px;
 }
 
 .sectionLeft { display: flex; align-items: center; gap: 10px; }
 
 .sectionTitle {
-  font-size: 26px;
+  font-family: 'Inter', sans-serif;
+  font-size: 22px;
   font-weight: 700;
-  color: var(--sv-text);
+  color: #F9FAFB;
   letter-spacing: -0.01em;
 }
 
@@ -408,18 +493,17 @@
 }
 
 .viewAll {
+  color: var(--sv-muted);
   font-size: 13px;
-  font-weight: 600;
-  color: var(--sv-blue);
-  white-space: nowrap;
-  text-decoration: none;
+  cursor: pointer;
+  margin-right: auto;
   display: flex;
   align-items: center;
   gap: 4px;
-  transition: opacity 0.15s ease;
-  flex-shrink: 0;
+  transition: color .18s;
+  text-decoration: none;
 }
-.viewAll:hover { opacity: 0.75; }
+.viewAll:hover { color: var(--sv-blue); }
 
 /* ── Product row ──────────────────────────────────────────────────────────── */
 .productRow {
@@ -434,38 +518,34 @@
   background: var(--sv-card);
 }
 
-/* ── Brands (horizontal strip with logo images) ───────────────────────────── */
+/* ── Brands (6-column grid — Sapir .brands-grid) ────────────────────────────── */
 .brandsStrip {
-  display: flex;
-  gap: 12px;
-  overflow-x: auto;
-  padding-bottom: 8px;
-  scrollbar-width: thin;
-  scrollbar-color: var(--sv-border) transparent;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 14px;
 }
 
 .brandCard {
-  flex: 0 0 130px;
+  background: var(--sv-card);
+  border: 1px solid var(--sv-border);
+  border-radius: 12px;
+  padding: 14px 12px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
-  padding: 20px 16px;
-  background: var(--sv-card);
-  border: 1px solid var(--sv-border);
-  border-radius: 14px;
+  gap: 8px;
   cursor: pointer;
-  transition: border-color 0.2s ease, background 0.2s ease, transform 0.15s ease;
-  font-family: var(--font-sans);
+  transition: all .2s;
+  text-align: center;
 }
 .brandCard:hover {
-  border-color: var(--sv-blue);
-  background: rgba(37,99,235,0.04);
-  transform: translateY(-3px);
+  border-color: rgba(37,99,235,0.4);
+  background: rgba(37,99,235,0.05);
+  transform: translateY(-2px);
 }
 
 .brandLogoWrap {
-  width: 72px;
+  width: 100%;
   height: 40px;
   display: flex;
   align-items: center;
@@ -473,72 +553,45 @@
 }
 
 .brandImg {
-  max-width: 64px;
-  max-height: 36px;
+  height: 32px;
+  width: auto;
+  max-width: 80px;
   object-fit: contain;
-  opacity: 0.7;
-  transition: opacity 0.2s ease;
+  opacity: 0.65;
+  transition: opacity .2s;
+  filter: grayscale(20%);
 }
-.brandCard:hover .brandImg { opacity: 1; }
+.brandCard:hover .brandImg { opacity: 1; filter: grayscale(0%); }
 
 .brandText {
-  font-family: var(--font-heading);
-  font-size: 14px;
-  font-weight: 800;
-  color: var(--sv-text);
-  letter-spacing: 0.04em;
-  opacity: 0.75;
-  transition: opacity 0.2s ease;
-}
-.brandCard:hover .brandText { opacity: 1; }
-
-.brandName { font-size: 11px; font-weight: 600; color: var(--sv-muted); letter-spacing: 0.04em; }
-
-/* ── Recently viewed ──────────────────────────────────────────────────────── */
-.recentRow {
-  display: flex;
-  gap: 12px;
-  overflow-x: auto;
-  padding-bottom: 8px;
-  scrollbar-width: thin;
-  scrollbar-color: var(--sv-border) transparent;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--sv-muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
-.recentCard {
-  flex: 0 0 140px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  padding: 12px;
-  background: var(--sv-card);
-  border: 1px solid var(--sv-border);
-  border-radius: 12px;
-  cursor: pointer;
-  text-align: center;
-  transition: border-color 0.15s ease, transform 0.15s ease;
-}
-.recentCard:hover { border-color: rgba(37,99,235,0.4); transform: translateY(-2px); }
+.brandName { font-size: 10px; font-weight: 600; color: var(--sv-muted); letter-spacing: 0.06em; text-transform: uppercase; }
 
-.recentImg {
-  width: 80px; height: 80px;
-  border-radius: 8px;
-  overflow: hidden;
-  background: var(--sv-dim);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+/* ── Recently viewed (Sapir: 5-col grid with full .pc cards) ─────────────── */
+.recentGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 18px;
+  direction: rtl;
 }
-.recentImg img { width: 100%; height: 100%; object-fit: cover; }
-.recentPlaceholder { font-size: 28px; }
-.recentName  { font-size: 11px; font-weight: 500; color: var(--sv-muted); line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; width: 100%; }
-.recentPrice { font-size: 13px; font-weight: 700; color: var(--sv-mint); }
+.recentClear {
+  font-size: 12px; color: var(--sv-muted); cursor: pointer;
+  margin-right: auto; transition: color .18s;
+  display: flex; align-items: center; gap: 5px;
+  background: none; border: none; font-family: inherit;
+}
+.recentClear:hover { color: var(--sv-red); }
 
 /* ── Gamer Club ───────────────────────────────────────────────────────────── */
 .clubBanner {
-  border: 1px solid rgba(158,110,241,0.25);
-  border-radius: 20px;
+  border: 1px solid var(--sv-border);
+  border-radius: 16px;
   display: grid;
   grid-template-columns: 1fr 1fr;
   overflow: hidden;
@@ -557,11 +610,11 @@
 /* Visual panel */
 .clubVisual {
   position: relative;
-  background: linear-gradient(135deg, #0a0f24 0%, #110920 100%);
+  background: linear-gradient(135deg, #0e0b1a 0%, #12101f 50%, #0a1020 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 48px 32px;
+  padding: 28px 40px;
   overflow: hidden;
 }
 
@@ -569,9 +622,9 @@
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(37,99,235,0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(37,99,235,0.04) 1px, transparent 1px);
-  background-size: 32px 32px;
+    linear-gradient(rgba(158,110,241,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(158,110,241,0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
   pointer-events: none;
 }
 
@@ -579,7 +632,9 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse at center, rgba(158,110,241,0.14) 0%, transparent 65%);
+  background:
+    radial-gradient(ellipse at 30% 40%, rgba(158,110,241,0.18) 0%, transparent 60%),
+    radial-gradient(ellipse at 70% 70%, rgba(37,99,235,0.12) 0%, transparent 55%);
 }
 
 .clubVisualContent {
@@ -592,35 +647,250 @@
   width: 100%;
 }
 
-.clubIcon { color: var(--sv-violet); opacity: 0.85; }
+.clubVisualIcon {
+  width: 72px; height: 72px;
+  background: rgba(158,110,241,0.12);
+  border: 1px solid rgba(158,110,241,0.25);
+  border-radius: 20px;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 40px rgba(158,110,241,0.12);
+  color: var(--sv-violet);
+}
+
+/* ── Club savings dashboard (Sapir) ── */
+.clubDashboard {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 300px;
+}
+
+.clubDashRingCard {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(37,99,235,0.2);
+  border-radius: 16px;
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.clubRingWrap {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  flex-shrink: 0;
+}
+
+.clubRingSvg {
+  width: 72px;
+  height: 72px;
+  transform: rotate(-90deg);
+}
+
+.clubRingTrack {
+  fill: none;
+  stroke: rgba(255,255,255,0.07);
+  stroke-width: 6;
+}
+
+.clubRingFill {
+  fill: none;
+  stroke: url(#ringGrad);
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-dasharray: 188;
+  stroke-dashoffset: 47;
+  animation: ringFill 1.6s ease-out forwards;
+}
+
+@keyframes ringFill {
+  from { stroke-dashoffset: 188; }
+  to { stroke-dashoffset: 47; }
+}
+
+.clubRingCenter {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.clubRingPct {
+  font-size: 16px;
+  font-weight: 800;
+  color: #F9FAFB;
+  line-height: 1;
+}
+
+.clubRingLbl {
+  font-size: 8px;
+  color: var(--sv-muted);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.clubDashRingTitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: #F9FAFB;
+  margin-bottom: 3px;
+}
+
+.clubDashRingVal {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--sv-mint);
+  line-height: 1;
+}
+
+.clubDashRingSub {
+  font-size: 11px;
+  color: var(--sv-muted);
+  margin-top: 3px;
+}
+
+/* Mini stat widgets */
+.clubDashRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.clubDashMini {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 12px;
+  padding: 14px 14px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: border-color .18s;
+}
+
+.clubDashMini:hover {
+  border-color: rgba(37,99,235,0.3);
+}
+
+.clubDashMiniIcon {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+
+.cdmBlue .clubDashMiniIcon { background: rgba(37,99,235,0.12); color: var(--sv-blue-l); }
+.cdmGreen .clubDashMiniIcon { background: rgba(16,185,129,0.12); color: var(--sv-success); }
+.cdmViolet .clubDashMiniIcon { background: rgba(158,110,241,0.12); color: var(--sv-violet); }
+.cdmGold .clubDashMiniIcon { background: rgba(245,158,11,0.1); color: var(--sv-gold); }
+
+.clubDashMiniVal {
+  font-size: 18px;
+  font-weight: 800;
+  color: #F9FAFB;
+  line-height: 1;
+}
+
+.clubDashMiniLbl {
+  font-size: 11px;
+  color: var(--sv-muted);
+}
+
+/* Progress bar */
+.clubDashProgress {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+
+.clubDashProgHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.clubDashProgTitle {
+  font-size: 12px;
+  font-weight: 600;
+  color: #F9FAFB;
+}
+
+.clubDashProgBadge {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--sv-gold);
+  background: rgba(245,158,11,0.1);
+  border: 1px solid rgba(245,158,11,0.2);
+  border-radius: 20px;
+  padding: 2px 8px;
+}
+
+.clubDashProgTrack {
+  height: 6px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+
+.clubDashProgFill {
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--sv-blue), var(--sv-violet));
+  width: 74%;
+  animation: progFill74 1.4s ease-out forwards;
+}
+
+@keyframes progFill74 {
+  from { width: 0%; }
+  to { width: 74%; }
+}
+
+.clubDashProgFoot {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--sv-muted);
+}
 
 .clubStatsGrid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
+  gap: 8px;
   width: 100%;
-  max-width: 280px;
+  max-width: 240px;
 }
 
 .clubStat {
-  background: rgba(0,0,0,0.35);
-  border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 12px;
-  padding: 16px 12px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 10px;
+  padding: 10px;
   text-align: center;
 }
 
-.clubStatNum    { font-size: 26px; font-weight: 700; color: #fff; margin-bottom: 3px; line-height: 1; }
+.clubStatNum    { font-size: 18px; font-weight: 700; color: #F9FAFB; }
 .clubStatAccent { color: var(--sv-violet); }
-.clubStatLbl    { font-size: 11px; color: var(--sv-muted); }
+.clubStatLbl    { font-size: 11px; color: var(--sv-muted); margin-top: 2px; }
 
 /* Content panel */
 .clubContent {
-  background: linear-gradient(135deg, #0d1228 0%, #130d20 100%);
+  background: var(--sv-surface);
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 48px 48px 48px 40px;
+  padding: 28px 40px;
+  border-right: 1px solid var(--sv-border);
 }
 
 .clubBadge {
@@ -628,32 +898,51 @@
   align-items: center;
   gap: 8px;
   background: rgba(158,110,241,0.1);
-  border: 1px solid rgba(158,110,241,0.3);
+  border: 1px solid rgba(158,110,241,0.25);
   border-radius: 100px;
-  padding: 5px 16px;
-  font-size: 12px;
+  padding: 4px 14px;
+  font-size: 11px;
   color: var(--sv-violet);
-  margin-bottom: 16px;
+  margin-bottom: 12px;
   width: fit-content;
+  font-weight: 500;
 }
 
 .clubTitle {
   font-family: 'Inter', var(--font-heading);
-  font-size: 34px;
+  font-size: 26px;
   font-weight: 800;
-  color: #fff;
+  color: #F9FAFB;
   line-height: 1.1;
-  margin-bottom: 14px;
+  margin-bottom: 8px;
 }
 .clubTitleAccent { color: var(--sv-violet); }
 
 .clubDesc {
-  font-size: 15px;
+  font-size: 14px;
   color: var(--sv-muted);
-  line-height: 1.7;
-  margin-bottom: 28px;
-  max-width: 400px;
+  line-height: 1.6;
+  margin-bottom: 16px;
+  max-width: 420px;
 }
+
+/* Club perks list (Sapir .club-perks) */
+.clubPerks { display: flex; flex-direction: column; gap: 0; margin-bottom: 20px; }
+.clubPerk {
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.clubPerk:first-child { border-top: 1px solid rgba(255,255,255,0.05); }
+.clubPerkIcon {
+  width: 30px; height: 30px; flex-shrink: 0;
+  background: rgba(158,110,241,0.1);
+  border-radius: 8px; display: flex; align-items: center; justify-content: center;
+  color: var(--sv-violet);
+}
+.clubPerkText { flex: 1; }
+.clubPerkTitle { font-size: 14px; font-weight: 600; color: var(--sv-text); }
+.clubPerkDesc { font-size: 12px; color: var(--sv-muted); margin-top: 2px; }
 
 .clubCta { display: flex; gap: 12px; align-items: center; }
 
@@ -688,12 +977,11 @@
 }
 .clubBtnSec:hover { border-color: var(--sv-violet); color: var(--sv-violet); }
 
-/* ── Policy bar ───────────────────────────────────────────────────────────── */
+/* ── Policy bar (Sapir: centered vertical columns with large icons) ───────── */
 .policyBar {
-  background: var(--sv-surface);
-  border-top: 1px solid var(--sv-border);
+  background: var(--sv-bg);
+  padding: 56px 0 48px;
   border-bottom: 1px solid var(--sv-border);
-  padding: 40px 0;
 }
 
 .policyInner {
@@ -704,14 +992,19 @@
 
 .policyHeadline {
   text-align: center;
-  margin-bottom: 32px;
+  font-size: 28px;
+  font-weight: 700;
+  color: #F9FAFB;
+  margin-bottom: 48px;
+  letter-spacing: -0.01em;
 }
+.policyHeadlineAccent { color: var(--sv-blue-l); }
 
 .policyTitle {
-  font-size: 22px;
+  font-size: 15px;
   font-weight: 700;
-  color: var(--sv-text);
-  margin: 0 0 6px;
+  color: #F9FAFB;
+  margin-bottom: 8px;
 }
 
 .policySub {
@@ -723,51 +1016,59 @@
 .policyGrid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
+  gap: 0;
 }
 
 .policyItem {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 16px;
-  padding: 0 28px;
-  border-inline-end: 1px solid var(--sv-border);
+  text-align: center;
+  padding: 0 32px;
+  border-left: 1px solid rgba(255,255,255,0.1);
+  cursor: pointer;
+  transition: all .2s;
 }
-.policyItem:last-child { border-inline-end: none; }
+.policyItem:last-child { border-left: none; }
+.policyItem:hover .policyIconWrap { border-color: rgba(37,99,235,0.4); background: rgba(37,99,235,0.08); }
 
 .policyIconWrap {
-  width: 48px;
-  height: 48px;
-  background: var(--sv-blue-d);
-  border: 1px solid var(--sv-blue-b);
+  width: 72px;
+  height: 72px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--sv-border);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-bottom: 20px;
   flex-shrink: 0;
-  color: var(--sv-blue);
+  transition: all .2s;
+  color: var(--sv-blue-l);
 }
 
-.policyItemTitle { font-size: 13px; font-weight: 600; color: var(--sv-text); margin-bottom: 3px; }
-.policyItemDesc  { font-size: 12px; color: var(--sv-muted); }
+.policyItemTitle { font-size: 15px; font-weight: 700; color: #F9FAFB; margin-bottom: 8px; }
+.policyItemDesc  { font-size: 13px; color: var(--sv-muted); line-height: 1.65; }
 
 /* ── Reviews ──────────────────────────────────────────────────────────────── */
 .reviewsGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
+  gap: 20px;
 }
 
 .reviewCard {
-  background: var(--sv-card);
-  border: 1px solid var(--sv-border);
+  background: var(--sv-surface);
+  border: 1px solid rgba(255,255,255,0.05);
   border-radius: 14px;
-  padding: 24px;
+  padding: 18px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  transition: border-color 0.2s ease, transform 0.15s ease;
+  gap: 8px;
+  transition: border-color .2s;
+  cursor: default;
 }
-.reviewCard:hover { border-color: rgba(37,99,235,0.3); transform: translateY(-2px); }
+.reviewCard:hover { border-color: rgba(255,255,255,0.1); }
 
 .reviewHeader {
   display: flex;
@@ -776,14 +1077,13 @@
 }
 
 .reviewAvatar {
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  background: var(--sv-blue-d);
-  border: 1.5px solid var(--sv-blue-b);
-  color: var(--sv-blue);
-  font-size: 13px;
-  font-weight: 700;
+  background: rgba(37,99,235,0.15);
+  color: rgba(255,255,255,0.8);
+  font-size: 12px;
+  font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -791,22 +1091,28 @@
 }
 
 .reviewMeta   { flex: 1; }
-.reviewAuthor { font-size: 14px; font-weight: 600; color: var(--sv-text); }
+.reviewAuthor { font-size: 13px; font-weight: 600; color: var(--sv-text); }
 .reviewDate   { font-size: 11px; color: var(--sv-muted); margin-top: 2px; }
 
-.reviewStars { display: flex; gap: 2px; }
-.starFilled  { fill: var(--sv-mint); color: var(--sv-mint); }
+.reviewStarsText { color: var(--sv-gold); font-size: 11px; letter-spacing: 1px; margin-top: 2px; }
 
 .reviewProduct {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   font-size: 11px;
-  color: var(--sv-blue);
-  font-weight: 500;
+  color: var(--sv-muted);
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
 }
+.reviewProduct svg { width: 12px; height: 12px; stroke: var(--sv-blue-l); flex-shrink: 0; }
+.reviewProduct strong { color: rgba(255,255,255,0.5); font-weight: 500; }
 
 .reviewText {
-  font-size: 14px;
-  color: var(--sv-muted);
+  font-size: 15px;
+  color: rgba(255,255,255,0.6);
   line-height: 1.65;
+  font-weight: 400;
 }
 
 /* ── Footer ───────────────────────────────────────────────────────────────── */
@@ -818,16 +1124,14 @@
 .footerInner {
   max-width: var(--sv-max);
   margin: 0 auto;
-  padding: 48px var(--sv-pad);
+  padding: 48px var(--sv-pad) 28px;
 }
 
 .footerGrid {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr 1fr;
-  gap: 48px;
+  gap: 56px;
   margin-bottom: 40px;
-  padding-bottom: 40px;
-  border-bottom: 1px solid var(--sv-border);
 }
 
 .footerBrandWrap {
@@ -840,53 +1144,56 @@
 .footerBrandName   { font-family: 'Neuropol', 'Rajdhani', sans-serif; font-size: 20px; font-weight: 400; color: #fff; letter-spacing: 0.05em; }
 .footerBrandAccent { color: var(--sv-blue); }
 
-.footerDesc { font-size: 13px; color: var(--sv-muted); line-height: 1.65; }
+.footerDesc { font-size: 13px; color: var(--sv-muted); line-height: 1.75; max-width: 280px; }
 
 .footerColTitle {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   color: var(--sv-text);
   margin-bottom: 16px;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.09em;
 }
 
 .footerLink {
   display: block;
   font-size: 13px;
   color: var(--sv-muted);
-  margin-bottom: 10px;
+  padding: 4px 0;
   text-decoration: none;
-  transition: color 0.15s ease;
+  cursor: pointer;
+  transition: color .18s;
 }
-.footerLink:hover { color: var(--sv-blue); }
+.footerLink:hover { color: var(--sv-blue-l); }
 
 .footerBottom {
+  border-top: 1px solid var(--sv-border);
+  padding-top: 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
 }
 
 .footerCopy { font-size: 12px; color: var(--sv-muted); }
 
-.footerSocials { display: flex; gap: 10px; }
+.footerSocials { display: flex; gap: 8px; }
 
 .socialBtn {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
+  width: 34px;
+  height: 34px;
+  background: var(--sv-card);
   border: 1px solid var(--sv-border);
-  background: transparent;
-  color: var(--sv-muted);
-  cursor: pointer;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
+  transition: all .18s;
+  color: var(--sv-muted);
   text-decoration: none;
-  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
 }
-.socialBtn:hover { border-color: var(--sv-blue); color: var(--sv-blue); background: rgba(37,99,235,0.06); }
+.socialBtn svg { width: 14px; height: 14px; }
+.socialBtn:hover { border-color: var(--sv-blue); color: var(--sv-blue); }
 
 /* ── Responsive ───────────────────────────────────────────────────────────── */
 @media (max-width: 1200px) {
@@ -895,7 +1202,7 @@
 
 @media (max-width: 1024px) {
   .heroInner { grid-template-columns: 1fr; gap: 40px; }
-  .heroRight { display: none; }
+  .heroClubPanel, .heroProductPanel { display: none; }
   .hero      { min-height: auto; }
   .floatBadge1, .floatBadge2 { display: none; }
   .productRow  { grid-template-columns: repeat(3, 1fr); }
@@ -911,8 +1218,8 @@
 @media (max-width: 767px) {
   .hero { padding: 40px 20px; }
   .heroTitle { font-size: 28px; }
-  .heroActions { flex-direction: column; align-items: stretch; }
-  .heroBtnPrimary, .heroBtnSecondary { text-align: center; }
+  .heroCta { flex-direction: column; align-items: stretch; }
+  .heroBtnPrimary, .heroBtnSecondary { justify-content: center; }
   .heroStats { gap: 16px; }
 
   .dealStripInner { flex-direction: column; align-items: flex-start; gap: 16px; }

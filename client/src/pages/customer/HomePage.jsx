@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import {
-  Monitor, Cpu, Keyboard, ShoppingCart,
+  Monitor, ShoppingCart,
   Truck, RotateCcw, ShieldCheck, Headphones,
   Zap, ArrowLeft, Star, UserPlus,
   ChevronLeft, Twitter, Instagram, Youtube, Linkedin,
-  Trophy,
+  Percent, Gift, Headset, Check,
+  Info, Clock, LayoutGrid, Tag, Armchair, Shield,
 } from 'lucide-react';
 import { productService } from '../../features/products/api/product.service';
 import { useRecentlyViewed } from '../../hooks/useRecentlyViewed';
@@ -15,49 +16,65 @@ import { BRANDS } from '../../constants/brands';
 import { HOMEPAGE_REVIEWS } from '../../constants/reviews';
 import s from './HomePage.module.css';
 
-/* ── Hero slides ──────────────────────────────────────────────────────────── */
+/* ── Hero slides (matches Sapir's .hero-slide markup exactly) ────────────── */
 const HERO_SLIDES = [
   {
-    eyebrow: 'חדש — מסך גיימינג OLED זמין עכשיו',
-    label: 'NEW', labelColor: 'var(--sv-blue)',
-    brand: 'ASUS ROG',
-    name: 'Swift PG27AQDM 27" OLED 240Hz',
-    desc: 'מסך OLED עם זמן תגובה 0.03ms וכיסוי 99% DCI-P3',
-    price: '₪3,299', oldPrice: '₪4,199', discount: '-22%',
-    Icon: Monitor,
-    badge1: { lbl: 'זמן תגובה', val: '⚡ 0.03ms' },
-    badge2: { lbl: 'כיסוי צבע', val: '★ 99% DCI-P3' },
+    eyebrow: 'שירות תיקונים ואחריות מורחבת — מקצועי ומהיר',
+    titleLine1: 'קוד לא', titleLine2: 'צריך שקט',
+    descLine1: 'שירות תיקונים ואחריות מורחבת מקצועי ומהיר.',
+    descLine2: 'הצטרפו למועדון הגיימרים והפכו כל רכישה לחוויה משתלמת.',
+    ctaPrimary:   { Icon: ShieldCheck, label: 'הצטרף למועדון', to: '/register' },
+    ctaSecondary: { Icon: Info,        label: 'פרטים נוספים',  to: '/register' },
+    panel: 'club',
   },
   {
-    eyebrow: 'חדש — מקלדת מכנית אופטית',
-    label: 'NEW', labelColor: 'var(--sv-blue)',
-    brand: 'Razer',
-    name: 'BlackWidow V4 Pro Optical Green',
-    desc: 'מתגים אופטיים Gen-3, תאורת Chroma RGB, חיבור כפול',
-    price: '₪699', oldPrice: '', discount: '',
-    Icon: Keyboard,
-    badge1: { lbl: 'סוג מתג', val: '★ אופטי Gen-3' },
-    badge2: { lbl: 'תאורה', val: '🌈 Chroma RGB' },
+    eyebrow: 'מבצעי פסח — כבר עכשיו באתר',
+    titleLine1: 'מבצעי פסח', titleLine2: 'כבר כאן',
+    descLine1: 'חג האביב מתחיל עם מבצעים מטורפים על אלפי מוצרים.',
+    descLine2: 'כולם בהנחה ענקית.',
+    ctaPrimary:   { Icon: Zap,   label: 'כל המבצעים', to: '/products?onSale=true' },
+    ctaSecondary: { Icon: Clock, label: 'מבצע שעתי',  to: '/products?onSale=true' },
+    panel: 'product',
+    product: {
+      Icon: Tag, label: 'פסח', labelBg: '#EF4444',
+      brand: 'מבצעי פסח', name: 'הנחה עד 40% על מוצרים נבחרים ומחשבים גיימינג',
+      rcount: 'אלפי לקוחות מרוצים', price: 'עד -40%', oldPrice: '', discount: '',
+      badge1: { lbl: 'מבצע',       val: 'זמן מוגבל',     Icon: Clock      },
+      badge2: { lbl: 'קטגוריות',   val: 'כל הקטגוריות',  Icon: LayoutGrid },
+    },
   },
   {
-    eyebrow: 'מבצע — כרטיס מסך RTX 4070 Ti',
-    label: 'SALE', labelColor: 'var(--sv-red)',
-    brand: 'NVIDIA',
-    name: 'GeForce RTX 4070 Ti Super 16GB',
-    desc: 'ביצועי 4K עם DLSS 3 ו-Ray Tracing מתקדם',
-    price: '₪2,999', oldPrice: '₪3,649', discount: '-18%',
-    Icon: Cpu,
-    badge1: { lbl: 'זיכרון', val: '💾 16GB GDDR6X' },
-    badge2: { lbl: 'פלט', val: '🎮 4K 60fps+' },
+    eyebrow: 'GTA 6 כבר כאן — תתכוננו',
+    titleLine1: 'GTA 6', titleLine2: 'כבר כאן',
+    descLine1: 'הדור הבא של הגיימינג מתחיל כאן.',
+    descLine2: 'כל הציוד שאתה צריך זמין במלאי מיידי.',
+    ctaPrimary:   { Icon: ShoppingCart, label: 'קנה עכשיו',     to: '/products' },
+    ctaSecondary: { Icon: LayoutGrid,   label: 'לקטלוג המלא',   to: '/products' },
+    panel: 'product',
+    product: {
+      Icon: Armchair, label: 'NEW', labelBg: '#9E6EF1',
+      brand: 'SecretLab', name: 'Titan Evo 2022 Gaming Chair',
+      rcount: '(2,341 ביקורות)', price: '₪2,199', oldPrice: '₪2,599', discount: '-15%',
+      badge1: { lbl: 'עומס מקסימלי', val: '180 ק"ג', Icon: Shield      },
+      badge2: { lbl: 'אחריות',       val: '5 שנים',  Icon: ShieldCheck },
+    },
   },
+];
+
+/* ── Hero stats (static — matches Sapir's .hero-stats, outside slide fade) ── */
+const HERO_STATS = [
+  { num: '12K', accent: '+', lbl: 'מוצרים בקטלוג'   },
+  { num: '48',  accent: 'h', lbl: 'משלוח מהיר'       },
+  { num: '4.9', accent: '★', lbl: 'דירוג לקוחות'     },
+  { num: '50K', accent: '+', lbl: 'לקוחות מרוצים'    },
 ];
 
 /* ── Static data ──────────────────────────────────────────────────────────── */
 const POLICY_ITEMS = [
-  { Icon: Truck,       title: 'משלוח חינם מ-₪299', desc: 'עד 48 שעות לכל הארץ'  },
-  { Icon: RotateCcw,   title: 'החזרה ב-30 ימים',   desc: 'ללא שאלות, החזר מלא'  },
-  { Icon: ShieldCheck, title: 'אחריות יצרן',        desc: 'על כל המוצרים בחנות'  },
-  { Icon: Headphones,  title: 'תמיכה 24/7',         desc: "צ'אט, טלפון ואימייל" },
+  { Icon: Truck,       title: 'משלוח חינם',      desc: 'על כל הזמנה מעל ₪299\nעד 48 שעות לכל הארץ'  },
+  { Icon: RotateCcw,   title: 'החזרה ב-30 ימים',  desc: 'לא מרוצים? מחזירים\nללא שאלות, החזר מלא'  },
+  { Icon: ShieldCheck, title: 'אחריות יצרן',       desc: 'אחריות מלאה על כל המוצרים\nשירות מהיצרן'    },
+  { Icon: Headphones,  title: 'תמיכה 24/7',        desc: "צוות מומחים זמין תמיד\nצ'אט, טלפון ואימייל" },
 ];
 
 const CLUB_STATS = [
@@ -235,67 +252,115 @@ function BrandsSection() {
   );
 }
 
-/* ── RecentlyViewedSection ────────────────────────────────────────────────── */
+/* ── RecentlyViewedSection (Sapir: 5-col grid with full .pc cards) ────────── */
 function RecentlyViewedSection() {
-  const { items } = useRecentlyViewed();
-  const t         = useTranslation();
-  const navigate  = useNavigate();
+  const { items, clear } = useRecentlyViewed();
+  const t = useTranslation();
   if (items.length === 0) return null;
+
+  const recentProducts = items.slice(0, 5).map(p => ({
+    _id: p.productId,
+    slug: p.slug,
+    name: p.name,
+    price: p.price,
+    images: p.image ? [p.image] : [],
+    brand: p.brand || '',
+    ratings: p.ratings || { average: 0, count: 0 },
+    stock: 1,
+  }));
 
   return (
     <section className={s.section}>
       <div className={s.sectionHead}>
-        <div className={s.sectionLeft}>
-          <h2 className={s.sectionTitle}>{t('home.recently_viewed')}</h2>
-        </div>
+        <h2 className={s.sectionTitle}>צפית <span className={s.sectionTitleEm}>לאחרונה</span></h2>
+        <button className={s.recentClear} onClick={clear}>נקה הכל</button>
       </div>
-      <div className={s.recentRow}>
-        {items.slice(0, 6).map(p => (
-          <button
-            key={p.productId}
-            className={s.recentCard}
-            onClick={() => navigate(`/products/${p.slug}`)}
-          >
-            <div className={s.recentImg}>
-              {p.image
-                ? <img src={p.image} alt={p.name} />
-                : <span className={s.recentPlaceholder}>📦</span>
-              }
-            </div>
-            <div className={s.recentName}>{p.name}</div>
-            <div className={s.recentPrice}>₪{Number(p.price).toFixed(2)}</div>
-          </button>
+      <div className={s.recentGrid}>
+        {recentProducts.map(p => (
+          <ProductCard key={p._id} product={p} />
         ))}
       </div>
     </section>
   );
 }
 
-/* ── GamerClubSection ─────────────────────────────────────────────────────── */
+/* ── GamerClubSection (matches Sapir's .club-section) ────────────────────── */
 function GamerClubSection() {
   const navigate = useNavigate();
   return (
     <section className={s.section}>
       <div className={s.clubBanner}>
-        {/* Visual panel (right in RTL) */}
+        {/* Visual panel */}
         <div className={s.clubVisual}>
           <div className={s.clubVisualBg} aria-hidden="true" />
-          <div className={s.clubVisualContent}>
-            <Trophy size={52} className={s.clubIcon} />
-            <div className={s.clubStatsGrid}>
-              {CLUB_STATS.map(({ num, accent, lbl }) => (
-                <div key={lbl} className={s.clubStat}>
-                  <div className={s.clubStatNum}>
-                    {num}<span className={s.clubStatAccent}>{accent}</span>
-                  </div>
-                  <div className={s.clubStatLbl}>{lbl}</div>
+          <div className={s.clubDashboard}>
+            {/* Yearly savings ring */}
+            <div className={s.clubDashRingCard}>
+              <div className={s.clubRingWrap}>
+                <svg className={s.clubRingSvg} viewBox="0 0 72 72">
+                  <defs>
+                    <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="#2563EB" />
+                      <stop offset="100%" stopColor="#00FFCC" />
+                    </linearGradient>
+                  </defs>
+                  <circle className={s.clubRingTrack} cx="36" cy="36" r="30" />
+                  <circle className={s.clubRingFill} cx="36" cy="36" r="30" />
+                </svg>
+                <div className={s.clubRingCenter}>
+                  <div className={s.clubRingPct}>75%</div>
+                  <div className={s.clubRingLbl}>SAVED</div>
                 </div>
-              ))}
+              </div>
+              <div>
+                <div className={s.clubDashRingTitle}>חיסכון שנתי משוער</div>
+                <div className={s.clubDashRingVal}>₪1,840</div>
+                <div className={s.clubDashRingSub}>ממוצע חבר מועדון פעיל</div>
+              </div>
+            </div>
+
+            {/* 4 mini stats */}
+            <div className={s.clubDashRow}>
+              <div className={`${s.clubDashMini} ${s.cdmBlue}`}>
+                <div className={s.clubDashMiniIcon}><Percent size={15} strokeWidth={1.6} /></div>
+                <div className={s.clubDashMiniVal}>10%</div>
+                <div className={s.clubDashMiniLbl}>ניקוד חזרה</div>
+              </div>
+              <div className={`${s.clubDashMini} ${s.cdmGreen}`}>
+                <div className={s.clubDashMiniIcon}><Truck size={15} strokeWidth={1.6} /></div>
+                <div className={s.clubDashMiniVal}>חינם</div>
+                <div className={s.clubDashMiniLbl}>משלוח תמיד</div>
+              </div>
+              <div className={`${s.clubDashMini} ${s.cdmViolet}`}>
+                <div className={s.clubDashMiniIcon}><Zap size={15} strokeWidth={1.6} /></div>
+                <div className={s.clubDashMiniVal}>24h</div>
+                <div className={s.clubDashMiniLbl}>גישה מוקדמת</div>
+              </div>
+              <div className={`${s.clubDashMini} ${s.cdmGold}`}>
+                <div className={s.clubDashMiniIcon}><Gift size={15} strokeWidth={1.6} /></div>
+                <div className={s.clubDashMiniVal}>×2</div>
+                <div className={s.clubDashMiniLbl}>נקודות ב-Sale</div>
+              </div>
+            </div>
+
+            {/* Cashback progress */}
+            <div className={s.clubDashProgress}>
+              <div className={s.clubDashProgHead}>
+                <div className={s.clubDashProgTitle}>התקדמות לפרס הבא</div>
+                <div className={s.clubDashProgBadge}>PLATINUM</div>
+              </div>
+              <div className={s.clubDashProgTrack}>
+                <div className={s.clubDashProgFill} />
+              </div>
+              <div className={s.clubDashProgFoot}>
+                <span>740 נקודות</span>
+                <span>נותרו 260 לפרס</span>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Content panel (left in RTL) */}
+        {/* Content panel */}
         <div className={s.clubContent}>
           <div className={s.clubBadge}>
             <Star size={13} /> מועדון TechVault
@@ -304,13 +369,42 @@ function GamerClubSection() {
             הצטרפו ל<span className={s.clubTitleAccent}>מועדון</span><br />הגיימרים שלנו
           </h2>
           <p className={s.clubDesc}>
-            קבלו הנחות בלעדיות, גישה מוקדמת למוצרים חדשים, ניקוד על כל קנייה ועוד הטבות מפתיעות.
+            הנחות בלעדיות, גישה מוקדמת למוצרים חדשים, ניקוד על כל קנייה — רק ₪50 לכל החיים.
           </p>
+          <div className={s.clubPerks}>
+            <div className={s.clubPerk}>
+              <div className={s.clubPerkIcon}><Percent size={16} /></div>
+              <div className={s.clubPerkText}>
+                <div className={s.clubPerkTitle}>עד 10% ניקוד חזרה</div>
+                <div className={s.clubPerkDesc}>על כל קנייה — הנקודות שלך, לנצח</div>
+              </div>
+            </div>
+            <div className={s.clubPerk}>
+              <div className={s.clubPerkIcon}><Truck size={16} /></div>
+              <div className={s.clubPerkText}>
+                <div className={s.clubPerkTitle}>משלוח חינם ללא מינימום</div>
+                <div className={s.clubPerkDesc}>תמיד, על כל הזמנה, לכל הארץ</div>
+              </div>
+            </div>
+            <div className={s.clubPerk}>
+              <div className={s.clubPerkIcon}><Zap size={16} /></div>
+              <div className={s.clubPerkText}>
+                <div className={s.clubPerkTitle}>גישה מוקדמת לסיילים</div>
+                <div className={s.clubPerkDesc}>24 שעות לפני כולם למוצרים חדשים</div>
+              </div>
+            </div>
+            <div className={s.clubPerk}>
+              <div className={s.clubPerkIcon}><Headset size={16} /></div>
+              <div className={s.clubPerkText}>
+                <div className={s.clubPerkTitle}>תמיכה VIP 24/7</div>
+                <div className={s.clubPerkDesc}>קו ישיר לנציגים מועדפים בכל שעה</div>
+              </div>
+            </div>
+          </div>
           <div className={s.clubCta}>
             <button className={s.clubBtnPrimary} onClick={() => navigate('/register')}>
-              <UserPlus size={16} /> הצטרפו בחינם
+              <UserPlus size={16} /> הצטרף עכשיו — ₪50 בלבד
             </button>
-            <button className={s.clubBtnSec}>קרא עוד</button>
           </div>
         </div>
       </div>
@@ -323,20 +417,15 @@ function PolicyBar() {
   return (
     <div className={s.policyBar}>
       <div className={s.policyInner}>
-        <div className={s.policyHeadline}>
-          <h3 className={s.policyTitle}>למה לקנות אצלנו?</h3>
-          <p className={s.policySub}>אלפי לקוחות מרוצים כבר בחרו ב-TechVault</p>
-        </div>
+        <div className={s.policyHeadline}>למה לקנות אצלנו<span className={s.policyHeadlineAccent}>...</span></div>
         <div className={s.policyGrid}>
           {POLICY_ITEMS.map(({ Icon, title, desc }) => (
             <div key={title} className={s.policyItem}>
               <div className={s.policyIconWrap}>
-                <Icon size={20} strokeWidth={1.8} />
+                <Icon size={28} strokeWidth={1.5} />
               </div>
-              <div>
-                <div className={s.policyItemTitle}>{title}</div>
-                <div className={s.policyItemDesc}>{desc}</div>
-              </div>
+              <div className={s.policyItemTitle}>{title}</div>
+              <div className={s.policyItemDesc}>{desc.split('\n').map((line, i) => <span key={i}>{line}{i === 0 && <br />}</span>)}</div>
             </div>
           ))}
         </div>
@@ -345,7 +434,7 @@ function PolicyBar() {
   );
 }
 
-/* ── ReviewsSection ───────────────────────────────────────────────────────── */
+/* ── ReviewsSection (matches Sapir's .reviews-section) ───────────────────── */
 function ReviewsSection() {
   return (
     <section className={s.section}>
@@ -363,21 +452,21 @@ function ReviewsSection() {
         {HOMEPAGE_REVIEWS.map(r => (
           <div key={r.id} className={s.reviewCard}>
             <div className={s.reviewHeader}>
-              <div className={s.reviewAvatar}>{r.initials}</div>
+              <div className={s.reviewAvatar} style={r.avatarBg ? { background: r.avatarBg } : undefined}>
+                {r.initials}
+              </div>
               <div className={s.reviewMeta}>
                 <div className={s.reviewAuthor}>{r.author}</div>
-                <div className={s.reviewDate}>{r.date}</div>
-              </div>
-              <div className={s.reviewStars}>
-                {[...Array(r.rating)].map((_, i) => (
-                  <Star key={i} size={13} className={s.starFilled} />
-                ))}
+                <div className={s.reviewDate}>{r.location} · {r.date}</div>
+                <div className={s.reviewStarsText}>{'★'.repeat(r.rating)}</div>
               </div>
             </div>
             {r.product && (
-              <div className={s.reviewProduct}>✓ רכישה מאומתת · {r.product}</div>
+              <div className={s.reviewProduct}>
+                <Monitor size={12} /> מוצר: <strong>{r.product}</strong>
+              </div>
             )}
-            <p className={s.reviewText}>{r.text}</p>
+            <p className={s.reviewText} dangerouslySetInnerHTML={{ __html: r.text }} />
           </div>
         ))}
       </div>
@@ -441,7 +530,6 @@ function SiteFooter() {
 /* ── HomePage ─────────────────────────────────────────────────────────────── */
 export default function HomePage() {
   const navigate = useNavigate();
-  const t        = useTranslation();
 
   /* Hero */
   const [heroIdx,     setHeroIdx]     = useState(0);
@@ -477,48 +565,61 @@ export default function HomePage() {
       .finally(() => setLoadingBestSellers(false));
   }, []);
 
-  const slide    = HERO_SLIDES[heroIdx];
-  const HeroIcon = slide.Icon;
+  const slide = HERO_SLIDES[heroIdx];
 
   return (
     <div className={s.page}>
 
-      {/* ── Hero ── */}
+      {/* ── Hero (matches Sapir's <section class="hero">) ── */}
       <section className={s.hero}>
         <div className={s.heroBg} aria-hidden="true" />
         <div className={s.heroGlow} aria-hidden="true" />
 
         <div className={s.heroInner}>
-          <div className={`${s.heroLeft} ${heroVisible ? s.heroVisible : s.heroHidden}`}>
-            <div className={s.heroEyebrow}>
-              <span className={s.eyebrowDot} aria-hidden="true" />
-              {slide.eyebrow}
-            </div>
 
-            <h1 className={s.heroTitle}>{slide.name}</h1>
-            <p className={s.heroDesc}>{slide.desc}</p>
+          {/* .hero-slides — slide content fades; stats + dots are static siblings */}
+          <div className={s.heroSlides}>
+            <div className={`${s.heroSlide} ${heroVisible ? s.heroSlideActive : ''}`}>
+              <div className={s.heroEyebrow}>
+                <span className={s.eyebrowDot} aria-hidden="true" />
+                {slide.eyebrow}
+              </div>
 
-            <div className={s.heroActions}>
-              <button className={s.heroBtnPrimary} onClick={() => navigate('/products')}>
-                {t('home.catalog_cta')}
-              </button>
-              <button className={s.heroBtnSecondary} onClick={() => navigate('/products?onSale=true')}>
-                {t('home.sales_cta')}
-              </button>
+              <h1 className={s.heroTitle}>
+                {slide.titleLine1}<br />
+                <span className={s.heroTitleAccent}>{slide.titleLine2}</span>
+              </h1>
+              <p className={s.heroDesc}>
+                {slide.descLine1}<br />
+                {slide.descLine2}
+              </p>
+
+              <div className={s.heroCta}>
+                <button className={s.heroBtnPrimary} onClick={() => navigate(slide.ctaPrimary.to)}>
+                  <slide.ctaPrimary.Icon size={16} />
+                  {slide.ctaPrimary.label}
+                </button>
+                <button className={s.heroBtnSecondary} onClick={() => navigate(slide.ctaSecondary.to)}>
+                  <slide.ctaSecondary.Icon size={16} />
+                  {slide.ctaSecondary.label}
+                </button>
+              </div>
             </div>
 
             <div className={s.heroStats}>
-              <div className={s.stat}><div className={s.statNum}>12,000<span className={s.statAccent}>+</span></div><div className={s.statLabel}>מוצרים</div></div>
-              <div className={s.stat}><div className={s.statNum}>200<span className={s.statAccent}>+</span></div><div className={s.statLabel}>מותגים</div></div>
-              <div className={s.stat}><div className={s.statNum}>4.9<span className={s.statAccent}>★</span></div><div className={s.statLabel}>דירוג</div></div>
-              <div className={s.stat}><div className={s.statNum}>30 <span className={s.statLabel}>יום</span></div><div className={s.statLabel}>החזרה</div></div>
+              {HERO_STATS.map(({ num, accent, lbl }) => (
+                <div key={lbl}>
+                  <div className={s.statNum}>{num}<span>{accent}</span></div>
+                  <div className={s.statLbl}>{lbl}</div>
+                </div>
+              ))}
             </div>
 
-            <div className={s.heroDots} role="tablist" aria-label="מצגת גיבורים">
+            <div className={s.slideDots} role="tablist" aria-label="מצגת גיבורים">
               {HERO_SLIDES.map((_, i) => (
                 <button
                   key={i}
-                  className={`${s.heroDot} ${i === heroIdx ? s.heroDotActive : ''}`}
+                  className={`${s.slideDot} ${i === heroIdx ? s.slideDotActive : ''}`}
                   onClick={() => goToSlide(i)}
                   role="tab"
                   aria-selected={i === heroIdx}
@@ -528,72 +629,114 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className={`${s.heroRight} ${heroVisible ? s.heroVisible : s.heroHidden}`}>
-            <div className={s.heroPCard}>
-              <div className={s.heroPImg}>
-                <HeroIcon size={72} strokeWidth={1} className={s.heroPIcon} />
-                <span className={s.heroPImgLabel} style={{ background: slide.labelColor }}>
-                  {slide.label}
-                </span>
-              </div>
-              <div className={s.heroPBrand}>{slide.brand}</div>
-              <div className={s.heroPName}>{slide.name}</div>
-              <div className={s.heroPRating}>
-                <span className={s.heroPStars}>★★★★★</span>
-                <span className={s.heroPRcount}>(128)</span>
-              </div>
-              <div className={s.heroPPriceRow}>
-                <span className={s.heroPPrice}>{slide.price}</span>
-                {slide.oldPrice && <span className={s.heroPOld}>{slide.oldPrice}</span>}
-                {slide.discount && <span className={s.heroPDiscount}>{slide.discount}</span>}
-              </div>
-              <button className={s.heroPAddBtn} onClick={() => navigate('/products')} aria-label="עבור לחנות">
-                <ShoppingCart size={15} />
-                הוסף לעגלה
-              </button>
-              <div className={s.floatBadge1} aria-hidden="true">
-                <span className={s.floatLbl}>{slide.badge1.lbl}</span>
-                <span className={s.floatVal}>{slide.badge1.val}</span>
-              </div>
-              <div className={s.floatBadge2} aria-hidden="true">
-                <span className={s.floatLbl}>{slide.badge2.lbl}</span>
-                <span className={s.floatVal}>{slide.badge2.val}</span>
+          {/* Right panel: club panel (slide 0) or product panel (slides 1–2) */}
+          {slide.panel === 'club' ? (
+            <div className={`${s.heroClubPanel} ${heroVisible ? s.heroVisible : s.heroHidden}`}>
+              <div className={s.heroClubCard}>
+                <div className={s.heroClubIcon}><ShieldCheck size={32} strokeWidth={1.4} /></div>
+                <div className={s.heroClubTitle}>מועדון TechVault</div>
+                <div className={s.heroClubPerks}>
+                  <div className={s.heroClubPerk}><Check size={13} /> אחריות מורחבת 3 שנים</div>
+                  <div className={s.heroClubPerk}><Check size={13} /> תמיכה מועדפת 24/7</div>
+                  <div className={s.heroClubPerk}><Check size={13} /> עד 10% נקודות חזרה</div>
+                  <div className={s.heroClubPerk}><Check size={13} /> משלוח חינם תמיד</div>
+                </div>
+                <div className={s.heroClubPrice}>רק <span>₪50</span> לכל החיים</div>
+                <button className={s.heroClubBtn} onClick={() => navigate('/register')}>
+                  <UserPlus size={15} /> הצטרף עכשיו
+                </button>
               </div>
             </div>
-          </div>
+          ) : (
+            <div className={`${s.heroProductPanel} ${heroVisible ? s.heroVisible : s.heroHidden}`}>
+              <div className={s.heroPCard}>
+                <div className={s.heroPImg}>
+                  <slide.product.Icon size={80} strokeWidth={1.2} className={s.heroPIcon} />
+                  <span className={s.heroPImgLabel} style={{ background: slide.product.labelBg }}>
+                    {slide.product.label}
+                  </span>
+                </div>
+                <div className={s.heroPBrand}>{slide.product.brand}</div>
+                <div className={s.heroPName}>{slide.product.name}</div>
+                <div className={s.heroPRating}>
+                  <span className={s.heroPStars}>★★★★★</span>
+                  <span className={s.heroPRcount}>{slide.product.rcount}</span>
+                </div>
+                <div className={s.heroPPriceRow}>
+                  <span className={s.heroPPrice}>{slide.product.price}</span>
+                  {slide.product.oldPrice && <span className={s.heroPOld}>{slide.product.oldPrice}</span>}
+                  {slide.product.discount && <span className={s.heroPDiscount}>{slide.product.discount}</span>}
+                </div>
+                <button className={s.heroPAddBtn} onClick={() => navigate('/products?onSale=true')}>
+                  <Zap size={15} /> כל המבצעים
+                </button>
+                <div className={s.floatBadge1} aria-hidden="true">
+                  <span className={s.floatLbl}>{slide.product.badge1.lbl}</span>
+                  <span className={s.floatVal}>
+                    <slide.product.badge1.Icon size={12} />
+                    {slide.product.badge1.val}
+                  </span>
+                </div>
+                <div className={s.floatBadge2} aria-hidden="true">
+                  <span className={s.floatLbl}>{slide.product.badge2.lbl}</span>
+                  <span className={s.floatVal}>
+                    <slide.product.badge2.Icon size={12} />
+                    {slide.product.badge2.val}
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </section>
 
-      {/* ── Brands + Best Sellers ── */}
-      <div className={s.main}>
-        <BrandsSection />
-        <ProductSection
-          titleBase="הנמכרים"
-          titleEm="ביותר"
-          badge="HOT 🔥"
-          products={bestSellers}
-          loading={loadingBestSellers}
-          error={errBestSellers}
-          viewAllHref="/products?sort=popularity"
-          showRanks
-        />
+      {/* ── Brands (bg: --bg) ── */}
+      <div className={s.brandsWrap}>
+        <div className={s.sectionInner}>
+          <BrandsSection />
+        </div>
+      </div>
+
+      {/* ── Best Sellers (bg: --surface) ── */}
+      <div className={s.sellersWrap}>
+        <div className={s.sectionInner}>
+          <ProductSection
+            titleBase="הנמכרים"
+            titleEm="ביותר"
+            products={bestSellers}
+            loading={loadingBestSellers}
+            error={errBestSellers}
+            viewAllHref="/products?sort=popularity"
+            showRanks
+          />
+        </div>
       </div>
 
       {/* ── Deal banner (full width) ── */}
       <DealBanner />
 
-      {/* ── Recently Viewed + Gamer Club ── */}
-      <div className={s.main}>
-        <RecentlyViewedSection />
-        <GamerClubSection />
+      {/* ── Recently Viewed (bg: --surface) ── */}
+      <div className={s.recentWrap}>
+        <div className={s.sectionInner}>
+          <RecentlyViewedSection />
+        </div>
+      </div>
+
+      {/* ── Gamer Club ── */}
+      <div className={s.clubWrap}>
+        <div className={s.clubWrapInner}>
+          <GamerClubSection />
+        </div>
       </div>
 
       {/* ── Policy bar (full width) ── */}
       <PolicyBar />
 
-      {/* ── Reviews ── */}
-      <div className={s.main}>
-        <ReviewsSection />
+      {/* ── Reviews (bg: --bg) ── */}
+      <div className={s.reviewsWrap}>
+        <div className={s.sectionInner}>
+          <ReviewsSection />
+        </div>
       </div>
 
       {/* ── Footer ── */}
