@@ -24,6 +24,10 @@ const reviewManagementRouter = Router();
 // the literal "eligibility" path segment as a page/limit query.
 productReviewRouter.get('/eligibility', authenticate, ctrl.checkEligibility);
 
+// Rating distribution (star histogram) for the product-page review summary.
+// Declared before GET '/' for the same reason as /eligibility above.
+productReviewRouter.get('/distribution', ctrl.getRatingDistribution);
+
 /**
  * @swagger
  * /products/{productId}/reviews:

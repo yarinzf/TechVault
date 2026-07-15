@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useCallback, useEffect } from 'rea
 
 const CompareContext = createContext(null);
 const STORAGE_KEY = 'techvault_compare';
-const MAX_ITEMS = 4;
+export const MAX_ITEMS = 4;
 
 function loadItems() {
   try {

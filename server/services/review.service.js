@@ -1,5 +1,6 @@
 'use strict';
 
+const mongoose = require('mongoose');
 const Review  = require('../models/Review');
 const Product = require('../models/Product');
 const Order   = require('../models/Order');
@@ -112,6 +113,28 @@ const listProductReviews = async (productId, query, viewerUserId = null) => {
   return { reviews, meta: paginateMeta(total, page, limit) };
 };
 
+// ─── Rating distribution (published reviews only) ────────────────────────────
+// Histogram of star counts (1-5) for the product-page review summary bars.
+const getRatingDistribution = async (productId) => {
+  const rows = await Review.aggregate([
+    { $match: { product: new mongoose.Types.ObjectId(productId), status: 'published' } },
+    { $group: { _id: '$rating', count: { $sum: 1 } } },
+  ]);
+
+  const counts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+  rows.forEach((r) => { counts[r._id] = r.count; });
+  const total = Object.values(counts).reduce((sum, c) => sum + c, 0);
+
+  return {
+    total,
+    stars: [5, 4, 3, 2, 1].map((star) => ({
+      star,
+      count:   counts[star],
+      percent: total > 0 ? Math.round((counts[star] / total) * 100) : 0,
+    })),
+  };
+};
+
 // ─── Update own review ────────────────────────────────────────────────────────
 const updateReview = async (reviewId, userId, dto) => {
   const review = await Review.findOneAndUpdate(
@@ -198,6 +221,7 @@ module.exports = {
   checkEligibility,
   createReview,
   listProductReviews,
+  getRatingDistribution,
   updateReview,
   deleteReview,
   listAllReviews,

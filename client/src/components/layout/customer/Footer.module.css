@@ -1,0 +1,88 @@
+.siteFooter {
+  background: var(--sv-surface);
+  border-top: 1px solid var(--sv-border);
+}
+
+.footerInner {
+  max-width: var(--sv-max);
+  margin: 0 auto;
+  padding: 48px var(--sv-pad) 28px;
+}
+
+.footerGrid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 56px;
+  margin-bottom: 40px;
+}
+
+.footerBrandWrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.footerBrandName   { font-family: 'Neuropol', 'Rajdhani', sans-serif; font-size: 20px; font-weight: 400; color: #fff; letter-spacing: 0.05em; }
+.footerBrandAccent { color: var(--sv-blue); }
+
+.footerDesc { font-size: 13px; color: var(--sv-muted); line-height: 1.75; max-width: 280px; }
+
+.footerColTitle {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--sv-text);
+  margin-bottom: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+}
+
+.footerLink {
+  display: block;
+  font-size: 13px;
+  color: var(--sv-muted);
+  padding: 4px 0;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color .18s;
+}
+.footerLink:hover { color: var(--sv-blue-l); }
+
+.footerBottom {
+  border-top: 1px solid var(--sv-border);
+  padding-top: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.footerCopy { font-size: 12px; color: var(--sv-muted); }
+
+.footerSocials { display: flex; gap: 8px; }
+
+.socialBtn {
+  width: 34px;
+  height: 34px;
+  background: var(--sv-card);
+  border: 1px solid var(--sv-border);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all .18s;
+  color: var(--sv-muted);
+  text-decoration: none;
+}
+.socialBtn svg { width: 14px; height: 14px; }
+.socialBtn:hover { border-color: var(--sv-blue); color: var(--sv-blue); }
+
+@media (max-width: 1024px) {
+  .footerGrid { grid-template-columns: 1fr 1fr; gap: 32px; }
+}
+
+@media (max-width: 767px) {
+  .footerGrid { grid-template-columns: 1fr; gap: 24px; }
+  .footerBottom { flex-direction: column; text-align: center; gap: 12px; }
+  .footerInner { padding: 32px 20px; }
+}

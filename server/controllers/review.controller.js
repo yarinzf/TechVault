@@ -29,6 +29,13 @@ const listProductReviews = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+const getRatingDistribution = async (req, res, next) => {
+  try {
+    const distribution = await reviewService.getRatingDistribution(req.params.productId);
+    sendSuccess(res, distribution);
+  } catch (err) { next(err); }
+};
+
 const updateReview = async (req, res, next) => {
   try {
     const review = await reviewService.updateReview(req.params.id, req.user._id, req.body);
@@ -60,7 +67,7 @@ const moderateReview = async (req, res, next) => {
 };
 
 module.exports = {
-  checkEligibility, createReview, listProductReviews,
+  checkEligibility, createReview, listProductReviews, getRatingDistribution,
   updateReview, deleteReview,
   listAllReviews, moderateReview,
 };

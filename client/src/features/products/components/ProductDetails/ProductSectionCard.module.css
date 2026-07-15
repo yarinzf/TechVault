@@ -1,0 +1,37 @@
+.card {
+  background: linear-gradient(180deg, var(--sv-card) 0%, var(--sv-surface) 140%);
+  border: 1px solid var(--sv-border);
+  border-radius: 16px;
+  padding: 24px 26px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 20px 40px -34px rgba(0,0,0,0.55);
+}
+.card.compact { padding: 19px 26px; }
+
+.card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, rgba(37,99,235,0.5), rgba(158,110,241,0.3));
+}
+
+.title {
+  font-size: 12px; font-weight: 700; color: var(--sv-blue-l);
+  margin-bottom: 4px; display: flex; align-items: center; gap: 9px;
+  text-transform: uppercase; letter-spacing: 0.08em;
+}
+.titleIcon {
+  width: 28px; height: 28px; border-radius: 8px;
+  background: linear-gradient(135deg, rgba(37,99,235,0.18), rgba(158,110,241,0.1));
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  color: var(--sv-blue-l);
+}
+
+.heading { font-size: 17px; font-weight: 800; color: var(--sv-text); margin: 6px 0 0; letter-spacing: -0.01em; }
+
+.body { border-top: 1px solid rgba(255,255,255,.05); margin-top: 12px; padding-top: 20px; }
+.compact .body { margin-top: 9px; padding-top: 14px; }
+
+@media (max-width: 640px) {
+  .card { padding: 18px 16px; }
+}

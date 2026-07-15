@@ -1,0 +1,91 @@
+/* ── Aggregate score summary (design: pp-reviews-header) ─────────────────── */
+.summary {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  padding: 20px 24px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(245,158,11,0.08), rgba(37,99,235,0.05));
+  border: 1px solid rgba(245,158,11,0.16);
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.summaryScore { text-align: center; flex-shrink: 0; }
+.summaryScoreNum { font-size: 44px; font-weight: 900; color: var(--sv-text); line-height: 1; letter-spacing: -0.02em; }
+.summaryScoreCount { font-size: 12px; color: var(--sv-muted); margin-top: 8px; }
+
+.summaryBars { flex: 1; min-width: 200px; }
+.barRow { display: flex; align-items: center; gap: 10px; margin-bottom: 7px; font-size: 12px; color: var(--sv-muted); }
+.barRow:last-child { margin-bottom: 0; }
+.barLabel { width: 14px; text-align: center; flex-shrink: 0; }
+.barTrack { flex: 1; height: 7px; background: var(--sv-surface); border-radius: 4px; overflow: hidden; }
+.barFill { height: 100%; background: linear-gradient(90deg, var(--sv-gold), #fbbf24); border-radius: 4px; }
+.barPct { width: 32px; text-align: end; flex-shrink: 0; }
+
+/* ── Review list / card ──────────────────────────────────────────────────── */
+.reviewsInner { display: flex; flex-direction: column; gap: 16px; }
+.reviewsList  { display: flex; flex-direction: column; gap: 16px; }
+
+.reviewCard {
+  background: var(--sv-surface);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 14px;
+  padding: 18px;
+  transition: border-color .2s;
+}
+.reviewCard:hover { border-color: rgba(255,255,255,0.1); }
+
+.reviewHeader { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
+.reviewMeta   { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.reviewAuthor { font-size: 13px; font-weight: 600; color: var(--sv-text); }
+.reviewDate   { font-size: 11px; color: var(--sv-muted); }
+.verifiedBadge{ font-size: 10px; color: rgba(16,185,129,0.6); }
+.reviewTitle  { font-size: 14px; font-weight: 600; color: var(--sv-text); margin-bottom: 4px; }
+.reviewBody   { font-size: 15px; color: rgba(255,255,255,0.6); line-height: 1.65; }
+
+.reviewActions { display: flex; gap: 8px; margin-top: 10px; }
+.actionBtn {
+  font-size: 11px;
+  padding: 4px 10px;
+  border: 1px solid var(--sv-border);
+  border-radius: 6px;
+  color: var(--sv-muted);
+  background: transparent;
+  cursor: pointer;
+  transition: color .15s, border-color .15s;
+}
+.actionBtn:hover { color: var(--sv-text); border-color: rgba(255,255,255,0.15); }
+.actionBtnDanger:hover { color: var(--sv-red); border-color: var(--sv-red); }
+
+/* ── Write review form ───────────────────────────────────────────────────── */
+.writeReviewBox {
+  background: var(--sv-card);
+  border: 1px solid var(--sv-border);
+  border-radius: 14px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.writeReviewTitle { font-size: 15px; font-weight: 600; color: var(--sv-text); }
+.reviewFormField { display: flex; flex-direction: column; gap: 4px; }
+.reviewFormLabel { font-size: 11px; font-weight: 700; color: var(--sv-muted); text-transform: uppercase; letter-spacing: 0.07em; }
+.reviewFormRow { display: flex; gap: 10px; justify-content: flex-end; }
+
+.gateBox {
+  background: var(--sv-surface);
+  border: 1px solid var(--sv-border);
+  border-radius: 10px;
+  padding: 16px;
+  font-size: 13px;
+  color: var(--sv-muted);
+}
+
+.emptyReviews { text-align: center; padding: 40px 16px; color: var(--sv-muted); font-size: 13px; }
+.loadMore { display: flex; justify-content: center; margin-top: 16px; }
+
+@media (max-width: 640px) {
+  .summary { flex-direction: column; align-items: stretch; text-align: center; }
+  .summaryBars { min-width: 0; }
+}

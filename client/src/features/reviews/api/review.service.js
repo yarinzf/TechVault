@@ -9,6 +9,9 @@ export const reviewService = {
   checkEligibility: (productId) =>
     api.get(`${productBase(productId)}/eligibility`).then((r) => r.data),
 
+  getDistribution: (productId) =>
+    api.get(`${productBase(productId)}/distribution`).then((r) => r.data),
+
   create:         (productId, body) =>
     api.post(productBase(productId), body).then((r) => r.data?.review),
 
