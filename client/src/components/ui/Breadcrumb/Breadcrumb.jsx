@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useLanguage } from '../../../context/LanguageContext';
 import s from './Breadcrumb.module.css';
 
 /**
@@ -7,10 +8,12 @@ import s from './Breadcrumb.module.css';
  * Last item is the current page (no href required).
  */
 export default function Breadcrumb({ items = [], className = '' }) {
+  const { t, language } = useLanguage();
   if (!items.length) return null;
+  const Sep = language === 'en' ? ChevronRight : ChevronLeft;
 
   return (
-    <nav aria-label="ניווט ארגזי לחם" className={`${s.nav} ${className}`}>
+    <nav aria-label={t('nav.breadcrumb_arialabel')} className={`${s.nav} ${className}`}>
       <ol className={s.list}>
         {items.map((item, i) => {
           const isLast = i === items.length - 1;
@@ -26,7 +29,7 @@ export default function Breadcrumb({ items = [], className = '' }) {
                 </Link>
               )}
               {!isLast && (
-                <ChevronLeft
+                <Sep
                   size={14}
                   className={s.sep}
                   aria-hidden="true"

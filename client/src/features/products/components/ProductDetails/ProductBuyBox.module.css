@@ -2,51 +2,65 @@
   background: linear-gradient(180deg, var(--sv-card) 0%, var(--sv-surface) 130%);
   border: 1px solid var(--sv-border);
   border-radius: 18px;
-  padding: 20px 22px;
+  padding: 16px 18px;
   position: sticky;
   top: 88px;
   box-shadow: 0 20px 40px -30px rgba(0,0,0,0.6);
   display: flex;
   flex-direction: column;
-  gap: 4px;
 }
 
 .badgesRow { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; }
+.badgesRowTight { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 6px; }
 
+/* 2. Brand — small pill, matching the reference exactly */
 .brand {
   display: inline-flex; align-items: center;
-  font-size: 10px; font-weight: 700; color: var(--sv-blue-l);
+  font-size: 9.5px; font-weight: 700; color: var(--sv-blue-l);
   text-transform: uppercase; letter-spacing: 0.06em;
-  margin-bottom: 6px; width: fit-content;
+  margin-bottom: 9px; opacity: 0.85; width: fit-content;
+  background: rgba(37,99,235,0.06); border: 1px solid rgba(37,99,235,0.14);
+  padding: 2px 8px; border-radius: 20px;
 }
 
-.name { font-size: 19px; font-weight: 700; line-height: 1.3; color: var(--sv-text); margin-bottom: 6px; }
-.subtitle { font-size: 12.5px; color: var(--sv-muted); line-height: 1.5; margin-bottom: 10px; }
+/* 3. Name / 4. Subtitle */
+.name { font-size: 18px; font-weight: 700; line-height: 1.28; color: var(--sv-text); margin-bottom: 7px; letter-spacing: -0.01em; }
+.subtitle { font-size: 12.5px; color: var(--sv-muted); line-height: 1.45; margin-bottom: 0; }
 
-.ratingRow { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+/* 5. Rating */
+.ratingRow { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
 .ratingNum { font-size: 13px; color: var(--sv-muted); }
 .ratingLink { font-size: 13px; color: var(--sv-muted); text-decoration: none; transition: color .18s; }
 .ratingLink:hover { color: var(--sv-blue-l); }
 
+/* ── Divider groups (price / purchase-details / qty+actions / secondary) ── */
+.group { border-top: 1px solid rgba(255,255,255,0.06); padding-top: 8px; margin-top: 8px; }
+.groupFirst { margin-top: 10px; }
+.groupTight { padding-top: 7px; margin-top: 7px; border-top: none; }
+.groupLabel {
+  font-size: 10px; font-weight: 700; color: var(--sv-muted);
+  text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 7px; opacity: 0.85;
+}
+
+/* 6. Price */
 .priceBlock {
   background: linear-gradient(135deg, rgba(37,99,235,0.08), rgba(158,110,241,0.05));
   border: 1px solid rgba(37,99,235,0.15);
   border-radius: 12px;
-  padding: 13px 16px;
-  margin-bottom: 13px;
+  padding: 9px 16px;
 }
-.priceRow { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-.price { font-size: 26px; font-weight: 800; color: var(--sv-text); letter-spacing: -0.015em; line-height: 1; }
-.oldPrice { font-size: 13px; color: var(--sv-muted); text-decoration: line-through; opacity: 0.75; }
+.priceRow { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.price { font-size: 25px; font-weight: 800; color: var(--sv-text); letter-spacing: -0.015em; line-height: 1; }
+.oldPrice { font-size: 12.5px; color: var(--sv-muted); text-decoration: line-through; opacity: 0.75; line-height: 1; }
 .discPill {
   background: rgba(16,185,129,0.16); color: var(--sv-success);
-  font-size: 10.5px; font-weight: 700; padding: 0 8px; height: 20px;
-  border-radius: 20px; display: inline-flex; align-items: center; direction: ltr;
+  font-size: 10.5px; font-weight: 700; padding: 0 8px; height: 20px; line-height: 20px;
+  border-radius: 20px; display: inline-flex; align-items: center; justify-content: center; direction: ltr;
 }
-.saving { font-size: 11.5px; color: var(--sv-success); font-weight: 500; margin-top: 6px; }
+.saving { font-size: 11.5px; color: var(--sv-success); font-weight: 500; margin-top: 6px; opacity: 0.85; }
 
-/* ── Variants (inert until real variant data exists) ─────────────────────── */
-.variants { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 13px; }
+/* Variants (inert until real variant data exists) */
+.variants { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
 .variantPill {
   padding: 6px 14px; border-radius: 8px;
   border: 1px solid var(--sv-border); background: var(--sv-surface);
@@ -54,8 +68,19 @@
 }
 .variantActive { border-color: var(--sv-blue); color: var(--sv-blue-l); }
 
-/* ── Stock ────────────────────────────────────────────────────────────────── */
-.stockRow { display: flex; align-items: center; gap: 6px; font-size: 13px; margin-bottom: 13px; }
+/* 7. Purchase details */
+.warrantyBadge {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11.5px; color: var(--sv-blue-l); font-weight: 600;
+  background: rgba(37,99,235,0.08); border: 1px solid rgba(37,99,235,0.2);
+  padding: 5px 11px; border-radius: 20px;
+}
+.trustRow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; }
+.trustItem { display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--sv-muted); }
+.trustIcon { color: var(--sv-success); flex-shrink: 0; }
+
+/* 8. Stock */
+.stockRow { display: flex; align-items: center; gap: 6px; font-size: 13px; margin-bottom: 8px; }
 .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 .dotGreen  { background: var(--sv-success); }
 .dotOrange { background: var(--sv-gold); }
@@ -64,26 +89,28 @@
 .stockLow  { color: var(--sv-gold); }
 .stockNone { color: var(--sv-red); }
 
-/* ── Quantity + actions ──────────────────────────────────────────────────── */
-.qtyRow { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+/* 9. Quantity */
+.qtyRow { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
 .qtyLabel { font-size: 12.5px; color: var(--sv-muted); font-weight: 500; }
 
-.actions { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+/* 10-11. Add to cart / Buy now */
+.actions { display: flex; flex-direction: column; gap: 8px; }
 
 .addBtn {
   background: linear-gradient(135deg, var(--sv-blue), var(--sv-blue-dk));
-  color: #fff; border: none; border-radius: 11px; height: 46px;
+  color: #fff; border: none; border-radius: 11px; height: 44px;
   font-size: 14px; font-weight: 700; font-family: var(--sv-font);
   cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
   transition: transform .16s ease, box-shadow .2s ease, opacity .16s ease;
   box-shadow: 0 10px 22px -10px rgba(37,99,235,0.55);
+  letter-spacing: -0.005em;
 }
 .addBtn:hover:not(:disabled) { opacity: 0.95; transform: translateY(-1.5px); box-shadow: 0 14px 26px -8px rgba(37,99,235,0.55); }
 .addBtn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
 
 .buyBtn {
   background: transparent; color: var(--sv-text); border: 1.5px solid var(--sv-border);
-  border-radius: 11px; height: 38px; font-size: 12.5px; font-weight: 600; font-family: var(--sv-font);
+  border-radius: 11px; height: 36px; font-size: 12.5px; font-weight: 600; font-family: var(--sv-font);
   cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px;
   transition: border-color .18s ease, background .18s ease, transform .16s ease;
 }
@@ -93,39 +120,16 @@
 .spin { animation: spin 0.75s linear infinite; display: inline-block; }
 @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-/* ── Secondary actions ───────────────────────────────────────────────────── */
-.secondaryActions { display: flex; gap: 8px; margin-bottom: 14px; }
+/* 12. Secondary actions */
+.secondaryActions { display: flex; gap: 8px; }
 .secondaryBtn {
-  flex: 1; height: 38px; border-radius: 10px; border: 1px solid var(--sv-border);
+  flex: 1; height: 36px; border-radius: 10px; border: 1px solid var(--sv-border);
   background: none; color: var(--sv-muted); font-size: 12.5px; font-weight: 600; font-family: var(--sv-font);
   cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;
   transition: all .18s;
 }
 .secondaryBtn:hover { border-color: var(--sv-blue-l); color: var(--sv-blue-l); background: rgba(37,99,235,0.05); }
 .secondaryBtnActive { border-color: var(--sv-red); color: var(--sv-red); background: rgba(239,68,68,0.06); }
-
-/* ── Trust / warranty row ────────────────────────────────────────────────── */
-.trustRow {
-  display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px;
-  padding-top: 13px; border-top: 1px solid rgba(255,255,255,0.06);
-  margin-bottom: 6px;
-}
-.warrantyBadge {
-  display: inline-flex; align-items: center; gap: 5px;
-  font-size: 11.5px; color: var(--sv-blue-l); font-weight: 600;
-  background: rgba(37,99,235,0.08); border: 1px solid rgba(37,99,235,0.2);
-  padding: 4px 10px; border-radius: 20px;
-}
-.trustItem { display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--sv-muted); }
-.trustIcon { color: var(--sv-success); flex-shrink: 0; }
-
-/* ── Tags ─────────────────────────────────────────────────────────────────── */
-.tagRow { display: flex; flex-wrap: wrap; gap: 6px; }
-.tag {
-  padding: 3px 10px; font-size: 10px; font-weight: 600;
-  background: rgba(37,99,235,0.08); border: 1px solid rgba(37,99,235,0.2);
-  border-radius: 8px; color: var(--sv-blue-l);
-}
 
 /* ── Signal badges ────────────────────────────────────────────────────────── */
 .signal {
@@ -145,4 +149,6 @@
   .buyBox { padding: 16px 15px; border-radius: 14px; }
   .name { font-size: 16px; }
   .price { font-size: 23px; }
+  .addBtn { height: 44px; font-size: 14px; }
+  .buyBtn { height: 38px; font-size: 13px; }
 }

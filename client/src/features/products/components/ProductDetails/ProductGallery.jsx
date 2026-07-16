@@ -1,38 +1,64 @@
-import { useState } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { ChevronLeft, ChevronRight, Play } from 'lucide-react';
 import { ImageWithFallback } from '../../../../components/ui/ImageWithFallback';
 import { useTranslation } from '../../../../context/LanguageContext';
+import { buildGalleryMedia } from '../../utils/media';
 import s from './ProductGallery.module.css';
 
-export default function ProductGallery({ images, name, discountPercent, outOfStock }) {
+export default function ProductGallery({ product, discountPercent, outOfStock }) {
   const t = useTranslation();
   const [index, setIndex] = useState(0);
   const [swapKey, setSwapKey] = useState(0);
+  const videoRef = useRef(null);
 
-  const list = images?.length ? images : [];
-  const hasMultiple = list.length > 1;
+  const media = buildGalleryMedia(product);
+  const hasMultiple = media.length > 1;
+  const active = media[index];
 
   const goTo = (i) => {
+    videoRef.current?.pause();
     setIndex(i);
     setSwapKey((k) => k + 1);
   };
-  const nav = (dir) => goTo((index + dir + list.length) % list.length);
+  const nav = (dir) => goTo((index + dir + media.length) % media.length);
+
+  // Pausing on unmount covers navigating away from the product entirely.
+  useEffect(() => () => videoRef.current?.pause(), []);
+
+  if (!media.length) {
+    return (
+      <div className={s.gallery}>
+        <div className={s.row}>
+          <div className={s.mainWrap}>
+            <ImageWithFallback src="" alt={product.name} className={s.mainImg} />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={s.gallery}>
       <div className={s.row}>
         {hasMultiple && (
           <div className={s.thumbs}>
-            {list.map((img, i) => (
+            {media.map((item, i) => (
               <button
                 key={i}
                 type="button"
                 className={`${s.thumb}${i === index ? ' ' + s.thumbActive : ''}`}
                 onClick={() => goTo(i)}
-                aria-label={`${t('product.image_prefix')} ${i + 1}`}
+                aria-label={item.type === 'video' ? `${product.name} — ${t('product.video_label')}` : `${t('product.image_prefix')} ${i + 1}`}
                 aria-current={i === index}
               >
-                <ImageWithFallback src={img} alt={`${name} ${i + 1}`} className={s.thumbImg} loading="lazy" />
+                {item.type === 'video' ? (
+                  <>
+                    <ImageWithFallback src={item.poster} alt="" className={s.thumbImg} loading="lazy" />
+                    <span className={s.thumbPlay}><Play size={14} fill="currentColor" /></span>
+                  </>
+                ) : (
+                  <ImageWithFallback src={item.url} alt={item.alt} className={s.thumbImg} loading="lazy" />
+                )}
               </button>
             ))}
           </div>
@@ -40,17 +66,28 @@ export default function ProductGallery({ images, name, discountPercent, outOfSto
 
         <div className={s.mainWrap}>
           {hasMultiple && (
-            <button type="button" className={`${s.navBtn} ${s.navPrev}`} onClick={() => nav(-1)} aria-label={t('product.prev_image') }>
+            <button type="button" className={`${s.navBtn} ${s.navPrev}`} onClick={() => nav(-1)} aria-label={t('product.prev_image')}>
               <ChevronLeft size={17} />
             </button>
           )}
 
-          <ImageWithFallback
-            key={swapKey}
-            src={list[index]}
-            alt={name}
-            className={s.mainImg}
-          />
+          {active.type === 'video' ? (
+            <video
+              key={swapKey}
+              ref={videoRef}
+              className={s.mainVideo}
+              src={active.url}
+              poster={active.poster}
+              controls
+              playsInline
+              preload="metadata"
+              aria-label={active.title}
+            >
+              <track kind="captions" />
+            </video>
+          ) : (
+            <ImageWithFallback key={swapKey} src={active.url} alt={active.alt} className={s.mainImg} />
+          )}
 
           {discountPercent != null && (
             <span className={s.discountBadge}>−{discountPercent}%</span>

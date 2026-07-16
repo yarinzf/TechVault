@@ -24,7 +24,7 @@ export default function QuantitySelector({
         disabled={disabled || value <= min}
         aria-label={decreaseLabel}
       >
-        <Minus size={14} />
+        <Minus size={12} />
       </button>
       <span className={s.val}>{value}</span>
       <button
@@ -34,7 +34,7 @@ export default function QuantitySelector({
         disabled={disabled || value >= max}
         aria-label={increaseLabel}
       >
-        <Plus size={14} />
+        <Plus size={12} />
       </button>
     </div>
   );

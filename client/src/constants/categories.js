@@ -24,47 +24,49 @@ export const CATEGORY_META = [
   { slug: 'smart-home',  labelKey: 'cat.smart_home',  heLabel: 'בית חכם',       Icon: Home           },
 ];
 
-// Sections shown in the categories modal (matches Sapir's grouping)
+// Sections shown in the categories modal (matches Sapir's grouping).
+// `labelKey`/`titleKey` drive the i18n system; `heLabel`/`title` are kept as
+// the authoritative Hebrew source the translation values were copied from.
 export const MODAL_SECTIONS = [
   {
-    title: 'מחשבים ורכיבים',
+    title: 'מחשבים ורכיבים', titleKey: 'modal.section_computers',
     items: [
-      { slug: 'monitors',   heLabel: 'מסכים',             Icon: Monitor,         count: null },
-      { slug: 'desktops',   heLabel: 'מחשבים שולחניים',   Icon: Server,          count: null },
-      { slug: 'laptops',    heLabel: 'מחשבים ניידים',     Icon: Laptop,          count: null },
-      { slug: 'components', heLabel: 'רכיבים',             Icon: Cpu,             count: null },
-      { slug: 'storage',    heLabel: 'אחסון ו-SSD',        Icon: HardDrive,       count: null },
-      { slug: 'components', heLabel: 'לוחות אם',      Icon: CircuitBoard,    count: null, subSlug: 'motherboards' },
-      { slug: 'components', heLabel: 'זיכרון RAM',    Icon: MemoryStick,     count: null, subSlug: 'ram' },
-      { slug: 'components', heLabel: 'ספקי כוח',      Icon: BatteryCharging, count: null, subSlug: 'psu' },
-      { slug: 'components', heLabel: 'קירור ופנים',   Icon: Wind,            count: null, subSlug: 'cooling' },
+      { slug: 'monitors',   labelKey: 'cat.monitors',              heLabel: 'מסכים',             Icon: Monitor,         count: null },
+      { slug: 'desktops',   labelKey: 'cat.desktops',              heLabel: 'מחשבים שולחניים',   Icon: Server,          count: null },
+      { slug: 'laptops',    labelKey: 'cat.laptops',               heLabel: 'מחשבים ניידים',     Icon: Laptop,          count: null },
+      { slug: 'components', labelKey: 'cat.components',            heLabel: 'רכיבים',             Icon: Cpu,             count: null },
+      { slug: 'storage',    labelKey: 'modal.item_storage_ssd',    heLabel: 'אחסון ו-SSD',        Icon: HardDrive,       count: null },
+      { slug: 'components', labelKey: 'modal.item_motherboards',   heLabel: 'לוחות אם',      Icon: CircuitBoard,    count: null, subSlug: 'motherboards' },
+      { slug: 'components', labelKey: 'modal.item_ram',            heLabel: 'זיכרון RAM',    Icon: MemoryStick,     count: null, subSlug: 'ram' },
+      { slug: 'components', labelKey: 'modal.item_psu',            heLabel: 'ספקי כוח',      Icon: BatteryCharging, count: null, subSlug: 'psu' },
+      { slug: 'components', labelKey: 'modal.item_cooling',        heLabel: 'קירור ופנים',   Icon: Wind,            count: null, subSlug: 'cooling' },
     ],
   },
   {
-    title: 'ציוד היקפי',
+    title: 'ציוד היקפי', titleKey: 'modal.section_peripherals',
     items: [
-      { slug: 'keyboards',  heLabel: 'מקלדות',         Icon: Keyboard,        count: null },
-      { slug: 'mice',       heLabel: 'עכברים',         Icon: MousePointer2,   count: null },
-      { slug: 'headphones', heLabel: 'אוזניות',        Icon: Headphones,      count: null },
-      { slug: 'accessories',heLabel: 'מיקרופונים',     Icon: Mic,             count: null },
-      { slug: 'accessories',heLabel: 'משטחי עכבר',     Icon: Mouse,           count: null },
-      { slug: 'accessories',heLabel: 'אביזרים',        Icon: Package2,        count: null },
+      { slug: 'keyboards',  labelKey: 'cat.keyboards',              heLabel: 'מקלדות',         Icon: Keyboard,        count: null },
+      { slug: 'mice',       labelKey: 'cat.mice',                   heLabel: 'עכברים',         Icon: MousePointer2,   count: null },
+      { slug: 'headphones', labelKey: 'cat.headphones',             heLabel: 'אוזניות',        Icon: Headphones,      count: null },
+      { slug: 'accessories',labelKey: 'modal.item_microphones',     heLabel: 'מיקרופונים',     Icon: Mic,             count: null },
+      { slug: 'accessories',labelKey: 'modal.item_mousepads',       heLabel: 'משטחי עכבר',     Icon: Mouse,           count: null },
+      { slug: 'accessories',labelKey: 'cat.accessories',            heLabel: 'אביזרים',        Icon: Package2,        count: null },
     ],
   },
   {
-    title: 'גיימינג וקונסולות',
+    title: 'גיימינג וקונסולות', titleKey: 'modal.section_gaming',
     items: [
-      { slug: 'gaming',     heLabel: 'גיימינג',        Icon: Gamepad2,        count: null },
-      { slug: 'gaming',     heLabel: 'אביזרי גיימינג', Icon: Zap,             count: null },
+      { slug: 'gaming',     labelKey: 'cat.gaming',                 heLabel: 'גיימינג',        Icon: Gamepad2,        count: null },
+      { slug: 'gaming',     labelKey: 'modal.item_gaming_accessories', heLabel: 'אביזרי גיימינג', Icon: Zap,          count: null },
     ],
   },
   {
-    title: 'רשת ותשתיות',
+    title: 'רשת ותשתיות', titleKey: 'modal.section_network',
     items: [
-      { slug: 'networking', heLabel: 'ראוטרים',        Icon: Wifi,            count: null },
-      { slug: 'networking', heLabel: 'מתגים ו-LAN',    Icon: Network,         count: null },
-      { slug: 'accessories',heLabel: 'הדפסה',          Icon: Printer,         count: null },
-      { slug: 'accessories',heLabel: 'מתנות וחבילות',  Icon: Package2,        count: null },
+      { slug: 'networking', labelKey: 'modal.item_routers',        heLabel: 'ראוטרים',        Icon: Wifi,            count: null },
+      { slug: 'networking', labelKey: 'modal.item_switches_lan',   heLabel: 'מתגים ו-LAN',    Icon: Network,         count: null },
+      { slug: 'accessories',labelKey: 'modal.item_printing',       heLabel: 'הדפסה',          Icon: Printer,         count: null },
+      { slug: 'accessories',labelKey: 'modal.item_gifts',          heLabel: 'מתנות וחבילות',  Icon: Package2,        count: null },
     ],
   },
 ];

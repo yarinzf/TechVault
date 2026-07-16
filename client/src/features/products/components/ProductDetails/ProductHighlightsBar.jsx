@@ -3,7 +3,9 @@ import {
   BatteryFull, Wifi, Bluetooth, Cable, MousePointer2, Ruler, Volume2,
   ShieldCheck, Mic, Palette, Info,
 } from 'lucide-react';
+import { useLanguage } from '../../../../context/LanguageContext';
 import { getProductHighlights } from '../../utils/highlights';
+import { getSpecLabel } from '../../utils/specLabels';
 import s from './ProductHighlightsBar.module.css';
 
 const ICONS = {
@@ -13,6 +15,7 @@ const ICONS = {
 };
 
 export default function ProductHighlightsBar({ product }) {
+  const { language } = useLanguage();
   const highlights = getProductHighlights(product, 6);
   if (!highlights.length) return null;
 
@@ -25,7 +28,7 @@ export default function ProductHighlightsBar({ product }) {
             <div key={key} className={s.item}>
               <div className={s.icon}><Icon size={19} /></div>
               <div className={s.title}>{value}</div>
-              <div className={s.sub}>{key}</div>
+              <div className={s.sub}>{getSpecLabel(key, language)}</div>
             </div>
           );
         })}

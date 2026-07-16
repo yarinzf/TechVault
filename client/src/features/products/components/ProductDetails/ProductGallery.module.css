@@ -1,7 +1,10 @@
 .gallery { display: flex; flex-direction: column; height: 100%; }
 .row { display: flex; gap: 9px; flex: 1; min-height: 0; }
 
-.thumbs { display: flex; flex-direction: column; gap: 7px; flex-shrink: 0; align-self: flex-start; }
+.thumbs {
+  display: flex; flex-direction: column; gap: 7px; flex-shrink: 0; align-self: flex-start;
+  max-height: 100%; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--sv-dim) transparent;
+}
 .thumb {
   width: 53px; height: 53px;
   background: var(--sv-card);
@@ -9,16 +12,24 @@
   border-radius: 9px;
   overflow: hidden;
   cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
   transition: border-color .2s ease, transform .2s ease, box-shadow .2s ease;
   padding: 0;
 }
 .thumb:hover { border-color: var(--sv-blue-l); transform: translateX(-2px); }
 .thumb:active { transform: translateX(0) scale(0.96); }
+.thumb:focus-visible { outline: 2px solid var(--sv-blue-l); outline-offset: 2px; }
 .thumbActive {
   border-color: var(--sv-blue);
   box-shadow: 0 0 0 3px rgba(37,99,235,0.16), 0 8px 16px -8px rgba(37,99,235,0.35);
 }
 .thumbImg { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.thumbPlay {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  background: rgba(10,10,15,0.45); color: #fff;
+}
 
 .mainWrap {
   background:
@@ -27,7 +38,7 @@
   border: 1px solid var(--sv-border);
   border-radius: 18px;
   flex: 1;
-  min-height: 340px;
+  min-height: 205px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -39,11 +50,21 @@
 .mainWrap:hover { border-color: rgba(59,130,246,0.35); }
 
 @keyframes galleryFadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+
+/* object-fit: contain — never crop the product; the card's gradient
+   background fills any letterboxed space around non-fill-frame images. */
 .mainImg {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   animation: galleryFadeIn 280ms ease both;
+}
+
+.mainVideo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
 }
 
 .discountBadge {
@@ -76,13 +97,13 @@
 .navNext { inset-inline-end: 14px; }
 
 @media (max-width: 1024px) {
-  .mainWrap { min-height: 280px; }
+  .mainWrap { min-height: 250px; }
 }
 
 @media (max-width: 640px) {
   .row { flex-direction: column; }
   .mainWrap { min-height: 220px; border-radius: 14px; }
-  .thumbs { flex-direction: row; align-self: stretch; overflow-x: auto; }
-  .thumb { width: 48px; height: 48px; border-radius: 9px; flex-shrink: 0; }
+  .thumbs { flex-direction: row; align-self: stretch; overflow-x: auto; overflow-y: visible; max-height: none; }
+  .thumb { width: 48px; height: 48px; border-radius: 9px; }
   .navBtn { width: 30px; height: 30px; }
 }

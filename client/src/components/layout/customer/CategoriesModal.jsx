@@ -2,9 +2,11 @@ import { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { LayoutGrid, X } from 'lucide-react';
 import { MODAL_SECTIONS } from '../../../constants/categories';
+import { useLanguage } from '../../../context/LanguageContext';
 import s from './CategoriesModal.module.css';
 
 export default function CategoriesModal({ open, onClose }) {
+  const { t, language } = useLanguage();
   const navigate  = useNavigate();
   const location  = useLocation();
 
@@ -43,7 +45,7 @@ export default function CategoriesModal({ open, onClose }) {
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
       aria-modal="true"
       role="dialog"
-      aria-label="כל הקטגוריות"
+      aria-label={t('nav.all_categories')}
     >
       <div className={s.modal}>
         {/* Top gradient line (Sapir's ::before) */}
@@ -53,17 +55,17 @@ export default function CategoriesModal({ open, onClose }) {
         <div className={s.header}>
           <div className={s.title}>
             <LayoutGrid size={20} aria-hidden="true" />
-            כל הקטגוריות
+            {t('nav.all_categories')}
           </div>
-          <button className={s.closeBtn} onClick={onClose} aria-label="סגור">
+          <button className={s.closeBtn} onClick={onClose} aria-label={t('btn.close')}>
             <X size={16} />
           </button>
         </div>
 
         {/* Sections */}
         {MODAL_SECTIONS.map((section) => (
-          <div key={section.title} className={s.section}>
-            <div className={s.sectionTitle}>{section.title}</div>
+          <div key={section.titleKey} className={s.section}>
+            <div className={s.sectionTitle}>{t(section.titleKey)}</div>
             <div className={s.grid}>
               {section.items.map((item, i) => {
                 const Icon    = item.Icon;
@@ -79,11 +81,11 @@ export default function CategoriesModal({ open, onClose }) {
                     </div>
                     <div className={s.info}>
                       <div className={`${s.name} ${isActive ? s.nameActive : ''}`}>
-                        {item.heLabel}
+                        {t(item.labelKey)}
                       </div>
                     </div>
                     {isActive && (
-                      <span className={s.activeArrow} aria-hidden="true">←</span>
+                      <span className={s.activeArrow} aria-hidden="true">{language === 'en' ? '→' : '←'}</span>
                     )}
                   </button>
                 );

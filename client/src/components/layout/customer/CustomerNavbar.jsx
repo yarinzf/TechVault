@@ -41,7 +41,7 @@ export default function CustomerNavbar({ onOpenCart = () => {} }) {
   const { totalItems }     = useCart();
   const { ids: wishIds }   = useWishlist();
   const { theme, toggle: toggleTheme } = useTheme();
-  const { language, setLanguage } = useLanguage();
+  const { language, setLanguage, t } = useLanguage();
   const navigate  = useNavigate();
   const location  = useLocation();
 
@@ -120,7 +120,7 @@ export default function CustomerNavbar({ onOpenCart = () => {} }) {
       <div className={s.inner}>
 
         {/* ── Logo ── */}
-        <Link to="/" className={s.logo} aria-label="TechVault — בית">
+        <Link to="/" className={s.logo} aria-label={t('nav.home_arialabel')}>
           <TechVaultLogo />
           <span className={s.logoText}>TechVault</span>
         </Link>
@@ -130,15 +130,15 @@ export default function CustomerNavbar({ onOpenCart = () => {} }) {
           <form onSubmit={handleSearchSubmit} role="search" className={s.navSearch}>
             <input
               className={s.navSearchInput}
-              placeholder="חפש מוצרים, מותגים, קטגוריות..."
+              placeholder={t('nav.search.placeholder')}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              aria-label="חיפוש מוצרים"
+              aria-label={t('nav.search_arialabel')}
               aria-autocomplete="list"
               aria-expanded={suggestions.length > 0}
               autoComplete="off"
             />
-            <button type="submit" className={s.navSearchBtn} aria-label="חפש">
+            <button type="submit" className={s.navSearchBtn} aria-label={t('btn.search')}>
               <Search size={17} />
             </button>
           </form>
@@ -171,7 +171,7 @@ export default function CustomerNavbar({ onOpenCart = () => {} }) {
               ))}
               <button className={s.sugAll} onClick={handleSeeAll} type="button">
                 <Search size={13} />
-                הצג את כל התוצאות עבור &ldquo;{query}&rdquo;
+                {t('nav.see_all_for')} &ldquo;{query}&rdquo;
               </button>
             </div>
           )}
@@ -184,8 +184,8 @@ export default function CustomerNavbar({ onOpenCart = () => {} }) {
           <Link
             to="/wishlist"
             className={s.navIconBtn}
-            data-tip="מועדפים"
-            aria-label={hasWishItems ? `מועדפים (${wishIds.size})` : 'מועדפים'}
+            data-tip={t('nav.wishlist')}
+            aria-label={hasWishItems ? `${t('nav.wishlist')} (${wishIds.size})` : t('nav.wishlist_arialabel')}
           >
             <Heart
               size={16}
@@ -201,7 +201,7 @@ export default function CustomerNavbar({ onOpenCart = () => {} }) {
           </Link>
 
           {/* Compare icon (UI only) */}
-          <button className={s.navIconBtn} data-tip="השוואת מוצרים" aria-label="השוואת מוצרים" type="button">
+          <button className={s.navIconBtn} data-tip={t('nav.compare')} aria-label={t('nav.compare')} type="button">
             <GitCompare size={16} strokeWidth={1.8} />
           </button>
 
@@ -211,7 +211,7 @@ export default function CustomerNavbar({ onOpenCart = () => {} }) {
           <button
             className={s.navLangBtn}
             onClick={() => setLanguage(nextLang)}
-            aria-label={`שפה: ${nextLang === 'he' ? 'עברית' : 'English'}`}
+            aria-label={`${t('lang.toggle')}: ${nextLang === 'he' ? t('lang.he') : t('lang.en')}`}
             type="button"
           >
             <Globe size={13} />
@@ -219,15 +219,15 @@ export default function CustomerNavbar({ onOpenCart = () => {} }) {
           </button>
 
           {/* Accessibility button */}
-          <button className={s.navIconBtn} data-tip="נגישות" aria-label="נגישות" type="button">
+          <button className={s.navIconBtn} data-tip={t('a11y.title')} aria-label={t('a11y.title')} type="button">
             <AccessibilityIcon />
           </button>
 
           {/* Theme toggle */}
           <button
             className={s.navIconBtn}
-            data-tip="מצב תצוגה"
-            aria-label={theme === 'dark' ? 'מצב בהיר' : 'מצב כהה'}
+            data-tip={t('theme.toggle')}
+            aria-label={theme === 'dark' ? t('theme.light') : t('theme.dark')}
             onClick={toggleTheme}
             type="button"
           >
@@ -241,9 +241,9 @@ export default function CustomerNavbar({ onOpenCart = () => {} }) {
 
           {/* Orders link — only when logged in */}
           {user && (
-            <Link to="/orders" className={s.navUserBtn} aria-label="ההזמנות שלי">
+            <Link to="/orders" className={s.navUserBtn} aria-label={t('nav.orders')}>
               <Package size={15} />
-              ההזמנות שלי
+              {t('nav.orders')}
             </Link>
           )}
 
@@ -267,24 +267,24 @@ export default function CustomerNavbar({ onOpenCart = () => {} }) {
 
               {menuOpen && (
                 <div className={s.dropdown} role="menu">
-                  <Link to="/orders"   className={s.dropdownItem} onClick={() => setMenuOpen(false)} role="menuitem"><Package size={14} />הזמנות</Link>
-                  <Link to="/wishlist" className={s.dropdownItem} onClick={() => setMenuOpen(false)} role="menuitem"><Heart size={14} />מועדפים</Link>
-                  <Link to="/profile"  className={s.dropdownItem} onClick={() => setMenuOpen(false)} role="menuitem"><User size={14} />פרופיל</Link>
+                  <Link to="/orders"   className={s.dropdownItem} onClick={() => setMenuOpen(false)} role="menuitem"><Package size={14} />{t('nav.orders')}</Link>
+                  <Link to="/wishlist" className={s.dropdownItem} onClick={() => setMenuOpen(false)} role="menuitem"><Heart size={14} />{t('nav.wishlist')}</Link>
+                  <Link to="/profile"  className={s.dropdownItem} onClick={() => setMenuOpen(false)} role="menuitem"><User size={14} />{t('nav.profile')}</Link>
 
                   {['warehouse', 'admin', 'superadmin'].includes(user?.role) && (
                     <Link to="/admin/inventory" className={s.dropdownItem} onClick={() => setMenuOpen(false)} role="menuitem">
-                      <Package size={14} />מחסן
+                      <Package size={14} />{t('nav.warehouse')}
                     </Link>
                   )}
                   {['admin', 'superadmin'].includes(user?.role) && (
                     <Link to="/admin" className={s.dropdownItem} onClick={() => setMenuOpen(false)} role="menuitem">
-                      <Zap size={14} />ניהול
+                      <Zap size={14} />{t('nav.admin')}
                     </Link>
                   )}
 
                   <div className={s.dropdownDivider} role="separator" />
                   <button className={`${s.dropdownItem} ${s.danger}`} onClick={logout} role="menuitem">
-                    <LogOut size={14} />התנתק
+                    <LogOut size={14} />{t('nav.logout')}
                   </button>
                 </div>
               )}
@@ -292,7 +292,7 @@ export default function CustomerNavbar({ onOpenCart = () => {} }) {
           ) : (
             <Link to="/login" className={s.navUserBtn}>
               <User size={15} />
-              כניסה
+              {t('nav.login')}
             </Link>
           )}
 
@@ -300,10 +300,10 @@ export default function CustomerNavbar({ onOpenCart = () => {} }) {
           <button
             className={s.navCart}
             onClick={onOpenCart}
-            aria-label={totalItems > 0 ? `עגלה, ${totalItems} פריטים` : 'עגלה'}
+            aria-label={totalItems > 0 ? `${t('nav.cart_arialabel')}, ${totalItems} ${t('nav.items')}` : t('nav.cart_arialabel')}
           >
             <ShoppingCart size={16} />
-            עגלה
+            {t('nav.cart')}
             {totalItems > 0 && (
               <span className={s.cartCount} aria-hidden="true">
                 {totalItems > 99 ? '99+' : totalItems}
@@ -315,7 +315,7 @@ export default function CustomerNavbar({ onOpenCart = () => {} }) {
           <button
             className={s.hamburger}
             onClick={() => setMobileOpen((o) => !o)}
-            aria-label={mobileOpen ? 'סגור תפריט' : 'פתח תפריט'}
+            aria-label={mobileOpen ? t('nav.mobile_close') : t('nav.mobile_open')}
             aria-expanded={mobileOpen}
           >
             {mobileOpen ? <X size={20} /> : <Menu size={20} />}
@@ -325,30 +325,30 @@ export default function CustomerNavbar({ onOpenCart = () => {} }) {
 
       {/* ── Mobile panel ── */}
       {mobileOpen && (
-        <div className={s.mobilePanel} role="navigation" aria-label="ניווט נייד">
+        <div className={s.mobilePanel} role="navigation" aria-label={t('nav.mobile_nav')}>
           <Link to="/products" className={s.mobilePanelLink} onClick={() => setMobileOpen(false)}>
-            <LayoutGrid size={16} />כל המוצרים
+            <LayoutGrid size={16} />{t('nav.all_products')}
           </Link>
 
           {user ? (
             <>
-              <Link to="/orders"   className={s.mobilePanelLink} onClick={() => setMobileOpen(false)}><Package size={16} />הזמנות</Link>
-              <Link to="/wishlist" className={s.mobilePanelLink} onClick={() => setMobileOpen(false)}><Heart size={16} />מועדפים</Link>
-              <Link to="/profile"  className={s.mobilePanelLink} onClick={() => setMobileOpen(false)}><User size={16} />פרופיל</Link>
+              <Link to="/orders"   className={s.mobilePanelLink} onClick={() => setMobileOpen(false)}><Package size={16} />{t('nav.orders')}</Link>
+              <Link to="/wishlist" className={s.mobilePanelLink} onClick={() => setMobileOpen(false)}><Heart size={16} />{t('nav.wishlist')}</Link>
+              <Link to="/profile"  className={s.mobilePanelLink} onClick={() => setMobileOpen(false)}><User size={16} />{t('nav.profile')}</Link>
               {['warehouse', 'admin', 'superadmin'].includes(user?.role) && (
-                <Link to="/admin/inventory" className={s.mobilePanelLink} onClick={() => setMobileOpen(false)}><Package size={16} />מחסן</Link>
+                <Link to="/admin/inventory" className={s.mobilePanelLink} onClick={() => setMobileOpen(false)}><Package size={16} />{t('nav.warehouse')}</Link>
               )}
               {['admin', 'superadmin'].includes(user?.role) && (
-                <Link to="/admin" className={s.mobilePanelLink} onClick={() => setMobileOpen(false)}><Zap size={16} />ניהול</Link>
+                <Link to="/admin" className={s.mobilePanelLink} onClick={() => setMobileOpen(false)}><Zap size={16} />{t('nav.admin')}</Link>
               )}
               <div className={s.mobileDivider} />
               <button className={`${s.mobilePanelLink} ${s.mobileLogout}`} onClick={() => { setMobileOpen(false); logout(); }}>
-                <LogOut size={16} />התנתק
+                <LogOut size={16} />{t('nav.logout')}
               </button>
             </>
           ) : (
             <Link to="/login" className={`${s.mobilePanelLink} ${s.mobileLoginLink}`} onClick={() => setMobileOpen(false)}>
-              <User size={16} />כניסה
+              <User size={16} />{t('nav.login')}
             </Link>
           )}
         </div>

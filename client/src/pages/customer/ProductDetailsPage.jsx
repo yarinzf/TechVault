@@ -7,7 +7,7 @@ import { useToast } from '../../hooks/useToast';
 import { useWishlist } from '../../hooks/useWishlist';
 import { useCompare, MAX_ITEMS as COMPARE_MAX_ITEMS } from '../../features/compare/context/CompareProvider';
 import { useRecentlyViewed } from '../../hooks/useRecentlyViewed';
-import { useTranslation } from '../../context/LanguageContext';
+import { useLanguage } from '../../context/LanguageContext';
 import Breadcrumb from '../../components/ui/Breadcrumb/Breadcrumb';
 import { PageSpinner } from '../../components/ui/Spinner/Spinner';
 import Footer from '../../components/layout/customer/Footer';
@@ -24,12 +24,13 @@ import FrequentlyBoughtTogether from '../../features/products/components/Product
 import { getProductPricing } from '../../features/products/utils/pricing';
 import { getProductHighlights } from '../../features/products/utils/highlights';
 import { groupProductSpecs } from '../../features/products/utils/specGroups';
+import { getCategoryLabel } from '../../features/products/utils/categoryLabels';
 import s from './ProductDetailsPage.module.css';
 
 export default function ProductPage() {
   const { slug } = useParams();
   const navigate = useNavigate();
-  const t = useTranslation();
+  const { t, language } = useLanguage();
   const { toast } = useToast();
 
   const { addItem } = useCart();
@@ -95,10 +96,11 @@ export default function ProductPage() {
   const specGroups = groupProductSpecs(product.specs, product.category?.slug);
   const recentOthers = recentlyViewed.filter((i) => i.productId !== String(product._id));
 
+  const categoryLabel = getCategoryLabel(product.category, language);
   const crumbs = [
     { label: t('product.breadcrumb_home'), href: '/' },
     { label: t('product.breadcrumb_store'), href: '/products' },
-    ...(product.category ? [{ label: product.category.name, href: `/category/${product.category.slug}` }] : []),
+    ...(product.category ? [{ label: categoryLabel, href: `/category/${product.category.slug}` }] : []),
     { label: product.name },
   ];
 
@@ -177,8 +179,7 @@ export default function ProductPage() {
 
       <div className={s.hero}>
         <ProductGallery
-          images={product.images}
-          name={product.name}
+          product={product}
           discountPercent={pricing.hasDiscount ? pricing.discountPercent : null}
           outOfStock={product.stock === 0}
         />
@@ -234,7 +235,7 @@ export default function ProductPage() {
         </ProductSectionCard>
 
         {recs.related.length > 0 && (
-          <ProductSectionCard icon={Grid3x3} label={t('product.section_related_label')} heading={product.category?.name ? `${t('product.recs_similar')} ${product.category.name}` : t('product.recs_heading')} compact>
+          <ProductSectionCard icon={Grid3x3} label={t('product.section_related_label')} heading={categoryLabel ? `${t('product.recs_similar')} ${categoryLabel}` : t('product.recs_heading')} compact>
             <RelatedProducts products={recs.related} />
           </ProductSectionCard>
         )}

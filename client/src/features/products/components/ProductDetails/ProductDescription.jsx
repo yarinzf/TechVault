@@ -3,8 +3,9 @@ import {
   BatteryFull, Wifi, Bluetooth, Cable, MousePointer2, Ruler, Volume2,
   ShieldCheck, Mic, Palette, Info,
 } from 'lucide-react';
-import { useTranslation } from '../../../../context/LanguageContext';
+import { useLanguage } from '../../../../context/LanguageContext';
 import { getProductHighlights } from '../../utils/highlights';
+import { getSpecLabel } from '../../utils/specLabels';
 import s from './ProductDescription.module.css';
 
 const ICONS = {
@@ -14,7 +15,7 @@ const ICONS = {
 };
 
 export default function ProductDescription({ product }) {
-  const t = useTranslation();
+  const { language } = useLanguage();
   const text = product.description || product.shortDescription;
   const highlights = getProductHighlights(product, 6);
 
@@ -31,7 +32,7 @@ export default function ProductDescription({ product }) {
             return (
               <div key={key} className={s.card}>
                 <Icon size={22} className={s.cardIcon} />
-                <span className={s.cardLabel}>{key}</span>
+                <span className={s.cardLabel}>{getSpecLabel(key, language)}</span>
                 <span className={s.cardVal}>{value}</span>
               </div>
             );

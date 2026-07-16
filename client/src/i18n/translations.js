@@ -21,6 +21,41 @@ export const translations = {
     'nav.mobile_open':        'פתח תפריט',
     'nav.mobile_close':       'סגור תפריט',
     'nav.mobile_nav':         'תפריט ניווט',
+    'nav.compare':            'השוואת מוצרים',
+    'nav.categories_arialabel': 'קטגוריות',
+    'nav.breadcrumb_arialabel': 'ניווט ארגזי לחם',
+    'nav.all_categories':     'כל הקטגוריות',
+    'nav.all_products':       'כל המוצרים',
+
+    /* ── Promo bar ────────────────────────────────────────────────────── */
+    'promo.close_arialabel':  'סגור פס הכרזות',
+    'promo.shipping_tag':     'משלוח חינם',
+    'promo.shipping_text':    'משלוח חינם לכל הארץ בהזמנות מעל ₪299',
+    'promo.shipping_cta':     'לקנייה עכשיו ←',
+    'promo.club_tag':         'מועדון גיימרים',
+    'promo.club_text':        'הצטרפו למועדון TechVault — ₪50 בלבד לכל החיים. הטבות, נקודות ועוד',
+    'promo.club_cta':         'הצטרפו עכשיו ←',
+    'promo.warranty_tag':     'אחריות יצרן',
+    'promo.warranty_text':    'אחריות יצרן מלאה על כל המוצרים באתר — ללא תנאים',
+    'promo.warranty_cta':     'למדיניות שלנו ←',
+
+    /* ── Categories modal ─────────────────────────────────────────────── */
+    'modal.section_computers':   'מחשבים ורכיבים',
+    'modal.section_peripherals': 'ציוד היקפי',
+    'modal.section_gaming':      'גיימינג וקונסולות',
+    'modal.section_network':     'רשת ותשתיות',
+    'modal.item_storage_ssd':          'אחסון ו-SSD',
+    'modal.item_motherboards':         'לוחות אם',
+    'modal.item_ram':                  'זיכרון RAM',
+    'modal.item_psu':                  'ספקי כוח',
+    'modal.item_cooling':              'קירור ופנים',
+    'modal.item_microphones':          'מיקרופונים',
+    'modal.item_mousepads':            'משטחי עכבר',
+    'modal.item_gaming_accessories':   'אביזרי גיימינג',
+    'modal.item_routers':              'ראוטרים',
+    'modal.item_switches_lan':         'מתגים ו-LAN',
+    'modal.item_printing':             'הדפסה',
+    'modal.item_gifts':                'מתנות וחבילות',
 
     /* ── Theme ────────────────────────────────────────────────────────── */
     'theme.dark':   'מצב כהה',
@@ -87,6 +122,7 @@ export const translations = {
 
     /* ── Category labels (static slugs in HomePage) ───────────────────── */
     'cat.laptops':     'מחשבים ניידים',
+    'cat.desktops':    'מחשבים שולחניים',
     'cat.smartphones': 'סמארטפונים',
     'cat.tablets':     'טאבלטים',
     'cat.gaming':      'גיימינג',
@@ -122,7 +158,7 @@ export const translations = {
     'home.section.best_sellers':    'הנמכרים ביותר',
 
     /* ── Product card ─────────────────────────────────────────────────── */
-    'product.out_of_stock':         'אזל המלאי',
+    'product.out_of_stock':         'אזל מהמלאי',
     'product.adding':               'מוסיף…',
     'product.add_to_wishlist':      'שמור למועדפים',
     'product.remove_from_wishlist': 'הסר ממועדפים',
@@ -192,6 +228,7 @@ export const translations = {
     'product.warranty_suffix':   'אחריות יצרן',
     'product.prev_image':        'תמונה קודמת',
     'product.next_image':        'תמונה הבאה',
+    'product.video_label':       'סרטון',
     'product.not_found_title':   'המוצר לא נמצא',
     'product.not_found_text':    'ייתכן שהמוצר הוסר או שהקישור שגוי.',
     'product.not_found_cta':     'חזרה לחנות',
@@ -205,6 +242,13 @@ export const translations = {
     'product.section_related_label':    'בחרו גם',
     'product.section_recently_label':   'היסטוריית גלישה',
     'product.section_fbt_label':        'קנייה חכמה',
+
+    /* ── Product page — stock (generic, no exact quantities) ──────────── */
+    'product.stock_in':          'במלאי',
+    'product.stock_low':         'נותרו יחידות בודדות',
+    'product.purchase_details_label': 'פרטי רכישה',
+    'product.badge_sale':        'מבצע',
+    'product.badge_popular':     'פופולרי',
 
     /* ── Product details page — dynamic specification groups ──────────── */
     'specgroup.show_more':      'הצג מפרט מלא',
@@ -227,7 +271,7 @@ export const translations = {
     'specgroup.picture_quality':'איכות תמונה',
     'specgroup.smart_platform': 'פלטפורמה חכמה',
     'specgroup.smart_features': 'תכונות חכמות',
-    'specgroup.additional':     'מפרט נוסף',
+    'specgroup.additional':     'מפרטים נוספים',
 
     /* ── Product details page — feature highlights ────────────────────── */
     'pdp.hl_gaming':   'מותאם לגיימינג',
@@ -1377,6 +1421,41 @@ export const translations = {
     'nav.mobile_open':        'Open menu',
     'nav.mobile_close':       'Close menu',
     'nav.mobile_nav':         'Navigation',
+    'nav.compare':            'Compare products',
+    'nav.categories_arialabel': 'Categories',
+    'nav.breadcrumb_arialabel': 'Breadcrumb',
+    'nav.all_categories':     'All Categories',
+    'nav.all_products':       'All Products',
+
+    /* ── Promo bar ────────────────────────────────────────────────────── */
+    'promo.close_arialabel':  'Close announcement bar',
+    'promo.shipping_tag':     'Free Shipping',
+    'promo.shipping_text':    'Free shipping nationwide on orders over ₪299',
+    'promo.shipping_cta':     'Shop now →',
+    'promo.club_tag':         'Gamer Club',
+    'promo.club_text':        'Join the TechVault Club — just ₪50 for life. Perks, points, and more',
+    'promo.club_cta':         'Join now →',
+    'promo.warranty_tag':     'Manufacturer Warranty',
+    'promo.warranty_text':    'Full manufacturer warranty on every product on the site — no conditions',
+    'promo.warranty_cta':     'See our policy →',
+
+    /* ── Categories modal ─────────────────────────────────────────────── */
+    'modal.section_computers':   'Computers & Components',
+    'modal.section_peripherals': 'Peripherals',
+    'modal.section_gaming':      'Gaming & Consoles',
+    'modal.section_network':     'Networking & Infrastructure',
+    'modal.item_storage_ssd':          'Storage & SSD',
+    'modal.item_motherboards':         'Motherboards',
+    'modal.item_ram':                  'RAM',
+    'modal.item_psu':                  'Power Supplies',
+    'modal.item_cooling':              'Cooling & Fans',
+    'modal.item_microphones':          'Microphones',
+    'modal.item_mousepads':            'Mouse Pads',
+    'modal.item_gaming_accessories':   'Gaming Accessories',
+    'modal.item_routers':              'Routers',
+    'modal.item_switches_lan':         'Switches & LAN',
+    'modal.item_printing':             'Printing',
+    'modal.item_gifts':                'Gifts & Bundles',
 
     /* ── Theme ────────────────────────────────────────────────────────── */
     'theme.dark':   'Dark Mode',
@@ -1443,6 +1522,7 @@ export const translations = {
 
     /* ── Category labels ──────────────────────────────────────────────── */
     'cat.laptops':     'Laptops',
+    'cat.desktops':    'Desktops',
     'cat.smartphones': 'Smartphones',
     'cat.tablets':     'Tablets',
     'cat.gaming':      'Gaming',
@@ -1548,6 +1628,7 @@ export const translations = {
     'product.warranty_suffix':   'manufacturer warranty',
     'product.prev_image':        'Previous image',
     'product.next_image':        'Next image',
+    'product.video_label':       'Video',
     'product.not_found_title':   'Product not found',
     'product.not_found_text':    'This product may have been removed, or the link is incorrect.',
     'product.not_found_cta':     'Back to store',
@@ -1561,6 +1642,13 @@ export const translations = {
     'product.section_related_label':    'You may also like',
     'product.section_recently_label':   'Browsing history',
     'product.section_fbt_label':        'Smart bundle',
+
+    /* ── Product page — stock (generic, no exact quantities) ──────────── */
+    'product.stock_in':          'In stock',
+    'product.stock_low':         'Only a few units left',
+    'product.purchase_details_label': 'Purchase details',
+    'product.badge_sale':        'Sale',
+    'product.badge_popular':     'Trending',
 
     /* ── Product details page — dynamic specification groups ──────────── */
     'specgroup.show_more':      'Show full spec',
@@ -1583,7 +1671,7 @@ export const translations = {
     'specgroup.picture_quality':'Picture Quality',
     'specgroup.smart_platform': 'Smart Platform',
     'specgroup.smart_features': 'Smart Features',
-    'specgroup.additional':     'Additional Specs',
+    'specgroup.additional':     'Additional Specifications',
 
     /* ── Product details page — feature highlights ────────────────────── */
     'pdp.hl_gaming':   'Gaming Optimized',
