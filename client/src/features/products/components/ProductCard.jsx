@@ -4,18 +4,20 @@ import { Heart, Plus, Loader } from 'lucide-react';
 import { useCart }     from '../../../hooks/useCart';
 import { useWishlist } from '../../../hooks/useWishlist';
 import { useToast }    from '../../../hooks/useToast';
-import { useTranslation } from '../../../context/LanguageContext';
+import { useLanguage } from '../../../context/LanguageContext';
+import { getLocalizedProductName } from '../utils/localizedProduct';
 import s from './ProductCard.module.css';
 
 export default function ProductCard({ product, rank }) {
   const { addItem }              = useCart();
   const { isInWishlist, toggle } = useWishlist();
   const { toast }                = useToast();
-  const t                        = useTranslation();
+  const { t, language }          = useLanguage();
   const navigate                 = useNavigate();
   const [adding, setAdding]      = useState(false);
 
   const wished = isInWishlist(product._id);
+  const displayName = getLocalizedProductName(product, language);
 
   const handleWishlist = (e) => {
     e.stopPropagation();
@@ -39,12 +41,12 @@ export default function ProductCard({ product, rank }) {
     setAdding(true);
     try {
       await addItem(product._id, 1, {
-        name:          product.name,
+        name:          displayName,
         price:         displayPrice,
         image:         product.images?.[0] ?? '',
         originalPrice: hasDiscount ? product.price : null,
       });
-      toast.success(`${product.name} ${t('product.added_to_cart_toast')}`);
+      toast.success(`${displayName} ${t('product.added_to_cart_toast')}`);
     } catch (err) {
       toast.error(err.message || t('product.cannot_add_toast'));
     } finally {
@@ -109,13 +111,13 @@ export default function ProductCard({ product, rank }) {
         <img
           className={s.image}
           src={product.images?.[0] || ''}
-          alt={product.name}
+          alt={displayName}
           loading="lazy"
         />
 
         {/* Rank badge — top right (.pc-rank) */}
         {rank != null && (
-          <div className={`${s.rank} ${rankClass}`} aria-label={`מקום ${rank}`}>
+          <div className={`${s.rank} ${rankClass}`} aria-label={t('product.rank_badge_label').replace('{rank}', rank)}>
             {rank}
           </div>
         )}
@@ -126,7 +128,7 @@ export default function ProductCard({ product, rank }) {
             <span className={`${s.badge} ${s.badgeSale}`}>−{discountPct}%</span>
           )}
           {product.tags?.includes('new') && (
-            <span className={`${s.badge} ${s.badgeNew}`}>חדש</span>
+            <span className={`${s.badge} ${s.badgeNew}`}>{t('product.badge_new')}</span>
           )}
         </div>
 
@@ -154,7 +156,7 @@ export default function ProductCard({ product, rank }) {
         )}
 
         {/* Name (.pc-name) */}
-        <div className={s.name}>{product.name}</div>
+        <div className={s.name}>{displayName}</div>
 
         {/* Rating (.pc-rating) */}
         {hasRating && (

@@ -6,6 +6,7 @@ const pulsar = [
     brand:       'Pulsar',
     price:       520,
     description: 'עכבר גיימינג אלחוטי Ambidextrous קל-משקל מ-Pulsar עם חיישן PixArt PAW3395 ו-2.4GHz. X2 Wireless מציע גוף סימטרי ב-55 גרם עם 26000 DPI ו-6 כפתורים. בין הבחירות הפופולריות ביותר בקהילת Esports לביצועי אלחוטי ממוצא טוב.',
+    descriptionHe: 'עכבר גיימינג אלחוטי Ambidextrous קל-משקל מ-Pulsar עם חיישן PixArt PAW3395 ו-2.4GHz. X2 Wireless מציע גוף סימטרי ב-55 גרם עם 26000 DPI ו-6 כפתורים. בין הבחירות הפופולריות ביותר בקהילת Esports לביצועי אלחוטי ממוצא טוב.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Pulsar+X2+Wireless'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -35,6 +36,7 @@ const pulsar = [
     brand:       'Pulsar',
     price:       320,
     description: 'עכבר גיימינג קווי Ambidextrous קל-משקל מ-Pulsar עם חיישן PixArt PAW3395. X2 Wired מציע גוף סימטרי ב-52 גרם עם 26000 DPI, כבל Paracord גמיש ו-6 כפתורים. הגרסה הקווית של ה-X2 הפופולרי במחיר נגיש יותר.',
+    descriptionHe: 'עכבר גיימינג קווי Ambidextrous קל-משקל מ-Pulsar עם חיישן PixArt PAW3395. X2 Wired מציע גוף סימטרי ב-52 גרם עם 26000 DPI, כבל Paracord גמיש ו-6 כפתורים. הגרסה הקווית של ה-X2 הפופולרי במחיר נגיש יותר.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Pulsar+X2+Wired'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -64,6 +66,7 @@ const pulsar = [
     brand:       'Pulsar',
     price:       550,
     description: 'עכבר גיימינג אלחוטי ממוקם לידיים גדולות מ-Pulsar עם חיישן PixArt PAW3395. X2H Wireless מציע גוף גבוה-גחון Ambidextrous ב-59 גרם עם 2.4GHz ו-26000 DPI. גרסת הגחון-גבוה של ה-X2 לגיימרים עם יד גדולה.',
+    descriptionHe: 'עכבר גיימינג אלחוטי ממוקם לידיים גדולות מ-Pulsar עם חיישן PixArt PAW3395. X2H Wireless מציע גוף גבוה-גחון Ambidextrous ב-59 גרם עם 2.4GHz ו-26000 DPI. גרסת הגחון-גבוה של ה-X2 לגיימרים עם יד גדולה.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Pulsar+X2H+Wireless'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -93,6 +96,7 @@ const pulsar = [
     brand:       'Pulsar',
     price:       480,
     description: 'עכבר גיימינג אלחוטי קל-משקל מ-Pulsar עם חיישן PixArt PAW3370 ו-2.4GHz. Xlite V2 Wireless מציע גוף Right-handed ב-60 גרם עם 19000 DPI ו-6 כפתורים. מהעכברים הקלים ביותר בקטגוריית האלחוטיים.',
+    descriptionHe: 'עכבר גיימינג אלחוטי קל-משקל מ-Pulsar עם חיישן PixArt PAW3370 ו-2.4GHz. Xlite V2 Wireless מציע גוף Right-handed ב-60 גרם עם 19000 DPI ו-6 כפתורים. מהעכברים הקלים ביותר בקטגוריית האלחוטיים.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Pulsar+Xlite+V2+Wireless'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -122,6 +126,7 @@ const pulsar = [
     brand:       'Pulsar',
     price:       280,
     description: 'עכבר גיימינג קווי קל-משקל מ-Pulsar עם חיישן PixArt PAW3370. Xlite V2 Wired מציע גוף Right-handed ב-57 גרם עם 19000 DPI וכבל Paracord גמיש. מהאפשרויות הקלות ביותר בקטגוריית הקוויים לגיימרי Esports.',
+    descriptionHe: 'עכבר גיימינג קווי קל-משקל מ-Pulsar עם חיישן PixArt PAW3370. Xlite V2 Wired מציע גוף Right-handed ב-57 גרם עם 19000 DPI וכבל Paracord גמיש. מהאפשרויות הקלות ביותר בקטגוריית הקוויים לגיימרי Esports.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Pulsar+Xlite+V2+Wired'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -151,6 +156,7 @@ const pulsar = [
     brand:       'Pulsar',
     price:       480,
     description: 'עכבר גיימינג אלחוטי מיני קל-משקל מ-Pulsar עם חיישן PixArt PAW3370. Xlite V2 Mini Wireless מציע גוף מוקטן ב-55 גרם עם 2.4GHz ו-19000 DPI. מתאים במיוחד לגיימרים עם ידיים קטנות המחפשים אלחוטי.',
+    descriptionHe: 'עכבר גיימינג אלחוטי מיני קל-משקל מ-Pulsar עם חיישן PixArt PAW3370. Xlite V2 Mini Wireless מציע גוף מוקטן ב-55 גרם עם 2.4GHz ו-19000 DPI. מתאים במיוחד לגיימרים עם ידיים קטנות המחפשים אלחוטי.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Pulsar+Xlite+V2+Mini+Wireless'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -180,6 +186,7 @@ const pulsar = [
     brand:       'Pulsar',
     price:       300,
     description: 'עכבר גיימינג קווי מיני Ambidextrous קל-משקל מ-Pulsar עם חיישן PixArt PAW3395. X2 Mini מציע גוף סימטרי מוקטן ב-50 גרם עם 26000 DPI וכבל Paracord. הקל ביותר במשפחת ה-X2 של Pulsar לידיים קטנות.',
+    descriptionHe: 'עכבר גיימינג קווי מיני Ambidextrous קל-משקל מ-Pulsar עם חיישן PixArt PAW3395. X2 Mini מציע גוף סימטרי מוקטן ב-50 גרם עם 26000 DPI וכבל Paracord. הקל ביותר במשפחת ה-X2 של Pulsar לידיים קטנות.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Pulsar+X2+Mini+Wired'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -209,6 +216,7 @@ const pulsar = [
     brand:       'Pulsar',
     price:       560,
     description: 'הדור השני של ה-X2 האלחוטי מ-Pulsar עם חיישן PixArt PAW3395 ושיפורים מרובים. X2 V2 Wireless מציע גוף Ambidextrous ב-53 גרם עם 2.4GHz ו-26000 DPI עם תחושת לחיצה משופרת. שדרוג משמעותי לדגם האלחוטי הפופולרי.',
+    descriptionHe: 'הדור השני של ה-X2 האלחוטי מ-Pulsar עם חיישן PixArt PAW3395 ושיפורים מרובים. X2 V2 Wireless מציע גוף Ambidextrous ב-53 גרם עם 2.4GHz ו-26000 DPI עם תחושת לחיצה משופרת. שדרוג משמעותי לדגם האלחוטי הפופולרי.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Pulsar+X2+V2+Wireless'],
     specs: {
       'Mouse Type':       'Gaming',

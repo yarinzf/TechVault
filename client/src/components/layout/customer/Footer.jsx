@@ -1,37 +1,38 @@
 import { Link } from 'react-router-dom';
 import { Twitter, Instagram, Youtube, Linkedin } from 'lucide-react';
+import { useTranslation } from '../../../context/LanguageContext';
 import s from './Footer.module.css';
 
 const FOOTER_COLS = [
   {
-    title: 'קטגוריות',
+    titleKey: 'footer.categories_title',
     links: [
-      { label: 'מסכי גיימינג',   to: '/products?category=monitors'   },
-      { label: 'כרטיסי מסך',     to: '/products?category=components'  },
-      { label: 'מקלדות ועכברים', to: '/products?category=keyboards'   },
-      { label: 'אוזניות',        to: '/products?category=headphones'  },
-      { label: 'מחשבים ניידים',  to: '/products?category=laptops'     },
-      { label: 'אחסון',          to: '/products?category=storage'     },
+      { labelKey: 'footer.cat_gaming_monitors', to: '/products?category=monitors'   },
+      { labelKey: 'footer.cat_graphics_cards',  to: '/products?category=components'  },
+      { labelKey: 'footer.cat_keyboards_mice',  to: '/products?category=keyboards'   },
+      { labelKey: 'footer.cat_headphones',      to: '/products?category=headphones'  },
+      { labelKey: 'footer.cat_laptops',         to: '/products?category=laptops'     },
+      { labelKey: 'footer.cat_storage',         to: '/products?category=storage'     },
     ],
   },
   {
-    title: 'שירות ללקוחות',
+    titleKey: 'footer.service_title',
     links: [
-      { label: 'צור קשר',           to: '#' },
-      { label: 'מדיניות החזרות',    to: '#' },
-      { label: 'אחריויות ותיקונים', to: '#' },
-      { label: 'שאלות נפוצות',      to: '#' },
-      { label: 'עמדות שירות',       to: '#' },
+      { labelKey: 'footer.contact_us',         to: '#' },
+      { labelKey: 'footer.returns_policy',     to: '#' },
+      { labelKey: 'footer.warranties_repairs', to: '#' },
+      { labelKey: 'footer.faq',                to: '#' },
+      { labelKey: 'footer.service_locations',  to: '#' },
     ],
   },
   {
-    title: 'החשבון שלי',
+    titleKey: 'footer.account_title',
     links: [
-      { label: 'התחברות',          to: '/login'    },
-      { label: 'הרשמה',            to: '/register' },
-      { label: 'הזמנות שלי',       to: '/orders'   },
-      { label: 'מועדפים',          to: '/wishlist' },
-      { label: 'מועדון TechVault', to: '#'         },
+      { labelKey: 'footer.login',      to: '/login'    },
+      { labelKey: 'footer.register',   to: '/register' },
+      { labelKey: 'footer.my_orders',  to: '/orders'   },
+      { labelKey: 'footer.wishlist',   to: '/wishlist' },
+      { labelKey: 'footer.club',       to: '#'         },
     ],
   },
 ];
@@ -39,6 +40,9 @@ const FOOTER_COLS = [
 // Extracted from HomePage's original local `SiteFooter` so it can be shared
 // across the storefront (e.g. the product page) instead of duplicated.
 export default function Footer() {
+  const t = useTranslation();
+  const year = new Date().getFullYear();
+
   return (
     <footer className={s.siteFooter}>
       <div className={s.footerInner}>
@@ -54,16 +58,16 @@ export default function Footer() {
               </span>
             </div>
             <p className={s.footerDesc}>
-              החנות המובילה לציוד גיימינג ותשתיות טכנולוגיות. אלפי מוצרים, מחירים תחרותיים, שירות מהיר.
+              {t('footer.brand_desc')}
             </p>
           </div>
 
           {FOOTER_COLS.map(col => (
-            <div key={col.title} className={s.footerCol}>
-              <div className={s.footerColTitle}>{col.title}</div>
+            <div key={col.titleKey} className={s.footerCol}>
+              <div className={s.footerColTitle}>{t(col.titleKey)}</div>
               {col.links.map(link => (
-                <Link key={link.label} to={link.to} className={s.footerLink}>
-                  {link.label}
+                <Link key={link.labelKey} to={link.to} className={s.footerLink}>
+                  {t(link.labelKey)}
                 </Link>
               ))}
             </div>
@@ -71,7 +75,7 @@ export default function Footer() {
         </div>
 
         <div className={s.footerBottom}>
-          <div className={s.footerCopy}>© 2025 TechVault. כל הזכויות שמורות.</div>
+          <div className={s.footerCopy}>{t('footer.copyright').replace('{year}', year)}</div>
           <div className={s.footerSocials}>
             {[
               { Icon: Twitter,   href: '#', label: 'Twitter'   },

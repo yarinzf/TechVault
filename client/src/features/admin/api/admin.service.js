@@ -176,6 +176,11 @@ export const adminService = {
     return data?.order ?? data;
   },
 
+  async getProductForEdit(id) {
+    const { data } = await api.get(`/products/${id}/admin-detail`);
+    return data?.product ?? data;
+  },
+
   async createProduct(dto) {
     const { data } = await api.post('/products', dto);
     return data?.product ?? data;

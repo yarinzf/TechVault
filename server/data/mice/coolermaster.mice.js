@@ -6,6 +6,7 @@ const coolermaster = [
     brand:       'Cooler Master',
     price:       220,
     description: 'עכבר גיימינג קל-משקל קיצוני מ-Cooler Master עם עיצוב honeycomb ייחודי בצורת "Claw shell". MM720 מציע חיישן PixArt PMW3389 ב-49 גרם בלבד, אחד הקלים ביותר בשוק. Ambidextrous עם כבל Ultra-Weave גמיש.',
+    descriptionHe: 'עכבר גיימינג קל-משקל קיצוני מ-Cooler Master עם עיצוב honeycomb ייחודי בצורת "Claw shell". MM720 מציע חיישן PixArt PMW3389 ב-49 גרם בלבד, אחד הקלים ביותר בשוק. Ambidextrous עם כבל Ultra-Weave גמיש.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Cooler+Master+MM720'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -35,6 +36,7 @@ const coolermaster = [
     brand:       'Cooler Master',
     price:       200,
     description: 'עכבר גיימינג honeycomb קל-משקל מ-Cooler Master עם מבנה מאוורר ייחודי. MM711 מציע 60 גרם עם חיישן PixArt PMW3389 וגוף Ambidextrous. תאורת RGB ניאון-כחולה ייחודית דרך חורי המבנה יוצרת אפקט ויזואלי מרהיב.',
+    descriptionHe: 'עכבר גיימינג honeycomb קל-משקל מ-Cooler Master עם מבנה מאוורר ייחודי. MM711 מציע 60 גרם עם חיישן PixArt PMW3389 וגוף Ambidextrous. תאורת RGB ניאון-כחולה ייחודית דרך חורי המבנה יוצרת אפקט ויזואלי מרהיב.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Cooler+Master+MM711'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -64,6 +66,7 @@ const coolermaster = [
     brand:       'Cooler Master',
     price:       350,
     description: 'עכבר גיימינג אלחוטי-כבל דו-מצבי קל-משקל מ-Cooler Master. MM731 מציע 59 גרם עם חיישן PixArt PAW3370, מצב 2.4GHz אלחוטי ומצב כבל גמיש. גוף Ambidextrous honeycomb עם סוללה ל-67 שעות.',
+    descriptionHe: 'עכבר גיימינג אלחוטי-כבל דו-מצבי קל-משקל מ-Cooler Master. MM731 מציע 59 גרם עם חיישן PixArt PAW3370, מצב 2.4GHz אלחוטי ומצב כבל גמיש. גוף Ambidextrous honeycomb עם סוללה ל-67 שעות.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Cooler+Master+MM731'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -93,6 +96,7 @@ const coolermaster = [
     brand:       'Cooler Master',
     price:       380,
     description: 'עכבר גיימינג פרימיום מ-Cooler Master עם גלגלת ה-dial הייחודית בצד שמאל. MM830 מציע חיישן PixArt PMW3360 ב-133 גרם עם תאורת RGB ושלוט ה-Scroll Wheel ייחודי. לגיימרים שמחפשים שליטה מלאה.',
+    descriptionHe: 'עכבר גיימינג פרימיום מ-Cooler Master עם גלגלת ה-dial הייחודית בצד שמאל. MM830 מציע חיישן PixArt PMW3360 ב-133 גרם עם תאורת RGB ושלוט ה-Scroll Wheel ייחודי. לגיימרים שמחפשים שליטה מלאה.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Cooler+Master+MM830'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -122,6 +126,7 @@ const coolermaster = [
     brand:       'Cooler Master',
     price:       150,
     description: 'עכבר גיימינג תקציבי קל מ-Cooler Master עם מבנה honeycomb. MM310 מציע 73 גרם עם חיישן PixArt PMW3325, גוף Ambidextrous ומחיר כניסה נגיש. נקודת הכניסה המושלמת לקטגוריית העכברים הקלים.',
+    descriptionHe: 'עכבר גיימינג תקציבי קל מ-Cooler Master עם מבנה honeycomb. MM310 מציע 73 גרם עם חיישן PixArt PMW3325, גוף Ambidextrous ומחיר כניסה נגיש. נקודת הכניסה המושלמת לקטגוריית העכברים הקלים.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Cooler+Master+MM310'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -151,6 +156,7 @@ const coolermaster = [
     brand:       'Cooler Master',
     price:       180,
     description: 'עכבר גיימינג Ambidextrous קל עם עיצוב honeycomb נקי מ-Cooler Master. MM712 מציע 57 גרם עם חיישן PixArt PMW3325, גוף Ambidextrous מאוורר ומחיר אטרקטיבי. מצוין לגיימרים שמחפשים קל-משקל במחיר סביר.',
+    descriptionHe: 'עכבר גיימינג Ambidextrous קל עם עיצוב honeycomb נקי מ-Cooler Master. MM712 מציע 57 גרם עם חיישן PixArt PMW3325, גוף Ambidextrous מאוורר ומחיר אטרקטיבי. מצוין לגיימרים שמחפשים קל-משקל במחיר סביר.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Cooler+Master+MM712'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -180,6 +186,7 @@ const coolermaster = [
     brand:       'Cooler Master',
     price:       210,
     description: 'גרסת הלבן של MM711 הפופולרי מ-Cooler Master עם עיצוב honeycomb נהדר. MM711 White מציע 60 גרם, חיישן PixArt PMW3389 ותאורת RGB שמאירה יפה דרך הלבן. נקי, מהיר ומדויק.',
+    descriptionHe: 'גרסת הלבן של MM711 הפופולרי מ-Cooler Master עם עיצוב honeycomb נהדר. MM711 White מציע 60 גרם, חיישן PixArt PMW3389 ותאורת RGB שמאירה יפה דרך הלבן. נקי, מהיר ומדויק.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Cooler+Master+MM711+White'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -209,6 +216,7 @@ const coolermaster = [
     brand:       'Cooler Master',
     price:       230,
     description: 'גרסת הלבן של MM720 הקל ביותר מ-Cooler Master. MM720 White שומר על 49 גרם עם חיישן PixArt PMW3389 בעיצוב Claw Shell לבן נקי. RGB שמבצבצת דרך המבנה הפתוח ביוצרת אפקט ייחודי.',
+    descriptionHe: 'גרסת הלבן של MM720 הקל ביותר מ-Cooler Master. MM720 White שומר על 49 גרם עם חיישן PixArt PMW3389 בעיצוב Claw Shell לבן נקי. RGB שמבצבצת דרך המבנה הפתוח ביוצרת אפקט ייחודי.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Cooler+Master+MM720+White'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -238,6 +246,7 @@ const coolermaster = [
     brand:       'Cooler Master',
     price:       380,
     description: 'עכבר גיימינג אלחוטי Ambidextrous מ-Cooler Master עם קישוריות Qi לטעינה אלחוטית. MM702 מציע חיישן PixArt PAW3370 ב-68 גרם עם 2.4GHz, Bluetooth ו-QI charging מובנה. פתרון אלחוטי שלם ומושלם.',
+    descriptionHe: 'עכבר גיימינג אלחוטי Ambidextrous מ-Cooler Master עם קישוריות Qi לטעינה אלחוטית. MM702 מציע חיישן PixArt PAW3370 ב-68 גרם עם 2.4GHz, Bluetooth ו-QI charging מובנה. פתרון אלחוטי שלם ומושלם.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Cooler+Master+MM702'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -267,6 +276,7 @@ const coolermaster = [
     brand:       'Cooler Master',
     price:       320,
     description: 'עכבר גיימינג אלחוטי ארגונומי לגיימרים ימניים מ-Cooler Master. MM733 מציע חיישן PixArt PAW3370 ב-80 גרם עם 2.4GHz נטול השהייה וסוללה ל-190 שעות. עיצוב ארגונומי נוח לסשנים ממושכים.',
+    descriptionHe: 'עכבר גיימינג אלחוטי ארגונומי לגיימרים ימניים מ-Cooler Master. MM733 מציע חיישן PixArt PAW3370 ב-80 גרם עם 2.4GHz נטול השהייה וסוללה ל-190 שעות. עיצוב ארגונומי נוח לסשנים ממושכים.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Cooler+Master+MM733'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -296,6 +306,7 @@ const coolermaster = [
     brand:       'Cooler Master',
     price:       170,
     description: 'עכבר גיימינג ממחלצת honeycomb קל מ-Cooler Master. MM710 מציע 53 גרם עם חיישן PixArt PMW3389, גוף Ambidextrous ומחיר אטרקטיבי. אחד מהעכברים הראשונים להביא honeycomb לשוק ההמוני.',
+    descriptionHe: 'עכבר גיימינג ממחלצת honeycomb קל מ-Cooler Master. MM710 מציע 53 גרם עם חיישן PixArt PMW3389, גוף Ambidextrous ומחיר אטרקטיבי. אחד מהעכברים הראשונים להביא honeycomb לשוק ההמוני.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Cooler+Master+MM710'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -325,6 +336,7 @@ const coolermaster = [
     brand:       'Cooler Master',
     price:       280,
     description: 'עכבר גיימינג קל אלחוטי מ-Cooler Master עם חיישן PixArt PAW3395 ב-49 גרם בלבד. MM735 מציע גוף Ambidextrous אלחוטי קל-משקל עם 2.4GHz וסוללה ל-80 שעות. ביצועי Top-tier בגוף מינימליסטי.',
+    descriptionHe: 'עכבר גיימינג קל אלחוטי מ-Cooler Master עם חיישן PixArt PAW3395 ב-49 גרם בלבד. MM735 מציע גוף Ambidextrous אלחוטי קל-משקל עם 2.4GHz וסוללה ל-80 שעות. ביצועי Top-tier בגוף מינימליסטי.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Cooler+Master+MM735'],
     specs: {
       'Mouse Type':       'Gaming',

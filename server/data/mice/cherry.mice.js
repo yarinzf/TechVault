@@ -6,6 +6,7 @@ const cherry = [
     brand:       'Cherry',
     price:       280,
     description: 'עכבר Esports פלאגשיפ קל-משקל מ-Cherry Xtrfy עם חיישן PixArt PAW3395. M64 Pro מציע גוף Ambidextrous ב-55 גרם עם כבל Kana גמיש ו-RGB. ביצועי Top-Tier בגוף אולטרה-קל לגיימרי Esports.',
+    descriptionHe: 'עכבר Esports פלאגשיפ קל-משקל מ-Cherry Xtrfy עם חיישן PixArt PAW3395. M64 Pro מציע גוף Ambidextrous ב-55 גרם עם כבל Kana גמיש ו-RGB. ביצועי Top-Tier בגוף אולטרה-קל לגיימרי Esports.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Cherry+Xtrfy+M64+Pro'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -35,6 +36,7 @@ const cherry = [
     brand:       'Cherry',
     price:       180,
     description: 'עכבר ארגונומי אלחוטי מ-Cherry עם עיצוב Vertical שמפחית עומס על הפרק. MW 4500 מציע 6 כפתורים, חיישן Optical ב-1200 DPI ו-2.4GHz עם סוללה ל-3 חודשים. תאימות DPI מרובה למשטחים שונים.',
+    descriptionHe: 'עכבר ארגונומי אלחוטי מ-Cherry עם עיצוב Vertical שמפחית עומס על הפרק. MW 4500 מציע 6 כפתורים, חיישן Optical ב-1200 DPI ו-2.4GHz עם סוללה ל-3 חודשים. תאימות DPI מרובה למשטחים שונים.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Cherry+MW+4500'],
     specs: {
       'Mouse Type':       'Vertical',
@@ -64,6 +66,7 @@ const cherry = [
     brand:       'Cherry',
     price:       120,
     description: 'עכבר אלחוטי מ-Cherry עם Dual Mode 2.4GHz ו-Bluetooth 5.0. MW 2310 מציע חיישן Optical ב-1200 DPI ב-92 גרם עם 5 כפתורים ואריכות חיים של 24 חודשים לסוללה. פשוט, אמין ומולטי-מצבי.',
+    descriptionHe: 'עכבר אלחוטי מ-Cherry עם Dual Mode 2.4GHz ו-Bluetooth 5.0. MW 2310 מציע חיישן Optical ב-1200 DPI ב-92 גרם עם 5 כפתורים ואריכות חיים של 24 חודשים לסוללה. פשוט, אמין ומולטי-מצבי.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Cherry+MW+2310'],
     specs: {
       'Mouse Type':       'Office',
@@ -93,6 +96,7 @@ const cherry = [
     brand:       'Cherry',
     price:       90,
     description: 'עכבר USB קווי מ-Cherry לשימוש Office יומיומי. MC 4900 מציע חיישן Optical ב-1000 DPI עם 3 כפתורים ועיצוב ארגונומי קלאסי. עמיד ואמין לשימוש יומיומי אינטנסיבי במשרד ובבית.',
+    descriptionHe: 'עכבר USB קווי מ-Cherry לשימוש Office יומיומי. MC 4900 מציע חיישן Optical ב-1000 DPI עם 3 כפתורים ועיצוב ארגונומי קלאסי. עמיד ואמין לשימוש יומיומי אינטנסיבי במשרד ובבית.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Cherry+MC+4900'],
     specs: {
       'Mouse Type':       'Office',
@@ -122,6 +126,7 @@ const cherry = [
     brand:       'Cherry',
     price:       100,
     description: 'עכבר אלחוטי בסיסי מ-Cherry לשימוש Office. MW 3000 מציע 2.4GHz עם חיישן Optical ב-1000 DPI ו-5 כפתורים. סוללה ל-24 חודשים ועיצוב ארגונומי קלאסי מ-Cherry הגרמנית.',
+    descriptionHe: 'עכבר אלחוטי בסיסי מ-Cherry לשימוש Office. MW 3000 מציע 2.4GHz עם חיישן Optical ב-1000 DPI ו-5 כפתורים. סוללה ל-24 חודשים ועיצוב ארגונומי קלאסי מ-Cherry הגרמנית.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Cherry+MW+3000'],
     specs: {
       'Mouse Type':       'Office',
@@ -151,6 +156,7 @@ const cherry = [
     brand:       'Cherry',
     price:       380,
     description: 'עכבר Esports אלחוטי Ambidextrous מ-Cherry Xtrfy עם חיישן PixArt PAW3395. M42 Wireless מציע גוף מודולרי עם 2.4GHz נטול השהייה ו-RGB. גוף מודולרי המאפשר התאמת כפתורים עם חירות אלחוטית מלאה.',
+    descriptionHe: 'עכבר Esports אלחוטי Ambidextrous מ-Cherry Xtrfy עם חיישן PixArt PAW3395. M42 Wireless מציע גוף מודולרי עם 2.4GHz נטול השהייה ו-RGB. גוף מודולרי המאפשר התאמת כפתורים עם חירות אלחוטית מלאה.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Cherry+Xtrfy+M42+Wireless'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -180,6 +186,7 @@ const cherry = [
     brand:       'Cherry',
     price:       80,
     description: 'עכבר USB קווי כניסה מ-Cherry עם עיצוב Ambidextrous. MC 2000 מציע חיישן Optical ב-600-1200 DPI ו-3 כפתורים בגוף קומפקטי סימטרי. מתאים לשני הידיים, עמיד ופשוט לשימוש בכל סביבה.',
+    descriptionHe: 'עכבר USB קווי כניסה מ-Cherry עם עיצוב Ambidextrous. MC 2000 מציע חיישן Optical ב-600-1200 DPI ו-3 כפתורים בגוף קומפקטי סימטרי. מתאים לשני הידיים, עמיד ופשוט לשימוש בכל סביבה.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Cherry+MC+2000'],
     specs: {
       'Mouse Type':       'Office',
@@ -209,6 +216,7 @@ const cherry = [
     brand:       'Cherry',
     price:       130,
     description: 'עכבר אלחוטי Bluetooth מ-Cherry לסביבת עסקים ופרודוקטיביות. MW 2400 מציע Bluetooth 4.0 עם חיישן Optical ב-1200 DPI ב-88 גרם עם 5 כפתורים. עמיד לשנים עם סוללה ל-3 חודשים שימוש.',
+    descriptionHe: 'עכבר אלחוטי Bluetooth מ-Cherry לסביבת עסקים ופרודוקטיביות. MW 2400 מציע Bluetooth 4.0 עם חיישן Optical ב-1200 DPI ב-88 גרם עם 5 כפתורים. עמיד לשנים עם סוללה ל-3 חודשים שימוש.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Cherry+MW+2400'],
     specs: {
       'Mouse Type':       'Office',

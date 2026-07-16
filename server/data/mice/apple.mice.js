@@ -6,6 +6,7 @@ const apple = [
     brand:       'Apple',
     price:       400,
     description: 'עכבר Multi-Touch האייקוני של Apple עם משטח גלישה מלא. Magic Mouse מציע עיצוב אלגנטי דק בגוף אלומיניום עם Bluetooth, גלילה רב-כיוונית וטעינת Lightning. שילוב מושלם עם כל מוצרי Apple.',
+    descriptionHe: 'עכבר Multi-Touch האייקוני של Apple עם משטח גלישה מלא. Magic Mouse מציע עיצוב אלגנטי דק בגוף אלומיניום עם Bluetooth, גלילה רב-כיוונית וטעינת Lightning. שילוב מושלם עם כל מוצרי Apple.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Apple+Magic+Mouse'],
     specs: {
       'Mouse Type':       'Office',
@@ -35,6 +36,7 @@ const apple = [
     brand:       'Apple',
     price:       420,
     description: 'גרסת שחור-חצות של Magic Mouse מ-Apple. מציע אותן יכולות Multi-Touch, גלילה רב-כיוונית ו-Bluetooth עם צבע Space Black אלגנטי ויוקרתי. זמין אך ורק עם מחשבי Mac בצבע Black.',
+    descriptionHe: 'גרסת שחור-חצות של Magic Mouse מ-Apple. מציע אותן יכולות Multi-Touch, גלילה רב-כיוונית ו-Bluetooth עם צבע Space Black אלגנטי ויוקרתי. זמין אך ורק עם מחשבי Mac בצבע Black.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Apple+Magic+Mouse+Black'],
     specs: {
       'Mouse Type':       'Office',
@@ -64,6 +66,7 @@ const apple = [
     brand:       'Apple',
     price:       400,
     description: 'הדור השני של Magic Mouse מ-Apple עם טעינת Lightning מובנית. Magic Mouse 2 מציע גוף אלומיניום קלאסי עם Bluetooth, Multi-Touch ואין יותר חלפות סוללות. עיצוב אחיד לסביבת Apple.',
+    descriptionHe: 'הדור השני של Magic Mouse מ-Apple עם טעינת Lightning מובנית. Magic Mouse 2 מציע גוף אלומיניום קלאסי עם Bluetooth, Multi-Touch ואין יותר חלפות סוללות. עיצוב אחיד לסביבת Apple.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Apple+Magic+Mouse+2'],
     specs: {
       'Mouse Type':       'Office',

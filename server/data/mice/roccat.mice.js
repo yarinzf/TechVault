@@ -6,6 +6,7 @@ const roccat = [
     brand:            'Roccat',
     price:            720,
     description:      'עכבר גיימינג אלחוטי פרימיום מבית Roccat עם חיישן PixArt מתקדם ועיצוב ארגונומי ל-Palm Grip. הקל בסדרת Kone עם משקל 75 גרם בלבד, מציע ביצועים של עכבר מקצועי עם חיבור אלחוטי נטול השהייה.',
+    descriptionHe: 'עכבר גיימינג אלחוטי פרימיום מבית Roccat עם חיישן PixArt מתקדם ועיצוב ארגונומי ל-Palm Grip. הקל בסדרת Kone עם משקל 75 גרם בלבד, מציע ביצועים של עכבר מקצועי עם חיבור אלחוטי נטול השהייה.',
     images:           ['https://placehold.co/800x600/1a1a2e/ffffff?text=Roccat+Kone+Pro+Air'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -35,6 +36,7 @@ const roccat = [
     brand:            'Roccat',
     price:            450,
     description:      'גרסת הכבל של Kone Pro המיתולוגי מ-Roccat. חיישן PixArt בהירות עם 16000 DPI, מבנה honeycomb ידני ועיצוב Right-handed מתוחכם. משקל אולטרה-קל של 66 גרם מאפשר שליטה מושלמת בתנועה מהירה.',
+    descriptionHe: 'גרסת הכבל של Kone Pro המיתולוגי מ-Roccat. חיישן PixArt בהירות עם 16000 DPI, מבנה honeycomb ידני ועיצוב Right-handed מתוחכם. משקל אולטרה-קל של 66 גרם מאפשר שליטה מושלמת בתנועה מהירה.',
     images:           ['https://placehold.co/800x600/1a1a2e/ffffff?text=Roccat+Kone+Pro'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -64,6 +66,7 @@ const roccat = [
     brand:            'Roccat',
     price:            580,
     description:      'עכבר גיימינג אלחוטי רב-מצבי עם 15 כפתורים ניתנים לתכנות. Kone XP Air מאגד קישוריות Bluetooth, אלחוטית ו-USB בגוף ארגונומי אחד. תאורת RGB תלת-ממדית ייחודית וחיישן PixArt בדיוק 19000 DPI.',
+    descriptionHe: 'עכבר גיימינג אלחוטי רב-מצבי עם 15 כפתורים ניתנים לתכנות. Kone XP Air מאגד קישוריות Bluetooth, אלחוטית ו-USB בגוף ארגונומי אחד. תאורת RGB תלת-ממדית ייחודית וחיישן PixArt בדיוק 19000 DPI.',
     images:           ['https://placehold.co/800x600/1a1a2e/ffffff?text=Roccat+Kone+XP+Air'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -93,6 +96,7 @@ const roccat = [
     brand:            'Roccat',
     price:            380,
     description:      'עכבר גיימינג ב-USB עם 15 כפתורים הניתנים לתכנות מלא דרך תוכנת Roccat Swarm. חיישן PixArt ב-19000 DPI ותאורת RGB NOVA שמאירה 16.8 מיליון צבעים. מתאים במיוחד לגיימרים שאוהבים שליטה מוחלטת על כל כפתור.',
+    descriptionHe: 'עכבר גיימינג ב-USB עם 15 כפתורים הניתנים לתכנות מלא דרך תוכנת Roccat Swarm. חיישן PixArt ב-19000 DPI ותאורת RGB NOVA שמאירה 16.8 מיליון צבעים. מתאים במיוחד לגיימרים שאוהבים שליטה מוחלטת על כל כפתור.',
     images:           ['https://placehold.co/800x600/1a1a2e/ffffff?text=Roccat+Kone+XP'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -122,6 +126,7 @@ const roccat = [
     brand:            'Roccat',
     price:            450,
     description:      'עכבר אלחוטי קל-משקל לשני הידיים עם חיישן PixArt ב-19000 DPI. Burst Pro Air נולד לאסקורט עם צורת Ambidextrous, Claw Grip אופטימלי וביצועים אלחוטיים ב-2.4GHz נטול השהייה.',
+    descriptionHe: 'עכבר אלחוטי קל-משקל לשני הידיים עם חיישן PixArt ב-19000 DPI. Burst Pro Air נולד לאסקורט עם צורת Ambidextrous, Claw Grip אופטימלי וביצועים אלחוטיים ב-2.4GHz נטול השהייה.',
     images:           ['https://placehold.co/800x600/1a1a2e/ffffff?text=Roccat+Burst+Pro+Air'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -151,6 +156,7 @@ const roccat = [
     brand:            'Roccat',
     price:            320,
     description:      'עכבר ב-USB אסקורט קל-משקל עם חיישן PixArt ב-16000 DPI. Burst Pro מביא ביצועים פרו בגוף Ambidextrous ייחודי של 68 גרם בלבד. מעולה לשחקני CS ו-Valorant שמחפשים יתרון בדיוק.',
+    descriptionHe: 'עכבר ב-USB אסקורט קל-משקל עם חיישן PixArt ב-16000 DPI. Burst Pro מביא ביצועים פרו בגוף Ambidextrous ייחודי של 68 גרם בלבד. מעולה לשחקני CS ו-Valorant שמחפשים יתרון בדיוק.',
     images:           ['https://placehold.co/800x600/1a1a2e/ffffff?text=Roccat+Burst+Pro'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -180,6 +186,7 @@ const roccat = [
     brand:            'Roccat',
     price:            180,
     description:      'עכבר גיימינג ידידותי לתקציב מסדרת Burst של Roccat. גוף Ambidextrous קל עם חיישן PixArt ב-8500 DPI ותאורת RGB. נקודת כניסה מצוינת לעולם עכברי הגיימינג הרציניים.',
+    descriptionHe: 'עכבר גיימינג ידידותי לתקציב מסדרת Burst של Roccat. גוף Ambidextrous קל עם חיישן PixArt ב-8500 DPI ותאורת RGB. נקודת כניסה מצוינת לעולם עכברי הגיימינג הרציניים.',
     images:           ['https://placehold.co/800x600/1a1a2e/ffffff?text=Roccat+Burst+Core'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -209,6 +216,7 @@ const roccat = [
     brand:            'Roccat',
     price:            280,
     description:      'עכבר גיימינג אולטרה-קל ב-66 גרם בעיצוב Right-handed ארגונומי מסדרת Kone. חיישן PixArt ב-16000 DPI עם מבנה פתוח חדשני שמוריד משקל מבלי לפגוע בחוזק המבנה.',
+    descriptionHe: 'עכבר גיימינג אולטרה-קל ב-66 גרם בעיצוב Right-handed ארגונומי מסדרת Kone. חיישן PixArt ב-16000 DPI עם מבנה פתוח חדשני שמוריד משקל מבלי לפגוע בחוזק המבנה.',
     images:           ['https://placehold.co/800x600/1a1a2e/ffffff?text=Roccat+Kone+Pure+Ultra'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -238,6 +246,7 @@ const roccat = [
     brand:            'Roccat',
     price:            280,
     description:      'עכבר גיימינג עם מנוע תאורת AIMO מתקדם ומיקרו-מתגים OPT מבוססי אור. Kain 202 מגיש חיישן PixArt ב-16000 DPI בגוף ארגונומי Right-handed עם תגובה מהירה ב-0.2ms.',
+    descriptionHe: 'עכבר גיימינג עם מנוע תאורת AIMO מתקדם ומיקרו-מתגים OPT מבוססי אור. Kain 202 מגיש חיישן PixArt ב-16000 DPI בגוף ארגונומי Right-handed עם תגובה מהירה ב-0.2ms.',
     images:           ['https://placehold.co/800x600/1a1a2e/ffffff?text=Roccat+Kain+202+AIMO'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -267,6 +276,7 @@ const roccat = [
     brand:            'Roccat',
     price:            220,
     description:      'גרסה חסכונית של סדרת Kain מ-Roccat עם מיקרו-מתגים מכניים ותאורת AIMO חכמה. חיישן PixArt ב-16000 DPI ועיצוב ארגונומי Right-handed מציעים ביצועים מצוינים במחיר נגיש.',
+    descriptionHe: 'גרסה חסכונית של סדרת Kain מ-Roccat עם מיקרו-מתגים מכניים ותאורת AIMO חכמה. חיישן PixArt ב-16000 DPI ועיצוב ארגונומי Right-handed מציעים ביצועים מצוינים במחיר נגיש.',
     images:           ['https://placehold.co/800x600/1a1a2e/ffffff?text=Roccat+Kain+122+AIMO'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -296,6 +306,7 @@ const roccat = [
     brand:            'Roccat',
     price:            180,
     description:      'עכבר גיימינג כניסה מסדרת Kain של Roccat עם תאורת AIMO ומיקרו-מתגים מכניים. חיישן PixArt ב-8500 DPI בגוף Right-handed ארגונומי נוח ומחיר אטרקטיבי.',
+    descriptionHe: 'עכבר גיימינג כניסה מסדרת Kain של Roccat עם תאורת AIMO ומיקרו-מתגים מכניים. חיישן PixArt ב-8500 DPI בגוף Right-handed ארגונומי נוח ומחיר אטרקטיבי.',
     images:           ['https://placehold.co/800x600/1a1a2e/ffffff?text=Roccat+Kain+102+AIMO'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -325,6 +336,7 @@ const roccat = [
     brand:            'Roccat',
     price:            320,
     description:      'עכבר גיימינג רב-כפתורי מתקדם עם 14 כפתורים הניתנים לתכנות ומתג Fin מהפכני בצד. Tyon מציע שליטה מלאה בכל מצב גיימינג עם חיישן PixArt ב-8200 DPI ותאורת RGB.',
+    descriptionHe: 'עכבר גיימינג רב-כפתורי מתקדם עם 14 כפתורים הניתנים לתכנות ומתג Fin מהפכני בצד. Tyon מציע שליטה מלאה בכל מצב גיימינג עם חיישן PixArt ב-8200 DPI ותאורת RGB.',
     images:           ['https://placehold.co/800x600/1a1a2e/ffffff?text=Roccat+Tyon'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -354,6 +366,7 @@ const roccat = [
     brand:            'Roccat',
     price:            420,
     description:      'עכבר MMO מודולרי עם 19 כפתורים מבית Roccat. Nyth מאפשר החלפת חלקים ועיצוב אישי לפי צרכי הגיימר, כולל כפתורי צד מודולריים. חיישן PixArt ב-12000 DPI מעניק דיוק בטאנק ובכישורים.',
+    descriptionHe: 'עכבר MMO מודולרי עם 19 כפתורים מבית Roccat. Nyth מאפשר החלפת חלקים ועיצוב אישי לפי צרכי הגיימר, כולל כפתורי צד מודולריים. חיישן PixArt ב-12000 DPI מעניק דיוק בטאנק ובכישורים.',
     images:           ['https://placehold.co/800x600/1a1a2e/ffffff?text=Roccat+Nyth'],
     specs: {
       'Mouse Type':       'MMO',
@@ -383,6 +396,7 @@ const roccat = [
     brand:            'Roccat',
     price:            220,
     description:      'עכבר Ambidextrous לשני ידיים עם תאורת AIMO חכמה ו-9 כפתורים מתכנתים. Kova AIMO מציע חיישן PixArt ב-7000 DPI בגוף סימטרי מאוזן לגיימרים שמשחקים בשתי הידיים.',
+    descriptionHe: 'עכבר Ambidextrous לשני ידיים עם תאורת AIMO חכמה ו-9 כפתורים מתכנתים. Kova AIMO מציע חיישן PixArt ב-7000 DPI בגוף סימטרי מאוזן לגיימרים שמשחקים בשתי הידיים.',
     images:           ['https://placehold.co/800x600/1a1a2e/ffffff?text=Roccat+Kova+AIMO'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -412,6 +426,7 @@ const roccat = [
     brand:            'Roccat',
     price:            350,
     description:      'עכבר גיימינג אלחוטי מקצועי עם 12 כפתורים ניתנים לתכנות וחיישן PixArt ב-7000 DPI. Leadr מביא חיבור אלחוטי 2.4GHz אמין עם סוללה לכ-10 שעות שימוש לגיימרים שמסרבים לשום כבל.',
+    descriptionHe: 'עכבר גיימינג אלחוטי מקצועי עם 12 כפתורים ניתנים לתכנות וחיישן PixArt ב-7000 DPI. Leadr מביא חיבור אלחוטי 2.4GHz אמין עם סוללה לכ-10 שעות שימוש לגיימרים שמסרבים לשום כבל.',
     images:           ['https://placehold.co/800x600/1a1a2e/ffffff?text=Roccat+Leadr'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -441,6 +456,7 @@ const roccat = [
     brand:            'Roccat',
     price:            280,
     description:      'עכבר הדגל ההיסטורי של Roccat עם מנוע תאורת AIMO ו-10 כפתורים מתכנתים. Kone AIMO מציע חיישן PixArt ב-12000 DPI בגוף ארגונומי Right-handed קלאסי שהפך לאייקון בתעשייה.',
+    descriptionHe: 'עכבר הדגל ההיסטורי של Roccat עם מנוע תאורת AIMO ו-10 כפתורים מתכנתים. Kone AIMO מציע חיישן PixArt ב-12000 DPI בגוף ארגונומי Right-handed קלאסי שהפך לאייקון בתעשייה.',
     images:           ['https://placehold.co/800x600/1a1a2e/ffffff?text=Roccat+Kone+AIMO'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -470,6 +486,7 @@ const roccat = [
     brand:            'Roccat',
     price:            180,
     description:      'עכבר Ambidextrous קומפקטי בגימור Military Edition מ-Roccat. חיישן PixArt ב-6400 DPI עם 7 כפתורים בעיצוב נוקשה ודיסקרטי. מתאים לגיימרים שמעדיפים מראה קלאסי ללא תאורת RGB.',
+    descriptionHe: 'עכבר Ambidextrous קומפקטי בגימור Military Edition מ-Roccat. חיישן PixArt ב-6400 DPI עם 7 כפתורים בעיצוב נוקשה ודיסקרטי. מתאים לגיימרים שמעדיפים מראה קלאסי ללא תאורת RGB.',
     images:           ['https://placehold.co/800x600/1a1a2e/ffffff?text=Roccat+Kova+Pure+Military'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -499,6 +516,7 @@ const roccat = [
     brand:            'Roccat',
     price:            150,
     description:      'עכבר גיימינג Ambidextrous עם כפתורי צד מודולריים מ-Roccat. Kiro מאפשר הסרה והחלפת כפתורי הצד לפי העדפת הגיימר בחיישן PixArt ב-5000 DPI ומחיר כניסה נגיש.',
+    descriptionHe: 'עכבר גיימינג Ambidextrous עם כפתורי צד מודולריים מ-Roccat. Kiro מאפשר הסרה והחלפת כפתורי הצד לפי העדפת הגיימר בחיישן PixArt ב-5000 DPI ומחיר כניסה נגיש.',
     images:           ['https://placehold.co/800x600/1a1a2e/ffffff?text=Roccat+Kiro'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -528,6 +546,7 @@ const roccat = [
     brand:            'Roccat',
     price:            150,
     description:      'עכבר גיימינג Ambidextrous קל-משקל ממשפחת Burst של Roccat. גוף 68 גרם קומפקטי עם חיישן PixArt ב-8500 DPI ו-5 כפתורים נקיים. מציע ביצועי אסקורט במחיר ידידותי לתקציב.',
+    descriptionHe: 'עכבר גיימינג Ambidextrous קל-משקל ממשפחת Burst של Roccat. גוף 68 גרם קומפקטי עם חיישן PixArt ב-8500 DPI ו-5 כפתורים נקיים. מציע ביצועי אסקורט במחיר ידידותי לתקציב.',
     images:           ['https://placehold.co/800x600/1a1a2e/ffffff?text=Roccat+Burst'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -557,6 +576,7 @@ const roccat = [
     brand:            'Roccat',
     price:            150,
     description:      'עכבר גיימינג קלאסי מסדרת Kone XTD עם חיישן אופטי ו-11 כפתורים מתכנתים. Kone XTD Optical מייצג את מורשת Roccat בעיצוב Right-handed ארגונומי עם תאורת RGB ב-6000 DPI.',
+    descriptionHe: 'עכבר גיימינג קלאסי מסדרת Kone XTD עם חיישן אופטי ו-11 כפתורים מתכנתים. Kone XTD Optical מייצג את מורשת Roccat בעיצוב Right-handed ארגונומי עם תאורת RGB ב-6000 DPI.',
     images:           ['https://placehold.co/800x600/1a1a2e/ffffff?text=Roccat+Kone+XTD+Optical'],
     specs: {
       'Mouse Type':       'Gaming',

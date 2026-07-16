@@ -25,6 +25,16 @@ const productSchema = new mongoose.Schema(
     description: { type: String, required: [true, 'Description is required'], trim: true },
     shortDescription: { type: String, trim: true },
 
+    // Optional Hebrew counterparts — additive, backward-compatible bilingual
+    // support. Brand/model names typically stay in the base `name` field
+    // (e.g. "ASUS ROG Swift PG27AQDM"); `nameHe` is only set when a genuinely
+    // localized product name makes sense. Both frontend and API fall back to
+    // the English fields whenever these are absent — see
+    // client/src/features/products/utils/localizedProduct.js.
+    nameHe:             { type: String, trim: true, maxlength: [200, 'Name cannot exceed 200 characters'] },
+    descriptionHe:       { type: String, trim: true },
+    shortDescriptionHe:  { type: String, trim: true },
+
     sku: { type: String, unique: true, uppercase: true },
 
     category: {

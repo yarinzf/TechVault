@@ -6,6 +6,10 @@ const createProductSchema = Joi.object({
   name:             Joi.string().min(3).max(200).trim().required(),
   description:      Joi.string().trim().required(),
   shortDescription: Joi.string().trim().optional(),
+  // Optional Hebrew counterparts — additive bilingual support, never required.
+  nameHe:             Joi.string().max(200).trim().allow('').optional(),
+  descriptionHe:      Joi.string().trim().allow('').optional(),
+  shortDescriptionHe: Joi.string().trim().allow('').optional(),
   category:         Joi.string().hex().length(24).required(),
   brand:            Joi.string().trim().optional(),
   price:            Joi.number().min(0).required(),

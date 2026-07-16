@@ -6,6 +6,7 @@ const genius = [
     brand:       'Genius',
     price:       120,
     description: 'עכבר גיימינג עם 7 כפתורים ו-RGB מ-Genius GX Gaming. Scorpion M8-610 מציע חיישן Optical ב-10000 DPI, עיצוב ארגונומי ומשקל מתכוונן. ביצועי גיימינג נוחים במחיר תקציבי נגיש.',
+    descriptionHe: 'עכבר גיימינג עם 7 כפתורים ו-RGB מ-Genius GX Gaming. Scorpion M8-610 מציע חיישן Optical ב-10000 DPI, עיצוב ארגונומי ומשקל מתכוונן. ביצועי גיימינג נוחים במחיר תקציבי נגיש.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Genius+GX+Scorpion+M8-610'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -35,6 +36,7 @@ const genius = [
     brand:       'Genius',
     price:       90,
     description: 'עכבר גיימינג כניסה מ-Genius GX Gaming עם חיישן Optical ב-6000 DPI ו-6 כפתורים מתכנתים. Scorpion M6-600 מציע עיצוב Dragon ייחודי עם תאורת LED אדומה ומחיר המציל תקציב.',
+    descriptionHe: 'עכבר גיימינג כניסה מ-Genius GX Gaming עם חיישן Optical ב-6000 DPI ו-6 כפתורים מתכנתים. Scorpion M6-600 מציע עיצוב Dragon ייחודי עם תאורת LED אדומה ומחיר המציל תקציב.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Genius+GX+Scorpion+M6-600'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -64,6 +66,7 @@ const genius = [
     brand:       'Genius',
     price:       150,
     description: 'עכבר ארגונומי אנכי אלחוטי מ-Genius לשיפור יציבת הפרק. ErgoLogic 8000 מציע עיצוב Vertical עם 2.4GHz, חיישן Optical ב-1000 DPI וסוללה ל-12 חודשים. מפחית עייפות ידיים בשימוש ממושך.',
+    descriptionHe: 'עכבר ארגונומי אנכי אלחוטי מ-Genius לשיפור יציבת הפרק. ErgoLogic 8000 מציע עיצוב Vertical עם 2.4GHz, חיישן Optical ב-1000 DPI וסוללה ל-12 חודשים. מפחית עייפות ידיים בשימוש ממושך.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Genius+ErgoLogic+8000'],
     specs: {
       'Mouse Type':       'Vertical',
@@ -93,6 +96,7 @@ const genius = [
     brand:       'Genius',
     price:       100,
     description: 'עכבר אלחוטי דו-מצבי מ-Genius עם Bluetooth ו-2.4GHz. MX8000X מציע חיישן Optical ב-1200 DPI עם 6 כפתורים וגלגלת אופקית ייחודית לגלילה רוחבית. פתרון מולטי-מצב לפרודוקטיביות.',
+    descriptionHe: 'עכבר אלחוטי דו-מצבי מ-Genius עם Bluetooth ו-2.4GHz. MX8000X מציע חיישן Optical ב-1200 DPI עם 6 כפתורים וגלגלת אופקית ייחודית לגלילה רוחבית. פתרון מולטי-מצב לפרודוקטיביות.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Genius+MX8000X'],
     specs: {
       'Mouse Type':       'Office',
@@ -122,6 +126,7 @@ const genius = [
     brand:       'Genius',
     price:       40,
     description: 'עכבר USB קווי בסיסי מ-Genius לשימוש יומיומי. DX-120 מציע חיישן Optical ב-1000 DPI, 3 כפתורים ועיצוב ארגונומי פשוט. הפתרון הפשוט והזול ביותר לעבודה ולמחשב ביתי.',
+    descriptionHe: 'עכבר USB קווי בסיסי מ-Genius לשימוש יומיומי. DX-120 מציע חיישן Optical ב-1000 DPI, 3 כפתורים ועיצוב ארגונומי פשוט. הפתרון הפשוט והזול ביותר לעבודה ולמחשב ביתי.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Genius+DX-120'],
     specs: {
       'Mouse Type':       'Office',
@@ -151,6 +156,7 @@ const genius = [
     brand:       'Genius',
     price:       80,
     description: 'עכבר אלחוטי בסיסי מ-Genius עם 2.4GHz וחיישן Optical ב-1200 DPI. NX-7000 מציע 3 כפתורים, עיצוב ארגונומי קלאסי וסוללה ל-12 חודשים. מתאים לעבודה יומיומית ולשימוש ביתי.',
+    descriptionHe: 'עכבר אלחוטי בסיסי מ-Genius עם 2.4GHz וחיישן Optical ב-1200 DPI. NX-7000 מציע 3 כפתורים, עיצוב ארגונומי קלאסי וסוללה ל-12 חודשים. מתאים לעבודה יומיומית ולשימוש ביתי.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Genius+NX-7000'],
     specs: {
       'Mouse Type':       'Office',

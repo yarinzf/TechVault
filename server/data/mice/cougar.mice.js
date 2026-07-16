@@ -6,6 +6,7 @@ const cougar = [
     brand:       'Cougar',
     price:       320,
     description: 'עכבר גיימינג קל-משקל Esports מ-Cougar עם חיישן PixArt PAW3395 וגוף חרור. Airblader Tournament מציע גוף Ambidextrous ב-57 גרם עם 26000 DPI, מתגי Omron ו-6 כפתורים. הביצועי-הקל של Cougar לגיימרי Esports.',
+    descriptionHe: 'עכבר גיימינג קל-משקל Esports מ-Cougar עם חיישן PixArt PAW3395 וגוף חרור. Airblader Tournament מציע גוף Ambidextrous ב-57 גרם עם 26000 DPI, מתגי Omron ו-6 כפתורים. הביצועי-הקל של Cougar לגיימרי Esports.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Cougar+Airblader+Tournament'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -35,6 +36,7 @@ const cougar = [
     brand:       'Cougar',
     price:       220,
     description: 'עכבר גיימינג קווי מ-Cougar עם חיישן PixArt PMW3327 ב-6200 DPI. Minos X5 מציע גוף ארגונומי ב-110 גרם עם 6 כפתורים ו-RGB צבעוני. עכבר גיימינג מוצק ממותג Cougar בנקודת מחיר אטרקטיבית.',
+    descriptionHe: 'עכבר גיימינג קווי מ-Cougar עם חיישן PixArt PMW3327 ב-6200 DPI. Minos X5 מציע גוף ארגונומי ב-110 גרם עם 6 כפתורים ו-RGB צבעוני. עכבר גיימינג מוצק ממותג Cougar בנקודת מחיר אטרקטיבית.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Cougar+Minos+X5'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -64,6 +66,7 @@ const cougar = [
     brand:       'Cougar',
     price:       280,
     description: 'עכבר גיימינג קווי מתכוונן מ-Cougar עם חיישן PixArt ב-16000 DPI ומכסה מתחלף. 700M EVO מציע 9 כפתורים עם גוף מודולרי ב-128 גרם ו-RGB מלא. אפשרות נדירה בשוק — עכבר גיימינג עם מכסים ניתנים לשינוי.',
+    descriptionHe: 'עכבר גיימינג קווי מתכוונן מ-Cougar עם חיישן PixArt ב-16000 DPI ומכסה מתחלף. 700M EVO מציע 9 כפתורים עם גוף מודולרי ב-128 גרם ו-RGB מלא. אפשרות נדירה בשוק — עכבר גיימינג עם מכסים ניתנים לשינוי.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Cougar+700M+EVO'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -93,6 +96,7 @@ const cougar = [
     brand:       'Cougar',
     price:       240,
     description: 'עכבר גיימינג קווי מ-Cougar עם חיישן PixArt PMW3330 ב-7200 DPI. Revenger ST מציע גוף ארגונומי ב-100 גרם עם 7 כפתורים ו-RGB COUGAR UIX. עיצוב אגרסיבי טיפוסי Cougar עם ביצועים מוצקים לגיימינג יומיומי.',
+    descriptionHe: 'עכבר גיימינג קווי מ-Cougar עם חיישן PixArt PMW3330 ב-7200 DPI. Revenger ST מציע גוף ארגונומי ב-100 גרם עם 7 כפתורים ו-RGB COUGAR UIX. עיצוב אגרסיבי טיפוסי Cougar עם ביצועים מוצקים לגיימינג יומיומי.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Cougar+Revenger+ST'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -122,6 +126,7 @@ const cougar = [
     brand:       'Cougar',
     price:       180,
     description: 'עכבר גיימינג קווי ביצועים-לכסף מ-Cougar עם חיישן Optical ב-7200 DPI. Surpassion RX מציע גוף ב-95 גרם עם 7 כפתורים ו-RGB בסיסי. אופציה מצוינת לגיימרים שרוצים ביצועי Cougar בתקציב מינימלי.',
+    descriptionHe: 'עכבר גיימינג קווי ביצועים-לכסף מ-Cougar עם חיישן Optical ב-7200 DPI. Surpassion RX מציע גוף ב-95 גרם עם 7 כפתורים ו-RGB בסיסי. אופציה מצוינת לגיימרים שרוצים ביצועי Cougar בתקציב מינימלי.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Cougar+Surpassion+RX'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -151,6 +156,7 @@ const cougar = [
     brand:       'Cougar',
     price:       150,
     description: 'עכבר גיימינג קווי כניסה מ-Cougar עם חיישן Optical ב-3200 DPI. Minos XT מציע גוף ב-112 גרם עם 6 כפתורים ו-RGB בסיסי. הכניסה הזולה ביותר לאקוסיסטם ה-Cougar לגיימרים מתחילים.',
+    descriptionHe: 'עכבר גיימינג קווי כניסה מ-Cougar עם חיישן Optical ב-3200 DPI. Minos XT מציע גוף ב-112 גרם עם 6 כפתורים ו-RGB בסיסי. הכניסה הזולה ביותר לאקוסיסטם ה-Cougar לגיימרים מתחילים.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Cougar+Minos+XT'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -180,6 +186,7 @@ const cougar = [
     brand:       'Cougar',
     price:       260,
     description: 'עכבר גיימינג קל-משקל מ-Cougar עם חיישן PixArt PMW3335 ב-16000 DPI וגוף חרור. Airblader מציע גוף Ambidextrous ב-63 גרם עם 6 כפתורים ו-RGB צבעוני. הגרסה המקורית של ה-Airblader לפני ה-Tournament Edition.',
+    descriptionHe: 'עכבר גיימינג קל-משקל מ-Cougar עם חיישן PixArt PMW3335 ב-16000 DPI וגוף חרור. Airblader מציע גוף Ambidextrous ב-63 גרם עם 6 כפתורים ו-RGB צבעוני. הגרסה המקורית של ה-Airblader לפני ה-Tournament Edition.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Cougar+Airblader'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -209,6 +216,7 @@ const cougar = [
     brand:       'Cougar',
     price:       200,
     description: 'עכבר גיימינג קווי פרמיום מ-Cougar עם חיישן PixArt PMW3327 ב-6200 DPI. Minos Elite מציע גוף ארגונומי ב-93 גרם עם 6 כפתורים ו-RGB UIX System. גרסת ה-Elite של ה-Minos עם שיפורים משמעותיים.',
+    descriptionHe: 'עכבר גיימינג קווי פרמיום מ-Cougar עם חיישן PixArt PMW3327 ב-6200 DPI. Minos Elite מציע גוף ארגונומי ב-93 גרם עם 6 כפתורים ו-RGB UIX System. גרסת ה-Elite של ה-Minos עם שיפורים משמעותיים.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Cougar+Minos+Elite'],
     specs: {
       'Mouse Type':       'Gaming',

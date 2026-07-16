@@ -10,12 +10,16 @@
 //
 // If the backend later adds a real `media`/`videos` field, this is the only
 // place that needs to change to wire it in.
-export function buildGalleryMedia(product) {
+//
+// @param {string} [displayName] Localized product name for alt text —
+// pass `getLocalizedProductName(product, language)` from the caller so
+// gallery alt text/aria-labels respect the current language too.
+export function buildGalleryMedia(product, displayName = product.name) {
   const images = product.images?.length ? product.images : [];
   const media = images.map((url, i) => ({
     type: 'image',
     url,
-    alt: `${product.name} — ${i + 1}/${images.length}`,
+    alt: `${displayName} — ${i + 1}/${images.length}`,
   }));
 
   // Optional, additive video support — only rendered if the product actually
@@ -26,7 +30,7 @@ export function buildGalleryMedia(product) {
       type: 'video',
       url: video.url,
       poster: video.poster || images[0] || undefined,
-      title: video.title || product.name,
+      title: video.title || displayName,
     });
   }
 

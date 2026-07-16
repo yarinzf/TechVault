@@ -13,6 +13,8 @@ module.exports = [
     stock: 20, minStock: 6, salesCount: 38,
     description: 'Premium 75% wireless keyboard with a gasket-mount PCB that absorbs keystroke impact for a uniquely cushioned typing experience. QMK/VIA support, hot-swappable Gateron G Pro switches, and a knob for volume or custom functions make this the go-to for enthusiasts who want both programmability and portability.',
     shortDescription: '75% · Gasket mount · QMK/VIA · Hot-swap · Wireless · Knob',
+    descriptionHe: 'מקלדת אלחוטית פרימיום בגודל 75% עם לוח מעגלים מסוג Gasket Mount שסופג את מכת ההקלדה ויוצר חוויית הקלדה רכה וייחודית. תמיכה מלאה ב-QMK/VIA, מתגי Gateron G Pro הניתנים להחלפה (Hot-swap), וחוגה נוחה לשליטה בעוצמת הקול או בפונקציות מותאמות אישית — כל אלה הופכים אותה לבחירה המושלמת לחובבי מקלדות שרוצים גם תכנות מלא וגם ניידות.',
+    shortDescriptionHe: 'מקלדת אלחוטית בגודל 75% עם מבנה Gasket Mount, תמיכת QMK/VIA, מתגים הניתנים להחלפה (Hot-swap) וחוגה לשליטה.',
     specs: {
       'Keyboard Type': 'Mechanical', 'Connection': 'Multi-mode', 'Layout': '75%',
       'Language': EO, 'Switch Type': 'Brown', 'Backlight': 'RGB',

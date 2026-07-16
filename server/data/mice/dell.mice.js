@@ -6,6 +6,7 @@ const dell = [
     brand:       'Dell',
     price:       130,
     description: 'עכבר אלחוטי פרמיום מ-Dell עם עיצוב חלק ונוח. WM527 מציע 2.4GHz ו-Bluetooth עם חיישן Laser ב-1600 DPI וסוללה ל-24 חודשים. עיצוב מינימליסטי מתאים לסביבת עסקים מקצועית.',
+    descriptionHe: 'עכבר אלחוטי פרמיום מ-Dell עם עיצוב חלק ונוח. WM527 מציע 2.4GHz ו-Bluetooth עם חיישן Laser ב-1600 DPI וסוללה ל-24 חודשים. עיצוב מינימליסטי מתאים לסביבת עסקים מקצועית.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Dell+WM527+Wireless+Mouse'],
     specs: {
       'Mouse Type':       'Office',
@@ -35,6 +36,7 @@ const dell = [
     brand:       'Dell',
     price:       110,
     description: 'עכבר Laser קווי מ-Dell לשימוש עסקי ומקצועי. MS3220 מציע חיישן Laser ב-1600 DPI ו-8 כפתורים מתכנתים ב-135 גרם. תואם לכל משטח, כולל זכוכית, עם עיצוב מוצק ומקצועי.',
+    descriptionHe: 'עכבר Laser קווי מ-Dell לשימוש עסקי ומקצועי. MS3220 מציע חיישן Laser ב-1600 DPI ו-8 כפתורים מתכנתים ב-135 גרם. תואם לכל משטח, כולל זכוכית, עם עיצוב מוצק ומקצועי.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Dell+MS3220+Laser+Mouse'],
     specs: {
       'Mouse Type':       'Office',
@@ -64,6 +66,7 @@ const dell = [
     brand:       'Dell',
     price:       280,
     description: 'עכבר אלחוטי פרמיום עסקי מ-Dell. Premier MS700 מציע עיצוב מהוגן עם 2.4GHz ו-Bluetooth 5.0, חיישר Optical ב-3200 DPI ו-5 כפתורים. USB-C לטעינה מהירה ואריזה פרמיום לסביבות עסקיות.',
+    descriptionHe: 'עכבר אלחוטי פרמיום עסקי מ-Dell. Premier MS700 מציע עיצוב מהוגן עם 2.4GHz ו-Bluetooth 5.0, חיישר Optical ב-3200 DPI ו-5 כפתורים. USB-C לטעינה מהירה ואריזה פרמיום לסביבות עסקיות.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Dell+Premier+Wireless+Mouse+MS700'],
     specs: {
       'Mouse Type':       'Office',
@@ -93,6 +96,7 @@ const dell = [
     brand:       'Dell',
     price:       450,
     description: 'עכבר גיימינג אלחוטי פלאגשיפ מ-Alienware ב-Dell עם שלושה מצבי חיבור. AW720M מציע חיישן Optical ב-26000 DPI ב-142 גרם עם 2.4GHz, Bluetooth ו-USB-C. תאורת AlienFX RGB ועיצוב Alienware אייקוני.',
+    descriptionHe: 'עכבר גיימינג אלחוטי פלאגשיפ מ-Alienware ב-Dell עם שלושה מצבי חיבור. AW720M מציע חיישן Optical ב-26000 DPI ב-142 גרם עם 2.4GHz, Bluetooth ו-USB-C. תאורת AlienFX RGB ועיצוב Alienware אייקוני.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Dell+Alienware+AW720M'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -122,6 +126,7 @@ const dell = [
     brand:       'Dell',
     price:       75,
     description: 'עכבר USB קווי בסיסי מ-Dell לשימוש יומיומי. WM118 מציע חיישן Optical ב-1000 DPI, 3 כפתורים ועיצוב ארגונומי פשוט. הפתרון הפשוט, הסביר והאמין ביותר לחלון המחשב של Dell.',
+    descriptionHe: 'עכבר USB קווי בסיסי מ-Dell לשימוש יומיומי. WM118 מציע חיישן Optical ב-1000 DPI, 3 כפתורים ועיצוב ארגונומי פשוט. הפתרון הפשוט, הסביר והאמין ביותר לחלון המחשב של Dell.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Dell+WM118+Optical+Mouse'],
     specs: {
       'Mouse Type':       'Office',
@@ -151,6 +156,7 @@ const dell = [
     brand:       'Dell',
     price:       160,
     description: 'עכבר נסיעות קומפקטי מ-Dell עם Multi-device Bluetooth. Travel Mouse MS700 מציע עיצוב מתקפל עם Nano receiver ו-Bluetooth ב-76 גרם. ניתן לחיבור ל-3 מכשירים ומגיע עם כיסוי נסיעות מובנה.',
+    descriptionHe: 'עכבר נסיעות קומפקטי מ-Dell עם Multi-device Bluetooth. Travel Mouse MS700 מציע עיצוב מתקפל עם Nano receiver ו-Bluetooth ב-76 גרם. ניתן לחיבור ל-3 מכשירים ומגיע עם כיסוי נסיעות מובנה.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Dell+Travel+Mouse+MS700'],
     specs: {
       'Mouse Type':       'Travel',

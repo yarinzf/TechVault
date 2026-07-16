@@ -697,6 +697,8 @@ module.exports = [
     brand: 'MSI',
     price: 29500,
     description: 'The ultimate AMD gaming and creator powerhouse. Ryzen 9 7950X, RTX 4090, 64GB DDR5, 4TB NVMe SSD, WiFi 7, Windows 11 Home.',
+    descriptionHe: 'עוצמת השיא לגיימרים ויוצרי תוכן מבוססי AMD. מעבד Ryzen 9 7950X, כרטיס מסך RTX 4090, זיכרון 64GB DDR5, כונן NVMe SSD בנפח 4TB, תמיכת WiFi 7 ומערכת ההפעלה Windows 11 Home — מחשב שמוכן לכל משימה, מהגיימינג התובעני ביותר ועד עריכת וידאו ברזולוציות גבוהות.',
+    shortDescriptionHe: 'מחשב גיימינג ויצירה עוצמתי במיוחד עם מעבד Ryzen 9 7950X, כרטיס מסך RTX 4090 וזיכרון DDR5 בנפח 64GB.',
     specs: {
       'Processor':        'AMD Ryzen 9 7950X',
       'CPU Brand':        'AMD',

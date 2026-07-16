@@ -6,6 +6,7 @@ const anker = [
     brand:       'Anker',
     price:       160,
     description: 'עכבר ארגונומי אנכי אלחוטי מ-Anker בזווית 45 מעלות לנוחות מרבית. מציע 5 כפתורים עם DPI ניתן לשינוי בין 800/1200/1600 ו-2.4GHz עם סוללת AA. פתרון Vertical אמין ובמחיר ידידותי.',
+    descriptionHe: 'עכבר ארגונומי אנכי אלחוטי מ-Anker בזווית 45 מעלות לנוחות מרבית. מציע 5 כפתורים עם DPI ניתן לשינוי בין 800/1200/1600 ו-2.4GHz עם סוללת AA. פתרון Vertical אמין ובמחיר ידידותי.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Anker+Wireless+Vertical+Ergonomic+Mouse'],
     specs: {
       'Mouse Type':       'Vertical',
@@ -35,6 +36,7 @@ const anker = [
     brand:       'Anker',
     price:       90,
     description: 'עכבר אלחוטי קומפקטי ופשוט מ-Anker עם 2.4GHz וחיישן Optical ב-1600 DPI. מציע עיצוב ארגונומי קלאסי עם 3 כפתורים וסוללה ל-12 חודשים. ידוע בעמידותו ובאמינותו במחיר נגיש.',
+    descriptionHe: 'עכבר אלחוטי קומפקטי ופשוט מ-Anker עם 2.4GHz וחיישן Optical ב-1600 DPI. מציע עיצוב ארגונומי קלאסי עם 3 כפתורים וסוללה ל-12 חודשים. ידוע בעמידותו ובאמינותו במחיר נגיש.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Anker+Wireless+Compact+Mouse'],
     specs: {
       'Mouse Type':       'Office',
@@ -64,6 +66,7 @@ const anker = [
     brand:       'Anker',
     price:       120,
     description: 'עכבר אלחוטי פרמיום מ-Anker עם עיצוב ארגונומי ב-5 כפתורים. AK-UBA מציע 2.4GHz, DPI ניתן לשינוי ב-4 רמות וסוללה ל-18 חודשים. כפתורי צד Forward/Back נוחים לגלישה ועבודה.',
+    descriptionHe: 'עכבר אלחוטי פרמיום מ-Anker עם עיצוב ארגונומי ב-5 כפתורים. AK-UBA מציע 2.4GHz, DPI ניתן לשינוי ב-4 רמות וסוללה ל-18 חודשים. כפתורי צד Forward/Back נוחים לגלישה ועבודה.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Anker+Wireless+Mouse+AK-UBA'],
     specs: {
       'Mouse Type':       'Office',
@@ -93,6 +96,7 @@ const anker = [
     brand:       'Anker',
     price:       150,
     description: 'עכבר Bluetooth ארגונומי מ-Anker לשימוש בלוח וסביבת Mac/PC. מציע חיבור Bluetooth 4.0, 5 כפתורים עם DPI ניתן לשינוי ב-3 רמות וסוללה ל-12 חודשים. ידידותי למגוון מערכות הפעלה.',
+    descriptionHe: 'עכבר Bluetooth ארגונומי מ-Anker לשימוש בלוח וסביבת Mac/PC. מציע חיבור Bluetooth 4.0, 5 כפתורים עם DPI ניתן לשינוי ב-3 רמות וסוללה ל-12 חודשים. ידידותי למגוון מערכות הפעלה.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Anker+Bluetooth+Ergonomic+Mouse'],
     specs: {
       'Mouse Type':       'Office',
@@ -122,6 +126,7 @@ const anker = [
     brand:       'Anker',
     price:       55,
     description: 'עכבר USB קווי בסיסי מ-Anker לשימוש יומיומי. מציע חיישן Optical ב-1000 DPI, 3 כפתורים ועיצוב ארגונומי פשוט. ידוע בעמידותו ובאמינותו של Anker – הפתרון הפשוט ביותר.',
+    descriptionHe: 'עכבר USB קווי בסיסי מ-Anker לשימוש יומיומי. מציע חיישן Optical ב-1000 DPI, 3 כפתורים ועיצוב ארגונומי פשוט. ידוע בעמידותו ובאמינותו של Anker – הפתרון הפשוט ביותר.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Anker+USB+Wired+Mouse'],
     specs: {
       'Mouse Type':       'Office',
@@ -151,6 +156,7 @@ const anker = [
     brand:       'Anker',
     price:       110,
     description: 'עכבר אלחוטי ב-5 כפתורים מ-Anker עם 2.4GHz וגלגלת גלילה נוחה. A7852 מציע חיישן Optical ב-1600 DPI בגוף ארגונומי ב-89 גרם עם סוללה ל-18 חודשים. קל לשימוש ואמין לאורך זמן.',
+    descriptionHe: 'עכבר אלחוטי ב-5 כפתורים מ-Anker עם 2.4GHz וגלגלת גלילה נוחה. A7852 מציע חיישן Optical ב-1600 DPI בגוף ארגונומי ב-89 גרם עם סוללה ל-18 חודשים. קל לשימוש ואמין לאורך זמן.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Anker+Wireless+Mouse+A7852'],
     specs: {
       'Mouse Type':       'Office',

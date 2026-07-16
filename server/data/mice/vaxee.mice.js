@@ -6,6 +6,7 @@ const vaxee = [
     brand:       'Vaxee',
     price:       360,
     description: 'עכבר גיימינג Esports ממוקד-ביצועים מ-Vaxee עם חיישן PixArt PAW3395. OUTSET AX מציע גוף Ambidextrous ב-70 גרם עם 26000 DPI ו-6 כפתורים. Vaxee, שפוצלה מ-Zowie, מביאה ניסיון עמוק בעיצוב עכברים מקצועיים.',
+    descriptionHe: 'עכבר גיימינג Esports ממוקד-ביצועים מ-Vaxee עם חיישן PixArt PAW3395. OUTSET AX מציע גוף Ambidextrous ב-70 גרם עם 26000 DPI ו-6 כפתורים. Vaxee, שפוצלה מ-Zowie, מביאה ניסיון עמוק בעיצוב עכברים מקצועיים.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Vaxee+OUTSET+AX'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -35,6 +36,7 @@ const vaxee = [
     brand:       'Vaxee',
     price:       550,
     description: 'גרסת אלחוטית של ה-OUTSET AX מ-Vaxee עם חיישן PixArt PAW3395 ו-2.4GHz. OUTSET AX Wireless מציע גוף Ambidextrous ב-88 גרם עם 26000 DPI וסוללה ל-70 שעות. ביצועי Esports מוצקים עם חופש אלחוטי מלא.',
+    descriptionHe: 'גרסת אלחוטית של ה-OUTSET AX מ-Vaxee עם חיישן PixArt PAW3395 ו-2.4GHz. OUTSET AX Wireless מציע גוף Ambidextrous ב-88 גרם עם 26000 DPI וסוללה ל-70 שעות. ביצועי Esports מוצקים עם חופש אלחוטי מלא.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Vaxee+OUTSET+AX+Wireless'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -64,6 +66,7 @@ const vaxee = [
     brand:       'Vaxee',
     price:       320,
     description: 'עכבר גיימינג Esports Right-handed מ-Vaxee עם חיישן PixArt PAW3370. NP-01 מציע גוף ארגונומי ב-69 גרם עם 19000 DPI ו-6 כפתורים. עיצוב מכוון-פרוגיימרים עם תשומת לב רבה לתחושת הלחיצה.',
+    descriptionHe: 'עכבר גיימינג Esports Right-handed מ-Vaxee עם חיישן PixArt PAW3370. NP-01 מציע גוף ארגונומי ב-69 גרם עם 19000 DPI ו-6 כפתורים. עיצוב מכוון-פרוגיימרים עם תשומת לב רבה לתחושת הלחיצה.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Vaxee+NP-01'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -93,6 +96,7 @@ const vaxee = [
     brand:       'Vaxee',
     price:       320,
     description: 'גרסת שמאל (Left-handed) של ה-NP-01 מ-Vaxee עם חיישן PixArt PAW3370. NP-01S מציע גוף ארגונומי לשמאלניים ב-68 גרם עם 19000 DPI. נדיר בשוק — עכבר Esports מיוחד לגיימרים שמאלניים.',
+    descriptionHe: 'גרסת שמאל (Left-handed) של ה-NP-01 מ-Vaxee עם חיישן PixArt PAW3370. NP-01S מציע גוף ארגונומי לשמאלניים ב-68 גרם עם 19000 DPI. נדיר בשוק — עכבר Esports מיוחד לגיימרים שמאלניים.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Vaxee+NP-01S'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -122,6 +126,7 @@ const vaxee = [
     brand:       'Vaxee',
     price:       480,
     description: 'שיתוף פעולה בין Vaxee לקבוצת Pro Gaming Zygen. Zygen NP-01 מציע חיישן PixArt PAW3395 בגוף ארגונומי ב-65 גרם עם 26000 DPI. גרסת מהדורה מוגבלת עם לוגו Zygen ומכסה עכבר חתום.',
+    descriptionHe: 'שיתוף פעולה בין Vaxee לקבוצת Pro Gaming Zygen. Zygen NP-01 מציע חיישן PixArt PAW3395 בגוף ארגונומי ב-65 גרם עם 26000 DPI. גרסת מהדורה מוגבלת עם לוגו Zygen ומכסה עכבר חתום.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Vaxee+Zygen+NP-01'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -151,6 +156,7 @@ const vaxee = [
     brand:       'Vaxee',
     price:       400,
     description: 'גרסת Small של ה-OUTSET AX מ-Vaxee לגיימרים עם ידיים קטנות. OUTSET AX S מציע חיישן PixArt PAW3395 בגוף Ambidextrous מוקטן ב-63 גרם עם 26000 DPI. אותה איכות OUTSET AX בגודל המתאים לידיים קטנות.',
+    descriptionHe: 'גרסת Small של ה-OUTSET AX מ-Vaxee לגיימרים עם ידיים קטנות. OUTSET AX S מציע חיישן PixArt PAW3395 בגוף Ambidextrous מוקטן ב-63 גרם עם 26000 DPI. אותה איכות OUTSET AX בגודל המתאים לידיים קטנות.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Vaxee+OUTSET+AX+S'],
     specs: {
       'Mouse Type':       'Gaming',

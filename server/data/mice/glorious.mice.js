@@ -6,6 +6,7 @@ const glorious = [
     brand:            'Glorious',
     price:            720,
     description:      'עכבר גיימינג אלחוטי פלאגשיפ מ-Glorious עם חיישן PixArt ב-19000 DPI ומשקל פנומנלי של 65 גרם. Model O 2 Wireless מביא את כל הביצועים של עכבר Esports קווי לאלחוט אמיתי עם Ambidextrous גוף מושלם.',
+    descriptionHe: 'עכבר גיימינג אלחוטי פלאגשיפ מ-Glorious עם חיישן PixArt ב-19000 DPI ומשקל פנומנלי של 65 גרם. Model O 2 Wireless מביא את כל הביצועים של עכבר Esports קווי לאלחוט אמיתי עם Ambidextrous גוף מושלם.',
     images:           ['https://placehold.co/800x600/1a1a2e/ffffff?text=Glorious+Model+O+2+Wireless'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -35,6 +36,7 @@ const glorious = [
     brand:            'Glorious',
     price:            320,
     description:      'הדור השני של עכבר ה-Esports האייקוני Model O. משקל שיא של 55 גרם עם חיישן PixArt ב-19000 DPI וגוף Ambidextrous מאוורר. Model O 2 מביא שיפורים משמעותיים ב-click latency ובדיוק הסנסור.',
+    descriptionHe: 'הדור השני של עכבר ה-Esports האייקוני Model O. משקל שיא של 55 גרם עם חיישן PixArt ב-19000 DPI וגוף Ambidextrous מאוורר. Model O 2 מביא שיפורים משמעותיים ב-click latency ובדיוק הסנסור.',
     images:           ['https://placehold.co/800x600/1a1a2e/ffffff?text=Glorious+Model+O+2'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -64,6 +66,7 @@ const glorious = [
     brand:            'Glorious',
     price:            380,
     description:      'הגרסה האלחוטית של עכבר ה-Esports הנמכר ביותר מ-Glorious. Model O Wireless שומר על משקל 69 גרם עם חיישן PixArt ב-19000 DPI וחיבור 2.4GHz נטול השהייה. מושלם לגיימרים שסרבים לפשרות.',
+    descriptionHe: 'הגרסה האלחוטית של עכבר ה-Esports הנמכר ביותר מ-Glorious. Model O Wireless שומר על משקל 69 גרם עם חיישן PixArt ב-19000 DPI וחיבור 2.4GHz נטול השהייה. מושלם לגיימרים שסרבים לפשרות.',
     images:           ['https://placehold.co/800x600/1a1a2e/ffffff?text=Glorious+Model+O+Wireless'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -93,6 +96,7 @@ const glorious = [
     brand:            'Glorious',
     price:            220,
     description:      'העכבר שהגדיר מחדש את קטגוריית הקל-משקל בשוק הגיימינג. Model O המקורי עם גוף Ambidextrous מאוורר ייחודי ב-67 גרם, חיישן PixArt ב-12000 DPI ו-Ascended Cord גמיש. אייקון של עכברי Esports.',
+    descriptionHe: 'העכבר שהגדיר מחדש את קטגוריית הקל-משקל בשוק הגיימינג. Model O המקורי עם גוף Ambidextrous מאוורר ייחודי ב-67 גרם, חיישן PixArt ב-12000 DPI ו-Ascended Cord גמיש. אייקון של עכברי Esports.',
     images:           ['https://placehold.co/800x600/1a1a2e/ffffff?text=Glorious+Model+O'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -122,6 +126,7 @@ const glorious = [
     brand:            'Glorious',
     price:            350,
     description:      'הגרסה הקטנה והאלחוטית של Model O לגיימרים עם כפות ידיים קטנות יותר. Model O Minus Wireless שומר על 65 גרם עם חיישן PixArt ב-19000 DPI ועיצוב Ambidextrous קומפקטי מושלם לאסקורט.',
+    descriptionHe: 'הגרסה הקטנה והאלחוטית של Model O לגיימרים עם כפות ידיים קטנות יותר. Model O Minus Wireless שומר על 65 גרם עם חיישן PixArt ב-19000 DPI ועיצוב Ambidextrous קומפקטי מושלם לאסקורט.',
     images:           ['https://placehold.co/800x600/1a1a2e/ffffff?text=Glorious+Model+O-+Wireless'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -151,6 +156,7 @@ const glorious = [
     brand:            'Glorious',
     price:            200,
     description:      'גרסת הכבל של Model O Minus לגיימרים שמחפשים עכבר Esports קומפקטי וקל. 58 גרם בלבד עם חיישן PixArt ב-12000 DPI וגוף Ambidextrous מאוורר. בחירה נהדרת לכפות ידיים קטנות עד בינוניות.',
+    descriptionHe: 'גרסת הכבל של Model O Minus לגיימרים שמחפשים עכבר Esports קומפקטי וקל. 58 גרם בלבד עם חיישן PixArt ב-12000 DPI וגוף Ambidextrous מאוורר. בחירה נהדרת לכפות ידיים קטנות עד בינוניות.',
     images:           ['https://placehold.co/800x600/1a1a2e/ffffff?text=Glorious+Model+O-'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -180,6 +186,7 @@ const glorious = [
     brand:            'Glorious',
     price:            280,
     description:      'הדור השני של Model D הארגונומי מ-Glorious, מתאים לגיימרים שמשחקים עם יד ימין. 55 גרם בלבד עם חיישן PixArt ב-19000 DPI ועיצוב Claw Grip מושלם. שיפור משמעותי ב-click latency לעומת דור קודם.',
+    descriptionHe: 'הדור השני של Model D הארגונומי מ-Glorious, מתאים לגיימרים שמשחקים עם יד ימין. 55 גרם בלבד עם חיישן PixArt ב-19000 DPI ועיצוב Claw Grip מושלם. שיפור משמעותי ב-click latency לעומת דור קודם.',
     images:           ['https://placehold.co/800x600/1a1a2e/ffffff?text=Glorious+Model+D+2'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -209,6 +216,7 @@ const glorious = [
     brand:            'Glorious',
     price:            420,
     description:      'הגרסה האלחוטית של עכבר Glorious Model D הארגונומי. 69 גרם עם חיישן PixArt ב-19000 DPI וחיבור 2.4GHz. מעוצב לגיימרים ימניים שמחפשים נוחות ארגונומית ויתרון ביצועי ללא כבל.',
+    descriptionHe: 'הגרסה האלחוטית של עכבר Glorious Model D הארגונומי. 69 גרם עם חיישן PixArt ב-19000 DPI וחיבור 2.4GHz. מעוצב לגיימרים ימניים שמחפשים נוחות ארגונומית ויתרון ביצועי ללא כבל.',
     images:           ['https://placehold.co/800x600/1a1a2e/ffffff?text=Glorious+Model+D+Wireless'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -238,6 +246,7 @@ const glorious = [
     brand:            'Glorious',
     price:            220,
     description:      'עכבר Esports ארגונומי קל-משקל לגיימרים ימניים מ-Glorious. גוף מאוורר ב-68 גרם עם חיישן PixArt ב-12000 DPI. Model D מציע את כל יתרונות העיצוב האסימטרי לגיימרים שמעדיפים תחושת Palm נוחה.',
+    descriptionHe: 'עכבר Esports ארגונומי קל-משקל לגיימרים ימניים מ-Glorious. גוף מאוורר ב-68 גרם עם חיישן PixArt ב-12000 DPI. Model D מציע את כל יתרונות העיצוב האסימטרי לגיימרים שמעדיפים תחושת Palm נוחה.',
     images:           ['https://placehold.co/800x600/1a1a2e/ffffff?text=Glorious+Model+D'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -267,6 +276,7 @@ const glorious = [
     brand:            'Glorious',
     price:            200,
     description:      'גרסה קומפקטית של Model D לגיימרים ימניים עם כפות ידיים קטנות. 61 גרם עם חיישן PixArt ב-12000 DPI וגוף מאוורר ארגונומי. Model D Minus מושלם לאלה שמחפשים עיצוב ימני עם ממדים קומפקטיים.',
+    descriptionHe: 'גרסה קומפקטית של Model D לגיימרים ימניים עם כפות ידיים קטנות. 61 גרם עם חיישן PixArt ב-12000 DPI וגוף מאוורר ארגונומי. Model D Minus מושלם לאלה שמחפשים עיצוב ימני עם ממדים קומפקטיים.',
     images:           ['https://placehold.co/800x600/1a1a2e/ffffff?text=Glorious+Model+D-'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -296,6 +306,7 @@ const glorious = [
     brand:            'Glorious',
     price:            550,
     description:      'הדור השני של Model I האלחוטי מ-Glorious עם חיישן PixArt ב-26000 DPI. 71 גרם עם עיצוב Fingertip Grip ארגונומי ימני, סוללת 71 שעות וחיבור 2.4GHz. הביצועים הטובים ביותר שהחברה הציגה.',
+    descriptionHe: 'הדור השני של Model I האלחוטי מ-Glorious עם חיישן PixArt ב-26000 DPI. 71 גרם עם עיצוב Fingertip Grip ארגונומי ימני, סוללת 71 שעות וחיבור 2.4GHz. הביצועים הטובים ביותר שהחברה הציגה.',
     images:           ['https://placehold.co/800x600/1a1a2e/ffffff?text=Glorious+Model+I+2+Wireless'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -325,6 +336,7 @@ const glorious = [
     brand:            'Glorious',
     price:            320,
     description:      'הדור השני של Model I הקווי מ-Glorious עם חיישן PixArt ב-26000 DPI ומשקל שיא של 55 גרם. עיצוב Fingertip Grip ימני עם כבל Ascended גמיש ו-click latency מינימלי לתחרות Esports.',
+    descriptionHe: 'הדור השני של Model I הקווי מ-Glorious עם חיישן PixArt ב-26000 DPI ומשקל שיא של 55 גרם. עיצוב Fingertip Grip ימני עם כבל Ascended גמיש ו-click latency מינימלי לתחרות Esports.',
     images:           ['https://placehold.co/800x600/1a1a2e/ffffff?text=Glorious+Model+I+2'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -354,6 +366,7 @@ const glorious = [
     brand:            'Glorious',
     price:            420,
     description:      'עכבר Esports אלחוטי ארגונומי לגיימרים ימניים מ-Glorious. Model I Wireless מציע 69 גרם עם חיישן PixArt ב-19000 DPI ועיצוב Fingertip Grip מושלם עם חיבור 2.4GHz לסשן גיימינג נטול כבל.',
+    descriptionHe: 'עכבר Esports אלחוטי ארגונומי לגיימרים ימניים מ-Glorious. Model I Wireless מציע 69 גרם עם חיישן PixArt ב-19000 DPI ועיצוב Fingertip Grip מושלם עם חיבור 2.4GHz לסשן גיימינג נטול כבל.',
     images:           ['https://placehold.co/800x600/1a1a2e/ffffff?text=Glorious+Model+I+Wireless'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -383,6 +396,7 @@ const glorious = [
     brand:            'Glorious',
     price:            250,
     description:      'עכבר Esports קווי ארגונומי לגיימרים ימניים שמחזיקים עכבר בסגנון Fingertip Grip. Model I מציע 69 גרם, חיישן PixArt ב-19000 DPI ו-Ascended Cord גמיש. עיצוב ייחודי שמשרת שחקני Esports תחרותיים.',
+    descriptionHe: 'עכבר Esports קווי ארגונומי לגיימרים ימניים שמחזיקים עכבר בסגנון Fingertip Grip. Model I מציע 69 גרם, חיישן PixArt ב-19000 DPI ו-Ascended Cord גמיש. עיצוב ייחודי שמשרת שחקני Esports תחרותיים.',
     images:           ['https://placehold.co/800x600/1a1a2e/ffffff?text=Glorious+Model+I'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -412,6 +426,7 @@ const glorious = [
     brand:            'Glorious',
     price:            480,
     description:      'עכבר גיימינג אלחוטי ארגונומי בגוף Right-handed מ-Glorious. BAMF Wireless מציע 80 גרם עם חיישן PixArt ב-19000 DPI, סוללה לכ-70 שעות וחיבור 2.4GHz. מיועד לגיימרים שרוצים ביצועים פלאגשיפ בגוף נוח.',
+    descriptionHe: 'עכבר גיימינג אלחוטי ארגונומי בגוף Right-handed מ-Glorious. BAMF Wireless מציע 80 גרם עם חיישן PixArt ב-19000 DPI, סוללה לכ-70 שעות וחיבור 2.4GHz. מיועד לגיימרים שרוצים ביצועים פלאגשיפ בגוף נוח.',
     images:           ['https://placehold.co/800x600/1a1a2e/ffffff?text=Glorious+BAMF+Wireless'],
     specs: {
       'Mouse Type':       'Gaming',

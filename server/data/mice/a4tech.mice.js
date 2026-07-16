@@ -6,6 +6,7 @@ const a4tech = [
     brand:       'Bloody',
     price:       250,
     description: 'עכבר גיימינג קל-משקל Ambidextrous מ-Bloody עם חיישן PixArt PAW3370 ב-66 גרם. W60 Max מציע טכנולוגיית LK Optical Switch ייחודית עם מתגים אופטיים ב-0.2ms תגובה, כבל אולטרה-קל וביצועים תחרותיים.',
+    descriptionHe: 'עכבר גיימינג קל-משקל Ambidextrous מ-Bloody עם חיישן PixArt PAW3370 ב-66 גרם. W60 Max מציע טכנולוגיית LK Optical Switch ייחודית עם מתגים אופטיים ב-0.2ms תגובה, כבל אולטרה-קל וביצועים תחרותיים.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Bloody+W60+Max'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -35,6 +36,7 @@ const a4tech = [
     brand:       'Bloody',
     price:       280,
     description: 'עכבר גיימינג ארגונומי פרימיום מ-Bloody עם מתגים אופטיים LK ייחודיים. W95 Max מציע חיישן PixArt ב-16000 DPI ב-90 גרם עם 8 כפתורים מתכנתים ותאורת RGB מלאה. מתג אופטי מבטיח חיי-כפתור של 100 מיליון לחיצות.',
+    descriptionHe: 'עכבר גיימינג ארגונומי פרימיום מ-Bloody עם מתגים אופטיים LK ייחודיים. W95 Max מציע חיישן PixArt ב-16000 DPI ב-90 גרם עם 8 כפתורים מתכנתים ותאורת RGB מלאה. מתג אופטי מבטיח חיי-כפתור של 100 מיליון לחיצות.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Bloody+W95+Max'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -64,6 +66,7 @@ const a4tech = [
     brand:       'Bloody',
     price:       180,
     description: 'עכבר גיימינג בעל צבע RGB מלהיב מ-Bloody עם חיישן PixArt PMW3360 ב-12000 DPI. A91 מציע עיצוב ארגונומי ב-135 גרם עם תאורת RGB 16.8 מיליון צבעים ומיקרו-מתגים LK אופטיים ייחודיים.',
+    descriptionHe: 'עכבר גיימינג בעל צבע RGB מלהיב מ-Bloody עם חיישן PixArt PMW3360 ב-12000 DPI. A91 מציע עיצוב ארגונומי ב-135 גרם עם תאורת RGB 16.8 מיליון צבעים ומיקרו-מתגים LK אופטיים ייחודיים.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Bloody+A91'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -93,6 +96,7 @@ const a4tech = [
     brand:       'Bloody',
     price:       220,
     description: 'עכבר גיימינג Pro מ-Bloody עם מתגי LK Optical אופטיים וחיישן PixArt ב-16000 DPI. P91 Pro מציע עיצוב ארגונומי ב-95 גרם עם מאיצי DPI מהירים ותאורת RGB צדדית ייחודית. אחד מעכברי ה-Esports המוצלחים של Bloody.',
+    descriptionHe: 'עכבר גיימינג Pro מ-Bloody עם מתגי LK Optical אופטיים וחיישן PixArt ב-16000 DPI. P91 Pro מציע עיצוב ארגונומי ב-95 גרם עם מאיצי DPI מהירים ותאורת RGB צדדית ייחודית. אחד מעכברי ה-Esports המוצלחים של Bloody.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Bloody+P91+Pro'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -122,6 +126,7 @@ const a4tech = [
     brand:       'Bloody',
     price:       250,
     description: 'עכבר גיימינג ארגונומי ב-90 גרם מ-Bloody עם מתגי LK Optical ייחודיים ב-0.2ms. W90 Pro מציע חיישן PixArt ב-16000 DPI עם עיצוב Palm Grip מוצק ותאורת RGB ניתנת לתכנות. אמין ומדויק לשחקני FPS.',
+    descriptionHe: 'עכבר גיימינג ארגונומי ב-90 גרם מ-Bloody עם מתגי LK Optical ייחודיים ב-0.2ms. W90 Pro מציע חיישן PixArt ב-16000 DPI עם עיצוב Palm Grip מוצק ותאורת RGB ניתנת לתכנות. אמין ומדויק לשחקני FPS.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Bloody+W90+Pro'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -151,6 +156,7 @@ const a4tech = [
     brand:       'Bloody',
     price:       200,
     description: 'עכבר גיימינג תקציבי מ-Bloody עם חיישן PixArt ב-8000 DPI ותאורת RGB מלאה. Ultracore 5 מציע עיצוב ארגונומי ב-100 גרם עם 10 כפתורים מתכנתים ומחיר נגיש. נקודת הכניסה לעולם עכברי Bloody המקצועיים.',
+    descriptionHe: 'עכבר גיימינג תקציבי מ-Bloody עם חיישן PixArt ב-8000 DPI ותאורת RGB מלאה. Ultracore 5 מציע עיצוב ארגונומי ב-100 גרם עם 10 כפתורים מתכנתים ומחיר נגיש. נקודת הכניסה לעולם עכברי Bloody המקצועיים.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Bloody+Ultracore+5'],
     specs: {
       'Mouse Type':       'Gaming',

@@ -6,6 +6,7 @@ import QuantitySelector from '../../../../components/ui/QuantitySelector';
 import { getProductPricing } from '../../utils/pricing';
 import { getStockStatus } from '../../utils/stockStatus';
 import { formatWarranty } from '../../utils/warranty';
+import { getLocalizedProductName, getLocalizedShortDescription } from '../../utils/localizedProduct';
 import s from './ProductBuyBox.module.css';
 
 const TRUST_ITEMS = [
@@ -82,6 +83,7 @@ export default function ProductBuyBox({
   const isTrending   = product.tags?.includes('trending');
   const isBestSeller = product.tags?.includes('best-seller');
   const warranty     = formatWarranty(product.specs?.['Warranty'], language);
+  const shortDescription = getLocalizedShortDescription(product, language);
 
   // Only a small, intentional set of customer-facing badges — never the raw
   // internal tags array (that's catalog metadata for filtering/search).
@@ -103,11 +105,12 @@ export default function ProductBuyBox({
       {/* 2. Brand */}
       {product.brand && <div className={s.brand}>{product.brand}</div>}
 
-      {/* 3. Product name */}
-      <h1 className={s.name}>{product.name}</h1>
+      {/* 3. Product name — localized only when a real nameHe exists; brand/model
+          identifiers otherwise stay as authored (see localizedProduct.js) */}
+      <h1 className={s.name}>{getLocalizedProductName(product, language)}</h1>
 
       {/* 4. Short description */}
-      {product.shortDescription && <p className={s.subtitle}>{product.shortDescription}</p>}
+      {shortDescription && <p className={s.subtitle}>{shortDescription}</p>}
 
       {/* 5. Rating + review count (only when available) */}
       {product.ratings?.count > 0 && (

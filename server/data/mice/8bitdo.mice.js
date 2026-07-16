@@ -6,6 +6,7 @@ const eightbitdo = [
     brand:       '8BitDo',
     price:       180,
     description: 'עכבר Bluetooth רטרו-מעוצב מ-8BitDo בהשראת בקרי Sega Genesis. M30 מציע Bluetooth 5.0 בגוף Ambidextrous ב-70 גרם עם Optical ב-1600 DPI ו-6 כפתורים. עיצוב רטרו ייחודי המתאים למעריצי קלאסיקות Gaming.',
+    descriptionHe: 'עכבר Bluetooth רטרו-מעוצב מ-8BitDo בהשראת בקרי Sega Genesis. M30 מציע Bluetooth 5.0 בגוף Ambidextrous ב-70 גרם עם Optical ב-1600 DPI ו-6 כפתורים. עיצוב רטרו ייחודי המתאים למעריצי קלאסיקות Gaming.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=8BitDo+M30+Bluetooth+Mouse'],
     specs: {
       'Mouse Type':       'Office',
@@ -35,6 +36,7 @@ const eightbitdo = [
     brand:       '8BitDo',
     price:       120,
     description: 'עכבר אלחוטי קומפקטי ורטרו מ-8BitDo לגיימרים קלאסיים. Lite Mouse מציע 2.4GHz בגוף Ambidextrous ב-55 גרם עם Optical ב-1200 DPI. עיצוב נוסטלגי ב-8BitDo האופייני עם מחיר נגיש לכולם.',
+    descriptionHe: 'עכבר אלחוטי קומפקטי ורטרו מ-8BitDo לגיימרים קלאסיים. Lite Mouse מציע 2.4GHz בגוף Ambidextrous ב-55 גרם עם Optical ב-1200 DPI. עיצוב נוסטלגי ב-8BitDo האופייני עם מחיר נגיש לכולם.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=8BitDo+Lite+Mouse'],
     specs: {
       'Mouse Type':       'Travel',
@@ -64,6 +66,7 @@ const eightbitdo = [
     brand:       '8BitDo',
     price:       150,
     description: 'עכבר אלחוטי רטרו מ-8BitDo בהשראת בקרי SNES. F30 Wireless מציע 2.4GHz בגוף Ambidextrous ב-65 גרם עם Optical ב-1600 DPI ו-6 כפתורים. אחד מהעכברים הרטרו-מעוצבים הפופולריים ביותר מ-8BitDo.',
+    descriptionHe: 'עכבר אלחוטי רטרו מ-8BitDo בהשראת בקרי SNES. F30 Wireless מציע 2.4GHz בגוף Ambidextrous ב-65 גרם עם Optical ב-1600 DPI ו-6 כפתורים. אחד מהעכברים הרטרו-מעוצבים הפופולריים ביותר מ-8BitDo.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=8BitDo+F30+Wireless+Mouse'],
     specs: {
       'Mouse Type':       'Office',
@@ -93,6 +96,7 @@ const eightbitdo = [
     brand:       '8BitDo',
     price:       160,
     description: 'עכבר אלחוטי רטרו גדול מ-8BitDo עם עיצוב מלא השראות לגיימינג קלאסי. Wireless Mouse Large מציע 2.4GHz בגוף גדול Ambidextrous ב-95 גרם עם Optical ב-2400 DPI ו-5 כפתורים. נוח לאנשים עם ידיים גדולות.',
+    descriptionHe: 'עכבר אלחוטי רטרו גדול מ-8BitDo עם עיצוב מלא השראות לגיימינג קלאסי. Wireless Mouse Large מציע 2.4GHz בגוף גדול Ambidextrous ב-95 גרם עם Optical ב-2400 DPI ו-5 כפתורים. נוח לאנשים עם ידיים גדולות.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=8BitDo+Wireless+Mouse+Large'],
     specs: {
       'Mouse Type':       'Office',
@@ -122,6 +126,7 @@ const eightbitdo = [
     brand:       '8BitDo',
     price:       140,
     description: 'עכבר Bluetooth קומפקטי מ-8BitDo לנסיעות ועבודה. Bluetooth Mouse Small מציע Bluetooth 5.0 בגוף קומפקטי ב-58 גרם עם Optical ב-1600 DPI ו-3 כפתורים. העיצוב ה-8BitDo הרטרו בגרסת הכי נייד שלו.',
+    descriptionHe: 'עכבר Bluetooth קומפקטי מ-8BitDo לנסיעות ועבודה. Bluetooth Mouse Small מציע Bluetooth 5.0 בגוף קומפקטי ב-58 גרם עם Optical ב-1600 DPI ו-3 כפתורים. העיצוב ה-8BitDo הרטרו בגרסת הכי נייד שלו.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=8BitDo+Bluetooth+Mouse+Small'],
     specs: {
       'Mouse Type':       'Travel',
@@ -151,6 +156,7 @@ const eightbitdo = [
     brand:       '8BitDo',
     price:       200,
     description: 'עכבר אלחוטי רב-מצבי מ-8BitDo עם 2.4GHz, Bluetooth 5.0 וכבל USB-C. Triple Mode Mouse מציע 3 מצבי חיבור בגוף Ambidextrous ב-78 גרם עם Optical ב-2400 DPI. הגמישות המרבית של 8BitDo בעכבר אחד.',
+    descriptionHe: 'עכבר אלחוטי רב-מצבי מ-8BitDo עם 2.4GHz, Bluetooth 5.0 וכבל USB-C. Triple Mode Mouse מציע 3 מצבי חיבור בגוף Ambidextrous ב-78 גרם עם Optical ב-2400 DPI. הגמישות המרבית של 8BitDo בעכבר אחד.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=8BitDo+Triple+Mode+Mouse'],
     specs: {
       'Mouse Type':       'Office',

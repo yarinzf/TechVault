@@ -1,4 +1,5 @@
 import { Minus, Plus } from 'lucide-react';
+import { useTranslation } from '../../../context/LanguageContext';
 import s from './QuantitySelector.module.css';
 
 /**
@@ -11,10 +12,13 @@ export default function QuantitySelector({
   min = 1,
   max = Infinity,
   disabled = false,
-  decreaseLabel = 'Decrease quantity',
-  increaseLabel = 'Increase quantity',
+  decreaseLabel,
+  increaseLabel,
   className = '',
 }) {
+  const t = useTranslation();
+  const decLabel = decreaseLabel ?? t('product.decrease_qty');
+  const incLabel = increaseLabel ?? t('product.increase_qty');
   return (
     <div className={`${s.ctrl} ${className}`}>
       <button
@@ -22,7 +26,7 @@ export default function QuantitySelector({
         className={s.btn}
         onClick={() => onChange(Math.max(min, value - 1))}
         disabled={disabled || value <= min}
-        aria-label={decreaseLabel}
+        aria-label={decLabel}
       >
         <Minus size={12} />
       </button>
@@ -32,7 +36,7 @@ export default function QuantitySelector({
         className={s.btn}
         onClick={() => onChange(Math.min(max, value + 1))}
         disabled={disabled || value >= max}
-        aria-label={increaseLabel}
+        aria-label={incLabel}
       >
         <Plus size={12} />
       </button>

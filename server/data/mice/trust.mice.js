@@ -6,6 +6,7 @@ const trust = [
     brand:       'Trust',
     price:       120,
     description: 'עכבר גיימינג RGB תקציבי מ-Trust Gaming עם חיישן Optical ב-7200 DPI. GXT 922 Ybar מציע 7 כפתורים מתכנתים, תאורת RGB ב-7 מצבי תאורה ועיצוב ארגונומי ב-150 גרם. ביצועי גיימינג ראויים במחיר כניסה.',
+    descriptionHe: 'עכבר גיימינג RGB תקציבי מ-Trust Gaming עם חיישן Optical ב-7200 DPI. GXT 922 Ybar מציע 7 כפתורים מתכנתים, תאורת RGB ב-7 מצבי תאורה ועיצוב ארגונומי ב-150 גרם. ביצועי גיימינג ראויים במחיר כניסה.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Trust+GXT+922+Ybar'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -35,6 +36,7 @@ const trust = [
     brand:       'Trust',
     price:       160,
     description: 'עכבר גיימינג אלחוטי תקציבי מ-Trust Gaming עם 2.4GHz אלחוטי וחיישן Optical ב-4800 DPI. GXT 942 Exoo מציע 5 כפתורים עם סוללה ל-12 חודשים ועיצוב ארגונומי נוח. פתרון אלחוטי ידידותי לתקציב.',
+    descriptionHe: 'עכבר גיימינג אלחוטי תקציבי מ-Trust Gaming עם 2.4GHz אלחוטי וחיישן Optical ב-4800 DPI. GXT 942 Exoo מציע 5 כפתורים עם סוללה ל-12 חודשים ועיצוב ארגונומי נוח. פתרון אלחוטי ידידותי לתקציב.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Trust+GXT+942+Exoo'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -64,6 +66,7 @@ const trust = [
     brand:       'Trust',
     price:       140,
     description: 'עכבר גיימינג RGB עם עיצוב honeycomb קל מ-Trust Gaming. GXT 900 Kudos מציע 62 גרם, חיישן Optical ב-10000 DPI ותאורת RGB מרשימה. נוצר לגיימרים שמחפשים עכבר קל-משקל בתקציב מוגבל.',
+    descriptionHe: 'עכבר גיימינג RGB עם עיצוב honeycomb קל מ-Trust Gaming. GXT 900 Kudos מציע 62 גרם, חיישן Optical ב-10000 DPI ותאורת RGB מרשימה. נוצר לגיימרים שמחפשים עכבר קל-משקל בתקציב מוגבל.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Trust+GXT+900+Kudos'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -93,6 +96,7 @@ const trust = [
     brand:       'Trust',
     price:       130,
     description: 'עכבר גיימינג RGB מ-Trust Gaming עם 10000 DPI וכבל לבד ב-6 כפתורים. GXT 930 Jacx מציע חיישן Optical מדויק בגוף ארגונומי נוח עם תאורת RGB ב-7 מצבי צבע ועיצוב מלהיב.',
+    descriptionHe: 'עכבר גיימינג RGB מ-Trust Gaming עם 10000 DPI וכבל לבד ב-6 כפתורים. GXT 930 Jacx מציע חיישן Optical מדויק בגוף ארגונומי נוח עם תאורת RGB ב-7 מצבי צבע ועיצוב מלהיב.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Trust+GXT+930+Jacx'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -122,6 +126,7 @@ const trust = [
     brand:       'Trust',
     price:       150,
     description: 'עכבר אלחוטי ארגונומי אנכי מ-Trust לשיפור יציבת כף היד. Verto Ergonomic מציע עיצוב אנכי Vertical ב-2.4GHz עם חיישן Optical ב-1200 DPI. מפחית עומס על כף היד והאמה בשימוש ממושך במחשב.',
+    descriptionHe: 'עכבר אלחוטי ארגונומי אנכי מ-Trust לשיפור יציבת כף היד. Verto Ergonomic מציע עיצוב אנכי Vertical ב-2.4GHz עם חיישן Optical ב-1200 DPI. מפחית עומס על כף היד והאמה בשימוש ממושך במחשב.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Trust+Verto+Ergonomic'],
     specs: {
       'Mouse Type':       'Vertical',
@@ -151,6 +156,7 @@ const trust = [
     brand:       'Trust',
     price:       110,
     description: 'עכבר אלחוטי נטען מ-Trust עם סוללה מובנית וטעינת USB-C. Ozaa Rechargeable מציע 2400 DPI עם 4 כפתורים, עיצוב ארגונומי נוח וטעינה פשוטה. ידידותי לסביבה ללא צורך בסוללות חד-פעמיות.',
+    descriptionHe: 'עכבר אלחוטי נטען מ-Trust עם סוללה מובנית וטעינת USB-C. Ozaa Rechargeable מציע 2400 DPI עם 4 כפתורים, עיצוב ארגונומי נוח וטעינה פשוטה. ידידותי לסביבה ללא צורך בסוללות חד-פעמיות.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Trust+Ozaa+Rechargeable'],
     specs: {
       'Mouse Type':       'Office',
@@ -180,6 +186,7 @@ const trust = [
     brand:       'Trust',
     price:       200,
     description: 'עכבר גיימינג קל ב-66 גרם עם חיישן PixArt מ-Trust Gaming. GXT 960 Graphin מציע עיצוב honeycomb מאוורר, Polling Rate 1000Hz וחיישן PixArt ב-12000 DPI. ביצועי lightweight gaming במחיר ידידותי.',
+    descriptionHe: 'עכבר גיימינג קל ב-66 גרם עם חיישן PixArt מ-Trust Gaming. GXT 960 Graphin מציע עיצוב honeycomb מאוורר, Polling Rate 1000Hz וחיישן PixArt ב-12000 DPI. ביצועי lightweight gaming במחיר ידידותי.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Trust+GXT+960+Graphin'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -209,6 +216,7 @@ const trust = [
     brand:       'Trust',
     price:       250,
     description: 'עכבר גיימינג אלחוטי בינוני מ-Trust Gaming עם חיישן PixArt PAW3370. GXT 980 Redex מציע 2.4GHz נטול השהייה ב-79 גרם, סוללה ל-80 שעות ותאורת RGB. מאזן מצוין בין ביצועים אלחוטיים למחיר.',
+    descriptionHe: 'עכבר גיימינג אלחוטי בינוני מ-Trust Gaming עם חיישן PixArt PAW3370. GXT 980 Redex מציע 2.4GHz נטול השהייה ב-79 גרם, סוללה ל-80 שעות ותאורת RGB. מאזן מצוין בין ביצועים אלחוטיים למחיר.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Trust+GXT+980+Redex'],
     specs: {
       'Mouse Type':       'Gaming',

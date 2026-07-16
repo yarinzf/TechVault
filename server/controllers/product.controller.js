@@ -20,6 +20,13 @@ const getOne = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+const getByIdAdmin = async (req, res, next) => {
+  try {
+    const product = await productService.getProductByIdAdmin(req.params.id);
+    sendSuccess(res, { product }, 'Product retrieved');
+  } catch (err) { next(err); }
+};
+
 const create = async (req, res, next) => {
   try {
     const product = await productService.createProduct(req.body);
@@ -113,4 +120,4 @@ const compare = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
-module.exports = { list, getOne, create, update, remove, autocomplete, updateStock, stockHistory, listCategories, compare };
+module.exports = { list, getOne, getByIdAdmin, create, update, remove, autocomplete, updateStock, stockHistory, listCategories, compare };

@@ -6,6 +6,7 @@ const klim = [
     brand:       'Klim',
     price:       130,
     description: 'עכבר גיימינג קווי מ-Klim Technologies עם חיישן Optical ב-6000 DPI ו-7 כפתורים. Aim RGB מציע עיצוב ארגונומי ב-125 גרם עם תאורת RGB מלאה. פתרון גיימינג בתקציב נגיש עם ביצועים מוצקים לגיימרים מתחילים.',
+    descriptionHe: 'עכבר גיימינג קווי מ-Klim Technologies עם חיישן Optical ב-6000 DPI ו-7 כפתורים. Aim RGB מציע עיצוב ארגונומי ב-125 גרם עם תאורת RGB מלאה. פתרון גיימינג בתקציב נגיש עם ביצועים מוצקים לגיימרים מתחילים.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Klim+Aim+RGB+Gaming+Mouse'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -35,6 +36,7 @@ const klim = [
     brand:       'Klim',
     price:       180,
     description: 'עכבר גיימינג אלחוטי ב-2.4GHz מ-Klim עם חיישן Optical ב-4000 DPI. Blaze מציע 6 כפתורים בגוף ב-107 גרם וסוללה ל-6 שעות עם USB-C. פתרון אלחוטי גיימינג בתקציב ידידותי מ-Klim Technologies.',
+    descriptionHe: 'עכבר גיימינג אלחוטי ב-2.4GHz מ-Klim עם חיישן Optical ב-4000 DPI. Blaze מציע 6 כפתורים בגוף ב-107 גרם וסוללה ל-6 שעות עם USB-C. פתרון אלחוטי גיימינג בתקציב ידידותי מ-Klim Technologies.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Klim+Blaze+Wireless+Gaming+Mouse'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -64,6 +66,7 @@ const klim = [
     brand:       'Klim',
     price:       110,
     description: 'עכבר גיימינג קווי כניסה מ-Klim עם חיישן Optical ב-4000 DPI. Puma מציע גוף ארגונומי ב-120 גרם עם 6 כפתורים ו-RGB בסיסי. גיימינג בסיסי אמין לגיימרים שמחפשים מחיר מינימלי ותמיכת Klim.',
+    descriptionHe: 'עכבר גיימינג קווי כניסה מ-Klim עם חיישן Optical ב-4000 DPI. Puma מציע גוף ארגונומי ב-120 גרם עם 6 כפתורים ו-RGB בסיסי. גיימינג בסיסי אמין לגיימרים שמחפשים מחיר מינימלי ותמיכת Klim.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Klim+Puma+Wired+Gaming+Mouse'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -93,6 +96,7 @@ const klim = [
     brand:       'Klim',
     price:       100,
     description: 'עכבר גיימינג קווי בתקציב קיצוני מ-Klim עם חיישן Optical ב-3000 DPI. Wind מציע גוף ב-108 גרם עם 6 כפתורים ו-RGB LED. תמיכת 5 שנות אחריות הייחודית ל-Klim Technologies בנקודת המחיר הנמוכה ביותר.',
+    descriptionHe: 'עכבר גיימינג קווי בתקציב קיצוני מ-Klim עם חיישן Optical ב-3000 DPI. Wind מציע גוף ב-108 גרם עם 6 כפתורים ו-RGB LED. תמיכת 5 שנות אחריות הייחודית ל-Klim Technologies בנקודת המחיר הנמוכה ביותר.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Klim+Wind+Gaming+Mouse'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -122,6 +126,7 @@ const klim = [
     brand:       'Klim',
     price:       160,
     description: 'עכבר אלחוטי Office מ-Klim עם 2.4GHz וחיישן Optical ב-1600 DPI. Rush מציע גוף ב-98 גרם עם 5 כפתורים וסוללה ל-6 חודשים. אלחוטי מהימן מ-Klim Technologies עם 5 שנות אחריות.',
+    descriptionHe: 'עכבר אלחוטי Office מ-Klim עם 2.4GHz וחיישן Optical ב-1600 DPI. Rush מציע גוף ב-98 גרם עם 5 כפתורים וסוללה ל-6 חודשים. אלחוטי מהימן מ-Klim Technologies עם 5 שנות אחריות.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Klim+Rush+Wireless+Mouse'],
     specs: {
       'Mouse Type':       'Office',
@@ -151,6 +156,7 @@ const klim = [
     brand:       'Klim',
     price:       145,
     description: 'עכבר גיימינג קווי מ-Klim עם חיישן Optical ב-4000 DPI ועיצוב ארגונומי מתוחכם. Blit מציע גוף ב-115 גרם עם 7 כפתורים ו-RGB צבעוני. עיצוב מעוצב עם ביצועים גיימינג מוצקים במחיר אטרקטיבי.',
+    descriptionHe: 'עכבר גיימינג קווי מ-Klim עם חיישן Optical ב-4000 DPI ועיצוב ארגונומי מתוחכם. Blit מציע גוף ב-115 גרם עם 7 כפתורים ו-RGB צבעוני. עיצוב מעוצב עם ביצועים גיימינג מוצקים במחיר אטרקטיבי.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Klim+Blit+Gaming+Mouse'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -180,6 +186,7 @@ const klim = [
     brand:       'Klim',
     price:       155,
     description: 'עכבר גיימינג Pro מ-Klim עם חיישן Optical ב-6000 DPI ו-8 כפתורים מתכנתים. Skill Pro מציע גוף ב-130 גרם עם RGB מלא ו-DPI ניתן לשינוי במהירות. גרסת ה-Pro של ה-Skill עם כפתורים נוספים לגיימרים מתקדמים.',
+    descriptionHe: 'עכבר גיימינג Pro מ-Klim עם חיישן Optical ב-6000 DPI ו-8 כפתורים מתכנתים. Skill Pro מציע גוף ב-130 גרם עם RGB מלא ו-DPI ניתן לשינוי במהירות. גרסת ה-Pro של ה-Skill עם כפתורים נוספים לגיימרים מתקדמים.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Klim+Skill+Pro+Gaming+Mouse'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -209,6 +216,7 @@ const klim = [
     brand:       'Klim',
     price:       170,
     description: 'עכבר גיימינג מתקדם מ-Klim עם חיישן Optical ב-6000 DPI ו-9 כפתורים מתכנתים. Evolution מציע גוף ב-120 גרם עם RGB מלא ועיצוב אגרסיבי. עכבר גיימינג הכולל כל הפיצ\'רים הדרושים בנקודת מחיר ייחודית Klim.',
+    descriptionHe: 'עכבר גיימינג מתקדם מ-Klim עם חיישן Optical ב-6000 DPI ו-9 כפתורים מתכנתים. Evolution מציע גוף ב-120 גרם עם RGB מלא ועיצוב אגרסיבי. עכבר גיימינג הכולל כל הפיצ\'רים הדרושים בנקודת מחיר ייחודית Klim.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Klim+Evolution+Gaming+Mouse'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -238,6 +246,7 @@ const klim = [
     brand:       'Klim',
     price:       200,
     description: 'עכבר גיימינג אלחוטי מ-Klim עם 2.4GHz וחיישן Optical ב-6000 DPI. Frantic מציע 7 כפתורים בגוף ב-110 גרם ו-RGB עם סוללה נטענת USB-C. גיימינג אלחוטי פרמיום במחיר Klim המיוחד.',
+    descriptionHe: 'עכבר גיימינג אלחוטי מ-Klim עם 2.4GHz וחיישן Optical ב-6000 DPI. Frantic מציע 7 כפתורים בגוף ב-110 גרם ו-RGB עם סוללה נטענת USB-C. גיימינג אלחוטי פרמיום במחיר Klim המיוחד.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Klim+Frantic+Wireless+Gaming+Mouse'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -267,6 +276,7 @@ const klim = [
     brand:       'Klim',
     price:       120,
     description: 'עכבר גיימינג קווי כניסה מ-Klim עם חיישן Optical ב-3200 DPI ועיצוב קומפקטי. Grabb מציע גוף ב-85 גרם עם 6 כפתורים ו-RGB בסיסי. הקומפקטי ביותר בקולקציית הגיימינג של Klim Technologies.',
+    descriptionHe: 'עכבר גיימינג קווי כניסה מ-Klim עם חיישן Optical ב-3200 DPI ועיצוב קומפקטי. Grabb מציע גוף ב-85 גרם עם 6 כפתורים ו-RGB בסיסי. הקומפקטי ביותר בקולקציית הגיימינג של Klim Technologies.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Klim+Grabb+Gaming+Mouse'],
     specs: {
       'Mouse Type':       'Gaming',

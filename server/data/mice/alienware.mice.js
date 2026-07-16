@@ -6,6 +6,7 @@ const alienware = [
     brand:       'Alienware',
     price:       450,
     description: 'עכבר גיימינג אלחוטי פרמיום מ-Alienware עם חיישן PixArt PAW3395 ו-Dual Mode 2.4GHz/Bluetooth. AW720M מציע 7 כפתורים מתכנתים בגוף ארגונומי ב-122 גרם עם 26000 DPI ו-RGB AlienFX. ביצועי Top-Tier בסגנון Alienware המאורגני.',
+    descriptionHe: 'עכבר גיימינג אלחוטי פרמיום מ-Alienware עם חיישן PixArt PAW3395 ו-Dual Mode 2.4GHz/Bluetooth. AW720M מציע 7 כפתורים מתכנתים בגוף ארגונומי ב-122 גרם עם 26000 DPI ו-RGB AlienFX. ביצועי Top-Tier בסגנון Alienware המאורגני.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Alienware+AW720M+Wireless'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -35,6 +36,7 @@ const alienware = [
     brand:       'Alienware',
     price:       350,
     description: 'עכבר גיימינג קווי פרמיום מ-Alienware עם חיישן PixArt PMW3389 ו-16000 DPI. AW610M מציע 7 כפתורים מתכנתים בגוף ארגונומי ב-130 גרם עם RGB AlienFX וכבל הניתן להסרה. עיצוב Alienware המובהק.',
+    descriptionHe: 'עכבר גיימינג קווי פרמיום מ-Alienware עם חיישן PixArt PMW3389 ו-16000 DPI. AW610M מציע 7 כפתורים מתכנתים בגוף ארגונומי ב-130 גרם עם RGB AlienFX וכבל הניתן להסרה. עיצוב Alienware המובהק.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Alienware+AW610M+Wired'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -64,6 +66,7 @@ const alienware = [
     brand:       'Alienware',
     price:       280,
     description: 'עכבר גיימינג קווי מ-Alienware לגיימרים ברמת כניסה-ביניים. AW510M מציע חיישן PixArt PMW3389 ב-16000 DPI בגוף ארגונומי ב-120 גרם עם 7 כפתורים ו-RGB AlienFX עם 16.8 מיליון צבעים.',
+    descriptionHe: 'עכבר גיימינג קווי מ-Alienware לגיימרים ברמת כניסה-ביניים. AW510M מציע חיישן PixArt PMW3389 ב-16000 DPI בגוף ארגונומי ב-120 גרם עם 7 כפתורים ו-RGB AlienFX עם 16.8 מיליון צבעים.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Alienware+AW510M+Wired'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -93,6 +96,7 @@ const alienware = [
     brand:       'Alienware',
     price:       320,
     description: 'עכבר גיימינג מקצועי מ-Alienware עם 13 כפתורים מתכנתים ו-TrueMove3 ב-12000 DPI. AW958 מציע 5 פרופילי DPI מהירים, RGB AlienFX עם 3 אזורי תאורה ועיצוב ארגונומי גדול. למשחקי MMO ו-MOBA.',
+    descriptionHe: 'עכבר גיימינג מקצועי מ-Alienware עם 13 כפתורים מתכנתים ו-TrueMove3 ב-12000 DPI. AW958 מציע 5 פרופילי DPI מהירים, RGB AlienFX עם 3 אזורי תאורה ועיצוב ארגונומי גדול. למשחקי MMO ו-MOBA.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Alienware+AW958+Pro'],
     specs: {
       'Mouse Type':       'MMO',
@@ -122,6 +126,7 @@ const alienware = [
     brand:       'Alienware',
     price:       200,
     description: 'עכבר גיימינג קווי בכניסה מ-Alienware עם חיישן Optical ב-4000 DPI. AW310M מציע 5 כפתורים בגוף ארגונומי ב-110 גרם עם RGB AlienFX בסיסי. ביצועי גיימינג Alienware במחיר הנגיש ביותר.',
+    descriptionHe: 'עכבר גיימינג קווי בכניסה מ-Alienware עם חיישן Optical ב-4000 DPI. AW310M מציע 5 כפתורים בגוף ארגונומי ב-110 גרם עם RGB AlienFX בסיסי. ביצועי גיימינג Alienware במחיר הנגיש ביותר.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Alienware+AW310M+Wired'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -151,6 +156,7 @@ const alienware = [
     brand:       'Alienware',
     price:       520,
     description: 'עכבר גיימינג אלחוטי פלאגשיפ מ-Alienware עם חיישן PixArt PAW3395 ו-Tri-Mode 2.4GHz/Bluetooth/USB-C. AW920M מציע 7 כפתורים ב-126 גרם עם 26000 DPI, AlienFX RGB וטעינה מהירה ב-4 שעות. ה-AW920M הוא הביטוי המלא של גיימינג Alienware אלחוטי.',
+    descriptionHe: 'עכבר גיימינג אלחוטי פלאגשיפ מ-Alienware עם חיישן PixArt PAW3395 ו-Tri-Mode 2.4GHz/Bluetooth/USB-C. AW920M מציע 7 כפתורים ב-126 גרם עם 26000 DPI, AlienFX RGB וטעינה מהירה ב-4 שעות. ה-AW920M הוא הביטוי המלא של גיימינג Alienware אלחוטי.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Alienware+AW920M+Wireless'],
     specs: {
       'Mouse Type':       'Gaming',

@@ -125,6 +125,16 @@ const getProduct = async (slug) => {
   return obj;
 };
 
+// Admin-only full lookup by id — unlike getProduct(), bypasses PUBLIC_FILTER
+// so drafts/unpublished products can be loaded for editing.
+const getProductByIdAdmin = async (id) => {
+  const product = await Product
+    .findOne({ _id: id, isDeleted: false })
+    .populate('category', 'name slug');
+  if (!product) throw new AppError('Product not found', StatusCodes.NOT_FOUND, 'PRODUCT_NOT_FOUND');
+  return product;
+};
+
 const createProduct = async (dto) => {
   return Product.create(dto);
 };
@@ -158,7 +168,7 @@ const autocomplete = async (q, limit = 8) => {
 
   return Product.find(
     { ...PUBLIC_FILTER, name: regex },
-    'name slug sku images price',
+    'name nameHe slug sku images price',
     { limit: safeLimit }
   ).lean();
 };
@@ -242,7 +252,7 @@ const getProductsByIds = async (ids) => {
 };
 
 module.exports = {
-  listProducts, listCategories, getProduct, getProductsByIds,
+  listProducts, listCategories, getProduct, getProductByIdAdmin, getProductsByIds,
   createProduct, updateProduct, deleteProduct,
   autocomplete, updateStock, getStockHistory,
 };

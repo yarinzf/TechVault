@@ -2827,6 +2827,8 @@ module.exports = [
     price: 348,
     compareAtPrice: 498,
     description: 'Sony WH-XB900N Extra Bass wireless over-ear headphones with noise cancellation and 30h battery. Bluetooth 4.2, Ambient Sound Mode, touch panel controls, USB-C, foldable design, Dual Noise Sensor technology.',
+    descriptionHe: 'אוזניות Sony WH-XB900N Extra Bass אלחוטיות מסוג Over-Ear עם ביטול רעשים אקטיבי וסוללה המחזיקה עד 30 שעות. תמיכה ב-Bluetooth 4.2, מצב Ambient Sound לשמיעת הסביבה, לוח מגע לשליטה במגע, חיבור USB-C לטעינה, מבנה מתקפל ונוח לנשיאה, וטכנולוגיית Dual Noise Sensor לביטול רעשים מדויק.',
+    shortDescriptionHe: 'אוזניות אלחוטיות מסוג Over-Ear עם ביטול רעשים (ANC), בס מוגבר וסוללה ל-30 שעות.',
     specs: {
       'Connection': 'Bluetooth',
       'Headphone Type': 'Over-Ear',

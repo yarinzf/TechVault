@@ -6,6 +6,7 @@ const redragon = [
     brand:       'Redragon',
     price:       120,
     description: 'עכבר גיימינג תקציבי מ-Redragon עם 12 כפתורים מתכנתים ותאורת RGB. M711 Cobra מציע חיישן Optical ב-10000 DPI עם עיצוב ארגונומי לגיימרים ימניים. הבחירה הפופולרית ביותר בקטגוריה התקציבית.',
+    descriptionHe: 'עכבר גיימינג תקציבי מ-Redragon עם 12 כפתורים מתכנתים ותאורת RGB. M711 Cobra מציע חיישן Optical ב-10000 DPI עם עיצוב ארגונומי לגיימרים ימניים. הבחירה הפופולרית ביותר בקטגוריה התקציבית.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Redragon+M711+Cobra'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -35,6 +36,7 @@ const redragon = [
     brand:       'Redragon',
     price:       90,
     description: 'עכבר גיימינג מבוא עם תאורת RGB מ-Redragon. M602 Griffin מציע 7 כפתורים מתכנתים, חיישן Optical ב-7200 DPI ותאורת RGB בעיצוב Dragon. הבחירה הטובה ביותר לגיימרים שמחפשים כניסה לעולם הגיימינג.',
+    descriptionHe: 'עכבר גיימינג מבוא עם תאורת RGB מ-Redragon. M602 Griffin מציע 7 כפתורים מתכנתים, חיישן Optical ב-7200 DPI ותאורת RGB בעיצוב Dragon. הבחירה הטובה ביותר לגיימרים שמחפשים כניסה לעולם הגיימינג.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Redragon+M602+Griffin'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -64,6 +66,7 @@ const redragon = [
     brand:       'Redragon',
     price:       130,
     description: 'עכבר גיימינג MMO תקציבי עם 18 כפתורים ניתנים לתכנות מ-Redragon. M908 Impact מציע חיישן Optical ב-12400 DPI ותאורת RGB עם 5 מצבי תאורה. לגיימרי MMORPG שמחפשים הרבה כפתורים במחיר נגיש.',
+    descriptionHe: 'עכבר גיימינג MMO תקציבי עם 18 כפתורים ניתנים לתכנות מ-Redragon. M908 Impact מציע חיישן Optical ב-12400 DPI ותאורת RGB עם 5 מצבי תאורה. לגיימרי MMORPG שמחפשים הרבה כפתורים במחיר נגיש.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Redragon+M908+Impact'],
     specs: {
       'Mouse Type':       'MMO',
@@ -93,6 +96,7 @@ const redragon = [
     brand:       'Redragon',
     price:       110,
     description: 'עכבר גיימינג עם 19 כפתורים ניתנים לתכנות מ-Redragon. M901 Perdition מציע חיישן Laser ב-16400 DPI ומשקל מתכוונן. עיצוב Dragon המרשים עם תאורת RGB ורצועות צד ניתנות להחלפה.',
+    descriptionHe: 'עכבר גיימינג עם 19 כפתורים ניתנים לתכנות מ-Redragon. M901 Perdition מציע חיישן Laser ב-16400 DPI ומשקל מתכוונן. עיצוב Dragon המרשים עם תאורת RGB ורצועות צד ניתנות להחלפה.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Redragon+M901+Perdition'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -122,6 +126,7 @@ const redragon = [
     brand:       'Redragon',
     price:       100,
     description: 'עכבר גיימינג תקציבי מוגבר מ-Redragon עם 7 כפתורים וחיישן Optical ב-7200 DPI. M607 Griffin Pro מציע עיצוב ארגונומי נוח לגיימרים ימניים עם תאורת RGB בקצב לב וסרגל צדדי נוח.',
+    descriptionHe: 'עכבר גיימינג תקציבי מוגבר מ-Redragon עם 7 כפתורים וחיישן Optical ב-7200 DPI. M607 Griffin Pro מציע עיצוב ארגונומי נוח לגיימרים ימניים עם תאורת RGB בקצב לב וסרגל צדדי נוח.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Redragon+M607+Griffin+Pro'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -151,6 +156,7 @@ const redragon = [
     brand:       'Redragon',
     price:       180,
     description: 'עכבר גיימינג אלחוטי תקציבי עם 16 כפתורים מ-Redragon. M913 Impact Elite מציע חיישן Optical ב-16000 DPI עם אלחוט 2.4GHz וסוללה ל-40 שעות. אחד מהפתרונות האלחוטיים הזולים ביותר עם כפתורים רבים.',
+    descriptionHe: 'עכבר גיימינג אלחוטי תקציבי עם 16 כפתורים מ-Redragon. M913 Impact Elite מציע חיישן Optical ב-16000 DPI עם אלחוט 2.4GHz וסוללה ל-40 שעות. אחד מהפתרונות האלחוטיים הזולים ביותר עם כפתורים רבים.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Redragon+M913+Impact+Elite'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -180,6 +186,7 @@ const redragon = [
     brand:       'Redragon',
     price:       130,
     description: 'גרסת FPS של Cobra מ-Redragon עם חיישן Optical ב-10000 DPI ועיצוב ממוקד ביצועים. M711-FPS מספק 7 כפתורים, Polling Rate גבוה ותגובה מהירה לשחקני FPS שמחפשים פתרון תקציבי.',
+    descriptionHe: 'גרסת FPS של Cobra מ-Redragon עם חיישן Optical ב-10000 DPI ועיצוב ממוקד ביצועים. M711-FPS מספק 7 כפתורים, Polling Rate גבוה ותגובה מהירה לשחקני FPS שמחפשים פתרון תקציבי.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Redragon+M711-FPS+Cobra'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -209,6 +216,7 @@ const redragon = [
     brand:       'Redragon',
     price:       150,
     description: 'עכבר גיימינג עם 16400 DPI ו-16 כפתורים מתכנתים מ-Redragon. M990 Legend מציע מבנה כפולות ל-Dual Core עם חיישן Laser ותאורת RGB מלאה. פתרון כל-בכלול לגיימרים שרוצים מקסימום פונקציות במינימום תקציב.',
+    descriptionHe: 'עכבר גיימינג עם 16400 DPI ו-16 כפתורים מתכנתים מ-Redragon. M990 Legend מציע מבנה כפולות ל-Dual Core עם חיישן Laser ותאורת RGB מלאה. פתרון כל-בכלול לגיימרים שרוצים מקסימום פונקציות במינימום תקציב.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Redragon+M990+Legend'],
     specs: {
       'Mouse Type':       'Gaming',

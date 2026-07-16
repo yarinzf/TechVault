@@ -708,6 +708,8 @@ module.exports = [
     isPublished: true,
     description: 'The MX Master 3S is the pinnacle of Logitech\'s productivity mouse lineup, featuring a whisper-quiet click mechanism, a high-precision 8000 DPI optical sensor that works even on glass, and the beloved MagSpeed electromagnetic scroll wheel that can cover a 1000-line document in less than a second. Its ergonomic right-handed shape, customizable thumb buttons, and multi-device Bluetooth/USB receiver pairing make it ideal for creative professionals and power users who live in multi-screen setups. A mouse that genuinely changes how you work.',
     shortDescription: 'Premium productivity mouse with quiet clicks, glass-tracking sensor, and MagSpeed scroll wheel.',
+    descriptionHe: 'ה-MX Master 3S הוא שיא סדרת עכברי הפרודוקטיביות של Logitech, עם מנגנון קליק שקט במיוחד, חיישן אופטי ברזולוציית 8000 DPI שעובד גם על משטחי זכוכית, וגלגלת הגלילה האהובה מסוג MagSpeed המסוגלת לגלול מסמך של 1,000 שורות בפחות משנייה. הצורה הארגונומית המותאמת ליד ימין, כפתורי האגודל הניתנים להתאמה אישית, וחיבור Bluetooth/USB מרובה-מכשירים הופכים אותו לבחירה אידיאלית לאנשי מקצוע יצירתיים ולמשתמשים מתקדמים העובדים עם מספר מסכים. עכבר שבאמת משנה את אופן העבודה שלך.',
+    shortDescriptionHe: 'עכבר פרודוקטיביות פרימיום עם קליקים שקטים, חיישן מעקב הפועל גם על זכוכית, וגלגלת גלילה מסוג MagSpeed.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=MX+Master+3S'],
     tags: ['logitech', 'productivity', 'wireless', 'bluetooth', 'multi-mode', 'ergonomic', 'office', 'mx-master'],
     specs: {

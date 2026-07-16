@@ -87,6 +87,27 @@ router.get('/:productId/recommendations', recCtrl.getRecommendations);
 
 /**
  * @swagger
+ * /products/{id}/admin-detail:
+ *   get:
+ *     summary: Get full product by id, bypassing published/draft filtering (admin)
+ *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: Product detail
+ *       404:
+ *         description: Not found
+ */
+router.get('/:id/admin-detail', authenticate, authorize(...ADMIN_ROLES), ctrl.getByIdAdmin);
+
+/**
+ * @swagger
  * /products/{slug}:
  *   get:
  *     summary: Get single product by slug

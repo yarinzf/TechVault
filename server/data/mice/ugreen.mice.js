@@ -6,6 +6,7 @@ const ugreen = [
     brand:       'UGREEN',
     price:       120,
     description: 'עכבר אלחוטי ארגונומי מ-UGREEN עם 2.4GHz וחיישן Optical ב-4000 DPI. מציע 6 כפתורים בגוף ארגונומי נוח ב-103 גרם עם DPI ניתן לשינוי ב-5 רמות וסוללה ל-12 חודשים. פתרון ארגונומי מוצק במחיר UGREEN האמין.',
+    descriptionHe: 'עכבר אלחוטי ארגונומי מ-UGREEN עם 2.4GHz וחיישן Optical ב-4000 DPI. מציע 6 כפתורים בגוף ארגונומי נוח ב-103 גרם עם DPI ניתן לשינוי ב-5 רמות וסוללה ל-12 חודשים. פתרון ארגונומי מוצק במחיר UGREEN האמין.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=UGREEN+Ergonomic+Wireless+Mouse'],
     specs: {
       'Mouse Type':       'Office',
@@ -35,6 +36,7 @@ const ugreen = [
     brand:       'UGREEN',
     price:       90,
     description: 'עכבר Bluetooth שקט מ-UGREEN עם חיישן Optical ב-1600 DPI ומתגים שקטים. מציע 3 כפתורים בגוף קומפקטי Ambidextrous ב-68 גרם עם Bluetooth 5.0 וסוללה ל-60 ימים. שקט ונקי לסביבות עבודה רגישות לרעש.',
+    descriptionHe: 'עכבר Bluetooth שקט מ-UGREEN עם חיישן Optical ב-1600 DPI ומתגים שקטים. מציע 3 כפתורים בגוף קומפקטי Ambidextrous ב-68 גרם עם Bluetooth 5.0 וסוללה ל-60 ימים. שקט ונקי לסביבות עבודה רגישות לרעש.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=UGREEN+Bluetooth+Silent+Mouse'],
     specs: {
       'Mouse Type':       'Office',
@@ -64,6 +66,7 @@ const ugreen = [
     brand:       'UGREEN',
     price:       150,
     description: 'עכבר אלחוטי רב-מכשיר מ-UGREEN עם Bluetooth 5.0 ו-2.4GHz. מציע חיבור ל-3 מכשירים עם מיתוג במגע כפתור אחד, חיישן Optical ב-4000 DPI ו-6 כפתורים ב-92 גרם. פתרון מולטי-דסקטופ יעיל ממותג UGREEN.',
+    descriptionHe: 'עכבר אלחוטי רב-מכשיר מ-UGREEN עם Bluetooth 5.0 ו-2.4GHz. מציע חיבור ל-3 מכשירים עם מיתוג במגע כפתור אחד, חיישן Optical ב-4000 DPI ו-6 כפתורים ב-92 גרם. פתרון מולטי-דסקטופ יעיל ממותג UGREEN.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=UGREEN+Wireless+Multi-Device+Mouse'],
     specs: {
       'Mouse Type':       'Office',
@@ -93,6 +96,7 @@ const ugreen = [
     brand:       'UGREEN',
     price:       150,
     description: 'עכבר ארגונומי אנכי מ-UGREEN עם 2.4GHz וחיישן Optical ב-4000 DPI. מציע עיצוב Vertical בזווית 57 מעלות ב-105 גרם עם 6 כפתורים ו-DPI ניתן לשינוי ב-5 רמות. מפחית עומס על שורש כף היד בסביבת Office.',
+    descriptionHe: 'עכבר ארגונומי אנכי מ-UGREEN עם 2.4GHz וחיישן Optical ב-4000 DPI. מציע עיצוב Vertical בזווית 57 מעלות ב-105 גרם עם 6 כפתורים ו-DPI ניתן לשינוי ב-5 רמות. מפחית עומס על שורש כף היד בסביבת Office.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=UGREEN+Vertical+Ergonomic+Mouse'],
     specs: {
       'Mouse Type':       'Vertical',
@@ -122,6 +126,7 @@ const ugreen = [
     brand:       'UGREEN',
     price:       80,
     description: 'עכבר נייד קומפקטי מ-UGREEN לנסיעות ועבודה מרחוק. מציע 2.4GHz עם חיישן Optical ב-1600 DPI בגוף קומפקטי ב-60 גרם עם 3 כפתורים ומקלט USB מתקפל. ידידותי לכיס ובלי חשש לשקע USB.',
+    descriptionHe: 'עכבר נייד קומפקטי מ-UGREEN לנסיעות ועבודה מרחוק. מציע 2.4GHz עם חיישן Optical ב-1600 DPI בגוף קומפקטי ב-60 גרם עם 3 כפתורים ומקלט USB מתקפל. ידידותי לכיס ובלי חשש לשקע USB.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=UGREEN+Portable+Travel+Mouse'],
     specs: {
       'Mouse Type':       'Travel',

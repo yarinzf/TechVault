@@ -6,6 +6,7 @@ import {
 import { useLanguage } from '../../../../context/LanguageContext';
 import { getProductHighlights } from '../../utils/highlights';
 import { getSpecLabel } from '../../utils/specLabels';
+import { getLocalizedDescription, getLocalizedShortDescription } from '../../utils/localizedProduct';
 import s from './ProductDescription.module.css';
 
 const ICONS = {
@@ -16,7 +17,7 @@ const ICONS = {
 
 export default function ProductDescription({ product }) {
   const { language } = useLanguage();
-  const text = product.description || product.shortDescription;
+  const text = getLocalizedDescription(product, language) || getLocalizedShortDescription(product, language);
   const highlights = getProductHighlights(product, 6);
 
   if (!text && !highlights.length) return null;

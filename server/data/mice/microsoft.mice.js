@@ -6,6 +6,7 @@ const microsoft = [
     brand:       'Microsoft',
     price:       220,
     description: 'חזרתו של מלך עכברי ה-Office, IntelliMouse, בגרסה Pro מ-Microsoft. IntelliMouse Pro מציע חיישן BlueTrack ב-3200 DPI עם עיצוב ארגונומי קלאסי ב-113 גרם. תאורת LED אדומה-כהה מוסיפה מגע Gaming עדין לאייקון ה-Office.',
+    descriptionHe: 'חזרתו של מלך עכברי ה-Office, IntelliMouse, בגרסה Pro מ-Microsoft. IntelliMouse Pro מציע חיישן BlueTrack ב-3200 DPI עם עיצוב ארגונומי קלאסי ב-113 גרם. תאורת LED אדומה-כהה מוסיפה מגע Gaming עדין לאייקון ה-Office.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Microsoft+IntelliMouse+Pro'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -35,6 +36,7 @@ const microsoft = [
     brand:       'Microsoft',
     price:       120,
     description: 'גרסה מחודשת של IntelliMouse המקורי מ-Microsoft. IntelliMouse Classic שומר על העיצוב הארגונומי האייקוני בגוף מחודש עם חיישן BlueTrack ב-1000 DPI. עבור אלה שמחפשים את הנוסטלגיה עם טכנולוגיה עדכנית.',
+    descriptionHe: 'גרסה מחודשת של IntelliMouse המקורי מ-Microsoft. IntelliMouse Classic שומר על העיצוב הארגונומי האייקוני בגוף מחודש עם חיישן BlueTrack ב-1000 DPI. עבור אלה שמחפשים את הנוסטלגיה עם טכנולוגיה עדכנית.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Microsoft+IntelliMouse+Classic'],
     specs: {
       'Mouse Type':       'Office',
@@ -64,6 +66,7 @@ const microsoft = [
     brand:       'Microsoft',
     price:       250,
     description: 'עכבר נסיעות גמיש מ-Microsoft עם עיצוב Arc ייחודי שניתן לקיפול שטוח. Arc Mouse מציע 2.4GHz ו-Bluetooth עם כרית נגיעה במקום גלגלת, קישוריות Bluetooth 4.0 ו-BlueTrack ב-1000 DPI.',
+    descriptionHe: 'עכבר נסיעות גמיש מ-Microsoft עם עיצוב Arc ייחודי שניתן לקיפול שטוח. Arc Mouse מציע 2.4GHz ו-Bluetooth עם כרית נגיעה במקום גלגלת, קישוריות Bluetooth 4.0 ו-BlueTrack ב-1000 DPI.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Microsoft+Arc+Mouse'],
     specs: {
       'Mouse Type':       'Travel',
@@ -93,6 +96,7 @@ const microsoft = [
     brand:       'Microsoft',
     price:       200,
     description: 'עכבר ארגונומי Bluetooth מ-Microsoft לשיפור יציבת כף היד. Bluetooth Ergonomic Mouse מציע עיצוב מעוגל נוח, חיישן BlueTrack ב-2400 DPI ו-4 כפתורים מתכנתים. מחובר ל-Microsoft Ergonomic Platform לשימוש ממושך.',
+    descriptionHe: 'עכבר ארגונומי Bluetooth מ-Microsoft לשיפור יציבת כף היד. Bluetooth Ergonomic Mouse מציע עיצוב מעוגל נוח, חיישן BlueTrack ב-2400 DPI ו-4 כפתורים מתכנתים. מחובר ל-Microsoft Ergonomic Platform לשימוש ממושך.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Microsoft+Bluetooth+Ergonomic+Mouse'],
     specs: {
       'Mouse Type':       'Ergonomic',
@@ -122,6 +126,7 @@ const microsoft = [
     brand:       'Microsoft',
     price:       90,
     description: 'הנכד של עכבר ה-IntelliMouse המיתולוגי מ-Microsoft בגרסה קלאסית חדשה. Classic IntelliMouse שומר על הצורה המקורית עם חיישן ב-3200 DPI ומיקרו-מתגים מהירים. נוסטלגיה אמיתית בעיצוב עדכני.',
+    descriptionHe: 'הנכד של עכבר ה-IntelliMouse המיתולוגי מ-Microsoft בגרסה קלאסית חדשה. Classic IntelliMouse שומר על הצורה המקורית עם חיישן ב-3200 DPI ומיקרו-מתגים מהירים. נוסטלגיה אמיתית בעיצוב עדכני.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Microsoft+Classic+IntelliMouse'],
     specs: {
       'Mouse Type':       'Office',
@@ -151,6 +156,7 @@ const microsoft = [
     brand:       'Microsoft',
     price:       280,
     description: 'עכבר פרודוקטיביות פרימיום מ-Microsoft עם גלגלת אלומיניום מדויקת ו-Bluetooth. Precision Mouse מציע 4 כפתורים מתכנתים, Microsoft Precision Scroll וחיישר BlueTrack ב-3000 DPI. מיועד לעבודה אינטנסיבית.',
+    descriptionHe: 'עכבר פרודוקטיביות פרימיום מ-Microsoft עם גלגלת אלומיניום מדויקת ו-Bluetooth. Precision Mouse מציע 4 כפתורים מתכנתים, Microsoft Precision Scroll וחיישר BlueTrack ב-3000 DPI. מיועד לעבודה אינטנסיבית.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Microsoft+Precision+Mouse'],
     specs: {
       'Mouse Type':       'Office',
@@ -180,6 +186,7 @@ const microsoft = [
     brand:       'Microsoft',
     price:       80,
     description: 'עכבר נייד בסיסי מ-Microsoft עם חיישן BlueTrack המאפשר שימוש על כל משטח. Mobile Mouse 3500 מציע 2.4GHz, 3 כפתורים וסוללה ל-8 חודשים. בחירה פשוטה ואמינה לעבודה יומיומית.',
+    descriptionHe: 'עכבר נייד בסיסי מ-Microsoft עם חיישן BlueTrack המאפשר שימוש על כל משטח. Mobile Mouse 3500 מציע 2.4GHz, 3 כפתורים וסוללה ל-8 חודשים. בחירה פשוטה ואמינה לעבודה יומיומית.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Microsoft+Mobile+Mouse+3500'],
     specs: {
       'Mouse Type':       'Office',
@@ -209,6 +216,7 @@ const microsoft = [
     brand:       'Microsoft',
     price:       130,
     description: 'עכבר נייד מינימליסטי וצבעוני מ-Microsoft עם Bluetooth וחיישן BlueTrack. Modern Mobile Mouse מציע עיצוב חלק ב-96 גרם עם 3 כפתורים וסוללה ל-12 חודשים. עיצוב מודרני ב-6 צבעים שמתאים לכל סגנון.',
+    descriptionHe: 'עכבר נייד מינימליסטי וצבעוני מ-Microsoft עם Bluetooth וחיישן BlueTrack. Modern Mobile Mouse מציע עיצוב חלק ב-96 גרם עם 3 כפתורים וסוללה ל-12 חודשים. עיצוב מודרני ב-6 צבעים שמתאים לכל סגנון.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Microsoft+Modern+Mobile+Mouse'],
     specs: {
       'Mouse Type':       'Office',

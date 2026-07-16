@@ -6,6 +6,7 @@ const lamzu = [
     brand:       'Lamzu',
     price:       480,
     description: 'עכבר גיימינג קל-משקל Ambidextrous מ-Lamzu עם חיישן PixArt PAW3395. Atlantis Mini Pro מציע גוף קומפקטי סימטרי ב-45 גרם עם 26000 DPI, מתגי Kailh GM 8.0 ו-6 כפתורים. אחד מהעכברים הקלים ביותר בשוק עם ביצועים מעולים.',
+    descriptionHe: 'עכבר גיימינג קל-משקל Ambidextrous מ-Lamzu עם חיישן PixArt PAW3395. Atlantis Mini Pro מציע גוף קומפקטי סימטרי ב-45 גרם עם 26000 DPI, מתגי Kailh GM 8.0 ו-6 כפתורים. אחד מהעכברים הקלים ביותר בשוק עם ביצועים מעולים.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Lamzu+Atlantis+Mini+Pro'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -35,6 +36,7 @@ const lamzu = [
     brand:       'Lamzu',
     price:       360,
     description: 'עכבר גיימינג קל-משקל Ambidextrous מ-Lamzu עם חיישן PixArt PAW3395. Atlantis Mini מציע גוף קומפקטי סימטרי ב-49 גרם עם 26000 DPI ו-6 כפתורים. גרסת הקלאסיק של ה-Atlantis Mini בנקודת מחיר נגישה יותר.',
+    descriptionHe: 'עכבר גיימינג קל-משקל Ambidextrous מ-Lamzu עם חיישן PixArt PAW3395. Atlantis Mini מציע גוף קומפקטי סימטרי ב-49 גרם עם 26000 DPI ו-6 כפתורים. גרסת הקלאסיק של ה-Atlantis Mini בנקודת מחיר נגישה יותר.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Lamzu+Atlantis+Mini'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -64,6 +66,7 @@ const lamzu = [
     brand:       'Lamzu',
     price:       500,
     description: 'עכבר גיימינג קל-משקל Ambidextrous גדול מ-Lamzu עם חיישן PixArt PAW3395. Atlantis Pro מציע גוף סימטרי גדול ב-51 גרם עם 26000 DPI ומתגי Kailh GM 8.0. גרסת Pro לגיימרים עם יד גדולה.',
+    descriptionHe: 'עכבר גיימינג קל-משקל Ambidextrous גדול מ-Lamzu עם חיישן PixArt PAW3395. Atlantis Pro מציע גוף סימטרי גדול ב-51 גרם עם 26000 DPI ומתגי Kailh GM 8.0. גרסת Pro לגיימרים עם יד גדולה.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Lamzu+Atlantis+Pro'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -93,6 +96,7 @@ const lamzu = [
     brand:       'Lamzu',
     price:       400,
     description: 'עכבר גיימינג קל-משקל Right-handed מ-Lamzu עם חיישן PixArt PAW3395. Maya מציע גוף ארגונומי ב-52 גרם עם 26000 DPI ומתגי Kailh. עיצוב ייחודי Lamzu לגיימרים המעדיפים צורת יד ימין קלאסית.',
+    descriptionHe: 'עכבר גיימינג קל-משקל Right-handed מ-Lamzu עם חיישן PixArt PAW3395. Maya מציע גוף ארגונומי ב-52 גרם עם 26000 DPI ומתגי Kailh. עיצוב ייחודי Lamzu לגיימרים המעדיפים צורת יד ימין קלאסית.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Lamzu+Maya'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -122,6 +126,7 @@ const lamzu = [
     brand:       'Lamzu',
     price:       420,
     description: 'עכבר גיימינג קל-משקל Ambidextrous מ-Lamzu עם חיישן PixArt PAW3395 ו-4K Polling Rate. Thorn מציע גוף סימטרי ב-47 גרם עם 26000 DPI ו-4000Hz Polling Rate לתגובה אולטימטיבית. מהעכברים המובילים בשוק ה-4K Polling.',
+    descriptionHe: 'עכבר גיימינג קל-משקל Ambidextrous מ-Lamzu עם חיישן PixArt PAW3395 ו-4K Polling Rate. Thorn מציע גוף סימטרי ב-47 גרם עם 26000 DPI ו-4000Hz Polling Rate לתגובה אולטימטיבית. מהעכברים המובילים בשוק ה-4K Polling.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Lamzu+Thorn'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -151,6 +156,7 @@ const lamzu = [
     brand:       'Lamzu',
     price:       440,
     description: 'הדור השני של ה-Atlantis Mini מ-Lamzu עם שיפורים ממוקדים. Atlantis Mini V2 מציע חיישן PixArt PAW3395 בגוף Ambidextrous ב-47 גרם עם מתגים משופרים ו-26000 DPI. שדרוג הדגם האהוב בקהילת הגיימינג.',
+    descriptionHe: 'הדור השני של ה-Atlantis Mini מ-Lamzu עם שיפורים ממוקדים. Atlantis Mini V2 מציע חיישן PixArt PAW3395 בגוף Ambidextrous ב-47 גרם עם מתגים משופרים ו-26000 DPI. שדרוג הדגם האהוב בקהילת הגיימינג.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Lamzu+Atlantis+Mini+V2'],
     specs: {
       'Mouse Type':       'Gaming',

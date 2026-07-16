@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from '../../../context/LanguageContext';
 import s from './StarRating.module.css';
 
 const STAR_PATH =
@@ -20,13 +21,14 @@ function StarSvg({ size = 18, className }) {
 
 /* ── Display mode (readonly, supports fractional value) ── */
 function StarDisplay({ value, size, count }) {
+  const t = useTranslation();
   const pct = Math.min(100, Math.max(0, (value / count) * 100));
 
   return (
     <div
       className={s.displayWrap}
       role="img"
-      aria-label={`דירוג: ${value.toFixed(1)} מתוך ${count}`}
+      aria-label={t('product.rating_display_label').replace('{value}', value.toFixed(1)).replace('{count}', count)}
     >
       {/* Background — empty stars */}
       <div className={s.emptyLayer}>
@@ -46,6 +48,7 @@ function StarDisplay({ value, size, count }) {
 
 /* ── Interactive / picker mode (whole stars only) ── */
 function StarPicker({ value, onChange, size, count, disabled }) {
+  const t = useTranslation();
   const [hovered, setHovered] = useState(0);
   const active = hovered || value;
 
@@ -53,7 +56,7 @@ function StarPicker({ value, onChange, size, count, disabled }) {
     <div
       className={s.pickerWrap}
       role="radiogroup"
-      aria-label="בחר דירוג"
+      aria-label={t('product.rating_picker_label')}
       onMouseLeave={() => setHovered(0)}
     >
       {Array.from({ length: count }).map((_, i) => {
@@ -65,7 +68,7 @@ function StarPicker({ value, onChange, size, count, disabled }) {
             className={`${s.pickBtn} ${star <= active ? s.pickActive : ''}`}
             onClick={() => !disabled && onChange(star)}
             onMouseEnter={() => !disabled && setHovered(star)}
-            aria-label={`דירוג ${star} מתוך ${count}`}
+            aria-label={t('product.rating_star_label').replace('{star}', star).replace('{count}', count)}
             aria-pressed={star === value}
             disabled={disabled}
           >

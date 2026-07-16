@@ -290,6 +290,8 @@ module.exports = [
     isPublished: true,
     description: 'The Alienware AW3423DWF is the AMD FreeSync Premium Pro version of the acclaimed AW3423 series, making the groundbreaking 34-inch curved QD-OLED ultrawide experience accessible to Radeon GPU owners at a lower price point. The 165Hz refresh rate and AMD FreeSync Premium Pro certification deliver smooth, tear-free ultrawide gaming with the same infinite contrast and spectacular OLED colour the series is known for.',
     shortDescription: 'Acclaimed 34" curved ultrawide QD-OLED at 165Hz with FreeSync.',
+    descriptionHe: 'ה-Alienware AW3423DWF הוא גרסת ה-AMD FreeSync Premium Pro של סדרת ה-AW3423 המהוללת, שמנגישה את חוויית ה-QD-OLED הקעורה והרחבה בגודל 34 אינץ׳ גם לבעלי כרטיסי מסך מבית Radeon, במחיר נוח יותר. קצב רענון של 165Hz בשילוב תעודת AMD FreeSync Premium Pro מספקים גיימינג חלק וללא קריעות מסך, עם אותה ניגודיות אינסופית וצבעי OLED מרהיבים שהסדרה ידועה בזכותם.',
+    shortDescriptionHe: 'מסך קעור רחב במיוחד בגודל 34 אינץ׳ עם פאנל QD-OLED, קצב רענון של 165Hz ותמיכה ב-AMD FreeSync Premium Pro.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=AW3423DWF'],
     tags: ['gaming', 'qd-oled', 'ultrawide', 'curved', 'qhd', '165hz', 'hdr', 'freesync', 'oled'],
     specs: {

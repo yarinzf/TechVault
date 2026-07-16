@@ -6,6 +6,7 @@ const hp = [
     brand:       'HP',
     price:       180,
     description: 'עכבר גיימינג קווי מ-HP OMEN עם חיישן Optical ב-7200 DPI. Vector Essential מציע 6 כפתורים מתכנתים ב-117 גרם עם תאורת RGB ניתנת לתכנות. פתרון גיימינג אמין מאחורית מותג OMEN.',
+    descriptionHe: 'עכבר גיימינג קווי מ-HP OMEN עם חיישן Optical ב-7200 DPI. Vector Essential מציע 6 כפתורים מתכנתים ב-117 גרם עם תאורת RGB ניתנת לתכנות. פתרון גיימינג אמין מאחורית מותג OMEN.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=HP+OMEN+Vector+Essential+Mouse'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -35,6 +36,7 @@ const hp = [
     brand:       'HP',
     price:       250,
     description: 'עכבר גיימינג פרימיום מ-HP OMEN עם חיישן PixArt PMW3389 ב-16000 DPI. Vector Mouse מציע 6 כפתורים מתכנתים ב-104 גרם עם Dual Zone RGB ותאורה ניתנת לתכנות מלא. הדגל של קו OMEN.',
+    descriptionHe: 'עכבר גיימינג פרימיום מ-HP OMEN עם חיישן PixArt PMW3389 ב-16000 DPI. Vector Mouse מציע 6 כפתורים מתכנתים ב-104 גרם עם Dual Zone RGB ותאורה ניתנת לתכנות מלא. הדגל של קו OMEN.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=HP+OMEN+Vector+Mouse'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -64,6 +66,7 @@ const hp = [
     brand:       'HP',
     price:       220,
     description: 'עכבר אלחוטי לאנשי יצירה מ-HP עם Multi-device Bluetooth. 930 Creator מציע 4 כפתורים מתכנתים, גלגלת אופקית וחיבור ל-3 מכשירים בו זמנית. עיצוב פרימיום לסביבת Creator ועבודה מקצועית.',
+    descriptionHe: 'עכבר אלחוטי לאנשי יצירה מ-HP עם Multi-device Bluetooth. 930 Creator מציע 4 כפתורים מתכנתים, גלגלת אופקית וחיבור ל-3 מכשירים בו זמנית. עיצוב פרימיום לסביבת Creator ועבודה מקצועית.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=HP+930+Creator+Wireless+Mouse'],
     specs: {
       'Mouse Type':       'Office',
@@ -93,6 +96,7 @@ const hp = [
     brand:       'HP',
     price:       180,
     description: 'עכבר Bluetooth פרימיום מ-HP לשימוש מקצועי ועסקי. Z5000 מציע עיצוב ייצוגי עם חיישן Laser ב-1200 DPI וסוללה ל-15 חודשים. מחובר בדרגת כפתורים מועטה אך יעילה לפרודוקטיביות מקסימלית.',
+    descriptionHe: 'עכבר Bluetooth פרימיום מ-HP לשימוש מקצועי ועסקי. Z5000 מציע עיצוב ייצוגי עם חיישן Laser ב-1200 DPI וסוללה ל-15 חודשים. מחובר בדרגת כפתורים מועטה אך יעילה לפרודוקטיביות מקסימלית.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=HP+Z5000+Bluetooth+Mouse'],
     specs: {
       'Mouse Type':       'Office',
@@ -122,6 +126,7 @@ const hp = [
     brand:       'HP',
     price:       110,
     description: 'עכבר אלחוטי אמין מ-HP עם 2.4GHz וחיישן Optical. X4500 מציע עיצוב ארגונומי קלאסי ב-91 גרם עם 3 כפתורים וסוללה ל-18 חודשים. פתרון פשוט, אמין ועמיד לסביבת עסקים ובית.',
+    descriptionHe: 'עכבר אלחוטי אמין מ-HP עם 2.4GHz וחיישן Optical. X4500 מציע עיצוב ארגונומי קלאסי ב-91 גרם עם 3 כפתורים וסוללה ל-18 חודשים. פתרון פשוט, אמין ועמיד לסביבת עסקים ובית.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=HP+X4500+Wireless+Mouse'],
     specs: {
       'Mouse Type':       'Office',
@@ -151,6 +156,7 @@ const hp = [
     brand:       'HP',
     price:       320,
     description: 'עכבר גיימינג אלחוטי פרימיום מ-HP OMEN עם Dual Connection. Photon מציע 2.4GHz ו-Bluetooth עם חיישן Optical ב-16000 DPI ותאורת RGB פנורמית. מעוצב עם גוף ארגונומי לסשנים תחרותיים ממושכים.',
+    descriptionHe: 'עכבר גיימינג אלחוטי פרימיום מ-HP OMEN עם Dual Connection. Photon מציע 2.4GHz ו-Bluetooth עם חיישן Optical ב-16000 DPI ותאורת RGB פנורמית. מעוצב עם גוף ארגונומי לסשנים תחרותיים ממושכים.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=HP+OMEN+Photon+Wireless+Mouse'],
     specs: {
       'Mouse Type':       'Gaming',

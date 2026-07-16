@@ -17,6 +17,7 @@ export function useRecentlyViewed() {
       productId: String(product._id),
       slug:      product.slug,
       name:      product.name,
+      nameHe:    product.nameHe || '',
       image:     product.images?.[0] ?? '',
       price:     product.discountedPrice ?? product.price,
       viewedAt:  Date.now(),

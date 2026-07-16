@@ -1,8 +1,9 @@
 import { Fragment } from 'react';
 import { ShoppingCart, Loader } from 'lucide-react';
-import { useTranslation } from '../../../../context/LanguageContext';
+import { useLanguage } from '../../../../context/LanguageContext';
 import { ImageWithFallback } from '../../../../components/ui/ImageWithFallback';
 import Button from '../../../../components/ui/Button/Button';
+import { getLocalizedProductName } from '../../utils/localizedProduct';
 import s from './FrequentlyBoughtTogether.module.css';
 
 // Not part of Sapir's static mockup, but this bundle-upsell feature already
@@ -10,7 +11,7 @@ import s from './FrequentlyBoughtTogether.module.css';
 // preserved here — just restyled to the new section-card visual language
 // instead of dropped for not appearing in the reference file.
 export default function FrequentlyBoughtTogether({ currentProduct, companions, onAddAll, adding }) {
-  const t = useTranslation();
+  const { t, language } = useLanguage();
   if (!companions.length) return null;
 
   const dp = (p) => p.discountedPrice ?? p.price;
@@ -20,19 +21,22 @@ export default function FrequentlyBoughtTogether({ currentProduct, companions, o
   return (
     <div className={s.wrap}>
       <div className={s.strip}>
-        {all.map((p, i) => (
-          <Fragment key={p._id}>
-            <div className={`${s.card}${i === 0 ? ' ' + s.cardCurrent : ''}`}>
-              <div className={s.imgWrap}>
-                <ImageWithFallback src={p.images?.[0] || ''} alt={p.name} className={s.img} loading="lazy" />
-                {i === 0 && <span className={s.currentLabel}>{t('product.fbt_current')}</span>}
+        {all.map((p, i) => {
+          const name = getLocalizedProductName(p, language);
+          return (
+            <Fragment key={p._id}>
+              <div className={`${s.card}${i === 0 ? ' ' + s.cardCurrent : ''}`}>
+                <div className={s.imgWrap}>
+                  <ImageWithFallback src={p.images?.[0] || ''} alt={name} className={s.img} loading="lazy" />
+                  {i === 0 && <span className={s.currentLabel}>{t('product.fbt_current')}</span>}
+                </div>
+                <p className={s.name}>{name}</p>
+                <p className={s.price}>₪{dp(p).toFixed(2)}</p>
               </div>
-              <p className={s.name}>{p.name}</p>
-              <p className={s.price}>₪{dp(p).toFixed(2)}</p>
-            </div>
-            {i < all.length - 1 && <span className={s.plus} aria-hidden="true">+</span>}
-          </Fragment>
-        ))}
+              {i < all.length - 1 && <span className={s.plus} aria-hidden="true">+</span>}
+            </Fragment>
+          );
+        })}
       </div>
 
       <div className={s.footer}>

@@ -6,6 +6,7 @@ const kensington = [
     brand:       'Kensington',
     price:       280,
     description: 'עכבר ארגונומי אנכי אלחוטי מ-Kensington למניעת כאבי Carpal Tunnel. Pro Fit Ergo Vertical מציע עיצוב Vertical ב-57 מעלות עם 2.4GHz, 5 כפתורים וחיישן Optical ב-1600 DPI. נרשם לשימוש גדול ביד ימין.',
+    descriptionHe: 'עכבר ארגונומי אנכי אלחוטי מ-Kensington למניעת כאבי Carpal Tunnel. Pro Fit Ergo Vertical מציע עיצוב Vertical ב-57 מעלות עם 2.4GHz, 5 כפתורים וחיישן Optical ב-1600 DPI. נרשם לשימוש גדול ביד ימין.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Kensington+Pro+Fit+Ergo+Vertical+Wireless'],
     specs: {
       'Mouse Type':       'Vertical',
@@ -35,6 +36,7 @@ const kensington = [
     brand:       'Kensington',
     price:       220,
     description: 'כדור מסלול ייחודי מ-Kensington עם טבעת גלילה מהפכנית. Orbit Trackball מאפשר שליטה מדויקת ב-Optical Tracking ב-400 DPI ללא הזזת כל העכבר. מפחית עומס על הפרק ואידיאלי לעבודה גרפית.',
+    descriptionHe: 'כדור מסלול ייחודי מ-Kensington עם טבעת גלילה מהפכנית. Orbit Trackball מאפשר שליטה מדויקת ב-Optical Tracking ב-400 DPI ללא הזזת כל העכבר. מפחית עומס על הפרק ואידיאלי לעבודה גרפית.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Kensington+Orbit+Trackball+Scroll+Ring'],
     specs: {
       'Mouse Type':       'Ergonomic',
@@ -64,6 +66,7 @@ const kensington = [
     brand:       'Kensington',
     price:       350,
     description: 'כדור מסלול אלחוטי מקצועי מ-Kensington עם כדור 52mm ענק. Expert Wireless Trackball מציע דיוק Optical, כפתורי תכנות גמישים ו-Bluetooth/2.4GHz. הסטנדרט המקצועי לכדורי מסלול עבור עבודה מאומצת.',
+    descriptionHe: 'כדור מסלול אלחוטי מקצועי מ-Kensington עם כדור 52mm ענק. Expert Wireless Trackball מציע דיוק Optical, כפתורי תכנות גמישים ו-Bluetooth/2.4GHz. הסטנדרט המקצועי לכדורי מסלול עבור עבודה מאומצת.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Kensington+Expert+Wireless+Trackball+Mouse'],
     specs: {
       'Mouse Type':       'Ergonomic',
@@ -93,6 +96,7 @@ const kensington = [
     brand:       'Kensington',
     price:       160,
     description: 'עכבר Bluetooth נייד קומפקטי מ-Kensington לעבודה בנסיעה. Pro Fit Bluetooth Mobile מציע חיישן Optical ב-1600 DPI בגוף קומפקטי ב-85 גרם עם 3 כפתורים. מתחבר בקלות ל-PC, Mac ו-Tablet.',
+    descriptionHe: 'עכבר Bluetooth נייד קומפקטי מ-Kensington לעבודה בנסיעה. Pro Fit Bluetooth Mobile מציע חיישן Optical ב-1600 DPI בגוף קומפקטי ב-85 גרם עם 3 כפתורים. מתחבר בקלות ל-PC, Mac ו-Tablet.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Kensington+Pro+Fit+Bluetooth+Mobile+Mouse'],
     specs: {
       'Mouse Type':       'Travel',
@@ -122,6 +126,7 @@ const kensington = [
     brand:       'Kensington',
     price:       420,
     description: 'כדור מסלול מקצועי מ-Kensington עם כדור 55mm ייחודי שמסתובב לגלילה. SlimBlade Pro מציע 4 כפתורים מתכנתים, 2.4GHz/Bluetooth ו-Laser ב-2400 DPI. הבחירה הראשונה של אדריכלים ומעצבים.',
+    descriptionHe: 'כדור מסלול מקצועי מ-Kensington עם כדור 55mm ייחודי שמסתובב לגלילה. SlimBlade Pro מציע 4 כפתורים מתכנתים, 2.4GHz/Bluetooth ו-Laser ב-2400 DPI. הבחירה הראשונה של אדריכלים ומעצבים.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Kensington+SlimBlade+Pro+Trackball+Mouse'],
     specs: {
       'Mouse Type':       'Ergonomic',
@@ -151,6 +156,7 @@ const kensington = [
     brand:       'Kensington',
     price:       160,
     description: 'עכבר אלחוטי דו-מצבי מ-Kensington עם 2.4GHz ו-Bluetooth 5.0. SureTrack מציע חיישן Optical ב-1600 DPI ב-88 גרם עם 5 כפתורים ניתנים לתכנות. מחובר לשני מכשירים בו זמנית עם מיתוג קל.',
+    descriptionHe: 'עכבר אלחוטי דו-מצבי מ-Kensington עם 2.4GHz ו-Bluetooth 5.0. SureTrack מציע חיישן Optical ב-1600 DPI ב-88 גרם עם 5 כפתורים ניתנים לתכנות. מחובר לשני מכשירים בו זמנית עם מיתוג קל.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Kensington+SureTrack+2GHz+Mouse'],
     specs: {
       'Mouse Type':       'Office',

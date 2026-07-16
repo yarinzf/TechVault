@@ -6,6 +6,7 @@ const dreammachines = [
     brand:       'Dream Machines',
     price:       280,
     description: 'עכבר גיימינג קל-משקל Ambidextrous מ-Dream Machines הפולנית עם חיישן PixArt PAW3395. DM6 Holey מציע גוף חרור ב-61 גרם עם 26000 DPI ו-6 כפתורים. מותג Esports פולני בצמיחה עם ביצועים יוצאי דופן.',
+    descriptionHe: 'עכבר גיימינג קל-משקל Ambidextrous מ-Dream Machines הפולנית עם חיישן PixArt PAW3395. DM6 Holey מציע גוף חרור ב-61 גרם עם 26000 DPI ו-6 כפתורים. מותג Esports פולני בצמיחה עם ביצועים יוצאי דופן.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Dream+Machines+DM6+Holey'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -35,6 +36,7 @@ const dreammachines = [
     brand:       'Dream Machines',
     price:       220,
     description: 'עכבר גיימינג FPS מ-Dream Machines עם חיישן PixArt PAW3370 ב-19000 DPI. DM1 FPS מציע גוף Right-handed ב-78 גרם עם 6 כפתורים וכבל Paracord גמיש. ממוקד לגיימרי FPS המחפשים דיוק ותגובה מהירה.',
+    descriptionHe: 'עכבר גיימינג FPS מ-Dream Machines עם חיישן PixArt PAW3370 ב-19000 DPI. DM1 FPS מציע גוף Right-handed ב-78 גרם עם 6 כפתורים וכבל Paracord גמיש. ממוקד לגיימרי FPS המחפשים דיוק ותגובה מהירה.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Dream+Machines+DM1+FPS'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -64,6 +66,7 @@ const dreammachines = [
     brand:       'Dream Machines',
     price:       320,
     description: 'עכבר גיימינג פרמיום מ-Dream Machines עם חיישן PixArt PAW3395 ב-26000 DPI. DM4 Ultra מציע גוף Right-handed ב-75 גרם עם 6 כפתורים, כבל Paracord ומתגי TTC. שיא הביצועים של Dream Machines לגיימרי Esports מקצועיים.',
+    descriptionHe: 'עכבר גיימינג פרמיום מ-Dream Machines עם חיישן PixArt PAW3395 ב-26000 DPI. DM4 Ultra מציע גוף Right-handed ב-75 גרם עם 6 כפתורים, כבל Paracord ומתגי TTC. שיא הביצועים של Dream Machines לגיימרי Esports מקצועיים.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Dream+Machines+DM4+Ultra'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -93,6 +96,7 @@ const dreammachines = [
     brand:       'Dream Machines',
     price:       200,
     description: 'עכבר גיימינג ארגונומי מ-Dream Machines עם חיישן PixArt PAW3370 ב-12000 DPI. DM2 Comfy מציע גוף Right-handed נוח ב-88 גרם עם 6 כפתורים ועיצוב ממוקד נוחות לשעות משחק ארוכות.',
+    descriptionHe: 'עכבר גיימינג ארגונומי מ-Dream Machines עם חיישן PixArt PAW3370 ב-12000 DPI. DM2 Comfy מציע גוף Right-handed נוח ב-88 גרם עם 6 כפתורים ועיצוב ממוקד נוחות לשעות משחק ארוכות.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Dream+Machines+DM2+Comfy'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -122,6 +126,7 @@ const dreammachines = [
     brand:       'Dream Machines',
     price:       340,
     description: 'גרסת Ultra של ה-DM6 Holey מ-Dream Machines עם שיפורי חיישן וחומר. DM6 Holey Ultra מציע חיישן PixArt PAW3395 בגוף Ambidextrous חרור ב-58 גרם עם 4000Hz Polling Rate. Dream Machines דוחפת את גבולות ה-Esports.',
+    descriptionHe: 'גרסת Ultra של ה-DM6 Holey מ-Dream Machines עם שיפורי חיישן וחומר. DM6 Holey Ultra מציע חיישן PixArt PAW3395 בגוף Ambidextrous חרור ב-58 גרם עם 4000Hz Polling Rate. Dream Machines דוחפת את גבולות ה-Esports.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Dream+Machines+DM6+Holey+Ultra'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -151,6 +156,7 @@ const dreammachines = [
     brand:       'Dream Machines',
     price:       260,
     description: 'עכבר גיימינג Esports מ-Dream Machines עם חיישן PixArt PAW3395. DM1 Superior מציע גוף Right-handed ב-72 גרם עם 26000 DPI, כבל Paracord ומתגי Huano. גרסת Superior של ה-DM1 עם שדרוג חיישן משמעותי.',
+    descriptionHe: 'עכבר גיימינג Esports מ-Dream Machines עם חיישן PixArt PAW3395. DM1 Superior מציע גוף Right-handed ב-72 גרם עם 26000 DPI, כבל Paracord ומתגי Huano. גרסת Superior של ה-DM1 עם שדרוג חיישן משמעותי.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Dream+Machines+DM1+Superior'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -180,6 +186,7 @@ const dreammachines = [
     brand:       'Dream Machines',
     price:       300,
     description: 'עכבר גיימינג אלחוטי מ-Dream Machines עם חיישן PixArt PAW3395 ו-2.4GHz. DM5 Air מציע גוף Right-handed ב-85 גרם עם 26000 DPI וסוללה ל-60 שעות. הכניסה הראשונה של Dream Machines לשוק האלחוטי.',
+    descriptionHe: 'עכבר גיימינג אלחוטי מ-Dream Machines עם חיישן PixArt PAW3395 ו-2.4GHz. DM5 Air מציע גוף Right-handed ב-85 גרם עם 26000 DPI וסוללה ל-60 שעות. הכניסה הראשונה של Dream Machines לשוק האלחוטי.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Dream+Machines+DM5+Air'],
     specs: {
       'Mouse Type':       'Gaming',

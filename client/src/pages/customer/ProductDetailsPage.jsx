@@ -25,6 +25,7 @@ import { getProductPricing } from '../../features/products/utils/pricing';
 import { getProductHighlights } from '../../features/products/utils/highlights';
 import { groupProductSpecs } from '../../features/products/utils/specGroups';
 import { getCategoryLabel } from '../../features/products/utils/categoryLabels';
+import { getLocalizedProductName, getLocalizedDescription, getLocalizedShortDescription } from '../../features/products/utils/localizedProduct';
 import s from './ProductDetailsPage.module.css';
 
 export default function ProductPage() {
@@ -92,7 +93,8 @@ export default function ProductPage() {
   const wished = isInWishlist(product._id);
   const comparing = isComparing(product._id);
   const highlights = getProductHighlights(product, 6);
-  const hasDescription = !!(product.description || product.shortDescription) || highlights.length > 0;
+  const displayName = getLocalizedProductName(product, language);
+  const hasDescription = !!(getLocalizedDescription(product, language) || getLocalizedShortDescription(product, language)) || highlights.length > 0;
   const specGroups = groupProductSpecs(product.specs, product.category?.slug);
   const recentOthers = recentlyViewed.filter((i) => i.productId !== String(product._id));
 
@@ -101,19 +103,19 @@ export default function ProductPage() {
     { label: t('product.breadcrumb_home'), href: '/' },
     { label: t('product.breadcrumb_store'), href: '/products' },
     ...(product.category ? [{ label: categoryLabel, href: `/category/${product.category.slug}` }] : []),
-    { label: product.name },
+    { label: displayName },
   ];
 
   const handleAddToCart = async () => {
     setAdding(true);
     try {
       await addItem(product._id, qty, {
-        name: product.name,
+        name: displayName,
         price: pricing.price,
         image: product.images?.[0] ?? '',
         originalPrice: pricing.hasDiscount ? pricing.oldPrice : null,
       });
-      toast.success(`${qty} × ${product.name} ${t('product.added_to_cart_toast')}`);
+      toast.success(`${qty} × ${displayName} ${t('product.added_to_cart_toast')}`);
     } catch (err) {
       toast.error(err.message || t('product.cannot_add_toast'));
     } finally {
@@ -125,7 +127,7 @@ export default function ProductPage() {
     setBuying(true);
     try {
       await addItem(product._id, qty, {
-        name: product.name,
+        name: displayName,
         price: pricing.price,
         image: product.images?.[0] ?? '',
         originalPrice: pricing.hasDiscount ? pricing.oldPrice : null,
@@ -144,7 +146,7 @@ export default function ProductPage() {
       for (const p of companions) {
         const dp = p.discountedPrice ?? p.price;
         await addItem(p._id, 1, {
-          name: p.name,
+          name: getLocalizedProductName(p, language),
           price: dp,
           image: p.images?.[0] ?? '',
           originalPrice: p.discountedPrice ? p.price : null,

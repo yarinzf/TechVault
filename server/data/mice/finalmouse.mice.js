@@ -6,6 +6,7 @@ const finalmouse = [
     brand:       'Finalmouse',
     price:       750,
     description: 'עכבר גיימינג אולטרה-קל-משקל מ-Finalmouse עשוי מגנזיום בלבד. Starlight 12 Small מציע חיישן PixArt ב-37 גרם — הקל ביותר בשוק — עם גוף Ambidextrous ו-6 כפתורים. עשוי ממגנזיום מחוקק CNC לחוזק מרבי במשקל מינימלי.',
+    descriptionHe: 'עכבר גיימינג אולטרה-קל-משקל מ-Finalmouse עשוי מגנזיום בלבד. Starlight 12 Small מציע חיישן PixArt ב-37 גרם — הקל ביותר בשוק — עם גוף Ambidextrous ו-6 כפתורים. עשוי ממגנזיום מחוקק CNC לחוזק מרבי במשקל מינימלי.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Finalmouse+Starlight+12+Small'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -35,6 +36,7 @@ const finalmouse = [
     brand:       'Finalmouse',
     price:       750,
     description: 'עכבר גיימינג אולטרה-קל-משקל בגודל בינוני מ-Finalmouse עשוי מגנזיום. Starlight 12 Medium מציע חיישן PixArt ב-42 גרם עם גוף Ambidextrous בינוני ו-6 כפתורים. אותה בנייה מגנזיום CNC ייחודית לגיימרים עם ידיים בינוניות.',
+    descriptionHe: 'עכבר גיימינג אולטרה-קל-משקל בגודל בינוני מ-Finalmouse עשוי מגנזיום. Starlight 12 Medium מציע חיישן PixArt ב-42 גרם עם גוף Ambidextrous בינוני ו-6 כפתורים. אותה בנייה מגנזיום CNC ייחודית לגיימרים עם ידיים בינוניות.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Finalmouse+Starlight+12+Medium'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -64,6 +66,7 @@ const finalmouse = [
     brand:       'Finalmouse',
     price:       620,
     description: 'עכבר גיימינג קל-משקל אגדי מ-Finalmouse שהניח את הרף לעכברים קלים. Ultralight 2 Cape Town מציע גוף Ambidextrous עם חורים ב-47 גרם וחיישן PixArt ב-3200 DPI. הדגם שהביא את מהפכת הקל-משקל לעולם הגיימינג.',
+    descriptionHe: 'עכבר גיימינג קל-משקל אגדי מ-Finalmouse שהניח את הרף לעכברים קלים. Ultralight 2 Cape Town מציע גוף Ambidextrous עם חורים ב-47 גרם וחיישן PixArt ב-3200 DPI. הדגם שהביא את מהפכת הקל-משקל לעולם הגיימינג.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Finalmouse+Ultralight+2+Cape+Town'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -93,6 +96,7 @@ const finalmouse = [
     brand:       'Finalmouse',
     price:       680,
     description: 'עכבר גיימינג קל-משקל אגדי מ-Finalmouse בשיתוף עם גיימר NinjA. Air58 Ninja Cherry Blossom מציע גוף Ambidextrous חרור ב-58 גרם עם חיישן PixArt ו-6 כפתורים. Collector\'s item ייחודי מהסדרה המוגבלת של Finalmouse.',
+    descriptionHe: 'עכבר גיימינג קל-משקל אגדי מ-Finalmouse בשיתוף עם גיימר NinjA. Air58 Ninja Cherry Blossom מציע גוף Ambidextrous חרור ב-58 גרם עם חיישן PixArt ו-6 כפתורים. Collector\'s item ייחודי מהסדרה המוגבלת של Finalmouse.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Finalmouse+Air58+Ninja+Cherry+Blossom'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -122,6 +126,7 @@ const finalmouse = [
     brand:       'Finalmouse',
     price:       1200,
     description: 'עכבר גיימינג אולטרה-יוקרתי מ-Finalmouse עשוי כולו מאלומיניום מחוקק CNC. Centerpiece מציע חיישן PixArt מותאם-אישית, גוף Ambidextrous ב-57 גרם וביצועים חסרי-פשרות. הגרסה הפרמיום ביותר שיצרה Finalmouse עד כה.',
+    descriptionHe: 'עכבר גיימינג אולטרה-יוקרתי מ-Finalmouse עשוי כולו מאלומיניום מחוקק CNC. Centerpiece מציע חיישן PixArt מותאם-אישית, גוף Ambidextrous ב-57 גרם וביצועים חסרי-פשרות. הגרסה הפרמיום ביותר שיצרה Finalmouse עד כה.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Finalmouse+Centerpiece'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -151,6 +156,7 @@ const finalmouse = [
     brand:       'Finalmouse',
     price:       800,
     description: 'עכבר גיימינג קל-משקל מ-Finalmouse עם גוף Ambidextrous מגנזיום ב-37 גרם. Ultralight X מציע חיישן PixArt PAW3370 ו-4 כפתורים בלבד לעיצוב מינימליסטי מוחלט. Finalmouse לוקחת את מושג הקל-משקל לרמה חדשה לחלוטין.',
+    descriptionHe: 'עכבר גיימינג קל-משקל מ-Finalmouse עם גוף Ambidextrous מגנזיום ב-37 גרם. Ultralight X מציע חיישן PixArt PAW3370 ו-4 כפתורים בלבד לעיצוב מינימליסטי מוחלט. Finalmouse לוקחת את מושג הקל-משקל לרמה חדשה לחלוטין.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Finalmouse+Ultralight+X'],
     specs: {
       'Mouse Type':       'Gaming',

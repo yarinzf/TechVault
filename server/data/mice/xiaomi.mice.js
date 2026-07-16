@@ -6,6 +6,7 @@ const xiaomi = [
     brand:       'Xiaomi',
     price:       90,
     description: 'עכבר אלחוטי בסיסי ואמין מ-Xiaomi עם 2.4GHz וחיישן Optical ב-1200 DPI. Wireless Mouse 2 מציע עיצוב מינימליסטי אלגנטי ב-90 גרם עם 3 כפתורים וסוללה ל-12 חודשים. המחיר-ערך הטוב ביותר ב-Office.',
+    descriptionHe: 'עכבר אלחוטי בסיסי ואמין מ-Xiaomi עם 2.4GHz וחיישן Optical ב-1200 DPI. Wireless Mouse 2 מציע עיצוב מינימליסטי אלגנטי ב-90 גרם עם 3 כפתורים וסוללה ל-12 חודשים. המחיר-ערך הטוב ביותר ב-Office.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Xiaomi+Wireless+Mouse+2'],
     specs: {
       'Mouse Type':       'Office',
@@ -35,6 +36,7 @@ const xiaomi = [
     brand:       'Xiaomi',
     price:       120,
     description: 'עכבר אלחוטי שקט דו-מצבי מ-Xiaomi עם 2.4GHz ו-Bluetooth 4.2. Silent Edition מציע מתגים שקטים ב-1300 DPI עם עיצוב Ambidextrous נקי ב-87 גרם. מחובר לשני מכשירים עם מיתוג מהיר.',
+    descriptionHe: 'עכבר אלחוטי שקט דו-מצבי מ-Xiaomi עם 2.4GHz ו-Bluetooth 4.2. Silent Edition מציע מתגים שקטים ב-1300 DPI עם עיצוב Ambidextrous נקי ב-87 גרם. מחובר לשני מכשירים עם מיתוג מהיר.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Xiaomi+Mi+Dual+Mode+Wireless+Mouse+Silent'],
     specs: {
       'Mouse Type':       'Office',
@@ -64,6 +66,7 @@ const xiaomi = [
     brand:       'Xiaomi',
     price:       80,
     description: 'עכבר אלחוטי Office פשוט ממותג MIIIW של Xiaomi. מציע 2.4GHz עם חיישר Optical ב-1000 DPI בגוף קומפקטי ב-76 גרם. עיצוב מינימליסטי לבן במחיר שאין על טוב ממנו.',
+    descriptionHe: 'עכבר אלחוטי Office פשוט ממותג MIIIW של Xiaomi. מציע 2.4GHz עם חיישר Optical ב-1000 DPI בגוף קומפקטי ב-76 גרם. עיצוב מינימליסטי לבן במחיר שאין על טוב ממנו.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Xiaomi+MIIIW+Wireless+Office+Mouse'],
     specs: {
       'Mouse Type':       'Office',
@@ -93,6 +96,7 @@ const xiaomi = [
     brand:       'Xiaomi',
     price:       220,
     description: 'עכבר גיימינג אלחוטי מ-Xiaomi עם חיישן PixArt PAW3335 ו-2.4GHz. HyperSpeed מציע 6 כפתורים מתכנתים ב-91 גרם עם 6400 DPI וסוללה ל-200 שעות. ביצועי גיימינג אלחוטי במחיר Xiaomi המצוין.',
+    descriptionHe: 'עכבר גיימינג אלחוטי מ-Xiaomi עם חיישן PixArt PAW3335 ו-2.4GHz. HyperSpeed מציע 6 כפתורים מתכנתים ב-91 גרם עם 6400 DPI וסוללה ל-200 שעות. ביצועי גיימינג אלחוטי במחיר Xiaomi המצוין.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Xiaomi+HyperSpeed+Wireless+Gaming+Mouse'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -122,6 +126,7 @@ const xiaomi = [
     brand:       'Xiaomi',
     price:       120,
     description: 'עכבר גיימינג קווי קל-משקל ממחיר נגיש מ-Xiaomi. Gaming Mouse Lite מציע חיישן Optical ב-6200 DPI ב-90 גרם עם 6 כפתורים מתכנתים ותאורת RGB. ביצועי גיימינג בסיסיים במחיר Xiaomi.',
+    descriptionHe: 'עכבר גיימינג קווי קל-משקל ממחיר נגיש מ-Xiaomi. Gaming Mouse Lite מציע חיישן Optical ב-6200 DPI ב-90 גרם עם 6 כפתורים מתכנתים ותאורת RGB. ביצועי גיימינג בסיסיים במחיר Xiaomi.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Xiaomi+Gaming+Mouse+Lite'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -151,6 +156,7 @@ const xiaomi = [
     brand:       'Xiaomi',
     price:       100,
     description: 'עכבר Bluetooth נייד קומפקטי מ-Xiaomi לנסיעות ועבודה ניידת. Mi Portable מציע Bluetooth 5.0, 3 כפתורים ב-1300 DPI בגוף קומפקטי ב-76 גרם עם סוללה ל-40 ימים. ניתן לשאת בכיס.',
+    descriptionHe: 'עכבר Bluetooth נייד קומפקטי מ-Xiaomi לנסיעות ועבודה ניידת. Mi Portable מציע Bluetooth 5.0, 3 כפתורים ב-1300 DPI בגוף קומפקטי ב-76 גרם עם סוללה ל-40 ימים. ניתן לשאת בכיס.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Xiaomi+Mi+Portable+Bluetooth+Mouse'],
     specs: {
       'Mouse Type':       'Travel',
@@ -180,6 +186,7 @@ const xiaomi = [
     brand:       'Xiaomi',
     price:       110,
     description: 'הדור השלישי של עכבר ה-Office האלחוטי מ-Xiaomi. Wireless Mouse 3 מציע 2.4GHz עם חיישן Optical ב-1200 DPI ב-92 גרם עם עיצוב מינימליסטי מחודש. שיפור משמעותי בתחושת הלחיצה ובגלגלת.',
+    descriptionHe: 'הדור השלישי של עכבר ה-Office האלחוטי מ-Xiaomi. Wireless Mouse 3 מציע 2.4GHz עם חיישן Optical ב-1200 DPI ב-92 גרם עם עיצוב מינימליסטי מחודש. שיפור משמעותי בתחושת הלחיצה ובגלגלת.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Xiaomi+Wireless+Mouse+3'],
     specs: {
       'Mouse Type':       'Office',
@@ -209,6 +216,7 @@ const xiaomi = [
     brand:       'Xiaomi',
     price:       150,
     description: 'עכבר גיימינג קווי עם RGB מ-MIIIW של Xiaomi. מציע חיישן Optical ב-10000 DPI ב-120 גרם עם 7 כפתורים מתכנתים ותאורת RGB מלהיבה. ביצועי גיימינג יעילים בתקציב Xiaomi.',
+    descriptionHe: 'עכבר גיימינג קווי עם RGB מ-MIIIW של Xiaomi. מציע חיישן Optical ב-10000 DPI ב-120 גרם עם 7 כפתורים מתכנתים ותאורת RGB מלהיבה. ביצועי גיימינג יעילים בתקציב Xiaomi.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Xiaomi+MIIIW+RGB+Gaming+Mouse'],
     specs: {
       'Mouse Type':       'Gaming',

@@ -6,6 +6,7 @@ const xtrfy = [
     brand:       'Xtrfy',
     price:       450,
     description: 'עכבר אלחוטי פלאגשיפ מ-Xtrfy עם חיישן PixArt PAW3395 ומשקל פנומנלי של 59 גרם. M8 Wireless מציע גוף Ambidextrous עם תאורת RGB נשלטת, 2.4GHz נטול השהייה וסוללה ל-150 שעות. עכבר הדגל האלחוטי של הסדרה.',
+    descriptionHe: 'עכבר אלחוטי פלאגשיפ מ-Xtrfy עם חיישן PixArt PAW3395 ומשקל פנומנלי של 59 גרם. M8 Wireless מציע גוף Ambidextrous עם תאורת RGB נשלטת, 2.4GHz נטול השהייה וסוללה ל-150 שעות. עכבר הדגל האלחוטי של הסדרה.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Xtrfy+M8+Wireless'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -35,6 +36,7 @@ const xtrfy = [
     brand:       'Xtrfy',
     price:       320,
     description: 'עכבר Esports קל-משקל מ-Xtrfy עם חיישן PixArt PAW3395 ב-55 גרם. M8 מציע גוף Ambidextrous מושלם לאחיזת Claw ו-Fingertip עם מבנה פתוח שמוריד משקל. כבל Xtrfy Kana גמיש לחוויית שחקן מיטבית.',
+    descriptionHe: 'עכבר Esports קל-משקל מ-Xtrfy עם חיישן PixArt PAW3395 ב-55 גרם. M8 מציע גוף Ambidextrous מושלם לאחיזת Claw ו-Fingertip עם מבנה פתוח שמוריד משקל. כבל Xtrfy Kana גמיש לחוויית שחקן מיטבית.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Xtrfy+M8'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -64,6 +66,7 @@ const xtrfy = [
     brand:       'Xtrfy',
     price:       380,
     description: 'עכבר אלחוטי Ambidextrous מ-Xtrfy עם עיצוב מודולרי ייחודי. M42 Wireless מציע חיישן PixArt PAW3395 עם 2.4GHz נטול השהייה, כפתורי צד הניתנים להחלפה ותאורת RGB. אלחוטי שמשלב אישיות ומקצועיות.',
+    descriptionHe: 'עכבר אלחוטי Ambidextrous מ-Xtrfy עם עיצוב מודולרי ייחודי. M42 Wireless מציע חיישן PixArt PAW3395 עם 2.4GHz נטול השהייה, כפתורי צד הניתנים להחלפה ותאורת RGB. אלחוטי שמשלב אישיות ומקצועיות.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Xtrfy+M42+Wireless'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -93,6 +96,7 @@ const xtrfy = [
     brand:       'Xtrfy',
     price:       280,
     description: 'עכבר Esports קווי Ambidextrous עם גוף מודולרי מ-Xtrfy. M42 Pro מציע חיישן PixArt PAW3395 עם כפתורי צד הניתנים להחלפה לאישיות מלאה. לגיימרים שרוצים שליטה מוחלטת על ארגונומיה ועיצוב.',
+    descriptionHe: 'עכבר Esports קווי Ambidextrous עם גוף מודולרי מ-Xtrfy. M42 Pro מציע חיישן PixArt PAW3395 עם כפתורי צד הניתנים להחלפה לאישיות מלאה. לגיימרים שרוצים שליטה מוחלטת על ארגונומיה ועיצוב.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Xtrfy+M42+Pro'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -122,6 +126,7 @@ const xtrfy = [
     brand:       'Xtrfy',
     price:       250,
     description: 'עכבר Esports קווי Ambidextrous ייחודי עם גוף מודולרי מ-Xtrfy. M42 מציע חיישן PixArt עם כפתורי צד ניתנים לפירוק, תאורת RGB ועיצוב שניתן להתאמה אישית. גיוון בין שחקני ימין ושמאל.',
+    descriptionHe: 'עכבר Esports קווי Ambidextrous ייחודי עם גוף מודולרי מ-Xtrfy. M42 מציע חיישן PixArt עם כפתורי צד ניתנים לפירוק, תאורת RGB ועיצוב שניתן להתאמה אישית. גיוון בין שחקני ימין ושמאל.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Xtrfy+M42'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -151,6 +156,7 @@ const xtrfy = [
     brand:       'Xtrfy',
     price:       280,
     description: 'הגרסה המשופרת של M4 הקלאסי מ-Xtrfy. M4 Pro מציע חיישן PixArt מעודכן עם עיצוב ארגונומי ימני משופר, מיקרו-מתגים Kailh ותאורת RGB. עכבר שמחבר בין המורשת של M4 לדרישות השחקן המודרני.',
+    descriptionHe: 'הגרסה המשופרת של M4 הקלאסי מ-Xtrfy. M4 Pro מציע חיישן PixArt מעודכן עם עיצוב ארגונומי ימני משופר, מיקרו-מתגים Kailh ותאורת RGB. עכבר שמחבר בין המורשת של M4 לדרישות השחקן המודרני.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Xtrfy+M4+Pro'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -180,6 +186,7 @@ const xtrfy = [
     brand:       'Xtrfy',
     price:       250,
     description: 'עכבר ה-Esports הקלאסי המקורי של Xtrfy לגיימרים ימניים. M4 עם חיישן PixArt ב-70 גרם, עיצוב ארגונומי ייחודי ותאורת RGB. הוכיח עצמו כאחד הבחירות הטובות ביותר בקטגוריית ה-Mid-Range.',
+    descriptionHe: 'עכבר ה-Esports הקלאסי המקורי של Xtrfy לגיימרים ימניים. M4 עם חיישן PixArt ב-70 גרם, עיצוב ארגונומי ייחודי ותאורת RGB. הוכיח עצמו כאחד הבחירות הטובות ביותר בקטגוריית ה-Mid-Range.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Xtrfy+M4'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -209,6 +216,7 @@ const xtrfy = [
     brand:       'Xtrfy',
     price:       270,
     description: 'מהדורת Surface המיוחדת של M4 מ-Xtrfy עם חומר כפות-רגל מיוחד לפני ריצה שונים. M4 Surface Edition מתאים לשחקנים שמשחקים על משטחים קשים, עם חיישן PixArt ו-70 גרם בגוף ארגונומי ימני.',
+    descriptionHe: 'מהדורת Surface המיוחדת של M4 מ-Xtrfy עם חומר כפות-רגל מיוחד לפני ריצה שונים. M4 Surface Edition מתאים לשחקנים שמשחקים על משטחים קשים, עם חיישן PixArt ו-70 גרם בגוף ארגונומי ימני.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Xtrfy+M4+Surface+Edition'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -238,6 +246,7 @@ const xtrfy = [
     brand:       'Xtrfy',
     price:       320,
     description: 'עכבר Esports ארגונומי ימני חדשני מ-Xtrfy. M5 מציע חיישן PixArt ב-76 גרם בגוף ייחודי בעל מספר נקודות כף-יד, מתאים לשלושת סגנונות האחיזה. תאורת RGB וכבל גמיש מושלמים את החוויה.',
+    descriptionHe: 'עכבר Esports ארגונומי ימני חדשני מ-Xtrfy. M5 מציע חיישן PixArt ב-76 גרם בגוף ייחודי בעל מספר נקודות כף-יד, מתאים לשלושת סגנונות האחיזה. תאורת RGB וכבל גמיש מושלמים את החוויה.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Xtrfy+M5'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -267,6 +276,7 @@ const xtrfy = [
     brand:       'Xtrfy',
     price:       180,
     description: 'עכבר ה-Esports הראשון של Xtrfy שהגדיר את הפילוסופיה של המותג. M1 מציע חיישן PixArt בגוף ארגונומי ימני פשוט ועמיד. נקודת כניסה מצוינת לעולם עכברי ה-Esports של Xtrfy.',
+    descriptionHe: 'עכבר ה-Esports הראשון של Xtrfy שהגדיר את הפילוסופיה של המותג. M1 מציע חיישן PixArt בגוף ארגונומי ימני פשוט ועמיד. נקודת כניסה מצוינת לעולם עכברי ה-Esports של Xtrfy.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Xtrfy+M1'],
     specs: {
       'Mouse Type':       'Gaming',

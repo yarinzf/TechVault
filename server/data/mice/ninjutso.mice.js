@@ -6,6 +6,7 @@ const ninjutso = [
     brand:       'Ninjutso',
     price:       520,
     description: 'עכבר גיימינג Esports קל-משקל מ-Ninjutso עם חיישן PixArt PAW3395 ו-4K Polling Rate. Sora V2 מציע גוף Ambidextrous ב-44 גרם עם 26000 DPI, מתגי TTC Gold ו-6 כפתורים. מהעכברים הקלים והמהירים ביותר בשוק עם תמיכת 4000Hz.',
+    descriptionHe: 'עכבר גיימינג Esports קל-משקל מ-Ninjutso עם חיישן PixArt PAW3395 ו-4K Polling Rate. Sora V2 מציע גוף Ambidextrous ב-44 גרם עם 26000 DPI, מתגי TTC Gold ו-6 כפתורים. מהעכברים הקלים והמהירים ביותר בשוק עם תמיכת 4000Hz.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Ninjutso+Sora+V2'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -35,6 +36,7 @@ const ninjutso = [
     brand:       'Ninjutso',
     price:       380,
     description: 'עכבר גיימינג Esports קל-משקל הראשון מ-Ninjutso עם חיישן PixArt PAW3395. Sora מציע גוף Ambidextrous ב-48 גרם עם 26000 DPI ו-6 כפתורים. הדגם שהציב את Ninjutso על מפת הגיימינג העולמי בקטגוריית הקל-משקל.',
+    descriptionHe: 'עכבר גיימינג Esports קל-משקל הראשון מ-Ninjutso עם חיישן PixArt PAW3395. Sora מציע גוף Ambidextrous ב-48 גרם עם 26000 DPI ו-6 כפתורים. הדגם שהציב את Ninjutso על מפת הגיימינג העולמי בקטגוריית הקל-משקל.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Ninjutso+Sora'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -64,6 +66,7 @@ const ninjutso = [
     brand:       'Ninjutso',
     price:       560,
     description: 'הגרסה המקצועית של ה-Sora מ-Ninjutso עם חיישן PixArt PAW3395 ושיפורים מבניים. Sora Pro מציע גוף Ambidextrous ב-42 גרם עם 4000Hz Polling Rate ומתגי TTC Gold 80M לאורך חיים מרבי. ה-Sora Pro הוא הקל ביותר במשפחה.',
+    descriptionHe: 'הגרסה המקצועית של ה-Sora מ-Ninjutso עם חיישן PixArt PAW3395 ושיפורים מבניים. Sora Pro מציע גוף Ambidextrous ב-42 גרם עם 4000Hz Polling Rate ומתגי TTC Gold 80M לאורך חיים מרבי. ה-Sora Pro הוא הקל ביותר במשפחה.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Ninjutso+Sora+Pro'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -93,6 +96,7 @@ const ninjutso = [
     brand:       'Ninjutso',
     price:       420,
     description: 'גרסת מיני של ה-Sora מ-Ninjutso לידיים קטנות. Sora Mini מציע חיישן PixArt PAW3395 בגוף Ambidextrous מוקטן ב-43 גרם עם 26000 DPI ו-1000Hz Polling Rate. מאפשר ל-Ninjutso להגיע לגיימרים עם ידיים קטנות.',
+    descriptionHe: 'גרסת מיני של ה-Sora מ-Ninjutso לידיים קטנות. Sora Mini מציע חיישן PixArt PAW3395 בגוף Ambidextrous מוקטן ב-43 גרם עם 26000 DPI ו-1000Hz Polling Rate. מאפשר ל-Ninjutso להגיע לגיימרים עם ידיים קטנות.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Ninjutso+Sora+Mini'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -122,6 +126,7 @@ const ninjutso = [
     brand:       'Ninjutso',
     price:       340,
     description: 'עכבר גיימינג כניסה מ-Ninjutso עם חיישן PixArt PAW3370 ו-19000 DPI. Origin One X מציע גוף Ambidextrous ב-60 גרם עם 1000Hz Polling Rate ו-6 כפתורים. גרסת הכניסה של Ninjutso לגיימרים שרוצים להכנס לעולם ה-Esports.',
+    descriptionHe: 'עכבר גיימינג כניסה מ-Ninjutso עם חיישן PixArt PAW3370 ו-19000 DPI. Origin One X מציע גוף Ambidextrous ב-60 גרם עם 1000Hz Polling Rate ו-6 כפתורים. גרסת הכניסה של Ninjutso לגיימרים שרוצים להכנס לעולם ה-Esports.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Ninjutso+Origin+One+X'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -151,6 +156,7 @@ const ninjutso = [
     brand:       'Ninjutso',
     price:       720,
     description: 'עכבר גיימינג אלחוטי Esports מ-Ninjutso עם חיישן PixArt PAW3395 ו-4000Hz Polling Rate. Sora 4K Wireless מציע גוף Ambidextrous ב-55 גרם עם 2.4GHz ו-26000 DPI. ה-Sora האלחוטי הראשון מ-Ninjutso עם 4K Polling.',
+    descriptionHe: 'עכבר גיימינג אלחוטי Esports מ-Ninjutso עם חיישן PixArt PAW3395 ו-4000Hz Polling Rate. Sora 4K Wireless מציע גוף Ambidextrous ב-55 גרם עם 2.4GHz ו-26000 DPI. ה-Sora האלחוטי הראשון מ-Ninjutso עם 4K Polling.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Ninjutso+Sora+4K+Wireless'],
     specs: {
       'Mouse Type':       'Gaming',

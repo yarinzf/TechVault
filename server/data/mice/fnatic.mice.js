@@ -6,6 +6,7 @@ const fnatic = [
     brand:       'Fnatic',
     price:       280,
     description: 'עכבר ה-Esports החדשני של ארגון Fnatic עם גוף Ambidextrous קל-משקל. Bolt מציע חיישן PixArt PAW3370 ב-67 גרם, כבל Paracord מקצועי ועיצוב מינימליסטי ורסטילי. פותח על ידי שחקני Fnatic המקצועיים עצמם לצרכי תחרות.',
+    descriptionHe: 'עכבר ה-Esports החדשני של ארגון Fnatic עם גוף Ambidextrous קל-משקל. Bolt מציע חיישן PixArt PAW3370 ב-67 גרם, כבל Paracord מקצועי ועיצוב מינימליסטי ורסטילי. פותח על ידי שחקני Fnatic המקצועיים עצמם לצרכי תחרות.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Fnatic+Bolt'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -35,6 +36,7 @@ const fnatic = [
     brand:       'Fnatic',
     price:       250,
     description: 'עכבר Esports ארגונומי ימני מ-Fnatic עם חיישן PixArt PMW3360. Flick 2 מציע 95 גרם בגוף ארגונומי ימני עם תאורת RGB מבוקרת ומיקרו-מתגים Huano. מעוצב בשיתוף עם צוות ה-CS:GO המקצועי של Fnatic.',
+    descriptionHe: 'עכבר Esports ארגונומי ימני מ-Fnatic עם חיישן PixArt PMW3360. Flick 2 מציע 95 גרם בגוף ארגונומי ימני עם תאורת RGB מבוקרת ומיקרו-מתגים Huano. מעוצב בשיתוף עם צוות ה-CS:GO המקצועי של Fnatic.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Fnatic+Flick+2'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -64,6 +66,7 @@ const fnatic = [
     brand:       'Fnatic',
     price:       200,
     description: 'גרסת הכניסה של Flick 2 מ-Fnatic עם חיישן PixArt PMW3360 ב-95 גרם. Flick 2 Essential מציע את אותה ארגונומיה ודיוק כמו Flick 2 במחיר נגיש יותר. מושלם לגיימרים שמחפשים איכות Fnatic בתקציב מוגבל.',
+    descriptionHe: 'גרסת הכניסה של Flick 2 מ-Fnatic עם חיישן PixArt PMW3360 ב-95 גרם. Flick 2 Essential מציע את אותה ארגונומיה ודיוק כמו Flick 2 במחיר נגיש יותר. מושלם לגיימרים שמחפשים איכות Fnatic בתקציב מוגבל.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Fnatic+Flick+2+Essential'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -93,6 +96,7 @@ const fnatic = [
     brand:       'Fnatic',
     price:       230,
     description: 'עכבר Esports קל-משקל ארגונומי מ-Fnatic עם חיישן PixArt PMW3360 ב-77 גרם. Dash מציע עיצוב ייחודי המאזן בין ארגונומיה לביצועים עם כבל Paracord גמיש ומיקרו-מתגים Kailh. בחירת שחקני Fnatic למשחקי FPS.',
+    descriptionHe: 'עכבר Esports קל-משקל ארגונומי מ-Fnatic עם חיישן PixArt PMW3360 ב-77 גרם. Dash מציע עיצוב ייחודי המאזן בין ארגונומיה לביצועים עם כבל Paracord גמיש ומיקרו-מתגים Kailh. בחירת שחקני Fnatic למשחקי FPS.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Fnatic+Dash'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -122,6 +126,7 @@ const fnatic = [
     brand:       'Fnatic',
     price:       220,
     description: 'עכבר גיימינג ארגונומי מ-Fnatic עם חיישן PixArt PMW3360 ב-115 גרם. Clutch 2 מציע עיצוב Palm Grip נוח עם 6 כפתורים מתכנתים ותאורת RGB. פותח לגיימרים שמחפשים שליטה ארגונומית ונוחות בסשן ממושך.',
+    descriptionHe: 'עכבר גיימינג ארגונומי מ-Fnatic עם חיישן PixArt PMW3360 ב-115 גרם. Clutch 2 מציע עיצוב Palm Grip נוח עם 6 כפתורים מתכנתים ותאורת RGB. פותח לגיימרים שמחפשים שליטה ארגונומית ונוחות בסשן ממושך.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Fnatic+Clutch+2'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -151,6 +156,7 @@ const fnatic = [
     brand:       'Fnatic',
     price:       270,
     description: 'הגרסה המשודרגת של Clutch 2 מ-Fnatic עם מיקרו-מתגים Kailh GM 8.0 Premium. Clutch 2 Pro שומר על חיישן PixArt PMW3360 ב-115 גרם עם שדרוג ה-click feel המשמעותי. בחירת גיימרים שרוצים Clutch עם תגובה מהירה יותר.',
+    descriptionHe: 'הגרסה המשודרגת של Clutch 2 מ-Fnatic עם מיקרו-מתגים Kailh GM 8.0 Premium. Clutch 2 Pro שומר על חיישן PixArt PMW3360 ב-115 גרם עם שדרוג ה-click feel המשמעותי. בחירת גיימרים שרוצים Clutch עם תגובה מהירה יותר.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Fnatic+Clutch+2+Pro'],
     specs: {
       'Mouse Type':       'Gaming',

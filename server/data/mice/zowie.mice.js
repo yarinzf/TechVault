@@ -6,6 +6,7 @@ const zowie = [
     brand:       'Zowie',
     price:       320,
     description: 'עכבר הדגל של Zowie בגרסת C לשנת 2022. EC2-C מציע חיישן PixArt ב-3200 DPI בגוף ארגונומי ימני מושלם ל-Palm Grip. ללא תוכנה, ללא RGB – רק דיוק מושלם לאסקורט. נבחר על ידי שחקנים מקצועיים ב-CS2 ו-Valorant ברחבי העולם.',
+    descriptionHe: 'עכבר הדגל של Zowie בגרסת C לשנת 2022. EC2-C מציע חיישן PixArt ב-3200 DPI בגוף ארגונומי ימני מושלם ל-Palm Grip. ללא תוכנה, ללא RGB – רק דיוק מושלם לאסקורט. נבחר על ידי שחקנים מקצועיים ב-CS2 ו-Valorant ברחבי העולם.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Zowie+EC2-C'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -35,6 +36,7 @@ const zowie = [
     brand:       'Zowie',
     price:       300,
     description: 'הגרסה הקטנה ביותר בסדרת EC של Zowie. EC3-C מיועד לגיימרים עם כפות ידיים קטנות ומשקלו 66 גרם בלבד עם חיישן PixArt ב-3200 DPI. עיצוב נקי ללא תוכנה הופך אותו לכלי תחרותי מושלם.',
+    descriptionHe: 'הגרסה הקטנה ביותר בסדרת EC של Zowie. EC3-C מיועד לגיימרים עם כפות ידיים קטנות ומשקלו 66 גרם בלבד עם חיישן PixArt ב-3200 DPI. עיצוב נקי ללא תוכנה הופך אותו לכלי תחרותי מושלם.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Zowie+EC3-C'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -64,6 +66,7 @@ const zowie = [
     brand:       'Zowie',
     price:       320,
     description: 'הגדול בסדרת EC של Zowie מדור C, עם גוף ארגונומי ימני ל-Palm Grip גדול. EC1-C מציע חיישן PixArt ב-3200 DPI ב-80 גרם. מתאים לגיימרים עם כפות ידיים גדולות שמחפשים עכבר Esports פרימיום ללא פשרות.',
+    descriptionHe: 'הגדול בסדרת EC של Zowie מדור C, עם גוף ארגונומי ימני ל-Palm Grip גדול. EC1-C מציע חיישן PixArt ב-3200 DPI ב-80 גרם. מתאים לגיימרים עם כפות ידיים גדולות שמחפשים עכבר Esports פרימיום ללא פשרות.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Zowie+EC1-C'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -93,6 +96,7 @@ const zowie = [
     brand:       'Zowie',
     price:       320,
     description: 'עכבר Ambidextrous שטוח מסדרת FK של Zowie דור C. FK1 Plus C עם גוף שטוח ורחב מותאם ל-Claw Grip, חיישן PixArt ב-3200 DPI ב-96 גרם. מועדף על ידי שחקני FPS שמשחקים עם אחיזה גבוהה.',
+    descriptionHe: 'עכבר Ambidextrous שטוח מסדרת FK של Zowie דור C. FK1 Plus C עם גוף שטוח ורחב מותאם ל-Claw Grip, חיישן PixArt ב-3200 DPI ב-96 גרם. מועדף על ידי שחקני FPS שמשחקים עם אחיזה גבוהה.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Zowie+FK1+Plus+C'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -122,6 +126,7 @@ const zowie = [
     brand:       'Zowie',
     price:       300,
     description: 'גרסת הביניים של סדרת FK מ-Zowie דור C. FK2-C מציע גוף Ambidextrous שטוח ב-80 גרם עם חיישן PixArt ב-3200 DPI, מתאים לכפות ידיים בינוניות ול-Claw Grip מדויק.',
+    descriptionHe: 'גרסת הביניים של סדרת FK מ-Zowie דור C. FK2-C מציע גוף Ambidextrous שטוח ב-80 גרם עם חיישן PixArt ב-3200 DPI, מתאים לכפות ידיים בינוניות ול-Claw Grip מדויק.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Zowie+FK2-C'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -151,6 +156,7 @@ const zowie = [
     brand:       'Zowie',
     price:       320,
     description: 'עכבר גיימינג ייחודי מסדרת S של Zowie דור C עם חזית נמוכה ואחורית גבוהה. S1-C מאפשר מעבר חלק בין Palm ל-Claw Grip ב-88 גרם עם חיישן PixArt ב-3200 DPI. מועדף על שחקני Esports מקצועיים.',
+    descriptionHe: 'עכבר גיימינג ייחודי מסדרת S של Zowie דור C עם חזית נמוכה ואחורית גבוהה. S1-C מאפשר מעבר חלק בין Palm ל-Claw Grip ב-88 גרם עם חיישן PixArt ב-3200 DPI. מועדף על שחקני Esports מקצועיים.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Zowie+S1-C'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -180,6 +186,7 @@ const zowie = [
     brand:       'Zowie',
     price:       300,
     description: 'הגרסה הקטנה יותר של סדרת S מ-Zowie דור C. S2-C מציע 70 גרם עם חיישן PixArt ב-3200 DPI בגוף ייחודי עם קדמה נמוכה. מתאים לגיימרים בינוניים שמחפשים גמישות בסגנון האחיזה.',
+    descriptionHe: 'הגרסה הקטנה יותר של סדרת S מ-Zowie דור C. S2-C מציע 70 גרם עם חיישן PixArt ב-3200 DPI בגוף ייחודי עם קדמה נמוכה. מתאים לגיימרים בינוניים שמחפשים גמישות בסגנון האחיזה.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Zowie+S2-C'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -209,6 +216,7 @@ const zowie = [
     brand:       'Zowie',
     price:       300,
     description: 'עכבר Ambidextrous גדול מסדרת ZA של Zowie דור C עם עיצוב כפות-ידיים גדול ועגלגל. ZA12-C מציע חיישן PixArt ב-3200 DPI ב-101 גרם עם ידיות צד מקבילות לשתי הידיים.',
+    descriptionHe: 'עכבר Ambidextrous גדול מסדרת ZA של Zowie דור C עם עיצוב כפות-ידיים גדול ועגלגל. ZA12-C מציע חיישן PixArt ב-3200 DPI ב-101 גרם עם ידיות צד מקבילות לשתי הידיים.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Zowie+ZA12-C'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -238,6 +246,7 @@ const zowie = [
     brand:       'Zowie',
     price:       280,
     description: 'הגרסה הקטנה של ZA מסדרת C של Zowie. ZA13-C מציע גוף Ambidextrous עגלגל ב-78 גרם עם חיישן PixArt ב-3200 DPI. מושלם לגיימרים Ambidextrous עם כפות ידיים קטנות עד בינוניות.',
+    descriptionHe: 'הגרסה הקטנה של ZA מסדרת C של Zowie. ZA13-C מציע גוף Ambidextrous עגלגל ב-78 גרם עם חיישן PixArt ב-3200 DPI. מושלם לגיימרים Ambidextrous עם כפות ידיים קטנות עד בינוניות.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Zowie+ZA13-C'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -267,6 +276,7 @@ const zowie = [
     brand:       'Zowie',
     price:       250,
     description: 'עכבר Esports קלאסי מדור B של Zowie – קודמו של EC2-C. EC2-B הוא מדור B עם גוף ארגונומי ימני מוכח ב-93 גרם וחיישן PixArt ב-3200 DPI. אמין, מדויק ופשוט – אייקון בקרב שחקני CS.',
+    descriptionHe: 'עכבר Esports קלאסי מדור B של Zowie – קודמו של EC2-C. EC2-B הוא מדור B עם גוף ארגונומי ימני מוכח ב-93 גרם וחיישן PixArt ב-3200 DPI. אמין, מדויק ופשוט – אייקון בקרב שחקני CS.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Zowie+EC2-B'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -296,6 +306,7 @@ const zowie = [
     brand:       'Zowie',
     price:       250,
     description: 'הגרסה הגדולה של EC מדור B של Zowie. EC1-B מציע גוף ארגונומי ימני גדול ב-97 גרם עם חיישן PixArt ב-3200 DPI. גרסה ותיקה ומוכחת שפעלה בתחרויות CS ב-CSGO ומשמשת עדיין שחקנים רבים.',
+    descriptionHe: 'הגרסה הגדולה של EC מדור B של Zowie. EC1-B מציע גוף ארגונומי ימני גדול ב-97 גרם עם חיישן PixArt ב-3200 DPI. גרסה ותיקה ומוכחת שפעלה בתחרויות CS ב-CSGO ומשמשת עדיין שחקנים רבים.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Zowie+EC1-B'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -325,6 +336,7 @@ const zowie = [
     brand:       'Zowie',
     price:       250,
     description: 'עכבר Ambidextrous שטוח מדור B של Zowie עם גוף מורחב. FK1 Plus B מציע 96 גרם עם חיישן PixArt ב-3200 DPI בגוף שטוח ורחב, אידיאלי ל-Claw Grip ולגיימרים שמחפשים תחושת מרחב באחיזה.',
+    descriptionHe: 'עכבר Ambidextrous שטוח מדור B של Zowie עם גוף מורחב. FK1 Plus B מציע 96 גרם עם חיישן PixArt ב-3200 DPI בגוף שטוח ורחב, אידיאלי ל-Claw Grip ולגיימרים שמחפשים תחושת מרחב באחיזה.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Zowie+FK1+Plus+B'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -354,6 +366,7 @@ const zowie = [
     brand:       'Zowie',
     price:       230,
     description: 'עכבר Ambidextrous שטוח בגודל בינוני מדור B של Zowie. FK2-B מציע 86 גרם עם חיישן PixArt ב-3200 DPI בגוף שטוח קומפקטי. מתאים לגיימרים עם כפות ידיים בינוניות ול-Claw Grip.',
+    descriptionHe: 'עכבר Ambidextrous שטוח בגודל בינוני מדור B של Zowie. FK2-B מציע 86 גרם עם חיישן PixArt ב-3200 DPI בגוף שטוח קומפקטי. מתאים לגיימרים עם כפות ידיים בינוניות ול-Claw Grip.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Zowie+FK2-B'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -383,6 +396,7 @@ const zowie = [
     brand:       'Zowie',
     price:       220,
     description: 'הגרסה המקורית של S1 מ-Zowie עם עיצוב קדמה-נמוכה ייחודי. S1 מציע חיישן PixArt ב-3200 DPI ב-91 גרם. מאפשר מעבר נוח בין Palm ל-Claw Grip ומתאים לגיימרים שמחפשים גמישות בסגנון האחיזה.',
+    descriptionHe: 'הגרסה המקורית של S1 מ-Zowie עם עיצוב קדמה-נמוכה ייחודי. S1 מציע חיישן PixArt ב-3200 DPI ב-91 גרם. מאפשר מעבר נוח בין Palm ל-Claw Grip ומתאים לגיימרים שמחפשים גמישות בסגנון האחיזה.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Zowie+S1'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -412,6 +426,7 @@ const zowie = [
     brand:       'Zowie',
     price:       200,
     description: 'הגרסה הקטנה יותר של S1 המקורי מ-Zowie. S2 מציע 72 גרם עם חיישן PixArt ב-3200 DPI בגוף נמוך-קדמי. ותיק ומוכח, S2 נחשב לאחד מעכברי ה-Esports הטובים שנוצרו.',
+    descriptionHe: 'הגרסה הקטנה יותר של S1 המקורי מ-Zowie. S2 מציע 72 גרם עם חיישן PixArt ב-3200 DPI בגוף נמוך-קדמי. ותיק ומוכח, S2 נחשב לאחד מעכברי ה-Esports הטובים שנוצרו.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Zowie+S2'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -441,6 +456,7 @@ const zowie = [
     brand:       'Zowie',
     price:       200,
     description: 'עכבר Ambidextrous גדול מסדרת ZA הקלאסית של Zowie. ZA12 מציע גוף עגלגל ב-115 גרם עם חיישן PixArt ב-3200 DPI. הגרסה הקלאסית שהניחה את היסוד לסדרת ZA הפופולרית.',
+    descriptionHe: 'עכבר Ambidextrous גדול מסדרת ZA הקלאסית של Zowie. ZA12 מציע גוף עגלגל ב-115 גרם עם חיישן PixArt ב-3200 DPI. הגרסה הקלאסית שהניחה את היסוד לסדרת ZA הפופולרית.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Zowie+ZA12'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -470,6 +486,7 @@ const zowie = [
     brand:       'Zowie',
     price:       180,
     description: 'הגרסה הקטנה של ZA הקלאסי מ-Zowie. ZA13 מציע גוף Ambidextrous קומפקטי ב-78 גרם עם חיישן PixArt ב-3200 DPI. מתאים לגיימרים Ambidextrous עם כפות ידיים קטנות שמחפשים עכבר Esports אמין.',
+    descriptionHe: 'הגרסה הקטנה של ZA הקלאסי מ-Zowie. ZA13 מציע גוף Ambidextrous קומפקטי ב-78 גרם עם חיישן PixArt ב-3200 DPI. מתאים לגיימרים Ambidextrous עם כפות ידיים קטנות שמחפשים עכבר Esports אמין.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Zowie+ZA13'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -499,6 +516,7 @@ const zowie = [
     brand:       'Zowie',
     price:       180,
     description: 'הגרסה הקלאסית הגדולה של EC מ-Zowie דור A. EC1-A הוא אחד מעכברי ה-Esports האייקוניים ביותר, בגוף ימני גדול ב-97 גרם עם חיישן PixArt. קנה את שמו בתחרויות CS:GO בעולם.',
+    descriptionHe: 'הגרסה הקלאסית הגדולה של EC מ-Zowie דור A. EC1-A הוא אחד מעכברי ה-Esports האייקוניים ביותר, בגוף ימני גדול ב-97 גרם עם חיישן PixArt. קנה את שמו בתחרויות CS:GO בעולם.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Zowie+EC1-A'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -528,6 +546,7 @@ const zowie = [
     brand:       'Zowie',
     price:       180,
     description: 'הגרסה הקלאסית הבינונית של EC מ-Zowie דור A. EC2-A היה הבחירה הראשונה של שחקני Esports מקצועיים ב-CS:GO. גוף ימני ב-93 גרם עם חיישן PixArt, אייקון של עידן ה-Esports המוקדם.',
+    descriptionHe: 'הגרסה הקלאסית הבינונית של EC מ-Zowie דור A. EC2-A היה הבחירה הראשונה של שחקני Esports מקצועיים ב-CS:GO. גוף ימני ב-93 גרם עם חיישן PixArt, אייקון של עידן ה-Esports המוקדם.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Zowie+EC2-A'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -557,6 +576,7 @@ const zowie = [
     brand:       'Zowie',
     price:       230,
     description: 'עכבר Ambidextrous שטוח גדול מדור B של Zowie. FK1-B מציע גוף שטוח ב-90 גרם עם חיישן PixArt ב-3200 DPI, מועדף על שחקני Esports שמשחקים עם Claw Grip ורוצים גוף גדול יותר.',
+    descriptionHe: 'עכבר Ambidextrous שטוח גדול מדור B של Zowie. FK1-B מציע גוף שטוח ב-90 גרם עם חיישן PixArt ב-3200 DPI, מועדף על שחקני Esports שמשחקים עם Claw Grip ורוצים גוף גדול יותר.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Zowie+FK1-B'],
     specs: {
       'Mouse Type':       'Gaming',

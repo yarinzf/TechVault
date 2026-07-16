@@ -1,17 +1,19 @@
 import { useState, useRef, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Play } from 'lucide-react';
 import { ImageWithFallback } from '../../../../components/ui/ImageWithFallback';
-import { useTranslation } from '../../../../context/LanguageContext';
+import { useLanguage } from '../../../../context/LanguageContext';
 import { buildGalleryMedia } from '../../utils/media';
+import { getLocalizedProductName } from '../../utils/localizedProduct';
 import s from './ProductGallery.module.css';
 
 export default function ProductGallery({ product, discountPercent, outOfStock }) {
-  const t = useTranslation();
+  const { t, language } = useLanguage();
   const [index, setIndex] = useState(0);
   const [swapKey, setSwapKey] = useState(0);
   const videoRef = useRef(null);
 
-  const media = buildGalleryMedia(product);
+  const displayName = getLocalizedProductName(product, language);
+  const media = buildGalleryMedia(product, displayName);
   const hasMultiple = media.length > 1;
   const active = media[index];
 
@@ -30,7 +32,7 @@ export default function ProductGallery({ product, discountPercent, outOfStock })
       <div className={s.gallery}>
         <div className={s.row}>
           <div className={s.mainWrap}>
-            <ImageWithFallback src="" alt={product.name} className={s.mainImg} />
+            <ImageWithFallback src="" alt={displayName} className={s.mainImg} />
           </div>
         </div>
       </div>
@@ -48,7 +50,7 @@ export default function ProductGallery({ product, discountPercent, outOfStock })
                 type="button"
                 className={`${s.thumb}${i === index ? ' ' + s.thumbActive : ''}`}
                 onClick={() => goTo(i)}
-                aria-label={item.type === 'video' ? `${product.name} — ${t('product.video_label')}` : `${t('product.image_prefix')} ${i + 1}`}
+                aria-label={item.type === 'video' ? `${displayName} — ${t('product.video_label')}` : `${t('product.image_prefix')} ${i + 1}`}
                 aria-current={i === index}
               >
                 {item.type === 'video' ? (

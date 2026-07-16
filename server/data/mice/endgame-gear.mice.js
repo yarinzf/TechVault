@@ -6,6 +6,7 @@ const endgameGear = [
     brand:       'Endgame Gear',
     price:       280,
     description: 'עכבר ה-Esports הנחשב של Endgame Gear עם חיישן PixArt PAW3370 ומשקל 70 גרם. XM1r מציע גוף Ambidextrous שטוח-בינוני, מיקרו-מתגים Kailh GM 8.0 מדויקים ו-Paracord כבל גמיש. הבחירה הראשונה של שחקני Esports האירופאיים.',
+    descriptionHe: 'עכבר ה-Esports הנחשב של Endgame Gear עם חיישן PixArt PAW3370 ומשקל 70 גרם. XM1r מציע גוף Ambidextrous שטוח-בינוני, מיקרו-מתגים Kailh GM 8.0 מדויקים ו-Paracord כבל גמיש. הבחירה הראשונה של שחקני Esports האירופאיים.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Endgame+Gear+XM1r'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -35,6 +36,7 @@ const endgameGear = [
     brand:       'Endgame Gear',
     price:       300,
     description: 'הגרסה המוארת של XM1r מ-Endgame Gear עם תאורת RGB לוגו ובסיס. חיישן PixArt PAW3370 ב-70 גרם עם מיקרו-מתגים Kailh GM 8.0 ו-Paracord גמיש. מציע ביצועי Esports עם יצירתיות ויזואלית.',
+    descriptionHe: 'הגרסה המוארת של XM1r מ-Endgame Gear עם תאורת RGB לוגו ובסיס. חיישן PixArt PAW3370 ב-70 גרם עם מיקרו-מתגים Kailh GM 8.0 ו-Paracord גמיש. מציע ביצועי Esports עם יצירתיות ויזואלית.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Endgame+Gear+XM1r+RGB'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -64,6 +66,7 @@ const endgameGear = [
     brand:       'Endgame Gear',
     price:       420,
     description: 'עכבר אלחוטי חדשני מ-Endgame Gear עם חיישן PixArt PAW3395 ב-63 גרם בלבד. XM2w מציע טכנולוגיית אלחוט 2.4GHz נטולת השהייה, סוללה ל-150 שעות וגוף Ambidextrous דק ומדויק לאסקורט תחרותי.',
+    descriptionHe: 'עכבר אלחוטי חדשני מ-Endgame Gear עם חיישן PixArt PAW3395 ב-63 גרם בלבד. XM2w מציע טכנולוגיית אלחוט 2.4GHz נטולת השהייה, סוללה ל-150 שעות וגוף Ambidextrous דק ומדויק לאסקורט תחרותי.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Endgame+Gear+XM2w'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -93,6 +96,7 @@ const endgameGear = [
     brand:       'Endgame Gear',
     price:       450,
     description: 'מהדורה מיוחדת של XM2w מ-Endgame Gear עם גימור פנים מיוחד. XM2we שומר על חיישן PixArt PAW3395, 63 גרם ו-2.4GHz נטול השהייה עם עיצוב מוגבל ייחודי. מיועד לאספנים ולגיימרים שרוצים בלוד אחד.',
+    descriptionHe: 'מהדורה מיוחדת של XM2w מ-Endgame Gear עם גימור פנים מיוחד. XM2we שומר על חיישן PixArt PAW3395, 63 גרם ו-2.4GHz נטול השהייה עם עיצוב מוגבל ייחודי. מיועד לאספנים ולגיימרים שרוצים בלוד אחד.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Endgame+Gear+XM2we'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -122,6 +126,7 @@ const endgameGear = [
     brand:       'Endgame Gear',
     price:       230,
     description: 'עכבר Esports עם תאורת RGB מ-Endgame Gear עם חיישן PixArt PMW3389 ב-82 גרם. XM1 RGB מציע גוף Ambidextrous קלאסי עם Paracord גמיש ומיקרו-מתגים Kailh. שילוב של ביצועים ואסתטיקה.',
+    descriptionHe: 'עכבר Esports עם תאורת RGB מ-Endgame Gear עם חיישן PixArt PMW3389 ב-82 גרם. XM1 RGB מציע גוף Ambidextrous קלאסי עם Paracord גמיש ומיקרו-מתגים Kailh. שילוב של ביצועים ואסתטיקה.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Endgame+Gear+XM1+RGB'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -151,6 +156,7 @@ const endgameGear = [
     brand:       'Endgame Gear',
     price:       200,
     description: 'עכבר ה-Esports המקורי של Endgame Gear שהניח את תפיסת המותג. XM1 עם חיישן PixArt PMW3389, גוף Ambidextrous ב-82 גרם ו-Paracord גמיש. הוכיח עצמו כאחד מעכברי ה-Esports המדויקים ביותר בשוק.',
+    descriptionHe: 'עכבר ה-Esports המקורי של Endgame Gear שהניח את תפיסת המותג. XM1 עם חיישן PixArt PMW3389, גוף Ambidextrous ב-82 גרם ו-Paracord גמיש. הוכיח עצמו כאחד מעכברי ה-Esports המדויקים ביותר בשוק.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Endgame+Gear+XM1'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -180,6 +186,7 @@ const endgameGear = [
     brand:       'Endgame Gear',
     price:       280,
     description: 'עכבר Esports ארגונומי לגיימרים ימניים מ-Endgame Gear. OP1 עם חיישן PixArt PAW3395 ב-77 גרם, כבל Paracord גמיש ומיקרו-מתגים Huano. עיצוב ייחודי ארגונומי שמשלב דיוק תחרותי עם נוחות לאורך זמן.',
+    descriptionHe: 'עכבר Esports ארגונומי לגיימרים ימניים מ-Endgame Gear. OP1 עם חיישן PixArt PAW3395 ב-77 גרם, כבל Paracord גמיש ומיקרו-מתגים Huano. עיצוב ייחודי ארגונומי שמשלב דיוק תחרותי עם נוחות לאורך זמן.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Endgame+Gear+OP1'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -209,6 +216,7 @@ const endgameGear = [
     brand:       'Endgame Gear',
     price:       380,
     description: 'הגרסה האלחוטית של OP1 הארגונומי מ-Endgame Gear. OP1w מציע חיישן PixArt PAW3395 ב-80 גרם עם חיבור 2.4GHz נטול השהייה, עיצוב ארגונומי ימני ו-120 שעות סוללה. לגיימרים ימניים שדורשים חירות אלחוטית.',
+    descriptionHe: 'הגרסה האלחוטית של OP1 הארגונומי מ-Endgame Gear. OP1w מציע חיישן PixArt PAW3395 ב-80 גרם עם חיבור 2.4GHz נטול השהייה, עיצוב ארגונומי ימני ו-120 שעות סוללה. לגיימרים ימניים שדורשים חירות אלחוטית.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Endgame+Gear+OP1w'],
     specs: {
       'Mouse Type':       'Gaming',

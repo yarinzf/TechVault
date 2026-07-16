@@ -6,6 +6,7 @@ const gigabyte = [
     brand:       'Gigabyte',
     price:       380,
     description: 'עכבר גיימינג אלחוטי Tri-Mode מ-Gigabyte Aorus עם חיישן PixArt PAW3395. Aorus M6 מציע 2.4GHz/Bluetooth/USB-C, 6 כפתורים בגוף ארגונומי ב-72 גרם עם 26000 DPI ו-RGB. ביצועי גיימינג Aorus בחבילה אלחוטית מלאה.',
+    descriptionHe: 'עכבר גיימינג אלחוטי Tri-Mode מ-Gigabyte Aorus עם חיישן PixArt PAW3395. Aorus M6 מציע 2.4GHz/Bluetooth/USB-C, 6 כפתורים בגוף ארגונומי ב-72 גרם עם 26000 DPI ו-RGB. ביצועי גיימינג Aorus בחבילה אלחוטית מלאה.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Gigabyte+Aorus+M6'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -35,6 +36,7 @@ const gigabyte = [
     brand:       'Gigabyte',
     price:       280,
     description: 'עכבר גיימינג קווי מ-Gigabyte Aorus עם חיישן PixArt PMW3389 ו-16000 DPI. Aorus M5 מציע 6 כפתורים מתכנתים עם Omron 50M בגוף ארגונומי ב-109 גרם ו-RGB FUSION 2.0. עכבר גיימינג מובחר מה-Aorus Gaming Ecosystem.',
+    descriptionHe: 'עכבר גיימינג קווי מ-Gigabyte Aorus עם חיישן PixArt PMW3389 ו-16000 DPI. Aorus M5 מציע 6 כפתורים מתכנתים עם Omron 50M בגוף ארגונומי ב-109 גרם ו-RGB FUSION 2.0. עכבר גיימינג מובחר מה-Aorus Gaming Ecosystem.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Gigabyte+Aorus+M5'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -64,6 +66,7 @@ const gigabyte = [
     brand:       'Gigabyte',
     price:       220,
     description: 'עכבר גיימינג קווי מ-Gigabyte Aorus עם חיישן PixArt PMW3327 ו-6400 DPI. Aorus M4 מציע 6 כפתורים בגוף ארגונומי ב-97 גרם עם RGB Fusion 2.0. נקודת כניסה מעולה לאקוסיסטם ה-Aorus עם ביצועים מוצקים.',
+    descriptionHe: 'עכבר גיימינג קווי מ-Gigabyte Aorus עם חיישן PixArt PMW3327 ו-6400 DPI. Aorus M4 מציע 6 כפתורים בגוף ארגונומי ב-97 גרם עם RGB Fusion 2.0. נקודת כניסה מעולה לאקוסיסטם ה-Aorus עם ביצועים מוצקים.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Gigabyte+Aorus+M4'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -93,6 +96,7 @@ const gigabyte = [
     brand:       'Gigabyte',
     price:       170,
     description: 'עכבר גיימינג קווי בסיסי מ-Gigabyte Aorus עם חיישן Optical ב-6200 DPI. Aorus M3 מציע 6 כפתורים בגוף ארגונומי ב-107 גרם עם תאורת RGB. נקודת הכניסה למשפחת Aorus בתקציב גיימינג ידידותי.',
+    descriptionHe: 'עכבר גיימינג קווי בסיסי מ-Gigabyte Aorus עם חיישן Optical ב-6200 DPI. Aorus M3 מציע 6 כפתורים בגוף ארגונומי ב-107 גרם עם תאורת RGB. נקודת הכניסה למשפחת Aorus בתקציב גיימינג ידידותי.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Gigabyte+Aorus+M3'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -122,6 +126,7 @@ const gigabyte = [
     brand:       'Gigabyte',
     price:       130,
     description: 'עכבר גיימינג קווי כניסה מ-Gigabyte Aorus עם חיישן Optical ב-6200 DPI. Aorus M2 מציע 6 כפתורים בגוף ב-100 גרם ותאורת RGB בסיסית. גיימינג Aorus במחיר הנגיש ביותר לתלמידים וגיימרים מתחילים.',
+    descriptionHe: 'עכבר גיימינג קווי כניסה מ-Gigabyte Aorus עם חיישן Optical ב-6200 DPI. Aorus M2 מציע 6 כפתורים בגוף ב-100 גרם ותאורת RGB בסיסית. גיימינג Aorus במחיר הנגיש ביותר לתלמידים וגיימרים מתחילים.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Gigabyte+Aorus+M2'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -151,6 +156,7 @@ const gigabyte = [
     brand:       'Gigabyte',
     price:       240,
     description: 'עכבר גיימינג קווי Laser מ-Gigabyte עם חיישן Laser ב-8200 DPI. Force M7 Torrent מציע 7 כפתורים מתכנתים בגוף ארגונומי ב-130 גרם עם תאורת RGB מלאה. עכבר Gigabyte Gaming קלאסי עם Laser sensor מדויק.',
+    descriptionHe: 'עכבר גיימינג קווי Laser מ-Gigabyte עם חיישן Laser ב-8200 DPI. Force M7 Torrent מציע 7 כפתורים מתכנתים בגוף ארגונומי ב-130 גרם עם תאורת RGB מלאה. עכבר Gigabyte Gaming קלאסי עם Laser sensor מדויק.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Gigabyte+Force+M7+Torrent'],
     specs: {
       'Mouse Type':       'Gaming',

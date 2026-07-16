@@ -6,6 +6,7 @@ const lenovo = [
     brand:       'Lenovo',
     price:       350,
     description: 'עכבר גיימינג אלחוטי עם טעינת Qi מ-Lenovo Legion. M600s Qi מציע חיישן PixArt PAW3370, 2.4GHz ו-Bluetooth עם טעינה אלחוטית Qi מובנית. ביצועי גיימינג אלחוטי עם נוחות טעינה מהפכנית.',
+    descriptionHe: 'עכבר גיימינג אלחוטי עם טעינת Qi מ-Lenovo Legion. M600s Qi מציע חיישן PixArt PAW3370, 2.4GHz ו-Bluetooth עם טעינה אלחוטית Qi מובנית. ביצועי גיימינג אלחוטי עם נוחות טעינה מהפכנית.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Lenovo+Legion+M600s+Qi'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -35,6 +36,7 @@ const lenovo = [
     brand:       'Lenovo',
     price:       220,
     description: 'עכבר גיימינג קווי מ-Lenovo Legion עם חיישן PixArt PMW3325 ו-RGB. M500 RGB מציע 7 כפתורים מתכנתים ב-120 גרם עם תאורת RGB ניתנת לשליטה. פתרון גיימינג אמין מאחורית ה-Legion.',
+    descriptionHe: 'עכבר גיימינג קווי מ-Lenovo Legion עם חיישן PixArt PMW3325 ו-RGB. M500 RGB מציע 7 כפתורים מתכנתים ב-120 גרם עם תאורת RGB ניתנת לשליטה. פתרון גיימינג אמין מאחורית ה-Legion.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Lenovo+Legion+M500+RGB'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -64,6 +66,7 @@ const lenovo = [
     brand:       'Lenovo',
     price:       160,
     description: 'עכבר Bluetooth קומפקטי מ-Lenovo מסדרת ThinkPad עם כפתור TrackPoint אדום ייחודי. ThinkPad Compact Mouse מציע 3 כפתורים ואמצעי TrackPoint ב-Bluetooth 5.0 עם סוללה ל-3 חודשים. מושלם לסביבת עסקים.',
+    descriptionHe: 'עכבר Bluetooth קומפקטי מ-Lenovo מסדרת ThinkPad עם כפתור TrackPoint אדום ייחודי. ThinkPad Compact Mouse מציע 3 כפתורים ואמצעי TrackPoint ב-Bluetooth 5.0 עם סוללה ל-3 חודשים. מושלם לסביבת עסקים.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Lenovo+ThinkPad+Compact+Bluetooth+Mouse'],
     specs: {
       'Mouse Type':       'Office',
@@ -93,6 +96,7 @@ const lenovo = [
     brand:       'Lenovo',
     price:       200,
     description: 'עכבר Bluetooth מסדרת Yoga המינימליסטית של Lenovo. Yoga Mouse מציע עיצוב דק וייחודי עם 4 כפתורים, 2.4GHz ו-Bluetooth ב-100 גרם. כרית לחיצה ייחודית ועיצוב Premium לסביבת עסקים יצירתית.',
+    descriptionHe: 'עכבר Bluetooth מסדרת Yoga המינימליסטית של Lenovo. Yoga Mouse מציע עיצוב דק וייחודי עם 4 כפתורים, 2.4GHz ו-Bluetooth ב-100 גרם. כרית לחיצה ייחודית ועיצוב Premium לסביבת עסקים יצירתית.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Lenovo+Yoga+Mouse'],
     specs: {
       'Mouse Type':       'Office',
@@ -122,6 +126,7 @@ const lenovo = [
     brand:       'Lenovo',
     price:       150,
     description: 'עכבר גיימינג קווי תקציבי מ-Lenovo Legion עם חיישן Optical ב-6400 DPI. M300 RGB מציע 6 כפתורים מתכנתים עם תאורת RGB ב-99 גרם. נקודת הכניסה הנגישה של Legion לעולם הגיימינג.',
+    descriptionHe: 'עכבר גיימינג קווי תקציבי מ-Lenovo Legion עם חיישן Optical ב-6400 DPI. M300 RGB מציע 6 כפתורים מתכנתים עם תאורת RGB ב-99 גרם. נקודת הכניסה הנגישה של Legion לעולם הגיימינג.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Lenovo+Legion+M300+RGB'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -151,6 +156,7 @@ const lenovo = [
     brand:       'Lenovo',
     price:       80,
     description: 'עכבר אלחוטי בסיסי מ-Lenovo עם 2.4GHz וחיישן Optical ב-1000 DPI. N100 מציע עיצוב ארגונומי פשוט ב-3 כפתורים עם סוללה ל-12 חודשים. פתרון אמין ופשוט לסביבת Office וניידות.',
+    descriptionHe: 'עכבר אלחוטי בסיסי מ-Lenovo עם 2.4GHz וחיישן Optical ב-1000 DPI. N100 מציע עיצוב ארגונומי פשוט ב-3 כפתורים עם סוללה ל-12 חודשים. פתרון אמין ופשוט לסביבת Office וניידות.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Lenovo+Wireless+Mouse+N100'],
     specs: {
       'Mouse Type':       'Office',

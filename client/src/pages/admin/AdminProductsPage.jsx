@@ -50,6 +50,7 @@ function formatPrice(price) {
 const BLANK_FORM = {
     name: '', description: '', category: '', brand: '',
     price: '', stock: '0', imageUrl: '', isPublished: false,
+    nameHe: '', shortDescriptionHe: '', descriptionHe: '',
 };
 
 export default function AdminProductsPage() {
@@ -67,10 +68,11 @@ export default function AdminProductsPage() {
 
     // Modal state
     const [modalMode, setModalMode]           = useState(null); // 'create' | 'edit'
-    const [editTarget, setEditTarget]         = useState(null);
+    const [editTarget, setEditTarget]         = useState(null); // full product fetched for editing (source of truth for diffing on save)
     const [form, setForm]                     = useState(BLANK_FORM);
     const [saving, setSaving]                 = useState(false);
     const [formError, setFormError]           = useState('');
+    const [editLoading, setEditLoading]       = useState(false);
 
     // Load products + health stats + categories in parallel
     useEffect(() => {
@@ -130,21 +132,36 @@ export default function AdminProductsPage() {
         setModalMode('create');
     };
 
-    // Edit modal — pre-fill with available fields from inventory list
-    const openEdit = (product) => {
-        setEditTarget(product);
-        setForm({
-            name:        product.name || '',
-            description: '',
-            category:    product.category?._id || '',
-            brand:       product.brand || '',
-            price:       product.price != null ? String(product.price) : '',
-            stock:       product.stock != null ? String(product.stock) : '0',
-            imageUrl:    product.images?.[0] || '',
-            isPublished: product.isPublished ?? false,
-        });
-        setFormError('');
-        setModalMode('edit');
+    // Edit modal — the inventory list row lacks description/brand/nameHe/
+    // shortDescriptionHe/descriptionHe (warehouse listing projection is
+    // deliberately sparse), so we fetch the full product before opening the
+    // form. `editTarget` holds that full record and is used in handleSave to
+    // detect which fields actually changed.
+    const openEdit = async (product) => {
+        setEditLoading(true);
+        try {
+            const full = await adminService.getProductForEdit(product._id);
+            setEditTarget(full);
+            setForm({
+                name:        full.name || '',
+                description: full.description || '',
+                category:    full.category?._id || '',
+                brand:       full.brand || '',
+                price:       full.price != null ? String(full.price) : '',
+                stock:       full.stock != null ? String(full.stock) : '0',
+                imageUrl:    full.images?.[0] || '',
+                isPublished: full.isPublished ?? false,
+                nameHe:             full.nameHe || '',
+                shortDescriptionHe: full.shortDescriptionHe || '',
+                descriptionHe:      full.descriptionHe || '',
+            });
+            setFormError('');
+            setModalMode('edit');
+        } catch (err) {
+            toast.error(err.message || 'טעינת המוצר לעריכה נכשלה');
+        } finally {
+            setEditLoading(false);
+        }
     };
 
     const handleFormChange = (e) => {
@@ -167,6 +184,26 @@ export default function AdminProductsPage() {
         if (form.brand.trim())       dto.brand         = form.brand.trim();
         if (form.category)           dto.category      = form.category;
         if (form.imageUrl.trim())    dto.images        = [form.imageUrl.trim()];
+
+        // Hebrew fields: in edit mode the form is pre-populated with the
+        // product's current values (see openEdit), so an empty field here
+        // means the admin explicitly cleared it — send it through as ''
+        // rather than silently keeping the old value. Only fields that
+        // actually changed are included, so untouched fields never overwrite
+        // themselves. In create mode there's no "original" to diff against,
+        // so fall back to the simple "send if non-empty" rule.
+        const heFields = ['nameHe', 'shortDescriptionHe', 'descriptionHe'];
+        if (modalMode === 'edit') {
+            for (const key of heFields) {
+                const original = editTarget?.[key] || '';
+                const current  = form[key].trim();
+                if (current !== original) dto[key] = current;
+            }
+        } else {
+            for (const key of heFields) {
+                if (form[key].trim()) dto[key] = form[key].trim();
+            }
+        }
 
         setSaving(true);
         try {
@@ -382,7 +419,8 @@ export default function AdminProductsPage() {
                                             <button
                                                 type="button"
                                                 onClick={() => openEdit(product)}
-                                                className="p-2 bg-card rounded-lg hover:bg-[#2563eb] hover:text-white transition-colors"
+                                                disabled={editLoading}
+                                                className="p-2 bg-card rounded-lg hover:bg-[#2563eb] hover:text-white transition-colors disabled:opacity-60"
                                                 aria-label="עריכת מוצר"
                                             >
                                                 <Edit className="w-4 h-4" />
@@ -472,13 +510,44 @@ export default function AdminProductsPage() {
                                 />
                             </FormField>
 
+                            <FormField label="שם מוצר בעברית (אופציונלי)">
+                                <input
+                                    name="nameHe"
+                                    value={form.nameHe}
+                                    onChange={handleFormChange}
+                                    placeholder={modalMode === 'edit' ? 'ריק = הסרת השם בעברית' : 'שם מותאם בעברית, אם רלוונטי'}
+                                    className={inputCls}
+                                />
+                            </FormField>
+
                             <FormField label={`תיאור${modalMode === 'create' ? ' *' : ''}`}>
                                 <textarea
                                     name="description"
                                     value={form.description}
                                     onChange={handleFormChange}
                                     rows={3}
-                                    placeholder={modalMode === 'edit' ? 'השאר ריק לאי-שינוי' : 'תיאור המוצר'}
+                                    placeholder="תיאור המוצר"
+                                    className={`${inputCls} resize-none`}
+                                />
+                            </FormField>
+
+                            <FormField label="תיאור קצר בעברית (אופציונלי)">
+                                <input
+                                    name="shortDescriptionHe"
+                                    value={form.shortDescriptionHe}
+                                    onChange={handleFormChange}
+                                    placeholder={modalMode === 'edit' ? 'ריק = הסרת התיאור הקצר בעברית' : 'תיאור קצר בעברית'}
+                                    className={inputCls}
+                                />
+                            </FormField>
+
+                            <FormField label="תיאור מלא בעברית (אופציונלי)">
+                                <textarea
+                                    name="descriptionHe"
+                                    value={form.descriptionHe}
+                                    onChange={handleFormChange}
+                                    rows={3}
+                                    placeholder={modalMode === 'edit' ? 'ריק = הסרת התיאור המלא בעברית' : 'תיאור מלא בעברית'}
                                     className={`${inputCls} resize-none`}
                                 />
                             </FormField>

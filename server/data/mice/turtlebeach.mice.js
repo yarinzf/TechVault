@@ -6,6 +6,7 @@ const turtlebeach = [
     brand:       'Turtle Beach',
     price:       480,
     description: 'עכבר גיימינג אלחוטי קל-משקל מ-Turtle Beach עם חיישן PixArt PAW3395 ו-2.4GHz. Burst II Air מציע גוף Ambidextrous ב-47 גרם עם 26000 DPI וסוללה ל-100 שעות. אחד העכברים האלחוטיים הקלים ביותר בשוק מ-Turtle Beach.',
+    descriptionHe: 'עכבר גיימינג אלחוטי קל-משקל מ-Turtle Beach עם חיישן PixArt PAW3395 ו-2.4GHz. Burst II Air מציע גוף Ambidextrous ב-47 גרם עם 26000 DPI וסוללה ל-100 שעות. אחד העכברים האלחוטיים הקלים ביותר בשוק מ-Turtle Beach.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Turtle+Beach+Burst+II+Air'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -35,6 +36,7 @@ const turtlebeach = [
     brand:       'Turtle Beach',
     price:       300,
     description: 'עכבר גיימינג קווי קל-משקל מ-Turtle Beach עם חיישן PixArt PAW3395. Burst II Core מציע גוף Ambidextrous ב-55 גרם עם 26000 DPI וכבל Paracord גמיש. הגרסה הקווית של ה-Burst II בנקודת מחיר נגישה יותר.',
+    descriptionHe: 'עכבר גיימינג קווי קל-משקל מ-Turtle Beach עם חיישן PixArt PAW3395. Burst II Core מציע גוף Ambidextrous ב-55 גרם עם 26000 DPI וכבל Paracord גמיש. הגרסה הקווית של ה-Burst II בנקודת מחיר נגישה יותר.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Turtle+Beach+Burst+II+Core'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -64,6 +66,7 @@ const turtlebeach = [
     brand:       'Turtle Beach',
     price:       420,
     description: 'עכבר גיימינג אלחוטי קל-משקל הראשון מ-Turtle Beach עם חיישן PixArt PAW3370. Burst I Air מציע גוף Ambidextrous ב-44 גרם עם 2.4GHz ו-19000 DPI. הדגם שהציב את Turtle Beach בשוק עכברי ה-Esports האלחוטיים.',
+    descriptionHe: 'עכבר גיימינג אלחוטי קל-משקל הראשון מ-Turtle Beach עם חיישן PixArt PAW3370. Burst I Air מציע גוף Ambidextrous ב-44 גרם עם 2.4GHz ו-19000 DPI. הדגם שהציב את Turtle Beach בשוק עכברי ה-Esports האלחוטיים.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Turtle+Beach+Burst+I+Air'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -93,6 +96,7 @@ const turtlebeach = [
     brand:       'Turtle Beach',
     price:       260,
     description: 'עכבר גיימינג קווי קל-משקל מ-Turtle Beach עם חיישן PixArt PAW3370. Burst I Core מציע גוף Ambidextrous ב-47 גרם עם 19000 DPI וכבל Paracord. גרסת כניסה לטכנולוגיית עכברים קל-משקל של Turtle Beach.',
+    descriptionHe: 'עכבר גיימינג קווי קל-משקל מ-Turtle Beach עם חיישן PixArt PAW3370. Burst I Core מציע גוף Ambidextrous ב-47 גרם עם 19000 DPI וכבל Paracord. גרסת כניסה לטכנולוגיית עכברים קל-משקל של Turtle Beach.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Turtle+Beach+Burst+I+Core'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -122,6 +126,7 @@ const turtlebeach = [
     brand:       'Turtle Beach',
     price:       520,
     description: 'עכבר גיימינג אלחוטי Ambidextrous אולטרה-קל מ-Turtle Beach עם חיישן PixArt PAW3395. Pure Air מציע גוף ב-44 גרם עם 2.4GHz, 26000 DPI ו-8000Hz Polling Rate. הפלאגשיפ האלחוטי של Turtle Beach עם ה-Polling Rate הגבוה ביותר.',
+    descriptionHe: 'עכבר גיימינג אלחוטי Ambidextrous אולטרה-קל מ-Turtle Beach עם חיישן PixArt PAW3395. Pure Air מציע גוף ב-44 גרם עם 2.4GHz, 26000 DPI ו-8000Hz Polling Rate. הפלאגשיפ האלחוטי של Turtle Beach עם ה-Polling Rate הגבוה ביותר.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Turtle+Beach+Pure+Air'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -151,6 +156,7 @@ const turtlebeach = [
     brand:       'Turtle Beach',
     price:       280,
     description: 'עכבר גיימינג קווי Esports מ-Turtle Beach עם חיישן PixArt PAW3395 ו-8000Hz Polling Rate. Pure Wired מציע גוף Ambidextrous ב-51 גרם עם 26000 DPI וכבל Paracord. הגרסה הקווית של ה-Pure Air עם Polling Rate זהה.',
+    descriptionHe: 'עכבר גיימינג קווי Esports מ-Turtle Beach עם חיישן PixArt PAW3395 ו-8000Hz Polling Rate. Pure Wired מציע גוף Ambidextrous ב-51 גרם עם 26000 DPI וכבל Paracord. הגרסה הקווית של ה-Pure Air עם Polling Rate זהה.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Turtle+Beach+Pure+Wired'],
     specs: {
       'Mouse Type':       'Gaming',

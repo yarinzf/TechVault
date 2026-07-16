@@ -6,6 +6,7 @@ const rapoo = [
     brand:       'Rapoo',
     price:       280,
     description: 'עכבר גיימינג אלחוטי פרימיום מ-Rapoo עם חיישן PixArt PAW3395 ב-79 גרם. VT9 Pro מציע 2.4GHz נטול השהייה, סוללה ל-90 שעות ועיצוב ארגונומי ימני. אחד מהפתרונות האלחוטיים הטובים בקטגוריה המחיר שלו.',
+    descriptionHe: 'עכבר גיימינג אלחוטי פרימיום מ-Rapoo עם חיישן PixArt PAW3395 ב-79 גרם. VT9 Pro מציע 2.4GHz נטול השהייה, סוללה ל-90 שעות ועיצוב ארגונומי ימני. אחד מהפתרונות האלחוטיים הטובים בקטגוריה המחיר שלו.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Rapoo+VT9+Pro'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -35,6 +36,7 @@ const rapoo = [
     brand:       'Rapoo',
     price:       120,
     description: 'עכבר גיימינג קווי תקציבי מ-Rapoo עם חיישן PixArt ב-8000 DPI. VT300 מציע עיצוב ארגונומי ב-5 כפתורים עם תאורת RGB, Polling Rate של 1000Hz ומחיר נגיש. מתאים לגיימרים שמחפשים כניסה לעולם הגיימינג.',
+    descriptionHe: 'עכבר גיימינג קווי תקציבי מ-Rapoo עם חיישן PixArt ב-8000 DPI. VT300 מציע עיצוב ארגונומי ב-5 כפתורים עם תאורת RGB, Polling Rate של 1000Hz ומחיר נגיש. מתאים לגיימרים שמחפשים כניסה לעולם הגיימינג.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Rapoo+VT300'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -64,6 +66,7 @@ const rapoo = [
     brand:       'Rapoo',
     price:       80,
     description: 'עכבר אלחוטי שקט מ-Rapoo עם טכנולוגיית "Silent" לקליקים שקטים ב-90%. M50 Silent מציע 2.4GHz, 1300 DPI וסוללה ל-12 חודשים. מושלם לעבודה במשרד או בספרייה ללא הפרעה לסביבה.',
+    descriptionHe: 'עכבר אלחוטי שקט מ-Rapoo עם טכנולוגיית "Silent" לקליקים שקטים ב-90%. M50 Silent מציע 2.4GHz, 1300 DPI וסוללה ל-12 חודשים. מושלם לעבודה במשרד או בספרייה ללא הפרעה לסביבה.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Rapoo+M50+Silent'],
     specs: {
       'Mouse Type':       'Office',
@@ -93,6 +96,7 @@ const rapoo = [
     brand:       'Rapoo',
     price:       100,
     description: 'עכבר אלחוטי שקט מולטי-מצב מ-Rapoo עם קישוריות 2.4GHz ו-Bluetooth. M700 Silent מציע מתגי Silent ב-1600 DPI וסוללה ל-9 חודשים, ניתן לחבר עד 3 מכשירים בו זמנית. אידיאלי לעבודה נייד.',
+    descriptionHe: 'עכבר אלחוטי שקט מולטי-מצב מ-Rapoo עם קישוריות 2.4GHz ו-Bluetooth. M700 Silent מציע מתגי Silent ב-1600 DPI וסוללה ל-9 חודשים, ניתן לחבר עד 3 מכשירים בו זמנית. אידיאלי לעבודה נייד.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Rapoo+M700+Silent'],
     specs: {
       'Mouse Type':       'Office',
@@ -122,6 +126,7 @@ const rapoo = [
     brand:       'Rapoo',
     price:       95,
     description: 'עכבר גיימינג קווי כניסה מ-Rapoo עם חיישן Optical ב-5000 DPI. VT200 מציע עיצוב ארגונומי עם 6 כפתורים מתכנתים ותאורת RGB בסיסית. מחיר נגיש עם ביצועים ראויים לגיימרים מתחילים.',
+    descriptionHe: 'עכבר גיימינג קווי כניסה מ-Rapoo עם חיישן Optical ב-5000 DPI. VT200 מציע עיצוב ארגונומי עם 6 כפתורים מתכנתים ותאורת RGB בסיסית. מחיר נגיש עם ביצועים ראויים לגיימרים מתחילים.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Rapoo+VT200'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -151,6 +156,7 @@ const rapoo = [
     brand:       'Rapoo',
     price:       75,
     description: 'עכבר מולטי-מצב שקט קומפקטי מ-Rapoo עם 2.4GHz ו-Bluetooth 4.0. M100 Silent מציע מתגי Silent ב-1600 DPI בגוף קומפקטי לניידות מקסימלית. מחיר מוכנס מיוחד לעבודה מובייל ומשרד.',
+    descriptionHe: 'עכבר מולטי-מצב שקט קומפקטי מ-Rapoo עם 2.4GHz ו-Bluetooth 4.0. M100 Silent מציע מתגי Silent ב-1600 DPI בגוף קומפקטי לניידות מקסימלית. מחיר מוכנס מיוחד לעבודה מובייל ומשרד.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Rapoo+M100+Silent'],
     specs: {
       'Mouse Type':       'Travel',
@@ -180,6 +186,7 @@ const rapoo = [
     brand:       'Rapoo',
     price:       220,
     description: 'עכבר גיימינג אלחוטי קל-משקל מ-Rapoo עם חיישן PixArt PAW3395 ב-68 גרם. VT9 Air מציע מבנה honeycomb עם 2.4GHz נטול השהייה, תאורת RGB ניתנת לשליטה וסוללה ל-80 שעות.',
+    descriptionHe: 'עכבר גיימינג אלחוטי קל-משקל מ-Rapoo עם חיישן PixArt PAW3395 ב-68 גרם. VT9 Air מציע מבנה honeycomb עם 2.4GHz נטול השהייה, תאורת RGB ניתנת לשליטה וסוללה ל-80 שעות.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Rapoo+VT9+Air'],
     specs: {
       'Mouse Type':       'Gaming',
@@ -209,6 +216,7 @@ const rapoo = [
     brand:       'Rapoo',
     price:       90,
     description: 'עכבר אלחוטי מולטי-מצב קומפקטי מ-Rapoo תואם ל-2.4GHz ו-Bluetooth 3.0/4.0. M600 Mini מציע 1600 DPI בגוף קטן ונוח עם 3 כפתורים, מתאים לשימוש נייד עם סוללה ל-9 חודשים.',
+    descriptionHe: 'עכבר אלחוטי מולטי-מצב קומפקטי מ-Rapoo תואם ל-2.4GHz ו-Bluetooth 3.0/4.0. M600 Mini מציע 1600 DPI בגוף קטן ונוח עם 3 כפתורים, מתאים לשימוש נייד עם סוללה ל-9 חודשים.',
     images:      ['https://placehold.co/800x600/1a1a2e/ffffff?text=Rapoo+M600+Mini'],
     specs: {
       'Mouse Type':       'Travel',
