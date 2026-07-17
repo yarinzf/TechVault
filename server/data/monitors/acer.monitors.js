@@ -16,7 +16,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Acer K242HYL is a no-fuss 24-inch Full HD IPS monitor built for everyday productivity. Its slim bezels and ZeroFrame design make it a clean addition to any desk, while the IPS panel delivers wide viewing angles and accurate colours so your spreadsheets and documents always look their best.',
+    descriptionHe: 'ה-Acer K242HYL הוא מסך פשוט ויעיל בגודל 24 אינץ׳ עם רזולוציית Full HD, שנועד לעבודה משרדית יומיומית. מסגרתו הדקה ועיצוב ZeroFrame הופכים אותו לתוספת נקייה לכל שולחן עבודה, בעוד פאנל ה-IPS מספק זוויות צפייה רחבות וצבעים מדויקים כך שהגיליונות והמסמכים שלכם תמיד ייראו במיטבם.',
     shortDescription: 'Slim 24" FHD IPS display for everyday office productivity.',
+    shortDescriptionHe: 'מסך משרדי דק בגודל 24 אינץ׳ עם רזולוציית Full HD ופאנל IPS, מתאים לעבודה יומיומית.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=K242HYL'],
     tags: ['office', 'ips', 'fhd', '24-inch', 'slim-bezel'],
     specs: {
@@ -55,7 +57,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Acer R240HY delivers a crisp Full HD IPS experience in a compact 24-inch package. Its ultra-thin profile and frameless design make it an elegant choice for home offices and study setups, providing accurate colour reproduction across its wide 178-degree viewing angles.',
+    descriptionHe: 'ה-Acer R240HY מספק חוויית Full HD חדה עם פאנל IPS במארז קומפקטי בגודל 24 אינץ׳. הפרופיל הדק במיוחד והעיצוב נטול המסגרת הופכים אותו לבחירה אלגנטית למשרדים ביתיים ולפינות לימוד, עם שחזור צבעים מדויק בזוויות צפייה רחבות של 178 מעלות.',
     shortDescription: 'Elegant 24" FHD IPS monitor with ultra-thin frameless design.',
+    shortDescriptionHe: 'מסך אלגנטי בגודל 24 אינץ׳ עם רזולוציית Full HD, פאנל IPS ועיצוב דק וללא מסגרת.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=R240HY'],
     tags: ['office', 'ips', 'fhd', '24-inch', 'frameless'],
     specs: {
@@ -94,7 +98,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Acer B277 is a professional 27-inch Full HD IPS business monitor engineered for demanding workstation environments. With a fully ergonomic stand offering height, tilt, swivel, and pivot adjustments, it keeps you comfortable through long working sessions while ComfyView anti-glare coating reduces eye strain.',
+    descriptionHe: 'ה-Acer B277 הוא מסך עסקי מקצועי בגודל 27 אינץ׳ עם רזולוציית Full HD ופאנל IPS, המיועד לסביבות עבודה תובעניות. מעמד ארגונומי מלא המאפשר כיוונון גובה, הטיה, סיבוב ופיבוט שומר על נוחות לאורך שעות עבודה ארוכות, בעוד ציפוי ComfyView נגד סנוור מפחית עומס על העיניים.',
     shortDescription: 'Ergonomic 27" FHD IPS business monitor with full stand adjustability.',
+    shortDescriptionHe: 'מסך עסקי ארגונומי בגודל 27 אינץ׳ עם רזולוציית Full HD ופאנל IPS, כולל מעמד מתכוונן במלואו.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=B277'],
     tags: ['office', 'ips', 'fhd', '27-inch', 'ergonomic'],
     specs: {
@@ -133,7 +139,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Acer BM270 is a 27-inch 4K UHD IPS monitor purpose-built for creative professionals and content creators. Its factory-calibrated colour accuracy and broad Adobe RGB and sRGB colour space coverage ensure every image, video, or design project renders with stunning realism straight out of the box.',
+    descriptionHe: 'ה-Acer BM270 הוא מסך בגודל 27 אינץ׳ ברזולוציית 4K UHD עם פאנל IPS, המיועד ליוצרי תוכן ואנשי מקצוע יצירתיים. דיוק הצבעים המכויל מהיצרן וכיסוי רחב של מרחבי הצבע Adobe RGB ו-sRGB מבטיחים שכל תמונה, סרטון או פרויקט עיצוב יוצג במראה ריאליסטי ומרשים ישר מהקופסה.',
     shortDescription: '27" 4K IPS creator monitor with factory-calibrated colour accuracy.',
+    shortDescriptionHe: 'מסך ליוצרי תוכן בגודל 27 אינץ׳ עם רזולוציית 4K, פאנל IPS ודיוק צבעים מכויל מהיצרן.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=BM270'],
     tags: ['creator', 'ips', '4k', '27-inch', 'colour-accurate'],
     specs: {
@@ -172,7 +180,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Acer B286HK brings 4K UHD resolution to a 28-inch IPS panel designed for professional office environments. Its crystal-clear picture detail is ideal for reading dense documents, working with large spreadsheets, and reviewing high-resolution design assets without squinting at a smaller screen.',
+    descriptionHe: 'ה-Acer B286HK מביא רזולוציית 4K UHD לפאנל IPS בגודל 28 אינץ׳, המיועד לסביבות משרדיות מקצועיות. פירוט התמונה החד שלו אידיאלי לקריאת מסמכים צפופים, עבודה עם גיליונות אלקטרוניים גדולים וסקירת קבצי עיצוב ברזולוציה גבוהה מבלי להתאמץ מול מסך קטן יותר.',
     shortDescription: '28" 4K IPS office monitor for detail-heavy professional workloads.',
+    shortDescriptionHe: 'מסך משרדי בגודל 28 אינץ׳ עם רזולוציית 4K ופאנל IPS, מתאים לעבודה עתירת פרטים.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=B286HK'],
     tags: ['office', 'ips', '4k', '28-inch'],
     specs: {
@@ -211,7 +221,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Acer CB272U is a 27-inch QHD IPS monitor tailored for busy office environments that demand screen real estate without sacrificing colour quality. Its AMD FreeSync support and 75Hz refresh rate keep on-screen content fluid, while the slim-bezel design works beautifully in multi-monitor configurations.',
+    descriptionHe: 'ה-Acer CB272U הוא מסך בגודל 27 אינץ׳ ברזולוציית QHD עם פאנל IPS, המיועד לסביבות משרדיות עמוסות הדורשות שטח מסך רב מבלי להתפשר על איכות הצבע. תמיכה ב-AMD FreeSync וקצב רענון של 75Hz שומרים על תוכן חלק על המסך, בעוד העיצוב עם המסגרות הדקות מתפקד להפליא במערכים מרובי מסכים.',
     shortDescription: '27" QHD IPS office monitor optimised for multi-display setups.',
+    shortDescriptionHe: 'מסך משרדי בגודל 27 אינץ׳ עם רזולוציית QHD ופאנל IPS, מותאם למערכי ריבוי מסכים.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=CB272U'],
     tags: ['office', 'ips', 'qhd', '27-inch', 'multi-monitor'],
     specs: {
@@ -250,7 +262,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Acer Nitro VG240Y is an accessible entry point into high-refresh-rate gaming. Its 24-inch Full HD IPS panel hits 144Hz and pairs with AMD FreeSync Premium to eliminate screen tearing, giving competitive gamers the smooth, responsive visuals they need at a price that keeps upgrade costs low.',
+    descriptionHe: 'ה-Acer Nitro VG240Y הוא נקודת כניסה נגישה לגיימינג בקצב רענון גבוה. פאנל ה-IPS שלו בגודל 24 אינץ׳ ברזולוציית Full HD מגיע ל-144Hz ומשולב עם AMD FreeSync Premium לביטול קריעות מסך, ומעניק לגיימרים תחרותיים את התמונה החלקה והרספונסיבית שהם צריכים במחיר משתלם.',
     shortDescription: 'Affordable 24" FHD 144Hz IPS gaming monitor for competitive play.',
+    shortDescriptionHe: 'מסך גיימינג משתלם בגודל 24 אינץ׳ עם רזולוציית Full HD, פאנל IPS וקצב רענון של 144Hz.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=VG240Y'],
     tags: ['gaming', 'ips', 'fhd', '24-inch', '144hz', 'freesync'],
     specs: {
@@ -289,7 +303,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Acer Nitro VG271U steps up the gaming experience with a 27-inch QHD IPS panel running at 144Hz. The increased pixel density over Full HD makes characters and environments look sharper, while AMD FreeSync Premium keeps frame delivery tear-free so you can focus entirely on the game.',
+    descriptionHe: 'ה-Acer Nitro VG271U מעלה את חוויית הגיימינג עם פאנל IPS בגודל 27 אינץ׳ ברזולוציית QHD הפועל ב-144Hz. צפיפות הפיקסלים הגבוהה יותר לעומת Full HD מעניקה לדמויות ולסביבות מראה חד יותר, בעוד AMD FreeSync Premium שומר על העברת פריימים ללא קריעות מסך כך שתוכלו להתמקד לגמרי במשחק.',
     shortDescription: '27" QHD 144Hz IPS gaming monitor — sharper pixels, smoother frames.',
+    shortDescriptionHe: 'מסך גיימינג בגודל 27 אינץ׳ עם רזולוציית QHD, פאנל IPS וקצב רענון של 144Hz.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=VG271U'],
     tags: ['gaming', 'ips', 'qhd', '27-inch', '144hz', 'freesync'],
     specs: {
@@ -328,7 +344,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Acer Nitro XV272U pushes QHD gaming to 170Hz on a 27-inch IPS panel, delivering a fluid visual experience that bridges the gap between mainstream and enthusiast gaming monitors. Its rapid 1ms VRB response time keeps motion crisp during fast-paced action, while AMD FreeSync Premium eliminates tearing and stuttering.',
+    descriptionHe: 'ה-Acer Nitro XV272U מקדם גיימינג ברזולוציית QHD ל-170Hz על פאנל IPS בגודל 27 אינץ׳, ומספק חוויה חזותית חלקה המשלבת בין הביצועים של מסכי גיימינג סטנדרטיים לאלה של מסכים לחובבי גיימינג מתקדם. זמן תגובה מהיר של 1ms VRB שומר על תנועה חדה בפעולה מהירה, בעוד AMD FreeSync Premium מבטל קריעות וגמגומי תמונה.',
     shortDescription: '27" QHD 170Hz IPS Nitro gaming monitor for fluid mid-range gaming.',
+    shortDescriptionHe: 'מסך גיימינג בסדרת Nitro בגודל 27 אינץ׳ עם רזולוציית QHD וקצב רענון של 170Hz.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=XV272U'],
     tags: ['gaming', 'ips', 'qhd', '27-inch', '170hz', 'freesync'],
     specs: {
@@ -367,7 +385,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Acer Nitro XV282K combines 4K UHD resolution with a 144Hz refresh rate on a 28-inch IPS panel, offering the best of both visual worlds for gamers who refuse to compromise on clarity or smoothness. HDMI 2.1 support makes it an excellent companion for next-generation consoles and high-end gaming PCs alike.',
+    descriptionHe: 'ה-Acer Nitro XV282K משלב רזולוציית 4K UHD עם קצב רענון של 144Hz על פאנל IPS בגודל 28 אינץ׳, ומציע את המיטב משני העולמות לגיימרים שמסרבים להתפשר על בהירות או חלקות. תמיכה ב-HDMI 2.1 הופכת אותו לבחירה מצוינת הן לקונסולות מהדור החדש והן למחשבי גיימינג חזקים.',
     shortDescription: '28" 4K 144Hz IPS gaming monitor with HDMI 2.1 for next-gen play.',
+    shortDescriptionHe: 'מסך גיימינג בגודל 28 אינץ׳ עם רזולוציית 4K וקצב רענון של 144Hz, כולל HDMI 2.1.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=XV282K'],
     tags: ['gaming', 'ips', '4k', '28-inch', '144hz', 'hdmi-2.1'],
     specs: {
@@ -406,7 +426,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Acer Nitro XZ322QU wraps a 32-inch QHD VA panel into a 1500R curved gaming display that pulls you into the action. At 165Hz with AMD FreeSync Premium, every battle and race plays out with buttery-smooth motion, while the VA panel delivers deep blacks and high contrast for an immersive visual experience.',
+    descriptionHe: 'ה-Acer Nitro XZ322QU עוטף פאנל VA בגודל 32 אינץ׳ ברזולוציית QHD בעקמומיות 1500R שמושכת אתכם לתוך הפעולה. בקצב רענון של 165Hz עם AMD FreeSync Premium, כל קרב ומרוץ מתנהלים בתנועה חלקה, בעוד פאנל ה-VA מספק שחורים עמוקים וניגודיות גבוהה לחוויה חזותית סוחפת.',
     shortDescription: '32" QHD 165Hz curved VA gaming monitor with deep contrast and immersion.',
+    shortDescriptionHe: 'מסך גיימינג קעור בגודל 32 אינץ׳ עם רזולוציית QHD, פאנל VA וקצב רענון של 165Hz.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=XZ322QU'],
     tags: ['gaming', 'va', 'qhd', '32-inch', '165hz', 'curved', 'freesync'],
     specs: {
@@ -445,7 +467,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Acer Predator XB273K is a 27-inch 4K UHD IPS gaming monitor certified for NVIDIA G-Sync Compatible operation and DisplayHDR 400. Its combination of 4K resolution and a fluid 144Hz refresh rate makes it one of the most versatile Predator monitors on the market, equally capable of gaming and creative work.',
+    descriptionHe: 'ה-Acer Predator XB273K הוא מסך גיימינג בגודל 27 אינץ׳ ברזולוציית 4K UHD עם פאנל IPS, המאושר לפעולה עם NVIDIA G-Sync Compatible ותקן DisplayHDR 400. השילוב של רזולוציית 4K וקצב רענון חלק של 144Hz הופך אותו לאחד ממסכי ה-Predator הרב-תכליתיים ביותר בשוק, מתאים באותה מידה לגיימינג ולעבודה יצירתית.',
     shortDescription: '27" 4K 144Hz IPS Predator gaming monitor with HDR400 and G-Sync Compatible.',
+    shortDescriptionHe: 'מסך גיימינג מסדרת Predator בגודל 27 אינץ׳ עם רזולוציית 4K, קצב רענון 144Hz ותמיכת HDR400.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=XB273K'],
     tags: ['gaming', 'ips', '4k', '27-inch', '144hz', 'hdr', 'gsync'],
     specs: {
@@ -484,7 +508,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Acer Predator X28 is a high-performance 28-inch 4K IPS gaming monitor reaching 155Hz, backed by NVIDIA G-Sync and DisplayHDR 400 certification. Designed for competitive and enthusiast gamers who demand maximum resolution without sacrificing frame rate, the X28 is one of the fastest 4K displays available.',
+    descriptionHe: 'ה-Acer Predator X28 הוא מסך גיימינג בעל ביצועים גבוהים בגודל 28 אינץ׳ עם פאנל IPS ברזולוציית 4K וקצב רענון גבוה במיוחד, בגיבוי תעודות NVIDIA G-Sync ו-DisplayHDR 400. מיועד לגיימרים תחרותיים וחובבי גיימינג הדורשים רזולוציה מקסימלית מבלי להתפשר על קצב הפריימים, ה-X28 הוא אחד ממסכי ה-4K המהירים ביותר הקיימים.',
     shortDescription: '28" 4K 155Hz G-Sync IPS Predator monitor — high-speed 4K gaming.',
+    shortDescriptionHe: 'מסך גיימינג Predator בגודל 28 אינץ׳ עם פאנל IPS, רזולוציית 4K וקצב רענון גבוה במיוחד.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=PredatorX28'],
     tags: ['gaming', 'ips', '4k', '28-inch', 'gsync', 'hdr'],
     specs: {
@@ -523,7 +549,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Acer Predator XB3 XB273U GX is a tour-de-force 27-inch QHD IPS gaming monitor capable of an extraordinary 270Hz refresh rate — placing it firmly in the realm of esports professionals. NVIDIA G-Sync and DisplayHDR 400 round out a feature set designed to give competitive players every possible edge.',
+    descriptionHe: 'ה-Acer Predator XB3 XB273U GX הוא מסך גיימינג יוצא דופן בגודל 27 אינץ׳ ברזולוציית QHD עם פאנל IPS, המסוגל לקצב רענון גבוה במיוחד שממקם אותו בבירור בתחום השחקנים המקצוענים בספורט האלקטרוני. NVIDIA G-Sync ותקן DisplayHDR 400 משלימים את המפרט שנועד להעניק לשחקנים תחרותיים כל יתרון אפשרי.',
     shortDescription: '27" QHD 270Hz IPS Predator — the esports edge with G-Sync and HDR.',
+    shortDescriptionHe: 'מסך גיימינג Predator בגודל 27 אינץ׳ עם רזולוציית QHD וקצב רענון מהיר במיוחד, לגיימינג תחרותי.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=XB273UGX'],
     tags: ['gaming', 'ips', 'qhd', '27-inch', '270hz', 'gsync', 'hdr', 'esports'],
     specs: {
@@ -562,7 +590,9 @@ module.exports = [
     isFeatured: true,
     isPublished: true,
     description: 'The Acer Predator X34 is a stunning 34-inch ultrawide QHD curved IPS gaming monitor that wraps the 21:9 image around you at 180Hz for a breathtaking level of immersion. Whether you are racing, flying, or exploring open worlds, the 1900R curvature and NVIDIA G-Sync ensure every detail is delivered with zero compromise.',
+    descriptionHe: 'ה-Acer Predator X34 הוא מסך גיימינג מרהיב, רחב במיוחד וקעור, בגודל 34 אינץ׳ ברזולוציית QHD עם פאנל IPS, העוטף אתכם בתמונה ביחס 21:9 בקצב רענון של 180Hz לחוויית סחיפה מרשימה. בין אם אתם מתחרים במרוצים, טסים או חוקרים עולמות פתוחים, העקמומיות 1900R ו-NVIDIA G-Sync מבטיחים שכל פרט יועבר בדיוק רב.',
     shortDescription: '34" UltraWide QHD 180Hz curved IPS Predator — total gaming immersion.',
+    shortDescriptionHe: 'מסך גיימינג קעור Predator בגודל 34 אינץ׳ עם רזולוציית QHD רחבה במיוחד וקצב רענון של 180Hz.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=PredatorX34'],
     tags: ['gaming', 'ips', 'ultrawide', '34-inch', '180hz', 'curved', 'gsync', 'hdr'],
     specs: {
@@ -601,7 +631,9 @@ module.exports = [
     isFeatured: true,
     isPublished: true,
     description: 'The Acer Predator X38 is a flagship 38-inch ultrawide QHD curved IPS gaming monitor that sets the standard for premium immersive gaming. Running at 175Hz with NVIDIA G-Sync Ultimate and Quantum Dot colour technology, it delivers a theatre-like gaming experience with HDR performance that rivals professional displays.',
+    descriptionHe: 'ה-Acer Predator X38 הוא מסך גיימינג דגל, רחב במיוחד וקעור, בגודל 38 אינץ׳ ברזולוציית QHD עם פאנל IPS, הקובע את הרף לגיימינג סוחף ברמה גבוהה. פועל ב-175Hz עם NVIDIA G-Sync Ultimate וטכנולוגיית צבע Quantum Dot, ומעניק חוויית גיימינג דמוית קולנוע עם ביצועי HDR המתחרים במסכים מקצועיים.',
     shortDescription: '38" UltraWide QHD 175Hz G-Sync Ultimate curved IPS — flagship Predator.',
+    shortDescriptionHe: 'מסך גיימינג דגל Predator בגודל 38 אינץ׳ רחב במיוחד וקעור, עם רזולוציית QHD וקצב רענון 175Hz.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=PredatorX38'],
     tags: ['gaming', 'ips', 'ultrawide', '38-inch', '175hz', 'curved', 'gsync-ultimate', 'hdr', 'flagship'],
     specs: {
@@ -640,7 +672,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Acer Predator CG437K is a massive 43-inch 4K VA gaming display that doubles as a premium home-theatre screen. With 144Hz refresh rate, AMD FreeSync Premium, built-in speakers, and VESA DisplayHDR 1000 certification, it transforms any room into an immersive gaming and entertainment hub.',
+    descriptionHe: 'ה-Acer Predator CG437K הוא מסך גיימינג ענק בגודל 43 אינץ׳ ברזולוציית 4K עם פאנל VA, המשמש גם כמסך קולנוע ביתי איכותי. עם קצב רענון של 144Hz, AMD FreeSync Premium, רמקולים מובנים ותקן VESA DisplayHDR 1000, הוא הופך כל חדר למרכז גיימינג ובידור סוחף.',
     shortDescription: '43" 4K 144Hz VA Predator gaming display with HDR1000 and built-in speakers.',
+    shortDescriptionHe: 'מסך גיימינג ענק Predator בגודל 43 אינץ׳ עם רזולוציית 4K, פאנל VA וקצב רענון 144Hz.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=CG437K'],
     tags: ['gaming', 'va', '4k', '43-inch', '144hz', 'hdr', 'speakers'],
     specs: {
@@ -679,7 +713,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Acer Predator Z35P is a 35-inch ultrawide QHD curved VA gaming monitor offering an enveloping 1800R curvature and 120Hz refresh rate. Its deep VA contrast ratio produces inky blacks that make darker game scenes truly atmospheric, while the wide 21:9 field of view gives you a natural competitive advantage in racing and simulation titles.',
+    descriptionHe: 'ה-Acer Predator Z35P הוא מסך גיימינג קעור, רחב במיוחד, בגודל 35 אינץ׳ ברזולוציית QHD עם פאנל VA, המציע עקמומיות עוטפת 1800R וקצב רענון של 120Hz. יחס הניגודיות העמוק של פאנל ה-VA מייצר שחורים כהים במיוחד שהופכים סצנות משחק חשוכות לאטמוספריות באמת, בעוד שדה הראייה הרחב ביחס 21:9 מעניק יתרון תחרותי טבעי במשחקי מרוצים וסימולציה.',
     shortDescription: '35" UltraWide QHD 120Hz curved VA Predator — deep blacks, wide field of view.',
+    shortDescriptionHe: 'מסך גיימינג קעור Predator בגודל 35 אינץ׳ רחב במיוחד, עם רזולוציית QHD ופאנל VA.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=PredatorZ35P'],
     tags: ['gaming', 'va', 'ultrawide', '35-inch', '120hz', 'curved', 'gsync'],
     specs: {
@@ -718,7 +754,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Acer Predator XB323QK delivers a 32-inch 4K IPS gaming experience with a 144Hz refresh rate and NVIDIA G-Sync Compatible certification. DisplayHDR 400 support and a comprehensive port selection including USB hub make it a versatile premium gaming workstation monitor for players who want extra screen real estate without going ultrawide.',
+    descriptionHe: 'ה-Acer Predator XB323QK מספק חוויית גיימינג בגודל 32 אינץ׳ ברזולוציית 4K עם פאנל IPS, קצב רענון של 144Hz ותעודת NVIDIA G-Sync Compatible. תמיכה ב-DisplayHDR 400 ומגוון חיבורים מקיף הכולל רכזת USB הופכים אותו למסך תחנת עבודה פרימיום ורב-תכליתי לשחקנים שרוצים שטח מסך נוסף מבלי לעבור למסך רחב במיוחד.',
     shortDescription: '32" 4K 144Hz G-Sync IPS Predator gaming monitor with USB hub.',
+    shortDescriptionHe: 'מסך גיימינג Predator בגודל 32 אינץ׳ עם רזולוציית 4K, קצב רענון 144Hz ותמיכת NVIDIA G-Sync.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=XB323QK'],
     tags: ['gaming', 'ips', '4k', '32-inch', '144hz', 'gsync', 'hdr'],
     specs: {
@@ -757,7 +795,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Acer Nitro ED270U curves a 27-inch QHD VA panel at 1500R for a budget-friendly immersive gaming experience. At 165Hz with AMD FreeSync Premium, it keeps motion silky and tear-free, and the VA technology brings out rich colour saturation and contrast that flat-panel IPS monitors in this price range simply cannot match.',
+    descriptionHe: 'ה-Acer Nitro ED270U מעקם פאנל VA בגודל 27 אינץ׳ ברזולוציית QHD בעקמומיות 1500R לחוויית גיימינג סוחפת ומשתלמת. בקצב רענון של 165Hz עם AMD FreeSync Premium, הוא שומר על תנועה חלקה וללא קריעות מסך, וטכנולוגיית ה-VA מעניקה רוויית צבע וניגודיות עשירות שמסכי IPS שטוחים בטווח המחירים הזה פשוט אינם משיגים.',
     shortDescription: '27" QHD 165Hz curved VA Nitro gaming monitor — immersion on a budget.',
+    shortDescriptionHe: 'מסך גיימינג קעור בסדרת Nitro בגודל 27 אינץ׳ עם רזולוציית QHD ופאנל VA, במחיר משתלם.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=ED270U'],
     tags: ['gaming', 'va', 'qhd', '27-inch', '165hz', 'curved', 'freesync'],
     specs: {
@@ -796,7 +836,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Acer ConceptD CP7271K is a 27-inch 4K IPS professional display engineered for the most colour-critical creative workflows. Factory-calibrated to Delta E < 1 with PANTONE Validated colours, NVIDIA G-Sync, and DisplayHDR 1000 certification, it satisfies both the colour scientist and the hardcore gamer in a single remarkable panel.',
+    descriptionHe: 'ה-Acer ConceptD CP7271K הוא מסך מקצועי בגודל 27 אינץ׳ ברזולוציית 4K עם פאנל IPS, המיועד לתהליכי עבודה יצירתיים הדורשים דיוק צבעים מרבי. מכויל מהיצרן ל-Delta E מתחת ל-1 עם אישור צבעים PANTONE Validated, NVIDIA G-Sync ותקן DisplayHDR 1000, הוא מתאים הן לאנשי מקצוע בתחום הצבע והן לגיימר הקשוח בפאנל יוצא דופן אחד.',
     shortDescription: '27" 4K 144Hz IPS professional monitor with PANTONE validation and HDR1000.',
+    shortDescriptionHe: 'מסך מקצועי בסדרת ConceptD בגודל 27 אינץ׳ עם רזולוציית 4K ואישור צבעים PANTONE.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=CP7271K'],
     tags: ['professional', 'ips', '4k', '27-inch', '144hz', 'gsync', 'hdr', 'pantone'],
     specs: {
@@ -835,7 +877,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Acer CB382CUR is a 38-inch ultrawide QHD IPS creator monitor that gives photographers, videographers, and multi-taskers an expansive 21:9 canvas at 75Hz. Its USB-C connectivity with power delivery, built-in speakers, and ergonomic stand make it a self-contained workstation hub for creative professionals.',
+    descriptionHe: 'ה-Acer CB382CUR הוא מסך ליוצרי תוכן בגודל 38 אינץ׳ רחב במיוחד ברזולוציית QHD עם פאנל IPS, המעניק לצלמים, לעורכי וידאו ולמבצעי מולטיטסקינג קנבס נרחב ביחס 21:9 בקצב רענון של 75Hz. חיבור USB-C עם אספקת חשמל, רמקולים מובנים ומעמד ארגונומי הופכים אותו למרכז תחנת עבודה עצמאי לאנשי מקצוע יצירתיים.',
     shortDescription: '38" UltraWide QHD IPS creator monitor with USB-C and built-in speakers.',
+    shortDescriptionHe: 'מסך ליוצרי תוכן בגודל 38 אינץ׳ רחב במיוחד, עם רזולוציית QHD וחיבור USB-C.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=CB382CUR'],
     tags: ['creator', 'ips', 'ultrawide', '38-inch', 'usb-c', 'speakers'],
     specs: {
@@ -874,7 +918,9 @@ module.exports = [
     isFeatured: true,
     isPublished: true,
     description: 'The Acer Predator CG48 is a 48-inch 4K OLED gaming monitor that redefines what a display can look and feel like. With perfect per-pixel contrast, virtually infinite contrast ratio, 138Hz refresh rate, and 0.1ms response time, it obliterates every boundary between gaming monitor and premium OLED television to deliver an experience with no equal.',
+    descriptionHe: 'ה-Acer Predator CG48 הוא מסך גיימינג בפורמט ענק עם פאנל OLED ורזולוציית 4K, שמגדיר מחדש איך מסך יכול להיראות ולהרגיש. עם ניגודיות מושלמת ברמת הפיקסל, יחס ניגודיות אינסופי כמעט וזמן תגובה של 0.1ms, הוא מטשטש את הגבול בין מסך גיימינג לטלוויזיית OLED פרימיום ומספק חוויית צפייה וגיימינג סוחפת במיוחד.',
     shortDescription: '48" 4K OLED 138Hz Predator monitor — pixel-perfect contrast, zero compromises.',
+    shortDescriptionHe: 'מסך גיימינג ענק Predator בפורמט גדול עם פאנל OLED ורזולוציית 4K.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=PredatorCG48'],
     tags: ['gaming', 'oled', '4k', '48-inch', 'hdr', 'flagship', 'freesync'],
     specs: {
@@ -913,7 +959,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Acer Nitro XV240Y packs a 165Hz refresh rate into a compact 24-inch Full HD IPS panel, making it a superb choice for fast-paced competitive gaming on a budget. AMD FreeSync Premium support and a 1ms VRB response time ensure that every frame arrives clean and crisp, even during the most hectic firefights.',
+    descriptionHe: 'ה-Acer Nitro XV240Y דוחס קצב רענון של 165Hz לתוך פאנל IPS קומפקטי בגודל 24 אינץ׳ ברזולוציית Full HD, מה שהופך אותו לבחירה מצוינת לגיימינג תחרותי ומהיר במחיר משתלם. תמיכה ב-AMD FreeSync Premium וזמן תגובה של 1ms VRB מבטיחים שכל פריים יגיע נקי וחד, גם בקרבות היריות הכי אינטנסיביים.',
     shortDescription: '24" FHD 165Hz IPS Nitro gaming monitor — competitive speed, compact size.',
+    shortDescriptionHe: 'מסך גיימינג קומפקטי בסדרת Nitro בגודל 24 אינץ׳ עם רזולוציית Full HD וקצב רענון 165Hz.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=XV240Y'],
     tags: ['gaming', 'ips', 'fhd', '24-inch', '165hz', 'freesync'],
     specs: {
@@ -952,7 +1000,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Acer EI342CKR is a 34-inch ultrawide QHD curved VA gaming monitor that hits 180Hz for an exhilarating combination of immersion and speed. Its 21:9 aspect ratio and 1500R curvature draw you into the action, while AMD FreeSync Premium and a 1ms VRB response time keep every fast-moving scene perfectly sharp.',
+    descriptionHe: 'ה-Acer EI342CKR הוא מסך גיימינג קעור, רחב במיוחד, בגודל 34 אינץ׳ ברזולוציית QHD עם פאנל VA, המגיע ל-180Hz לשילוב מרגש של סחיפה ומהירות. יחס התמונה 21:9 והעקמומיות 1500R מושכים אתכם לתוך הפעולה, בעוד AMD FreeSync Premium וזמן תגובה של 1ms VRB שומרים על כל סצנה מהירה חדה לחלוטין.',
     shortDescription: '34" UltraWide QHD 180Hz curved VA gaming monitor — speed meets immersion.',
+    shortDescriptionHe: 'מסך גיימינג קעור בגודל 34 אינץ׳ רחב במיוחד, עם רזולוציית QHD ופאנל VA וקצב רענון 180Hz.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=EI342CKR'],
     tags: ['gaming', 'va', 'ultrawide', '34-inch', '180hz', 'curved', 'freesync'],
     specs: {

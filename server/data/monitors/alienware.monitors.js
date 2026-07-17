@@ -16,7 +16,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Alienware AW2521H is a 25-inch Full HD IPS gaming monitor pushing the boundaries of speed with a blistering 360Hz refresh rate and NVIDIA G-Sync module. Designed from the ground up for professional esports competition, every frame is rendered and displayed with sub-millisecond precision, ensuring the fastest possible reaction advantage in FPS and battle royale titles.',
+    descriptionHe: 'ה-Alienware AW2521H הוא מסך גיימינג בגודל 25 אינץ׳ ברזולוציית Full HD עם פאנל IPS, הדוחף את גבולות המהירות עם קצב רענון מסחרר של 360Hz ומודול NVIDIA G-Sync. מתוכנן מהיסוד לתחרויות ספורט אלקטרוני מקצועיות, כל פריים מעובד ומוצג בדיוק תת-מילישניה, ומעניק יתרון תגובה משמעותי במשחקי FPS ובאטל רויאל.',
     shortDescription: 'Blistering 25" FHD IPS esports monitor at 360Hz with G-Sync.',
+    shortDescriptionHe: 'מסך גיימינג לספורט אלקטרוני בגודל 25 אינץ׳ עם רזולוציית Full HD וקצב רענון של 360Hz.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=AW2521H'],
     tags: ['gaming', 'ips', 'full-hd', '360hz', 'esports', 'g-sync'],
     specs: {
@@ -55,7 +57,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Alienware AW2721D is a 27-inch QHD IPS gaming monitor that combines the visual clarity of 2560x1440 resolution with a 240Hz refresh rate, offering the ideal balance of sharpness and speed for serious gamers. NVIDIA G-Sync Compatible certification guarantees tear-free gameplay, while the signature Alienware lunar light and AlienFX lighting design bring a distinctive premium aesthetic to any setup.',
+    descriptionHe: 'ה-Alienware AW2721D הוא מסך גיימינג בגודל 27 אינץ׳ ברזולוציית QHD עם פאנל IPS, המשלב את הבהירות החזותית של רזולוציית 2560x1440 עם קצב רענון של 240Hz, ומציע את האיזון האידיאלי בין חדות ומהירות לגיימרים רציניים. תעודת NVIDIA G-Sync Compatible מבטיחה משחק ללא קריעות מסך, בעוד עיצוב התאורה החתום Alienware Lunar Light ו-AlienFX מעניק אסתטיקה פרימיום ומובחנת לכל מערך.',
     shortDescription: 'Fast and sharp 27" QHD IPS gaming monitor at 240Hz.',
+    shortDescriptionHe: 'מסך גיימינג מהיר וחד בגודל 27 אינץ׳ עם רזולוציית QHD וקצב רענון של 240Hz.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=AW2721D'],
     tags: ['gaming', 'ips', 'qhd', '240hz', 'g-sync', 'alienware'],
     specs: {
@@ -94,7 +98,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Alienware AW2723DF is a 27-inch QHD IPS gaming monitor that reaches a remarkable 280Hz refresh rate, sitting above standard 240Hz displays for an even greater competitive edge. AMD FreeSync Premium Pro and NVIDIA G-Sync Compatible dual certification means it delivers adaptive sync perfection regardless of which GPU powers your rig.',
+    descriptionHe: 'ה-Alienware AW2723DF הוא מסך גיימינג בגודל 27 אינץ׳ ברזולוציית QHD עם פאנל IPS, המגיע לקצב רענון גבוה במיוחד ליתרון תחרותי משמעותי. אישור כפול של AMD FreeSync Premium Pro ו-NVIDIA G-Sync Compatible אומר שהוא מספק סנכרון אדפטיבי מדויק ללא קשר לכרטיס המסך שמניע את המערכת שלכם.',
     shortDescription: 'Ultra-fast 27" QHD IPS gaming monitor at 280Hz.',
+    shortDescriptionHe: 'מסך גיימינג מהיר במיוחד בגודל 27 אינץ׳ עם רזולוציית QHD וקצב רענון גבוה.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=AW2723DF'],
     tags: ['gaming', 'ips', 'qhd', '240hz', 'g-sync', 'freesync'],
     specs: {
@@ -133,7 +139,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Alienware AW2724HF delivers an incredible 360Hz refresh rate on a 27-inch Full HD IPS panel, making it one of the fastest mainstream gaming monitors available. AMD FreeSync Premium Pro certification provides ultra-low latency adaptive sync for players who refuse to accept any input lag or screen tearing during competitive play.',
+    descriptionHe: 'ה-Alienware AW2724HF מספק קצב רענון מדהים של 360Hz על פאנל IPS בגודל 27 אינץ׳ ברזולוציית Full HD, מה שהופך אותו לאחד ממסכי הגיימינג המהירים ביותר בשוק הרחב. תעודת AMD FreeSync Premium Pro מספקת סנכרון אדפטיבי בהשהיה נמוכה במיוחד לשחקנים שמסרבים לקבל פיגור קלט או קריעות מסך במשחק תחרותי.',
     shortDescription: 'Extreme 27" FHD IPS gaming monitor at 360Hz.',
+    shortDescriptionHe: 'מסך גיימינג קיצוני בגודל 27 אינץ׳ עם רזולוציית Full HD וקצב רענון של 360Hz.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=AW2724HF'],
     tags: ['gaming', 'ips', 'full-hd', '360hz', 'esports', 'freesync'],
     specs: {
@@ -172,7 +180,9 @@ module.exports = [
     isFeatured: true,
     isPublished: true,
     description: 'The Alienware AW2725DF is a groundbreaking 27-inch QHD QD-OLED gaming monitor that combines a staggering 360Hz refresh rate with the infinite contrast and self-emissive perfection of quantum dot OLED technology. At 0.03ms response time with AMD FreeSync Premium Pro and HDR support, this is the definitive display for players who demand the absolute peak of what current monitor technology can offer.',
+    descriptionHe: 'ה-Alienware AW2725DF הוא מסך גיימינג פורץ דרך בגודל 27 אינץ׳ ברזולוציית QHD עם פאנל QD-OLED, המשלב קצב רענון מדהים של 360Hz עם הניגודיות האינסופית והשלמות העצמית-פולטת של טכנולוגיית quantum dot OLED. בזמן תגובה של 0.03ms עם AMD FreeSync Premium Pro ותמיכת HDR, זהו מסך מתקדם המיועד לשחקנים המחפשים את הביצועים הגבוהים ביותר שטכנולוגיית המסכים הנוכחית מציעה.',
     shortDescription: 'Next-gen 27" QHD QD-OLED gaming monitor at 360Hz.',
+    shortDescriptionHe: 'מסך גיימינג פורץ דרך בגודל 27 אינץ׳ עם פאנל QD-OLED, רזולוציית QHD וקצב רענון 360Hz.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=AW2725DF'],
     tags: ['gaming', 'qd-oled', 'qhd', '360hz', 'hdr', 'g-sync', 'oled'],
     specs: {
@@ -211,7 +221,9 @@ module.exports = [
     isFeatured: true,
     isPublished: true,
     description: 'The Alienware AW3225QF is a 32-inch 4K QD-OLED gaming monitor that sets a new standard for large-format gaming displays. Its quantum dot OLED panel delivers true 4K resolution at 240Hz with infinite contrast and a breathtaking colour gamut, while AMD FreeSync Premium Pro ensures flawless adaptive sync. HDR performance on this panel is reference-class, producing highlights and shadow detail that must be seen to be believed.',
+    descriptionHe: 'ה-Alienware AW3225QF הוא מסך גיימינג בגודל 32 אינץ׳ עם פאנל QD-OLED ברזולוציית 4K, הקובע רף חדש למסכי גיימינג בפורמט גדול. פאנל ה-quantum dot OLED שלו מספק רזולוציית 4K אמיתית ב-240Hz עם ניגודיות אינסופית וגמת צבעים מרשימה, בעוד AMD FreeSync Premium Pro מבטיח סנכרון אדפטיבי מדויק. ביצועי ה-HDR בפאנל זה הם ברמת ייחוס, ומייצרים פרטי הארה וצל מרשימים במיוחד.',
     shortDescription: 'Flagship 32" 4K QD-OLED gaming monitor at 240Hz.',
+    shortDescriptionHe: 'מסך גיימינג דגל בגודל 32 אינץ׳ עם פאנל QD-OLED, רזולוציית 4K וקצב רענון 240Hz.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=AW3225QF'],
     tags: ['gaming', 'qd-oled', '4k', '240hz', 'hdr', 'freesync', 'flagship'],
     specs: {
@@ -250,7 +262,9 @@ module.exports = [
     isFeatured: true,
     isPublished: true,
     description: 'The Alienware AW3423DW is a 34-inch ultrawide curved QD-OLED gaming monitor that changed the industry when it launched, bringing organic quantum dot OLED technology to the ultrawide gaming space for the first time. Its 21:9 1800R curved panel delivers infinite contrast, 1.07 billion colours, and a 175Hz refresh rate with NVIDIA G-Sync Ultimate certification — the highest tier of adaptive sync available — for a truly elite gaming experience.',
+    descriptionHe: 'ה-Alienware AW3423DW הוא מסך גיימינג קעור, רחב במיוחד, בגודל 34 אינץ׳ עם פאנל QD-OLED, שהיה הראשון מסוגו בהשקתו והביא טכנולוגיית quantum dot OLED אורגנית לעולם הגיימינג הרחב במיוחד. הפאנל הקעור שלו ביחס 21:9 ובעקמומיות 1800R מספק ניגודיות אינסופית, 1.07 מיליארד צבעים וקצב רענון של 175Hz עם תעודת NVIDIA G-Sync Ultimate — הרמה הגבוהה ביותר בקרב תעודות הסנכרון האדפטיבי של NVIDIA — לחוויית גיימינג מתקדמת ברמה גבוהה.',
     shortDescription: 'Industry-changing 34" ultrawide curved QD-OLED gaming monitor at 175Hz.',
+    shortDescriptionHe: 'מסך גיימינג קעור פורץ דרך בגודל 34 אינץ׳ רחב במיוחד, עם פאנל QD-OLED וקצב רענון 175Hz.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=AW3423DW'],
     tags: ['gaming', 'qd-oled', 'ultrawide', 'curved', 'qhd', '175hz', 'hdr', 'g-sync', 'oled'],
     specs: {
@@ -330,7 +344,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Alienware AW3821DW is a massive 38-inch ultrawide curved IPS gaming monitor offering a sprawling 21:9 panoramic view with UltraWide QHD resolution. Running at 144Hz with NVIDIA G-Sync Ultimate certification, it provides premium adaptive sync performance across its enormous curved canvas, making open-world games and flight simulators feel like genuine windows into another world.',
+    descriptionHe: 'ה-Alienware AW3821DW הוא מסך גיימינג קעור ענק, רחב במיוחד, בגודל 38 אינץ׳ עם פאנל IPS, המציע מבט פנורמי משתרע ביחס 21:9 ברזולוציית QHD רחבה במיוחד. פועל ב-144Hz עם תעודת NVIDIA G-Sync Ultimate, הוא מספק ביצועי סנכרון אדפטיבי פרימיום על פני הקנבס הקעור העצום שלו, והופך משחקי עולם פתוח וסימולטורי טיסה לחלונות אמיתיים לעולם אחר.',
     shortDescription: 'Massive 38" ultrawide curved IPS gaming monitor at 144Hz.',
+    shortDescriptionHe: 'מסך גיימינג קעור ענק בגודל 38 אינץ׳ רחב במיוחד, עם רזולוציית QHD וקצב רענון 144Hz.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=AW3821DW'],
     tags: ['gaming', 'ips', 'ultrawide', 'curved', 'qhd', '144hz', 'g-sync', '38-inch'],
     specs: {
@@ -369,7 +385,9 @@ module.exports = [
     isFeatured: true,
     isPublished: true,
     description: 'The Alienware AW5520QF is a 55-inch 4K OLED gaming display that blurs the boundary between gaming monitor and living-room television. Its massive OLED panel delivers infinite contrast and true 4K resolution at 120Hz with AMD FreeSync Premium Pro, producing cinematic visuals that envelop your entire field of vision. This is the statement piece for players who want an unparalleled console and PC gaming experience at any cost.',
+    descriptionHe: 'ה-Alienware AW5520QF הוא מסך גיימינג בגודל 55 אינץ׳ עם פאנל OLED ברזולוציית 4K, המטשטש את הגבול בין מסך גיימינג לטלוויזיית סלון. הפאנל ה-OLED העצום שלו מספק ניגודיות אינסופית ורזולוציית 4K אמיתית ב-120Hz עם AMD FreeSync Premium Pro, ומייצר תמונה קולנועית העוטפת את כל שדה הראייה שלכם. זהו פריט הדגל לשחקנים המחפשים חוויית גיימינג קונסולה ומחשב יוצאת דופן, ללא פשרות על העלות.',
     shortDescription: 'Cinematic 55" 4K OLED gaming display at 120Hz.',
+    shortDescriptionHe: 'מסך גיימינג ענק בגודל 55 אינץ׳ עם פאנל OLED, רזולוציית 4K וקצב רענון 120Hz.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=AW5520QF'],
     tags: ['gaming', 'oled', '4k', '120hz', 'hdr', 'freesync', 'console', '55-inch'],
     specs: {
@@ -408,7 +426,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Alienware AW2518H is a 25-inch Full HD TN gaming monitor built for pure competitive speed, featuring a 240Hz refresh rate with NVIDIA G-Sync for absolute tear-free smoothness. The TN panel delivers the fastest native pixel transitions available, ensuring that in the most demanding firefights, your display never becomes the limiting factor in your performance.',
+    descriptionHe: 'ה-Alienware AW2518H הוא מסך גיימינג בגודל 25 אינץ׳ ברזולוציית Full HD עם פאנל TN, שנבנה למען מהירות תחרותית טהורה, עם קצב רענון של 240Hz ו-NVIDIA G-Sync לחלקות מוחלטת ללא קריעות מסך. פאנל ה-TN מספק את מעברי הפיקסלים המהירים ביותר הקיימים, ומבטיח שבקרבות היריות התובעניים ביותר, המסך שלכם לעולם לא יהיה הגורם המגביל בביצועים שלכם.',
     shortDescription: 'Speed-focused 25" FHD TN gaming monitor at 240Hz with G-Sync.',
+    shortDescriptionHe: 'מסך גיימינג ממוקד מהירות בגודל 25 אינץ׳ עם רזולוציית Full HD, פאנל TN וקצב רענון 240Hz.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=AW2518H'],
     tags: ['gaming', 'tn', 'full-hd', '240hz', 'esports', 'g-sync'],
     specs: {
@@ -447,7 +467,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Alienware AW2721D Lunar Light is the white-chassis variant of the acclaimed AW2721D, wrapping the same 27-inch QHD IPS 240Hz performance in Alienware\'s signature Lunar Light colour scheme. NVIDIA G-Sync Compatible support and the crisp, fast IPS panel remain identical, making this the aesthetically refined option for white-themed battlestations seeking top-tier gaming performance.',
+    descriptionHe: 'ה-Alienware AW2721D Lunar Light הוא גרסת העיצוב הלבן של ה-AW2721D המהולל, העוטף את אותם ביצועי 27 אינץ׳ QHD IPS ב-240Hz בגימור הלבן החתום Alienware Lunar Light. תמיכת NVIDIA G-Sync Compatible ופאנל ה-IPS החד והמהיר נותרים זהים, מה שהופך אותו לאפשרות המעודנת אסתטית עבור מערכי גיימינג בעיצוב לבן המחפשים ביצועי גיימינג ברמה הגבוהה ביותר.',
     shortDescription: 'White-edition 27" QHD IPS gaming monitor at 240Hz.',
+    shortDescriptionHe: 'מסך גיימינג בגרסה לבנה בגודל 27 אינץ׳ עם רזולוציית QHD וקצב רענון 240Hz.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=AW2721D-W'],
     tags: ['gaming', 'ips', 'qhd', '240hz', 'g-sync', 'white', 'alienware'],
     specs: {
@@ -486,7 +508,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Alienware AW3225QF White Edition brings the flagship 32-inch 4K QD-OLED gaming experience to white-themed battlestations, cloaking the same breathtaking panel in Alienware\'s Lunar Light chassis. Infinite contrast, 240Hz refresh, and AMD FreeSync Premium Pro remain unchanged from the standard model, making this a pure aesthetic choice that sacrifices nothing in terms of performance.',
+    descriptionHe: 'ה-Alienware AW3225QF White Edition מביא את חוויית הגיימינג הדגל בגודל 32 אינץ׳ עם פאנל QD-OLED ורזולוציית 4K למערכי גיימינג בעיצוב לבן, ועוטה את אותו פאנל מרהיב בגימור Alienware Lunar Light. ניגודיות אינסופית, קצב רענון של 240Hz ו-AMD FreeSync Premium Pro נותרים ללא שינוי לעומת הדגם הסטנדרטי, מה שהופך אותו לבחירה אסתטית טהורה שאינה מוותרת על דבר מבחינת ביצועים.',
     shortDescription: 'White-edition flagship 32" 4K QD-OLED gaming monitor at 240Hz.',
+    shortDescriptionHe: 'מסך גיימינג דגל בגרסה לבנה בגודל 32 אינץ׳ עם פאנל QD-OLED ורזולוציית 4K.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=AW3225QF-W'],
     tags: ['gaming', 'qd-oled', '4k', '240hz', 'hdr', 'freesync', 'white', 'flagship'],
     specs: {
@@ -525,7 +549,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Alienware AW2524H is a refreshed 25-inch Full HD IPS gaming monitor maintaining the 360Hz standard established by the AW2521H, now with updated connectivity and refined stand design. NVIDIA G-Sync Compatible certification and the fast IPS panel ensure esports players at any level can take advantage of the ultra-high refresh rate for measurably improved reaction performance.',
+    descriptionHe: 'ה-Alienware AW2524H הוא מסך גיימינג מרוענן בגודל 25 אינץ׳ ברזולוציית Full HD עם פאנל IPS, השומר על תקן ה-360Hz שנקבע על ידי ה-AW2521H, כעת עם חיבוריות מעודכנת ועיצוב מעמד משופר. תעודת NVIDIA G-Sync Compatible ופאנל ה-IPS המהיר מבטיחים ששחקני ספורט אלקטרוני בכל רמה יוכלו לנצל את קצב הרענון הגבוה במיוחד לשיפור מדיד בביצועי התגובה.',
     shortDescription: 'Refreshed 25" FHD IPS esports monitor at 360Hz.',
+    shortDescriptionHe: 'מסך גיימינג מרוענן לספורט אלקטרוני בגודל 25 אינץ׳ עם רזולוציית Full HD וקצב רענון 360Hz.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=AW2524H'],
     tags: ['gaming', 'ips', 'full-hd', '360hz', 'esports', 'g-sync'],
     specs: {
@@ -564,7 +590,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Alienware AW2724DW is a 27-inch QHD IPS gaming monitor that steps back from extreme refresh rates to prioritise pixel density and overall visual quality at 180Hz. AMD FreeSync Premium Pro certification delivers precise, low-latency adaptive sync, and the height-adjustable ergonomic stand ensures comfortable positioning for long gaming sessions or work-from-home use.',
+    descriptionHe: 'ה-Alienware AW2724DW הוא מסך גיימינג בגודל 27 אינץ׳ ברזולוציית QHD עם פאנל IPS, המעניק עדיפות לצפיפות פיקסלים ולאיכות חזותית כוללת בקצב רענון של 180Hz במקום להתמקד בקצבי רענון קיצוניים. תעודת AMD FreeSync Premium Pro מספקת סנכרון אדפטיבי מדויק בהשהיה נמוכה, ומעמד ארגונומי מתכוונן בגובה מבטיח מיקום נוח למפגשי גיימינג ארוכים או לעבודה מהבית.',
     shortDescription: 'Balanced 27" QHD IPS gaming monitor at 180Hz.',
+    shortDescriptionHe: 'מסך גיימינג מאוזן בגודל 27 אינץ׳ עם רזולוציית QHD וקצב רענון של 180Hz.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=AW2724DW'],
     tags: ['gaming', 'ips', 'qhd', '180hz', 'freesync', 'alienware'],
     specs: {
@@ -603,7 +631,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Alienware AW3225QF 2024 edition is the revised iteration of the flagship 32-inch 4K QD-OLED gaming monitor, incorporating updated firmware, improved burn-in protection algorithms, and enhanced ABL tuning for a more consistent and confident long-term ownership experience. The core 240Hz QD-OLED panel performance with AMD FreeSync Premium Pro and HDR remains the benchmark for large-format gaming displays.',
+    descriptionHe: 'ה-Alienware AW3225QF במהדורת 2024 הוא הגרסה המעודכנת של מסך הגיימינג הדגל בגודל 32 אינץ׳ עם פאנל QD-OLED ברזולוציית 4K, המשלבת קושחה מעודכנת, אלגוריתמים משופרים להגנה מפני צריבה וכיוונון ABL משופר לחוויית בעלות ארוכת טווח עקבית ובטוחה יותר. ביצועי הליבה של פאנל ה-QD-OLED ב-240Hz עם AMD FreeSync Premium Pro ו-HDR נותרים אמת המידה למסכי גיימינג בפורמט גדול.',
     shortDescription: 'Updated 2024 edition 32" 4K QD-OLED gaming monitor at 240Hz.',
+    shortDescriptionHe: 'מסך גיימינג בגרסת 2024 מעודכנת בגודל 32 אינץ׳ עם פאנל QD-OLED ורזולוציית 4K.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=AW3225QF-2024'],
     tags: ['gaming', 'qd-oled', '4k', '240hz', 'hdr', 'freesync', 'flagship', '2024'],
     specs: {
@@ -642,7 +672,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Alienware AW2224H is a compact 22-inch Full HD IPS gaming monitor that brings the Alienware brand experience to a smaller form factor and accessible price. Running at 100Hz with NVIDIA G-Sync Compatible support, it delivers noticeably smoother gameplay than standard 60Hz office panels, making it the ideal entry point for players new to the Alienware ecosystem or those building a compact streaming or secondary gaming setup.',
+    descriptionHe: 'ה-Alienware AW2224H הוא מסך גיימינג קומפקטי בגודל 22 אינץ׳ ברזולוציית Full HD עם פאנל IPS, המביא את חוויית מותג Alienware לפורמט קטן יותר ולמחיר נגיש. פועל ב-100Hz עם תמיכת NVIDIA G-Sync Compatible, הוא מספק משחק חלק בצורה ניכרת בהשוואה לפאנלים משרדיים סטנדרטיים של 60Hz, מה שהופך אותו לנקודת כניסה אידיאלית לשחקנים חדשים לעולם Alienware או למי שבונה מערך סטרימינג קומפקטי או מסך גיימינג משני.',
     shortDescription: 'Compact 22" FHD IPS gaming monitor at 100Hz.',
+    shortDescriptionHe: 'מסך גיימינג קומפקטי בגודל 22 אינץ׳ עם רזולוציית Full HD וקצב רענון 100Hz.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=AW2224H'],
     tags: ['gaming', 'ips', 'full-hd', '100hz', 'g-sync', 'compact'],
     specs: {
@@ -681,7 +713,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Alienware AW3423DWF Luna Light Edition brings the acclaimed 34-inch curved ultrawide QD-OLED experience to white-themed gaming setups in Alienware\'s signature Lunar Light colour scheme. The same 165Hz refresh rate, AMD FreeSync Premium Pro certification, and infinite-contrast QD-OLED performance of the standard AW3423DWF are preserved, wrapped in a distinctive chassis that stands out in any battlestation.',
+    descriptionHe: 'ה-Alienware AW3423DWF Luna Light Edition מביא את חוויית ה-QD-OLED הקעורה והרחבה במיוחד בגודל 34 אינץ׳ המהוללת למערכי גיימינג בעיצוב לבן, בערכת הצבעים החתומה Alienware Lunar Light. אותו קצב רענון של 165Hz, תעודת AMD FreeSync Premium Pro וביצועי הניגודיות האינסופית של פאנל ה-QD-OLED של ה-AW3423DWF הסטנדרטי נשמרים, בעיצוב ייחודי שבולט בכל מערך גיימינג.',
     shortDescription: 'Lunar Light 34" curved ultrawide QD-OLED at 165Hz.',
+    shortDescriptionHe: 'מסך גיימינג קעור בגרסה לבנה בגודל 34 אינץ׳ רחב במיוחד, עם פאנל QD-OLED וקצב רענון 165Hz.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=AW3423DWF-LL'],
     tags: ['gaming', 'qd-oled', 'ultrawide', 'curved', 'qhd', '165hz', 'hdr', 'freesync', 'white'],
     specs: {
@@ -720,7 +754,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Alienware AW2723DW is a 27-inch QHD IPS gaming monitor combining a 240Hz refresh rate with AMD FreeSync Premium Pro certification, making the high-refresh QHD experience accessible to AMD Radeon GPU owners within the premium Alienware lineup. The full-featured ergonomic stand, signature AlienFX lighting, and robust connectivity make it a complete and refined gaming display.',
+    descriptionHe: 'ה-Alienware AW2723DW הוא מסך גיימינג בגודל 27 אינץ׳ ברזולוציית QHD עם פאנל IPS, המשלב קצב רענון של 240Hz עם תעודת AMD FreeSync Premium Pro, ומעניק חוויית QHD בקצב רענון גבוה גם לבעלי כרטיסי מסך מבית AMD Radeon, בתוך קו המוצרים הפרימיום של Alienware. המעמד הארגונומי המלא, תאורת AlienFX החתומה וחיבוריות חזקה הופכים אותו למסך גיימינג שלם ומעודן.',
     shortDescription: 'Fluid 27" QHD IPS gaming monitor at 240Hz with FreeSync Pro.',
+    shortDescriptionHe: 'מסך גיימינג חלק בגודל 27 אינץ׳ עם רזולוציית QHD, קצב רענון 240Hz ותמיכת FreeSync Pro.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=AW2723DW'],
     tags: ['gaming', 'ips', 'qhd', '240hz', 'freesync', 'alienware'],
     specs: {
