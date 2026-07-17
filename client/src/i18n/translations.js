@@ -1521,7 +1521,7 @@ export const translations = {
     'nav.mobile_open':        'Open menu',
     'nav.mobile_close':       'Close menu',
     'nav.mobile_nav':         'Navigation',
-    'nav.compare':            'Compare products',
+    'nav.compare':            'Product comparison',
     'nav.categories_arialabel': 'Categories',
     'nav.breadcrumb_arialabel': 'Breadcrumb',
     'nav.all_categories':     'All Categories',
