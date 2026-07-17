@@ -15,7 +15,9 @@ module.exports = [
     isFeatured: true,
     isPublished: true,
     description: 'The Apple Studio Display is a 27-inch 5K Retina monitor engineered to pair seamlessly with Mac. Driven by the Apple A13 Bionic chip, it features a built-in 12MP Ultra Wide camera with Center Stage, a three-mic array with directional beamforming, and a six-speaker sound system with Spatial Audio. The stunning IPS display covers the P3 wide colour gamut and delivers True Tone automatic white-point adjustment for a natural, eye-comfortable viewing experience in any lighting condition.',
+    descriptionHe: 'ה-Apple Studio Display הוא מסך מקצועי בגודל 27 אינץ׳ עם רזולוציית 5K Retina, המיועד לעבודה חלקה עם מחשבי Mac. השבב A13 Bionic המובנה מפעיל מצלמת Ultra Wide ברזולוציית 12MP עם Center Stage, מערך שלושה מיקרופונים ומערכת שישה רמקולים עם Spatial Audio. הפאנל מסוג IPS מכסה את מרחב הצבע הרחב P3 ותומך ב-True Tone להתאמת גוון לבן אוטומטית לתאורת הסביבה.',
     shortDescription: 'Apple 27" 5K Retina display with A13 Bionic and Spatial Audio.',
+    shortDescriptionHe: 'מסך מקצועי בגודל 27 אינץ׳ עם רזולוציית 5K Retina, שבב A13 Bionic ומערכת שישה רמקולים עם Spatial Audio.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=MMYV3LL%2FA'],
     tags: ['professional', 'ips', '5k', 'apple', 'studio', 'thunderbolt', 'retina'],
     specs: {
@@ -53,7 +55,9 @@ module.exports = [
     isFeatured: true,
     isPublished: true,
     description: 'The Apple Pro Display XDR is the reference-class professional display that redefines what a monitor can be. Its 32-inch Retina screen delivers extreme dynamic range with a peak brightness of 1600 nits and a 1,000,000:1 contrast ratio, achieved through an innovative backlighting system behind a nano-texture or standard matte glass. Designed for the most demanding colour science, post-production, and broadcast workflows, it covers the P3 wide colour gamut and supports multiple colour reference modes out of the box.',
+    descriptionHe: 'ה-Apple Pro Display XDR הוא מסך מקצועי ברמת ייחוס בגודל 32 אינץ׳, המציע טווח דינמי יוצא דופן עם בהירות שיא של 1600 nits ויחס ניגודיות של 1,000,000:1 בזכות מערכת תאורה אחורית ייחודית מאחורי זכוכית רגילה או זכוכית בגימור nano-texture. המסך מיועד לתהליכי עבודה תובעניים בעריכת צבע מקצועית, פוסט-פרודקשן ושידור, מכסה את מרחב הצבע הרחב P3 ותומך במספר מצבי ייחוס צבע מובנים.',
     shortDescription: 'Reference-class 32" 6K XDR professional display for pros.',
+    shortDescriptionHe: 'מסך מקצועי ברמת ייחוס בגודל 32 אינץ׳ עם בהירות שיא של 1600 nits ותמיכה ב-Thunderbolt.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=MWPE2LL%2FA'],
     tags: ['professional', 'ips', '5k', 'apple', 'xdr', 'thunderbolt', 'reference'],
     specs: {
@@ -91,7 +95,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Apple Studio Display with VESA Mount Adapter delivers the same exceptional 27-inch 5K Retina experience as the standard Studio Display, but ships with a VESA mount adapter instead of a tilt-adjustable stand. This configuration is ideal for users with third-party monitor arms or wall-mount setups, offering the full suite of Apple features — including the A13 Bionic chip, 12MP Ultra Wide camera, six-speaker sound system, and Thunderbolt 3 connectivity — in a more flexible mounting solution.',
+    descriptionHe: 'ה-Apple Studio Display עם מתאם התקנת VESA מעניק את אותן יכולות הליבה של ה-Studio Display הרגיל, בגודל 27 אינץ׳ וברזולוציית 5K Retina, אך מגיע עם מתאם VESA במקום מעמד נטוי מתכוונן. תצורה זו אידיאלית למשתמשים עם זרועות מסך של צד שלישי או התקנות על קיר, תוך שמירה על מלוא היכולות של Apple — כולל שבב A13 Bionic, מצלמת Ultra Wide ברזולוציית 12MP ומערכת שישה רמקולים — בפתרון התקנה גמיש יותר.',
     shortDescription: 'Apple 27" 5K Studio Display configured for VESA arm mounting.',
+    shortDescriptionHe: 'מסך Apple Studio Display בגודל 27 אינץ׳ עם רזולוציית 5K Retina, בתצורה עם מתאם VESA להתקנה על זרוע מסך.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=MMYX3LL%2FA'],
     tags: ['professional', 'ips', '5k', 'apple', 'studio', 'vesa', 'thunderbolt', 'retina'],
     specs: {

@@ -15,7 +15,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The AOC 24B2XH is a dependable 24-inch Full HD IPS office monitor offering accurate colors and wide viewing angles at a highly accessible price. Its 75Hz refresh rate and AMD FreeSync support make desktop navigation and casual gaming smoother than standard 60Hz panels, while the ultra-slim frameless design is a clean fit for any desk environment. AOC Flicker-Free and Low Blue Light certification protect eyes through long work sessions without sacrificing image quality.',
+    descriptionHe: 'ה-AOC 24B2XH הוא מסך משרדי אמין בגודל 24 אינץ׳ עם רזולוציית Full HD ופאנל IPS, המציע צבעים מדויקים וזוויות צפייה רחבות במחיר נגיש במיוחד. קצב הרענון של 75Hz בשילוב תמיכה ב-AMD FreeSync משפר את חלקות הניווט בשולחן העבודה ואת המשחק המזדמן לעומת פאנלים סטנדרטיים של 60Hz, והעיצוב הדק והנטול מסגרת מתאים לכל שולחן עבודה. טכנולוגיית Flicker-Free ומצב Low Blue Light שומרות על העיניים לאורך יום עבודה ארוך.',
     shortDescription: '24" FHD IPS office monitor with 75Hz refresh rate, ultra-slim bezels, and eye-care technology.',
+    shortDescriptionHe: 'מסך משרדי בגודל 24 אינץ׳ עם רזולוציית Full HD, פאנל IPS וקצב רענון של 75Hz, כולל טכנולוגיית הגנה על העיניים.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=24B2XH'],
     tags: ['office', 'ips', 'full-hd', '75hz', 'eye-care'],
     specs: {
@@ -53,7 +55,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The AOC Q27P2Q is a 27-inch QHD IPS office monitor engineered for productivity-focused users who need sharp text, accurate colors, and ergonomic comfort throughout the workday. Its height-adjustable stand with tilt, swivel, and pivot lets you dial in the perfect viewing angle, and the four-sided ultra-slim bezel design makes it easy to assemble a seamless multi-monitor configuration. Built-in USB hub and a wide array of ports keep all your peripherals organized and accessible.',
+    descriptionHe: 'ה-AOC Q27P2Q הוא מסך משרדי בגודל 27 אינץ׳ עם רזולוציית QHD ופאנל IPS, המיועד למשתמשים הזקוקים לטקסט חד, צבעים מדויקים ונוחות ארגונומית לאורך יום העבודה. מעמד מתכוונן בגובה, הטיה, סיבוב ופיבוט מאפשר כיוונון מדויק של זווית הצפייה, ועיצוב המסגרות הדקות משלושה צדדים מקל על הרכבת תצורת ריבוי מסכים רציפה. רכזת USB מובנית ומגוון חיבורים רחב שומרים על סדר ונגישות לציוד ההיקפי.',
     shortDescription: '27" QHD IPS office monitor with height-adjustable stand and multi-monitor-friendly slim bezels.',
+    shortDescriptionHe: 'מסך משרדי בגודל 27 אינץ׳ עם רזולוציית QHD, פאנל IPS ומעמד מתכוונן, מתאים למערכי ריבוי מסכים.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=Q27P2Q'],
     tags: ['office', 'ips', 'qhd', '75hz', 'ergonomic', 'usb-hub'],
     specs: {
@@ -91,7 +95,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The AOC U27P2 is a 27-inch 4K IPS office monitor that makes every pixel count, delivering sharp, detailed visuals perfect for reading dense documents, editing high-resolution images, or multitasking across multiple application windows. Its IPS panel provides consistent, accurate colors from wide viewing angles, making it suitable for collaborative work environments. The fully height-adjustable stand with tilt and swivel ensures comfortable posture for users of any height.',
+    descriptionHe: 'ה-AOC U27P2 הוא מסך משרדי בגודל 27 אינץ׳ ברזולוציית 4K עם פאנל IPS, המציג תמונה חדה ומפורטת הנוחה לקריאת מסמכים צפופים, עריכת תמונות ברזולוציה גבוהה או עבודה מקבילה במספר חלונות. פאנל ה-IPS מספק צבעים עקביים ומדויקים מזוויות צפייה רחבות, מה שמתאים לסביבות עבודה שיתופיות. מעמד מתכוונן בגובה עם הטיה וסיבוב מבטיח ישיבה נוחה למשתמשים בכל גובה.',
     shortDescription: '27" 4K IPS office monitor with full ergonomic stand and sharp UHD visuals for productivity.',
+    shortDescriptionHe: 'מסך משרדי בגודל 27 אינץ׳ עם רזולוציית 4K, פאנל IPS ומעמד ארגונומי מלא.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=U27P2'],
     tags: ['office', 'ips', '4k', '60hz', 'ergonomic'],
     specs: {
@@ -129,7 +135,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The AOC U32P2 is a large-format 32-inch 4K IPS office monitor that provides a generous working canvas for multitasking, spreadsheet analysis, or detailed image and video review. Its IPS panel delivers wide viewing angles and true-to-life colors, making it equally suitable for design work and data-heavy office tasks. The height-adjustable ergonomic stand keeps the display comfortable regardless of your desk setup or chair height.',
+    descriptionHe: 'ה-AOC U32P2 הוא מסך משרדי גדול בגודל 32 אינץ׳ עם רזולוציית 4K ופאנל IPS, המעניק שטח עבודה נרחב לריבוי משימות, ניתוח גיליונות אלקטרוניים או סקירת תמונות וסרטונים בפירוט גבוה. פאנל ה-IPS מספק זוויות צפייה רחבות וצבעים נאמנים למקור, ומתאים הן לעבודות עיצוב והן למשימות משרדיות עתירות נתונים. מעמד ארגונומי מתכוונן בגובה שומר על נוחות ללא קשר לגובה השולחן או הכיסא.',
     shortDescription: '32" 4K IPS office monitor with ergonomic height-adjustable stand and wide-angle IPS panel.',
+    shortDescriptionHe: 'מסך משרדי גדול בגודל 32 אינץ׳ עם רזולוציית 4K, פאנל IPS ומעמד מתכוונן בגובה.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=U32P2'],
     tags: ['office', 'ips', '4k', '60hz', 'ergonomic'],
     specs: {
@@ -167,7 +175,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The AOC 24G2SE is a highly popular 24-inch Full HD IPS gaming monitor that punches well above its price point with a 165Hz refresh rate and 1ms MPRT response time. AMD FreeSync Premium support delivers tear-free gaming across a wide frame-rate range, while the borderless design and compact footprint make it a favourite for space-efficient gaming setups and dual-monitor configurations. It is one of the best-selling value gaming monitors in the market.',
+    descriptionHe: 'ה-AOC 24G2SE הוא מסך גיימינג בגודל 24 אינץ׳ עם רזולוציית Full HD ופאנל IPS, המציע ביצועים גבוהים ביחס למחירו עם קצב רענון של 165Hz וזמן תגובה של 1ms MPRT. תמיכה ב-AMD FreeSync Premium מבטיחה גיימינג ללא קריעות מסך על פני טווח רחב של קצבי פריימים, והעיצוב נטול המסגרת והקומפקטי הופך אותו לבחירה נוחה למערכים חסכוניים במקום ולתצורות דו-מסך. התוצאה היא מסך המתאים במיוחד למי שמחפש חוויית גיימינג מהירה ותגובתית במחיר נגיש.',
     shortDescription: '24" FHD IPS gaming monitor with 165Hz, AMD FreeSync Premium, and 1ms response at great value.',
+    shortDescriptionHe: 'מסך גיימינג בגודל 24 אינץ׳ עם רזולוציית Full HD, פאנל IPS, קצב רענון 165Hz ותמיכה ב-AMD FreeSync Premium.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=24G2SE'],
     tags: ['gaming', 'ips', 'full-hd', '165hz', 'freesync', 'value'],
     specs: {
@@ -205,7 +215,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The AOC 27G2SP is a 27-inch Full HD IPS gaming monitor running at 165Hz, offering a larger screen experience for gamers who want more immersion without stepping up to QHD resolution. Its Fast IPS panel achieves 1ms MPRT response time while maintaining wide color accuracy and consistent brightness across the display surface. AMD FreeSync Premium keeps frames in sync with your GPU for a fluid, artefact-free gaming experience across supported titles.',
+    descriptionHe: 'ה-AOC 27G2SP הוא מסך גיימינג בגודל 27 אינץ׳ עם רזולוציית Full HD ופאנל IPS הפועל ב-165Hz, ומעניק חוויית מסך גדולה יותר לגיימרים המעוניינים בתחושת סחיפה נוספת מבלי לעבור לרזולוציית QHD. פאנל ה-Fast IPS מגיע לזמן תגובה של 1ms MPRT תוך שמירה על דיוק צבעים רחב ובהירות אחידה על פני המסך. תמיכה ב-AMD FreeSync Premium שומרת על סנכרון חלק עם כרטיס המסך לתצוגה חלקה וללא קריעות מסך.',
     shortDescription: '27" FHD IPS gaming monitor with 165Hz, Fast IPS 1ms MPRT, and AMD FreeSync Premium.',
+    shortDescriptionHe: 'מסך גיימינג בגודל 27 אינץ׳ עם רזולוציית Full HD, פאנל Fast IPS, קצב רענון 165Hz וזמן תגובה של 1ms MPRT.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=27G2SP'],
     tags: ['gaming', 'ips', 'full-hd', '165hz', 'freesync'],
     specs: {
@@ -243,7 +255,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The AOC Q27G2S is a 27-inch QHD IPS gaming monitor that delivers a significant jump in visual detail over Full HD displays while maintaining the fast 165Hz refresh rate demanded by competitive gamers. Its Fast IPS panel achieves 1ms MPRT response time and supports AMD FreeSync Premium for tear-free adaptive sync across the full supported frame-rate range. The combination of resolution, speed, and competitive pricing makes this one of the most popular mid-range gaming monitors available.',
+    descriptionHe: 'ה-AOC Q27G2S הוא מסך גיימינג בגודל 27 אינץ׳ עם רזולוציית QHD ופאנל IPS, המעניק קפיצה משמעותית בפירוט החזותי לעומת מסכי Full HD מבלי לוותר על קצב הרענון המהיר של 165Hz שדורשים גיימרים תחרותיים. פאנל ה-Fast IPS מגיע לזמן תגובה של 1ms MPRT ותומך ב-AMD FreeSync Premium לסנכרון אדפטיבי ללא קריעות מסך על פני טווח קצבי הפריימים הנתמך. השילוב של רזולוציה, מהירות ומחיר תחרותי הופך אותו לבחירה מאוזנת במיוחד בטווח המחירים הבינוני.',
     shortDescription: '27" QHD IPS gaming monitor with 165Hz refresh rate and AMD FreeSync Premium at great value.',
+    shortDescriptionHe: 'מסך גיימינג בגודל 27 אינץ׳ עם רזולוציית QHD, קצב רענון 165Hz ותמיכה ב-AMD FreeSync Premium.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=Q27G2S'],
     tags: ['gaming', 'ips', 'qhd', '165hz', 'freesync'],
     specs: {
@@ -281,7 +295,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The AOC CQ27G3S is a 27-inch curved QHD VA gaming monitor with a 180Hz refresh rate, delivering the high-contrast, deep-black performance that VA panels are celebrated for while pushing into high-refresh territory. The 1500R curvature gently wraps the screen around your field of view, reducing eye movement fatigue and enhancing immersion in both games and cinematic content. AMD FreeSync Premium support and Shadow Control technology for dark scene visibility make this a compelling mid-range curved gaming display.',
+    descriptionHe: 'ה-AOC CQ27G3S הוא מסך גיימינג קעור בגודל 27 אינץ׳ עם רזולוציית QHD ופאנל VA, המגיע לקצב רענון של 180Hz ומספק את הניגודיות העמוקה והשחורים העשירים שפאנלי VA ידועים בהם. עקמומיות 1500R עוטפת בעדינות את שדה הראייה, מפחיתה עייפות תנועת עיניים ומגבירה את תחושת הסחיפה במשחקים ובתוכן קולנועי כאחד. תמיכה ב-AMD FreeSync Premium וטכנולוגיית Shadow Control לשיפור הנראות בסצנות חשוכות הופכות אותו למסך קעור אטרקטיבי בטווח המחירים הבינוני.',
     shortDescription: '27" curved QHD VA gaming monitor with 180Hz, deep contrast, and AMD FreeSync Premium.',
+    shortDescriptionHe: 'מסך גיימינג קעור בגודל 27 אינץ׳ עם רזולוציית QHD, פאנל VA וקצב רענון של 180Hz.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=CQ27G3S'],
     tags: ['gaming', 'va', 'qhd', '180hz', 'curved', 'freesync'],
     specs: {
@@ -319,7 +335,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The AOC CQ32G3S scales up the curved VA gaming formula to a 32-inch QHD panel at 165Hz, providing a larger and more enveloping display experience without compromising on refresh rate or color quality. The curved screen maximizes immersion during open-world and racing games, while the VA panel\'s native high contrast renders dark scenes with detail and atmosphere that flat IPS monitors struggle to match. AMD FreeSync Premium ensures smooth frame delivery across compatible GPUs.',
+    descriptionHe: 'ה-AOC CQ32G3S מגדיל את נוסחת הגיימינג הקעורה עם פאנל VA לגודל 32 אינץ׳ ברזולוציית QHD ובקצב רענון של 165Hz, ומעניק חוויית צפייה גדולה וסוחפת יותר מבלי להתפשר על מהירות או איכות הצבע. המסך הקעור מגביר את תחושת ההשתלבות במשחקי עולם פתוח ומרוצים, בעוד הניגודיות הגבוהה הטבעית של פאנל ה-VA מציגה סצנות חשוכות בעומק ובפירוט מרשימים. תמיכה ב-AMD FreeSync Premium מבטיחה העברת פריימים חלקה מול כרטיסי מסך תואמים.',
     shortDescription: '32" curved QHD VA gaming monitor with 165Hz refresh rate and deep native contrast.',
+    shortDescriptionHe: 'מסך גיימינג קעור בגודל 32 אינץ׳ עם רזולוציית QHD, פאנל VA וקצב רענון של 165Hz.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=CQ32G3S'],
     tags: ['gaming', 'va', 'qhd', '165hz', 'curved', 'freesync'],
     specs: {
@@ -357,7 +375,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The AOC AGON AG274QZM is a premium 27-inch QHD IPS gaming monitor delivering a blazing 240Hz refresh rate for the smoothest competitive gaming experience at QHD resolution. NVIDIA G-Sync Compatible and AMD FreeSync Premium Pro dual certifications ensure it works seamlessly with either GPU brand, while the Fast IPS panel keeps response times sharp and colors wide. Built-in RGB lighting and a gaming-centric stand design round out this high-performance AGON display.',
+    descriptionHe: 'ה-AOC AGON AG274QZM הוא מסך גיימינג פרימיום בגודל 27 אינץ׳ עם רזולוציית QHD, המגיע לקצב רענון מהיר במיוחד של 240Hz לחוויית גיימינג תחרותי חלקה ברזולוציית QHD. תמיכה ב-NVIDIA G-Sync Compatible לצד AMD FreeSync Premium Pro מבטיחה תאימות טובה לשני סוגי כרטיסי המסך המובילים, ופאנל ה-Fast IPS שומר על זמני תגובה חדים וצבעים רחבים. תאורת RGB מובנית ועיצוב מעמד ממוקד-גיימינג מוסיפים אופי ונוחות שימוש למסך המיועד לגיימרים תחרותיים.',
     shortDescription: '27" QHD IPS gaming monitor with 240Hz, G-Sync Compatible, and FreeSync Premium Pro.',
+    shortDescriptionHe: 'מסך גיימינג בגודל 27 אינץ׳ עם רזולוציית QHD, קצב רענון 240Hz ותמיכת NVIDIA G-Sync Compatible.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=AG274QZM'],
     tags: ['gaming', 'ips', 'qhd', '240hz', 'gsync', 'freesync', 'agon', 'trending'],
     specs: {
@@ -395,7 +415,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The AOC AGON AG274FZ2 is a 27-inch Full HD IPS gaming monitor that sacrifices resolution in favour of an extraordinary 280Hz refresh rate, making it one of the fastest displays available for competitive esports players. The Fast IPS panel achieves 0.5ms GTG response time for ultra-sharp motion clarity, while AMD FreeSync Premium Pro certification guarantees both adaptive sync and HDR performance. This is AOC\'s answer for players who compete at the highest level and need every refresh rate advantage possible.',
+    descriptionHe: 'ה-AOC AGON AG274FZ2 הוא מסך גיימינג בגודל 27 אינץ׳ עם רזולוציית Full HD ופאנל IPS, המוותר על רזולוציה גבוהה לטובת קצב רענון גבוה במיוחד המיועד לשחקני eSports. פאנל ה-Fast IPS מגיע לזמן תגובה של 0.5ms GTG לבהירות תנועה חדה במיוחד, ותמיכה ב-AMD FreeSync Premium מבטיחה סנכרון אדפטיבי חלק. זהו מסך המתאים לגיימינג תחרותי הדורש קצב רענון מהיר ותגובה חדה.',
     shortDescription: '27" FHD IPS esports monitor with 280Hz refresh rate and 0.5ms GTG for maximum speed.',
+    shortDescriptionHe: 'מסך גיימינג בגודל 27 אינץ׳ עם רזולוציית Full HD, פאנל IPS וקצב רענון גבוה במיוחד למשחק תחרותי.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=AG274FZ2'],
     tags: ['gaming', 'ips', 'full-hd', '240hz', 'freesync', 'agon', 'esports'],
     specs: {
@@ -433,7 +455,9 @@ module.exports = [
     isFeatured: true,
     isPublished: true,
     description: 'The AOC AGON AG274UXP is a 27-inch 4K IPS gaming monitor that achieves a rare combination of UHD resolution and 144Hz refresh rate, delivering crystal-clear detail alongside fluid gameplay. HDR support with wide color gamut coverage and NVIDIA G-Sync Compatible certification make this a genuinely premium gaming experience. The fully ergonomic stand with height, tilt, pivot, and swivel adjustment accommodates every setup, while the built-in USB hub and comprehensive port selection simplify your desktop.',
+    descriptionHe: 'ה-AOC AGON AG274UXP הוא מסך גיימינג בגודל 27 אינץ׳ המשלב רזולוציית 4K עם קצב רענון של 144Hz — שילוב נדיר המעניק פירוט חד לצד משחק זורם. תמיכה ב-HDR עם כיסוי צבעים רחב ותעודת NVIDIA G-Sync Compatible הופכים אותו למסך גיימינג ברמה גבוהה במיוחד. מעמד ארגונומי מלא עם כיוונון גובה, הטיה, פיבוט וסיבוב מתאים לכל סביבת עבודה, ורכזת USB מובנית לצד מגוון חיבורים רחב מפשטים את שולחן העבודה.',
     shortDescription: '27" 4K IPS gaming monitor with 144Hz, HDR, G-Sync Compatible, and full ergonomic stand.',
+    shortDescriptionHe: 'מסך גיימינג בגודל 27 אינץ׳ עם רזולוציית 4K, קצב רענון 144Hz, תמיכת HDR ו-NVIDIA G-Sync Compatible.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=AG274UXP'],
     tags: ['gaming', 'ips', '4k', '144hz', 'hdr', 'gsync', 'agon', 'featured'],
     specs: {
@@ -471,7 +495,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The AOC AGON AG352UCG is a 35-inch curved ultrawide QHD VA gaming monitor featuring NVIDIA G-Sync hardware for a perfectly smooth adaptive sync experience across its wide 21:9 panel. The 1800R curvature of the large VA screen delivers deep immersion in racing, flight simulation, and open-world games, where the extra horizontal width adds genuine situational awareness. With HDR support and a high-contrast VA panel, dark scene detail is rendered with impressive depth and atmosphere.',
+    descriptionHe: 'ה-AOC AGON AG352UCG הוא מסך גיימינג קעור, רחב במיוחד, בגודל 35 אינץ׳ עם רזולוציית QHD ופאנל VA, התומך ב-NVIDIA G-Sync על פני הפאנל הרחב ביחס 21:9. עקמומיות 1800R של המסך הגדול מספקת סחיפה עמוקה במשחקי מרוצים, סימולציית טיסה ועולם פתוח, כאשר הרוחב הנוסף מאפשר לראות יותר משטח המשחק בכל רגע נתון. עם תמיכת HDR ופאנל VA בעל ניגודיות גבוהה, פרטי הסצנות החשוכות מוצגים בעומק ובאווירה מרשימים.',
     shortDescription: '35" curved ultrawide QHD VA gaming monitor with NVIDIA G-Sync hardware and HDR support.',
+    shortDescriptionHe: 'מסך גיימינג קעור בגודל 35 אינץ׳ רחב במיוחד, עם רזולוציית QHD, פאנל VA ותמיכת HDR.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=AG352UCG'],
     tags: ['gaming', 'va', 'ultrawide', 'qhd', 'curved', 'hdr', 'gsync', 'agon'],
     specs: {
@@ -509,7 +535,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The AOC CU34G3S is a 34-inch curved ultrawide QHD VA gaming monitor with a 165Hz refresh rate, blending the immersive benefits of ultrawide with the high refresh rates demanded by competitive gamers. Its 1500R curved VA panel delivers excellent contrast and saturated colors that make games visually striking, while AMD FreeSync Premium support eliminates tearing across the wide horizontal resolution. The ultrawide 21:9 format is a natural fit for simulation, strategy, and open-world genres that benefit from an extended field of view.',
+    descriptionHe: 'ה-AOC CU34G3S הוא מסך גיימינג קעור, רחב במיוחד, בגודל 34 אינץ׳ עם רזולוציית QHD וקצב רענון של 165Hz, המשלב את יתרונות המסך הרחב עם קצב הרענון הגבוה שדורשים גיימרים תחרותיים. פאנל ה-VA הקעור בעקמומיות 1500R מספק ניגודיות מצוינת וצבעים רוויים שמעניקים למשחקים מראה בולט, בעוד תמיכה ב-AMD FreeSync Premium מבטלת קריעות מסך לאורך הרזולוציה הרחבה. יחס התמונה 21:9 מתאים באופן טבעי לז׳אנרים כמו סימולציה, אסטרטגיה ועולם פתוח הנהנים משדה ראייה מורחב.',
     shortDescription: '34" curved ultrawide QHD VA gaming monitor with 165Hz refresh and AMD FreeSync Premium.',
+    shortDescriptionHe: 'מסך גיימינג קעור בגודל 34 אינץ׳ רחב במיוחד, עם רזולוציית QHD וקצב רענון של 165Hz.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=CU34G3S'],
     tags: ['gaming', 'va', 'ultrawide', 'qhd', 'curved', 'freesync'],
     specs: {
@@ -547,7 +575,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The AOC 24B2XDA is a slim, stylish 24-inch Full HD IPS office monitor with a premium aesthetic that complements modern workspaces. Its IPS panel provides accurate colors and wide viewing angles ideal for shared desks and collaborative environments, while the 75Hz refresh rate gives everyday use a noticeably responsive feel. Flicker-Free backlighting and Low Blue Light mode reduce eye fatigue during long office sessions without washing out the display.',
+    descriptionHe: 'ה-AOC 24B2XDA הוא מסך משרדי דק ואלגנטי בגודל 24 אינץ׳ עם רזולוציית Full HD ופאנל IPS, בעל מראה פרימיום המשתלב היטב בסביבות עבודה מודרניות. פאנל ה-IPS מספק צבעים מדויקים וזוויות צפייה רחבות המתאימות לשולחנות משותפים ולסביבות עבודה שיתופיות, וקצב הרענון של 75Hz מעניק תחושת שימוש מגיבה יותר בפעילות היומיומית. תאורה אחורית מסוג Flicker-Free ומצב Low Blue Light מפחיתים עייפות עיניים לאורך ישיבות עבודה ארוכות מבלי לפגוע באיכות התמונה.',
     shortDescription: '24" FHD IPS office monitor with premium slim design, accurate colors, and eye-care features.',
+    shortDescriptionHe: 'מסך משרדי בגודל 24 אינץ׳ עם רזולוציית Full HD, פאנל IPS ועיצוב דק ואלגנטי.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=24B2XDA'],
     tags: ['office', 'ips', 'full-hd', '75hz', 'eye-care'],
     specs: {
@@ -585,7 +615,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The AOC Q32P2CA is a 32-inch QHD IPS office monitor that serves as a single-cable USB-C docking solution for laptop users, delivering 65W power delivery, video signal, and a built-in USB hub through one connection. The expansive QHD resolution on a 32-inch screen offers generous screen real estate for multitasking and document work, while built-in speakers eliminate the need for external audio in compact setups. The height-adjustable stand and comprehensive connectivity make this a premium hub-style workstation monitor.',
+    descriptionHe: 'ה-AOC Q32P2CA הוא מסך משרדי בגודל 32 אינץ׳ עם רזולוציית QHD, המשמש גם כתחנת עגינה מבוססת כבל USB-C יחיד למחשבים ניידים, ומספק אספקת חשמל של 65W, אות וידאו ורכזת USB מובנית דרך חיבור אחד. רזולוציית ה-QHD הנרחבת על מסך בגודל 32 אינץ׳ מעניקה שטח מסך רב לריבוי משימות ולעבודה עם מסמכים, ורמקולים מובנים מייתרים את הצורך בפתרון שמע חיצוני במערכים קומפקטיים. מעמד מתכוונן בגובה וחיבוריות מקיפה הופכים אותו לפתרון נוח ומשולב לעמדת עבודה.',
     shortDescription: '32" QHD IPS office monitor with USB-C 65W, built-in speakers, and full ergonomic stand.',
+    shortDescriptionHe: 'מסך משרדי בגודל 32 אינץ׳ עם רזולוציית QHD, חיבור USB-C ואספקת חשמל של 65W.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=Q32P2CA'],
     tags: ['office', 'ips', 'qhd', '75hz', 'usb-c', 'hub'],
     specs: {
@@ -623,7 +655,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The AOC 22B2H is a compact and budget-friendly 22-inch Full HD IPS office monitor that delivers clear, color-accurate visuals for everyday computing tasks. Its ultra-thin profile and minimal bezel design are ideal for space-limited desks and secondary monitor roles, while IPS technology ensures consistent image quality when viewed from an angle. Flicker-Free and Low Blue Light technology protect your eyes through the working day, making this an ergonomically considerate pick at an entry-level price.',
+    descriptionHe: 'ה-AOC 22B2H הוא מסך משרדי קומפקטי וחסכוני בגודל 22 אינץ׳ עם רזולוציית Full HD ופאנל IPS, המעניק תמונה ברורה ומדויקת בצבעים למשימות מחשוב יומיומיות. הפרופיל הדק במיוחד ועיצוב המסגרות המינימלי מתאימים לשולחנות עם מקום מוגבל ולתפקיד של מסך משני, וטכנולוגיית IPS שומרת על איכות תמונה עקבית גם מזווית. טכנולוגיית Flicker-Free ומצב Low Blue Light מגנות על העיניים לאורך יום העבודה, מה שהופך אותו לאפשרות חסכונית ונוחה מבחינה ארגונומית לשימוש יומיומי.',
     shortDescription: '22" FHD IPS office monitor with ultra-thin profile, accurate colors, and low-blue-light mode.',
+    shortDescriptionHe: 'מסך משרדי קומפקטי בגודל 22 אינץ׳ עם רזולוציית Full HD ופאנל IPS, במחיר משתלם.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=22B2H'],
     tags: ['office', 'ips', 'full-hd', '75hz', 'compact', 'budget'],
     specs: {
@@ -661,7 +695,9 @@ module.exports = [
     isFeatured: true,
     isPublished: true,
     description: 'The AOC AGON AG493UCX2 is a massive 49-inch curved super-ultrawide Dual QHD VA gaming monitor that replaces two 27-inch monitors with a single expansive display surface. Its 165Hz refresh rate and 1ms MPRT response time on a curved VA panel deliver fluid, high-contrast gaming across a panoramic 32:9 field of view, while HDR support adds vibrancy and depth to compatible content. NVIDIA G-Sync Compatible and AMD FreeSync Premium Pro certifications cover both GPU ecosystems, and the built-in KVM switch allows control of two PCs from a single peripherals set.',
+    descriptionHe: 'ה-AOC AGON AG493UCX2 הוא מסך גיימינג ענק, קעור וסופר-רחב, בגודל 49 אינץ׳ עם רזולוציית Dual QHD, המחליף למעשה שני מסכים בגודל 27 אינץ׳ במשטח תצוגה יחיד ונרחב. קצב רענון של 165Hz וזמן תגובה של 1ms MPRT על פאנל VA קעור מספקים גיימינג חלק ובניגודיות גבוהה על פני שדה ראייה פנורמי ביחס 32:9, ותמיכת HDR מוסיפה עומק ותוססות לתוכן נתמך. תעודת NVIDIA G-Sync Compatible ומתג KVM מובנה מאפשרים שליטה בשני מחשבים באמצעות מקלדת ועכבר משותפים.',
     shortDescription: '49" Dual QHD curved VA super-ultrawide gaming monitor with 165Hz, HDR, and KVM switch.',
+    shortDescriptionHe: 'מסך גיימינג ענק וסופר-רחב בגודל 49 אינץ׳ עם רזולוציית Dual QHD, פאנל VA קעור וקצב רענון 165Hz.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=AG493UCX2'],
     tags: ['gaming', 'va', 'ultrawide', 'dual-qhd', 'curved', 'hdr', 'gsync', 'agon', 'featured'],
     specs: {
@@ -699,7 +735,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The AOC AGON AG275QXN is a 27-inch QHD IPS gaming monitor delivering a 170Hz refresh rate alongside NVIDIA G-Sync Compatible certification, making it a well-balanced choice for gamers who want QHD detail with high refresh performance. Its Fast IPS panel hits 1ms GTG response time for sharp motion clarity, and the AGON Pro series stand provides a solid, adjustable base for extended gaming sessions. A clean, minimal aesthetic with subtle AGON branding suits setups that prioritize performance over flashy RGB.',
+    descriptionHe: 'ה-AOC AGON AG275QXN הוא מסך גיימינג בגודל 27 אינץ׳ עם רזולוציית QHD, המספק קצב רענון של 170Hz לצד תעודת NVIDIA G-Sync Compatible, ומהווה בחירה מאוזנת לגיימרים המעוניינים בפירוט QHD יחד עם ביצועי קצב רענון גבוהים. פאנל ה-Fast IPS מגיע לזמן תגובה של 1ms GTG לבהירות תנועה חדה, ומעמד סדרת AGON Pro מספק בסיס יציב ומתכוונן למפגשי גיימינג ממושכים. העיצוב הנקי עם מיתוג AGON עדין משתלב במערכים המעדיפים ביצועים על פני RGB בולט.',
     shortDescription: '27" QHD IPS gaming monitor with 170Hz, NVIDIA G-Sync Compatible, and Fast IPS 1ms GTG.',
+    shortDescriptionHe: 'מסך גיימינג בגודל 27 אינץ׳ עם רזולוציית QHD, קצב רענון 170Hz ותעודת NVIDIA G-Sync Compatible.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=AG275QXN'],
     tags: ['gaming', 'ips', 'qhd', '170hz', 'gsync', 'agon'],
     specs: {
@@ -737,7 +775,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The AOC Q27G3XMN is a 27-inch QHD Mini LED gaming monitor that leverages a large number of local dimming zones to deliver HDR contrast performance previously out of reach for LCD panels at this price point. Its 180Hz refresh rate keeps competitive gameplay smooth while the Mini LED backlight produces deep blacks and brilliant highlights that make HDR content genuinely impactful. AMD FreeSync Premium support and a clean, gamer-focused design make this one of the most forward-looking monitors in AOC\'s lineup.',
+    descriptionHe: 'ה-AOC Q27G3XMN הוא מסך גיימינג בגודל 27 אינץ׳ עם רזולוציית QHD ופאנל Mini LED, המנצל אזורי עמעום מקומיים רבים כדי לספק ניגודיות HDR שבעבר לא הייתה נגישה לפאנלי LCD בטווח המחיר הזה. קצב רענון של 180Hz שומר על משחק תחרותי חלק, בעוד תאורת ה-Mini LED מייצרת שחורים עמוקים והבהרות בולטות שהופכות תוכן HDR למשמעותי באמת. תמיכה ב-AMD FreeSync Premium ועיצוב נקי וממוקד-גיימינג משלימים מסך המשלב רזולוציית QHD, קצב רענון גבוה וניגודיות HDR יוצאת דופן.',
     shortDescription: '27" QHD Mini LED gaming monitor with 180Hz refresh rate, local dimming HDR, and FreeSync Premium.',
+    shortDescriptionHe: 'מסך גיימינג בגודל 27 אינץ׳ עם רזולוציית QHD, פאנל Mini LED, קצב רענון 180Hz ותמיכת HDR.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=Q27G3XMN'],
     tags: ['gaming', 'mini-led', 'qhd', '180hz', 'hdr', 'freesync', 'trending'],
     specs: {
