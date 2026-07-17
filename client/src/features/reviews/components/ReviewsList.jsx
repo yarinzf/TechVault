@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { reviewService } from '../api/review.service';
 import { useAuth } from '../../../hooks/useAuth';
 import { useToast } from '../../../hooks/useToast';
@@ -16,6 +16,7 @@ export default function ReviewsList({ productId, onReviewAction }) {
   const { user, loading: authLoading } = useAuth();
   const { toast } = useToast();
   const t = useTranslation();
+  const location = useLocation();
 
   const [reviews, setReviews]         = useState([]);
   const [meta, setMeta]               = useState(null);
@@ -85,7 +86,7 @@ export default function ReviewsList({ productId, onReviewAction }) {
         <>
           {!user && (
             <div className={s.gateBox}>
-              <Link to="/login">{t('product.review_login')}</Link> {t('product.review_login_prompt')}
+              <Link to="/login" state={{ returnTo: `${location.pathname}${location.search}` }}>{t('product.review_login')}</Link> {t('product.review_login_prompt')}
             </div>
           )}
 

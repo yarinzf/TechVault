@@ -2,7 +2,9 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, ArrowLeft } from 'lucide-react';
 import AuthBackground from './AuthBackground';
+import AuthCloseButton from '../../components/ui/AuthCloseButton/AuthCloseButton';
 import { authService } from '../../features/auth/api/auth.service';
+import { useTranslation } from '../../context/LanguageContext';
 import s from './ForgotPasswordPage.module.css';
 
 function TechVaultLogo() {
@@ -15,6 +17,7 @@ function TechVaultLogo() {
 }
 
 export default function ForgotPasswordPage() {
+  const t = useTranslation();
   const [email,   setEmail]   = useState('');
   const [loading, setLoading] = useState(false);
   const [sent,    setSent]    = useState(false);
@@ -28,7 +31,7 @@ export default function ForgotPasswordPage() {
       await authService.forgotPassword(email);
       setSent(true);
     } catch (err) {
-      setError(err.message || 'אירעה שגיאה. נסה שוב.');
+      setError(err.message || t('auth.forgot_generic_error'));
     } finally {
       setLoading(false);
     }
@@ -43,28 +46,28 @@ export default function ForgotPasswordPage() {
 
       <div className={s.cardWrap}>
         <div className={s.card}>
-          <Link to="/" className={s.logo} aria-label="TechVault - עמוד הבית">
+          <AuthCloseButton />
+
+          <Link to="/" className={s.logo} aria-label={t('auth.logo_home_label')}>
             <TechVaultLogo />
             <span>Tech<span className={s.logoAccent}>Vault</span></span>
           </Link>
 
-          <h1 className={s.title}>שחזור סיסמה</h1>
-          <p className={s.subtitle}>הזן את כתובת האימייל שלך ונשלח לך קישור לאיפוס הסיסמה</p>
+          <h1 className={s.title}>{t('auth.forgot_title')}</h1>
+          <p className={s.subtitle}>{t('auth.forgot_subtitle')}</p>
 
           {sent ? (
             <div className={s.success}>
               <div className={s.successIcon}>✉️</div>
-              <p>
-                אם הכתובת <strong>{email}</strong> רשומה אצלנו,
-                שלחנו אליה קישור לאיפוס הסיסמה.
-              </p>
-              <p className={s.successNote}>בדוק את תיבת הדואר שלך (כולל תיקיית ספאם).</p>
+              <p><strong>{t('auth.forgot_success_title')}</strong></p>
+              <p>{t('auth.forgot_success_message')}</p>
+              <p className={s.successNote}>{t('auth.forgot_success_hint')}</p>
             </div>
           ) : (
             <form className={s.form} onSubmit={submit} noValidate>
               {error && <div className={s.error} role="alert">{error}</div>}
               <div className={s.field}>
-                <label className={s.label} htmlFor="forgot-email">כתובת אימייל</label>
+                <label className={s.label} htmlFor="forgot-email">{t('auth.forgot_email_label')}</label>
                 <input
                   id="forgot-email"
                   className={s.input}
@@ -85,7 +88,7 @@ export default function ForgotPasswordPage() {
                 aria-busy={loading}
               >
                 <Mail size={16} />
-                {loading ? 'שולח...' : 'שלח קישור לאיפוס'}
+                {loading ? t('auth.forgot_sending') : t('auth.forgot_submit_btn')}
               </button>
             </form>
           )}
@@ -93,7 +96,7 @@ export default function ForgotPasswordPage() {
           <div className={s.footer}>
             <Link to="/login" className={s.backLink}>
               <ArrowLeft size={14} />
-              חזרה להתחברות
+              {t('auth.forgot_back_to_login')}
             </Link>
           </div>
         </div>

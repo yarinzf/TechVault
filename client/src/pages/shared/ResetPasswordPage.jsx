@@ -2,7 +2,9 @@ import { useState } from 'react';
 import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { Lock, Eye, EyeOff } from 'lucide-react';
 import AuthBackground from './AuthBackground';
+import AuthCloseButton from '../../components/ui/AuthCloseButton/AuthCloseButton';
 import { authService } from '../../features/auth/api/auth.service';
+import { useTranslation } from '../../context/LanguageContext';
 import s from './ResetPasswordPage.module.css';
 
 function TechVaultLogo() {
@@ -15,13 +17,15 @@ function TechVaultLogo() {
 }
 
 function PageShell({ children }) {
+  const t = useTranslation();
   return (
     <div className={s.page}>
       <div className={s.bgLayer} aria-hidden="true"><AuthBackground /></div>
       <div className={s.overlay} aria-hidden="true" />
       <div className={s.cardWrap}>
         <div className={s.card}>
-          <Link to="/" className={s.logo} aria-label="TechVault - עמוד הבית">
+          <AuthCloseButton />
+          <Link to="/" className={s.logo} aria-label={t('auth.logo_home_label')}>
             <TechVaultLogo />
             <span>Tech<span className={s.logoAccent}>Vault</span></span>
           </Link>
@@ -33,6 +37,7 @@ function PageShell({ children }) {
 }
 
 export default function ResetPasswordPage() {
+  const t = useTranslation();
   const [searchParams] = useSearchParams();
   const navigate       = useNavigate();
   const token          = searchParams.get('token');
@@ -47,12 +52,12 @@ export default function ResetPasswordPage() {
   if (!token) {
     return (
       <PageShell>
-        <h1 className={s.title}>קישור לא תקין</h1>
+        <h1 className={s.title}>{t('auth.reset_invalid_link_title')}</h1>
         <div className={s.error} role="alert">
-          קישור האיפוס חסר או לא תקין. בקש קישור חדש.
+          {t('auth.reset_invalid_link_message')}
         </div>
         <div className={s.footer}>
-          <Link to="/forgot-password" className={s.link}>שלח קישור חדש</Link>
+          <Link to="/forgot-password" className={s.link}>{t('auth.reset_request_new_link')}</Link>
         </div>
       </PageShell>
     );
@@ -63,11 +68,11 @@ export default function ResetPasswordPage() {
     setError('');
 
     if (newPassword.length < 8) {
-      setError('הסיסמה חייבת להכיל לפחות 8 תווים');
+      setError(t('auth.password_min_8'));
       return;
     }
     if (newPassword !== confirmPassword) {
-      setError('הסיסמאות אינן תואמות');
+      setError(t('auth.reset_passwords_mismatch'));
       return;
     }
 
@@ -77,7 +82,7 @@ export default function ResetPasswordPage() {
       setDone(true);
       setTimeout(() => navigate('/login', { replace: true }), 3000);
     } catch (err) {
-      setError(err.message || 'הקישור אינו תקין או שפג תוקפו. בקש קישור חדש.');
+      setError(err.message || t('auth.reset_token_invalid_error'));
     } finally {
       setLoading(false);
     }
@@ -85,27 +90,27 @@ export default function ResetPasswordPage() {
 
   return (
     <PageShell>
-      <h1 className={s.title}>איפוס סיסמה</h1>
-      <p className={s.subtitle}>הגדר סיסמה חדשה לחשבונך</p>
+      <h1 className={s.title}>{t('auth.reset_title')}</h1>
+      <p className={s.subtitle}>{t('auth.reset_subtitle')}</p>
 
       {done ? (
         <div className={s.success}>
           <div className={s.successIcon}>✅</div>
-          <p>הסיסמה אופסה בהצלחה!</p>
-          <p className={s.successNote}>מועבר לדף ההתחברות...</p>
+          <p>{t('auth.reset_success_message')}</p>
+          <p className={s.successNote}>{t('auth.reset_success_redirecting')}</p>
         </div>
       ) : (
         <form className={s.form} onSubmit={submit} noValidate>
           {error && <div className={s.error} role="alert">{error}</div>}
 
           <div className={s.field}>
-            <label className={s.label} htmlFor="reset-password">סיסמה חדשה</label>
+            <label className={s.label} htmlFor="reset-password">{t('auth.reset_new_password_label')}</label>
             <div className={s.inputWrap}>
               <input
                 id="reset-password"
                 className={s.input}
                 type={showPassword ? 'text' : 'password'}
-                placeholder="לפחות 8 תווים"
+                placeholder={t('auth.password_ph')}
                 value={newPassword}
                 onChange={e => setNewPassword(e.target.value)}
                 required
@@ -118,7 +123,7 @@ export default function ResetPasswordPage() {
                 type="button"
                 className={s.eyeBtn}
                 onClick={() => setShowPassword(v => !v)}
-                aria-label={showPassword ? 'הסתר סיסמה' : 'הצג סיסמה'}
+                aria-label={showPassword ? t('auth.hide_password_label') : t('auth.show_password_label')}
               >
                 {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
@@ -126,12 +131,12 @@ export default function ResetPasswordPage() {
           </div>
 
           <div className={s.field}>
-            <label className={s.label} htmlFor="reset-confirm">אימות סיסמה</label>
+            <label className={s.label} htmlFor="reset-confirm">{t('auth.reset_confirm_password_label')}</label>
             <input
               id="reset-confirm"
               className={s.input}
               type={showPassword ? 'text' : 'password'}
-              placeholder="חזור על הסיסמה"
+              placeholder={t('auth.reset_confirm_password_ph')}
               value={confirmPassword}
               onChange={e => setConfirmPassword(e.target.value)}
               required
@@ -147,13 +152,13 @@ export default function ResetPasswordPage() {
             aria-busy={loading}
           >
             <Lock size={16} />
-            {loading ? 'מאפס...' : 'אפס סיסמה'}
+            {loading ? t('auth.reset_submitting') : t('auth.reset_submit_btn')}
           </button>
         </form>
       )}
 
       <div className={s.footer}>
-        <Link to="/login" className={s.link}>חזרה להתחברות</Link>
+        <Link to="/login" className={s.link}>{t('auth.forgot_back_to_login')}</Link>
       </div>
     </PageShell>
   );

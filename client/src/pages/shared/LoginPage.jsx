@@ -4,6 +4,7 @@ import { LogIn, Smartphone } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useTranslation } from '../../context/LanguageContext';
 import AuthBackground from './AuthBackground';
+import AuthCloseButton from '../../components/ui/AuthCloseButton/AuthCloseButton';
 import s from './LoginPage.module.css';
 
 const COUNTRIES = [
@@ -186,8 +187,8 @@ export default function LoginPage() {
   // Submit button label
   let submitLabel = t('auth.login_btn');
   if (loading)              submitLabel = t('auth.logging_in');
-  else if (isSMS && !smsSent) submitLabel = 'שלח קוד אימות';
-  else if (isSMS && smsSent)  submitLabel = 'אמת קוד';
+  else if (isSMS && !smsSent) submitLabel = t('auth.sms_send_code_btn');
+  else if (isSMS && smsSent)  submitLabel = t('auth.sms_verify_btn');
 
   return (
     <div className={s.page}>
@@ -200,8 +201,10 @@ export default function LoginPage() {
       <div className={s.cardWrap}>
       <div className={s.card}>
 
+        <AuthCloseButton />
+
         {/* Logo */}
-        <Link to="/" className={s.logo} aria-label="TechVault - עמוד הבית">
+        <Link to="/" className={s.logo} aria-label={t('auth.logo_home_label')}>
           <TechVaultLogo />
           <span>Tech<span className={s.logoAccent}>Vault</span></span>
         </Link>
@@ -253,7 +256,7 @@ export default function LoginPage() {
                     autoComplete="current-password"
                     dir="ltr"
                   />
-                  <button type="button" className={s.forgot} onClick={() => navigate('/forgot-password')}>שכחתי סיסמה</button>
+                  <button type="button" className={s.forgot} onClick={() => navigate('/forgot-password')}>{t('auth.forgot_password_link')}</button>
                 </div>
               </>
             )}
@@ -261,14 +264,14 @@ export default function LoginPage() {
             {/* ── SMS mode — step 1: phone number ── */}
             {isSMS && !smsSent && (
               <div className={s.field}>
-                <label className={s.label} htmlFor="login-phone">מספר טלפון</label>
+                <label className={s.label} htmlFor="login-phone">{t('auth.phone_label')}</label>
                 <div className={s.phoneRow}>
                   <select
                     className={`${s.input} ${s.countrySelect}`}
                     value={form.country}
                     onChange={handle('country')}
                     dir="ltr"
-                    aria-label="קידומת מדינה"
+                    aria-label={t('auth.country_code_label')}
                   >
                     {COUNTRIES.map(c => (
                       <option key={c.code} value={c.code}>{c.label}</option>
@@ -292,9 +295,9 @@ export default function LoginPage() {
             {/* ── SMS mode — step 2: OTP code ── */}
             {isSMS && smsSent && (
               <div className={s.field}>
-                <label className={s.label} htmlFor="login-otp">קוד אימות</label>
+                <label className={s.label} htmlFor="login-otp">{t('auth.otp_label')}</label>
                 <p className={s.smsHint}>
-                  קוד נשלח ל-{form.country}{form.phone}
+                  {t('auth.otp_sent_to')}{form.country}{form.phone}
                   {' · '}
                   <button
                     type="button"
@@ -306,13 +309,13 @@ export default function LoginPage() {
                         const fullPhone = `${form.country}${form.phone.replace(/^0/, '')}`;
                         await smsStart(fullPhone);
                       } catch (err) {
-                        setError(err.message || 'שליחה מחדש נכשלה');
+                        setError(err.message || t('auth.otp_resend_failed'));
                       } finally {
                         setLoading(false);
                       }
                     }}
                   >
-                    שלח מחדש
+                    {t('auth.otp_resend_btn')}
                   </button>
                 </p>
                 <input
@@ -356,7 +359,7 @@ export default function LoginPage() {
               type="button"
               className={s.oauthBtn}
               disabled={loading}
-              aria-label="כניסה עם Google"
+              aria-label={t('auth.google_signin_label')}
               tabIndex={-1}
             >
               <GoogleIcon /> Google
@@ -373,7 +376,7 @@ export default function LoginPage() {
             className={`${s.oauthBtn} ${!import.meta.env.VITE_APPLE_CLIENT_ID ? s.oauthBtnDisabled : ''}`}
             onClick={handleApple}
             disabled={loading || !import.meta.env.VITE_APPLE_CLIENT_ID}
-            aria-label="כניסה עם Apple"
+            aria-label={t('auth.apple_signin_label')}
             title={!import.meta.env.VITE_APPLE_CLIENT_ID ? t('auth.apple_not_configured') : undefined}
           >
             <AppleIcon /> Apple
@@ -383,7 +386,7 @@ export default function LoginPage() {
             className={`${s.oauthBtn} ${isSMS ? s.oauthBtnActive : ''}`}
             onClick={toggleSMS}
             disabled={loading}
-            aria-label="כניסה עם SMS"
+            aria-label={t('auth.sms_signin_label')}
             aria-pressed={isSMS}
           >
             <Smartphone size={16} /> SMS
@@ -392,7 +395,7 @@ export default function LoginPage() {
 
         {/* Terms */}
         <div className={s.terms}>
-          בכניסה אתם מסכימים ל<Link to="/terms">תנאי השימוש</Link> ו<Link to="/privacy">מדיניות הפרטיות</Link>
+          {t('auth.terms_prefix')}<Link to="/terms">{t('auth.terms_link')}</Link>{t('auth.terms_middle')}<Link to="/privacy">{t('auth.privacy_link')}</Link>{t('auth.terms_suffix')}
         </div>
 
         {/* Footer */}
@@ -403,10 +406,10 @@ export default function LoginPage() {
 
         {/* Dev-only credentials hint */}
         <div className={s.devHint}>
-          Demo: <strong>alice@example.com</strong> / <strong>User123!</strong><br />
-          Admin: <strong>admin@techvault.dev</strong> / <strong>Admin123!</strong><br />
-          Warehouse: <strong>warehouse@techvault.dev</strong> / <strong>Admin123!</strong><br />
-          Super Admin: <strong>superadmin@techvault.dev</strong> / <strong>Admin123!</strong>
+          {t('auth.dev_demo')}: <strong>alice@example.com</strong> / <strong>User123!</strong><br />
+          {t('auth.dev_admin')}: <strong>admin@techvault.dev</strong> / <strong>Admin123!</strong><br />
+          {t('auth.dev_warehouse')}: <strong>warehouse@techvault.dev</strong> / <strong>Admin123!</strong><br />
+          {t('auth.dev_super_admin')}: <strong>superadmin@techvault.dev</strong> / <strong>Admin123!</strong>
         </div>
 
       </div>

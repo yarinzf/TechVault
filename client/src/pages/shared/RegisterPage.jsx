@@ -4,6 +4,7 @@ import { UserPlus } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useTranslation } from '../../context/LanguageContext';
 import AuthBackground from './AuthBackground';
+import AuthCloseButton from '../../components/ui/AuthCloseButton/AuthCloseButton';
 import s from './LoginPage.module.css';
 
 const COUNTRIES = [
@@ -148,8 +149,10 @@ export default function RegisterPage() {
       <div className={s.cardWrap}>
       <div className={s.card}>
 
+        <AuthCloseButton />
+
         {/* Logo */}
-        <Link to="/" className={s.logo} aria-label="TechVault - עמוד הבית">
+        <Link to="/" className={s.logo} aria-label={t('auth.logo_home_label')}>
           <TechVaultLogo />
           <span>Tech<span className={s.logoAccent}>Vault</span></span>
         </Link>
@@ -173,7 +176,7 @@ export default function RegisterPage() {
             <input
               id="reg-name"
               className={s.input}
-              placeholder="ישראל ישראלי"
+              placeholder={t('auth.name_ph')}
               value={form.name}
               onChange={handle('name')}
               required
@@ -197,14 +200,14 @@ export default function RegisterPage() {
           </div>
 
           <div className={s.field}>
-            <label className={s.label} htmlFor="reg-phone">מספר טלפון</label>
+            <label className={s.label} htmlFor="reg-phone">{t('auth.phone_label')}</label>
             <div className={s.phoneRow}>
               <select
                 className={`${s.input} ${s.countrySelect}`}
                 value={form.country}
                 onChange={handle('country')}
                 dir="ltr"
-                aria-label="קידומת מדינה"
+                aria-label={t('auth.country_code_label')}
               >
                 {COUNTRIES.map(c => (
                   <option key={c.code} value={c.code}>{c.label}</option>
@@ -259,7 +262,7 @@ export default function RegisterPage() {
               type="button"
               className={s.oauthBtn}
               disabled={loading}
-              aria-label="הרשמה עם Google"
+              aria-label={t('auth.google_signup_label')}
               tabIndex={-1}
             >
               <GoogleIcon /> Google
@@ -276,7 +279,7 @@ export default function RegisterPage() {
             className={`${s.oauthBtn} ${!import.meta.env.VITE_APPLE_CLIENT_ID ? s.oauthBtnDisabled : ''}`}
             onClick={handleApple}
             disabled={loading || !import.meta.env.VITE_APPLE_CLIENT_ID}
-            aria-label="הרשמה עם Apple"
+            aria-label={t('auth.apple_signup_label')}
             title={!import.meta.env.VITE_APPLE_CLIENT_ID ? t('auth.apple_not_configured') : undefined}
           >
             <AppleIcon /> Apple
@@ -285,7 +288,7 @@ export default function RegisterPage() {
 
         {/* Terms */}
         <div className={s.terms}>
-          בהרשמה אתם מסכימים ל<Link to="/terms">תנאי השימוש</Link> ו<Link to="/privacy">מדיניות הפרטיות</Link>
+          {t('auth.terms_prefix')}<Link to="/terms">{t('auth.terms_link')}</Link>{t('auth.terms_middle')}<Link to="/privacy">{t('auth.privacy_link')}</Link>{t('auth.terms_suffix')}
         </div>
 
         {/* Footer */}

@@ -290,7 +290,7 @@ export default function CustomerNavbar({ onOpenCart = () => {} }) {
               )}
             </div>
           ) : (
-            <Link to="/login" className={s.navUserBtn}>
+            <Link to="/login" state={{ returnTo: `${location.pathname}${location.search}` }} className={s.navUserBtn}>
               <User size={15} />
               {t('nav.login')}
             </Link>
@@ -347,7 +347,7 @@ export default function CustomerNavbar({ onOpenCart = () => {} }) {
               </button>
             </>
           ) : (
-            <Link to="/login" className={`${s.mobilePanelLink} ${s.mobileLoginLink}`} onClick={() => setMobileOpen(false)}>
+            <Link to="/login" state={{ returnTo: `${location.pathname}${location.search}` }} className={`${s.mobilePanelLink} ${s.mobileLoginLink}`} onClick={() => setMobileOpen(false)}>
               <User size={16} />{t('nav.login')}
             </Link>
           )}

@@ -1,22 +1,27 @@
 import { Monitor } from 'lucide-react';
+import { useTranslation } from '../../context/LanguageContext';
 import s from './AuthBackground.module.css';
 
 /* Static replica of the TechVault storefront — rendered behind the blur overlay.
-   No live data, no hooks, no interactions. Pure visual structure. */
+   No live data, no interactions, purely decorative and aria-hidden from the
+   parent auth pages. Visible text is still localized (see useTranslation calls
+   below) since it remains on-screen in both languages. */
 
 function StaticPromoBar() {
+  const t = useTranslation();
   return (
     <div className={s.promo}>
-      <span>🚀 משלוח חינם בקנייה מעל ₪299</span>
+      <span>🚀 {t('authbg.promo_shipping')}</span>
       <span className={s.promoDivider}>|</span>
-      <span>⚡ מבצעי שבוע: עד 40% הנחה</span>
+      <span>⚡ {t('authbg.promo_deals')}</span>
       <span className={s.promoDivider}>|</span>
-      <span>🆕 מוצרים חדשים הגיעו!</span>
+      <span>🆕 {t('authbg.promo_new')}</span>
     </div>
   );
 }
 
 function StaticNavbar() {
+  const t = useTranslation();
   return (
     <div className={s.nav}>
       <div className={s.navInner}>
@@ -33,7 +38,7 @@ function StaticNavbar() {
         <div className={s.navSearch}>
           <input
             className={s.navSearchInput}
-            placeholder="חפש מוצרים, מותגים, קטגוריות..."
+            placeholder={t('authbg.search_placeholder')}
             readOnly
             tabIndex={-1}
           />
@@ -52,13 +57,13 @@ function StaticNavbar() {
   );
 }
 
-const CATS = [
-  'כל המוצרים', 'מחשבים ניידים', 'סמארטפונים', 'טאבלטים',
-  'גיימינג', 'מסכים', 'מקלדות', 'עכברים', 'אוזניות',
-  'רמקולים', 'אחסון', 'רכיבים', 'רשת', 'אביזרים',
-];
-
 function StaticCategoryBar() {
+  const t = useTranslation();
+  const CATS = [
+    t('nav.all_products'), t('cat.laptops'), t('cat.smartphones'), t('cat.tablets'),
+    t('cat.gaming'), t('cat.monitors'), t('cat.keyboards'), t('cat.mice'), t('cat.headphones'),
+    t('cat.speakers'), t('cat.storage'), t('cat.components'), t('cat.networking'), t('cat.accessories'),
+  ];
   return (
     <div className={s.catBar}>
       <div className={s.catInner}>
@@ -72,6 +77,13 @@ function StaticCategoryBar() {
 }
 
 function StaticHero() {
+  const t = useTranslation();
+  const stats = [
+    ['12,000+', t('authbg.stat_products')],
+    ['200+', t('authbg.stat_brands')],
+    ['4.9★', t('authbg.stat_rating')],
+    ['30', t('authbg.stat_day_returns')],
+  ];
   return (
     <section className={s.hero}>
       <div className={s.heroBg} aria-hidden="true" />
@@ -86,18 +98,18 @@ function StaticHero() {
             {' ASUS ROG'}
           </div>
           <h1 className={s.heroTitle}>Swift PG27AQDM 27" OLED 240Hz</h1>
-          <p className={s.heroDesc}>מסך OLED עם זמן תגובה 0.03ms וכיסוי 99% DCI-P3</p>
+          <p className={s.heroDesc}>{t('authbg.hero_desc')}</p>
           <div className={s.priceRow}>
             <span className={s.heroPrice}>₪3,299</span>
             <span className={s.heroOldPrice}>₪4,199</span>
             <span className={s.discBadge}>-22%</span>
           </div>
           <div className={s.heroActions}>
-            <div className={s.btnPrimary}>לצפייה בקטלוג</div>
-            <div className={s.btnSecondary}>מבצעים</div>
+            <div className={s.btnPrimary}>{t('authbg.browse_catalog_btn')}</div>
+            <div className={s.btnSecondary}>{t('authbg.deals_btn')}</div>
           </div>
           <div className={s.heroStats}>
-            {[['12,000+','מוצרים'],['200+','מותגים'],['4.9★','דירוג'],['30 יום','החזרה']].map(([n, l]) => (
+            {stats.map(([n, l]) => (
               <div key={l} className={s.stat}>
                 <div className={s.statNum}>{n}</div>
                 <div className={s.statLabel}>{l}</div>
@@ -116,9 +128,9 @@ function StaticHero() {
             <div className={s.pName}>Swift PG27AQDM 27" OLED 240Hz</div>
             <div className={s.pPrice}>₪3,299</div>
             <div className={s.pOldPrice}>₪4,199</div>
-            <div className={s.pAddBtn}>🛒 הוסף לעגלה</div>
-            <div className={s.floatBadge1}><span>⚡</span><span>מהיר</span></div>
-            <div className={s.floatBadge2}><span>🏆</span><span>#1 במכירות</span></div>
+            <div className={s.pAddBtn}>🛒 {t('authbg.add_to_cart_btn')}</div>
+            <div className={s.floatBadge1}><span>⚡</span><span>{t('authbg.badge_fast')}</span></div>
+            <div className={s.floatBadge2}><span>🏆</span><span>{t('authbg.badge_bestseller')}</span></div>
           </div>
         </div>
 
@@ -151,6 +163,7 @@ function SkeletonSection({ title, badge }) {
 }
 
 export default function AuthBackground() {
+  const t = useTranslation();
   return (
     <div className={s.root}>
       <StaticPromoBar />
@@ -158,8 +171,8 @@ export default function AuthBackground() {
       <StaticCategoryBar />
       <StaticHero />
       <div className={s.main}>
-        <SkeletonSection title="מובילי המכירות" badge="HOT 🔥" />
-        <SkeletonSection title="מוצרים מומלצים" badge="★ פיצ'רד" />
+        <SkeletonSection title={t('authbg.section_bestsellers')} badge="HOT 🔥" />
+        <SkeletonSection title={t('authbg.section_recommended')} badge={`★ ${t('authbg.badge_featured')}`} />
       </div>
     </div>
   );

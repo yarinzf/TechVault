@@ -1,0 +1,31 @@
+/* Close affordance for the auth pages' card. Positioned with logical
+   properties so it sits top-left in RTL and top-right in LTR automatically. */
+.closeBtn {
+  position: absolute;
+  top: 16px;
+  inset-inline-end: 16px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--sv-muted);
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  z-index: 3;
+}
+
+.closeBtn:hover {
+  background: var(--sv-surface);
+  border-color: rgba(255, 255, 255, 0.08);
+  color: var(--sv-text);
+}
+
+.closeBtn:focus-visible {
+  outline: none;
+  border-color: var(--sv-blue);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
