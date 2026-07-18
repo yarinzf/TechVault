@@ -16,7 +16,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The ViewSonic VA2419-SMH is a 24-inch Full HD IPS monitor designed for productive office work. Its frameless design and SuperClear IPS panel deliver accurate colors from wide viewing angles, while built-in speakers and HDMI connectivity make it an all-in-one desktop solution at an exceptional value.',
+    descriptionHe: 'מסך ViewSonic VA2419-SMH הוא מסך משרדי בגודל 24 אינץ׳ ברזולוציית Full HD, עם עיצוב חסר מסגרת ופאנל IPS מסוג SuperClear המספק צבעים מדויקים מזוויות צפייה רחבות. רמקולים מובנים וחיבור HDMI כלולים במסך.',
     shortDescription: 'Slim 24" FHD IPS office monitor with built-in speakers.',
+    shortDescriptionHe: 'מסך משרדי דק 24 אינץ׳ Full HD IPS עם רמקולים מובנים.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=VA2419-SMH'],
     tags: ['office', 'ips', 'full-hd', 'frameless', 'speakers'],
     specs: {
@@ -55,7 +57,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The ViewSonic VA2715-MH delivers a spacious 27-inch Full HD viewing experience with an IPS panel for vivid, consistent colors across a wide 178-degree viewing angle. Built-in dual speakers and dual HDMI inputs make it a versatile and affordable choice for everyday office tasks and multimedia consumption.',
+    descriptionHe: 'מסך ViewSonic VA2715-MH הוא מסך משרדי בגודל 27 אינץ׳ ברזולוציית Full HD, עם פאנל IPS לצבעים עקביים בזווית צפייה של 178 מעלות. רמקולים כפולים מובנים ושני חיבורי HDMI כלולים במסך, המתאים למשימות משרדיות ולמולטימדיה.',
     shortDescription: 'Versatile 27" FHD IPS monitor with built-in speakers.',
+    shortDescriptionHe: 'מסך משרדי 27 אינץ׳ Full HD IPS עם רמקולים מובנים.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=VA2715-MH'],
     tags: ['office', 'ips', 'full-hd', 'speakers', '27-inch'],
     specs: {
@@ -94,7 +98,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The ViewSonic VX2718-PC-MHD is a 27-inch curved gaming monitor with a 1500R VA panel that envelops your field of view for an immersive gaming experience. Running at a blazing 165Hz refresh rate with AMD FreeSync Premium support, it eliminates screen tearing and stuttering for fluid, responsive gameplay.',
+    descriptionHe: 'מסך הגיימינג המעוקל ViewSonic VX2718-PC-MHD הוא מסך VA בגודל 27 אינץ׳ עם רדיוס עקמומיות 1500R. קצב רענון מהיר של 165Hz יחד עם תמיכת AMD FreeSync Premium מסייעים לצמצם קריעות מסך ולשמור על תנועה יציבה.',
     shortDescription: 'Immersive 27" curved VA gaming monitor at 165Hz.',
+    shortDescriptionHe: 'מסך גיימינג מעוקל 27 אינץ׳ VA עם 165Hz.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=VX2718-PC-MHD'],
     tags: ['gaming', 'va', 'curved', 'full-hd', '165hz', 'freesync'],
     specs: {
@@ -133,7 +139,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The ViewSonic VX2758A-2K-PRO combines a sharp QHD resolution with a 165Hz refresh rate on a 27-inch IPS panel, offering the ideal balance between visual clarity and gaming performance. AMD FreeSync Premium technology ensures tear-free gameplay, while the flat IPS panel provides accurate colors for both gaming and content creation.',
+    descriptionHe: 'מסך הגיימינג ViewSonic VX2758A-2K-PRO משלב רזולוציית QHD עם קצב רענון של 165Hz בפאנל IPS בגודל 27 אינץ׳. תמיכת AMD FreeSync Premium מסייעת לשמור על תנועה יציבה, והפאנל השטוח מספק צבעים מדויקים למשחקים וליצירת תוכן.',
     shortDescription: 'Sharp 27" QHD IPS gaming monitor at 165Hz.',
+    shortDescriptionHe: 'מסך גיימינג 27 אינץ׳ QHD IPS עם 165Hz, מתאים גם ליצירת תוכן.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=VX2758A-2K-PRO'],
     tags: ['gaming', 'ips', 'qhd', '165hz', 'freesync', '27-inch'],
     specs: {
@@ -172,7 +180,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The ViewSonic VX3268-PC-MHD brings an expansive 32-inch curved VA panel to your gaming setup, wrapping your vision in a 1500R curve for deep immersion. The 165Hz refresh rate and AMD FreeSync Premium sync eliminate tearing during fast-paced action, while the Full HD resolution keeps frame rates soaring.',
+    descriptionHe: 'מסך הגיימינג ViewSonic VX3268-PC-MHD הוא מסך VA מעוקל בגודל 32 אינץ׳ ברדיוס עקמומיות 1500R. קצב רענון של 165Hz ותמיכת AMD FreeSync Premium מסייעים לשמור על תנועה יציבה במהלך פעולה מהירה, ברזולוציית Full HD.',
     shortDescription: 'Large 32" curved VA gaming monitor with 165Hz refresh.',
+    shortDescriptionHe: 'מסך גיימינג מעוקל 32 אינץ׳ VA עם 165Hz.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=VX3268-PC-MHD'],
     tags: ['gaming', 'va', 'curved', 'full-hd', '165hz', '32-inch'],
     specs: {
@@ -211,7 +221,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The ViewSonic VX3276-4K-MHD is a 32-inch 4K UHD IPS monitor that delivers stunning detail and lifelike colors for office professionals and multimedia enthusiasts alike. HDR support enhances contrast and brightness, while HDMI 2.0 and DisplayPort 1.4 inputs ensure compatibility with modern devices.',
+    descriptionHe: 'מסך ViewSonic VX3276-4K-MHD הוא מסך משרדי בגודל 32 אינץ׳ ברזולוציית 4K UHD, המתאים לאנשי מקצוע ולשימוש מולטימדיה. תמיכת HDR משפרת את הניגודיות והבהירות, וחיבורי HDMI 2.0 ו-DisplayPort 1.4 תומכים במכשירים מודרניים.',
     shortDescription: 'Stunning 32" 4K UHD IPS monitor with HDR support.',
+    shortDescriptionHe: 'מסך משרדי 32 אינץ׳ 4K UHD IPS עם HDR.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=VX3276-4K-MHD'],
     tags: ['office', 'ips', '4k', 'hdr', '32-inch'],
     specs: {
@@ -250,7 +262,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The ViewSonic VP2776 is a 27-inch QHD professional monitor built for color-critical workflows. Factory-calibrated to Delta E less than 2 accuracy with 100% sRGB and Rec. 709 coverage, it ensures consistent, true-to-life color reproduction. An ergonomic stand with full height, tilt, swivel, and pivot adjustments supports all-day comfortable use.',
+    descriptionHe: 'מסך ViewSonic VP2776 הוא מסך מקצועי בגודל 27 אינץ׳ ברזולוציית QHD, המיועד לעבודות הדורשות דיוק צבעים. המסך מכויל מהמפעל לעבודת צבע עקבית, ומעמד ארגונומי עם התאמת גובה, הטיה, סיבוב וציר מלא תומך בישיבה נוחה לאורך היום.',
     shortDescription: 'Factory-calibrated 27" QHD IPS monitor for professionals.',
+    shortDescriptionHe: 'מסך מקצועי 27 אינץ׳ QHD IPS מכויל מהמפעל.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=VP2776'],
     tags: ['professional', 'ips', 'qhd', 'color-accurate', 'ergonomic'],
     specs: {
@@ -289,7 +303,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The ViewSonic VP3268a-4K is a 32-inch 4K UHD professional display engineered for photographers, video editors, and graphic designers demanding the highest color accuracy. With factory calibration to Delta E less than 2, 100% sRGB, 100% Rec. 709, and HDR support, every shade renders with exceptional fidelity. The ergonomic stand and USB hub add practical convenience to the studio workflow.',
+    descriptionHe: 'מסך ViewSonic VP3268a-4K הוא מסך מקצועי בגודל 32 אינץ׳ ברזולוציית 4K UHD, המיועד לצלמים, עורכי וידאו ומעצבים גרפיים. הכיול מהמפעל מיועד לשחזור צבעים עקבי, ותמיכת HDR זמינה בפאנל. המעמד הארגונומי ורכזת ה-USB תורמים לנוחות בזרימת העבודה בסטודיו.',
     shortDescription: 'Precision 32" 4K IPS professional monitor with HDR.',
+    shortDescriptionHe: 'מסך מקצועי 32 אינץ׳ 4K IPS מכויל מהמפעל, עם HDR.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=VP3268a-4K'],
     tags: ['professional', 'ips', '4k', 'hdr', 'color-accurate', '32-inch'],
     specs: {
@@ -328,7 +344,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The ViewSonic VX3418-2KPC is a 34-inch ultrawide curved gaming monitor featuring a 21:9 aspect ratio and 1500R VA panel that draws you deep into every scene. With UltraWide QHD resolution, a 144Hz refresh rate, and AMD FreeSync Premium, it delivers a sweeping, tear-free experience perfect for open-world games and productivity multitasking.',
+    descriptionHe: 'מסך הגיימינג ViewSonic VX3418-2KPC הוא מסך מעוקל רחב במיוחד בגודל 34 אינץ׳ ביחס תמונה 21:9 ופאנל VA בעקמומיות 1500R. רזולוציית UltraWide QHD, קצב רענון של 144Hz ותמיכת AMD FreeSync Premium מסייעים לשמור על תנועה יציבה, ומתאימים למשחקי עולם פתוח ולריבוי משימות.',
     shortDescription: 'Sweeping 34" ultrawide curved QHD gaming monitor at 144Hz.',
+    shortDescriptionHe: 'מסך גיימינג מעוקל 34 אינץ׳ Ultrawide QHD VA עם 144Hz.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=VX3418-2KPC'],
     tags: ['gaming', 'va', 'ultrawide', 'curved', 'qhd', '144hz', 'freesync'],
     specs: {
@@ -367,7 +385,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The ViewSonic XG2431 is a 24-inch esports gaming monitor built for competitive players who demand peak responsiveness. Running at 240Hz with a 1ms response time and NVIDIA G-Sync Compatible certification, it keeps up with the fastest gameplay. The IPS panel maintains accurate colors so you never miss a target hiding in shadows.',
+    descriptionHe: 'מסך ViewSonic XG2431 הוא מסך גיימינג בגודל 24 אינץ׳ ברזולוציית Full HD. קצב רענון של 240Hz וזמן תגובה של 1ms, לצד הסמכת NVIDIA G-Sync Compatible, תומכים בתנועה חדה ומגיבה. פאנל ה-IPS שומר על צבעים מדויקים.',
     shortDescription: 'Ultra-fast 24" 240Hz IPS monitor for competitive gaming.',
+    shortDescriptionHe: 'מסך גיימינג 24 אינץ׳ 240Hz IPS.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=XG2431'],
     tags: ['gaming', 'ips', 'full-hd', '240hz', 'esports', 'g-sync'],
     specs: {
@@ -406,7 +426,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The ViewSonic XG2705-2K pairs a crisp 27-inch QHD IPS panel with a 144Hz refresh rate to give gamers the winning combination of sharp visuals and smooth motion. NVIDIA G-Sync Compatible support ensures a tear-free experience, while the slim bezel design keeps the focus on the game.',
+    descriptionHe: 'מסך הגיימינג ViewSonic XG2705-2K משלב פאנל IPS בגודל 27 אינץ׳ ברזולוציית QHD עם קצב רענון של 144Hz. תמיכת NVIDIA G-Sync Compatible מסייעת לשמור על תנועה יציבה, במסגרת דקה.',
     shortDescription: 'Crisp 27" QHD IPS gaming monitor at 144Hz.',
+    shortDescriptionHe: 'מסך גיימינג 27 אינץ׳ QHD IPS עם 144Hz ותמיכת G-Sync.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=XG2705-2K'],
     tags: ['gaming', 'ips', 'qhd', '144hz', 'g-sync'],
     specs: {
@@ -445,7 +467,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The ViewSonic XG2706-2K is an updated 27-inch QHD IPS gaming monitor pushing the refresh rate to 165Hz for even smoother gameplay. NVIDIA G-Sync Compatible certification, a 1ms response time, and a sleek slim-bezel chassis make it an excellent all-rounder for enthusiast gamers seeking QHD sharpness without compromise.',
+    descriptionHe: 'מסך הגיימינג ViewSonic XG2706-2K הוא גרסה משודרגת של מסך הגיימינג בגודל 27 אינץ׳ ברזולוציית QHD, עם קצב רענון מוגבר של 165Hz. הסמכת NVIDIA G-Sync Compatible, זמן תגובה של 1ms ועיצוב דק ואלגנטי מתאימים לגיימרים המחפשים חדות QHD.',
     shortDescription: 'Smooth 27" QHD IPS gaming monitor at 165Hz.',
+    shortDescriptionHe: 'מסך גיימינג 27 אינץ׳ QHD IPS עם 165Hz ותמיכת G-Sync.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=XG2706-2K'],
     tags: ['gaming', 'ips', 'qhd', '165hz', 'g-sync'],
     specs: {
@@ -484,7 +508,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The ViewSonic VX2780-4K-HDU is a 27-inch 4K UHD IPS monitor purpose-built for the modern office, featuring USB-C connectivity for single-cable docking with compatible laptops. The ergonomic height-adjustable stand and accurate IPS panel combine to create a productive, comfortable workstation that handles everything from spreadsheets to video calls in crystal-clear 4K.',
+    descriptionHe: 'מסך ViewSonic VX2780-4K-HDU הוא מסך משרדי בגודל 27 אינץ׳ ברזולוציית 4K UHD, המצויד בחיבור USB-C לחיבור בכבל אחד עם מחשבים ניידים תואמים. המעמד הארגונומי המתכוונן בגובה ופאנל ה-IPS יוצרים עמדת עבודה נוחה למגוון משימות משרדיות.',
     shortDescription: '27" 4K IPS office monitor with USB-C and height adjust.',
+    shortDescriptionHe: 'מסך משרדי 27 אינץ׳ 4K IPS עם USB-C ומעמד מתכוונן בגובה.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=VX2780-4K-HDU'],
     tags: ['office', 'ips', '4k', 'usb-c', 'ergonomic'],
     specs: {
@@ -523,7 +549,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The ViewSonic VP2786-4K is a premium 27-inch 4K professional monitor featuring factory calibration with a report included, covering 100% sRGB, 100% Rec. 709, and 95% DCI-P3 color gamuts. Built-in colorimeter support via Colorbration+ software ensures the panel stays calibrated over time, keeping creative work accurate from concept to delivery.',
+    descriptionHe: 'מסך ViewSonic VP2786-4K הוא מסך מקצועי בגודל 27 אינץ׳ ברזולוציית 4K, עם כיול מפעל מלווה בדוח כיסוי צבעים מפורט. תמיכה בתוכנת Colorbration+ עם קולורימטר מובנה שומרת על דיוק הכיול לאורך זמן, לטובת עבודה יצירתית עקבית.',
     shortDescription: 'Premium factory-calibrated 27" 4K IPS professional display.',
+    shortDescriptionHe: 'מסך מקצועי 27 אינץ׳ 4K IPS מכויל מהמפעל.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=VP2786-4K'],
     tags: ['professional', 'ips', '4k', 'color-accurate', 'calibrated'],
     specs: {
@@ -562,7 +590,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The ViewSonic Elite XG270QG is a high-performance 27-inch QHD IPS gaming monitor featuring NVIDIA G-Sync Compatible certification and a 165Hz refresh rate for elite-level competitive play. HDR support and wide color gamut coverage enhance visual depth, while the fully ergonomic stand and RGB lighting let you tailor every aspect of your battlestation.',
+    descriptionHe: 'מסך הגיימינג ViewSonic Elite XG270QG הוא מסך בגודל 27 אינץ׳ ברזולוציית QHD, עם הסמכת NVIDIA G-Sync Compatible וקצב רענון של 165Hz. תמיכת HDR וכיסוי צבעים רחב מוסיפים עומק חזותי, והמעמד הארגונומי המלא לצד תאורת RGB מאפשרים התאמת עמדת המשחק.',
     shortDescription: 'Elite 27" QHD IPS gaming monitor with G-Sync and HDR.',
+    shortDescriptionHe: 'מסך גיימינג 27 אינץ׳ QHD IPS עם G-Sync, 165Hz ו-HDR.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=XG270QG'],
     tags: ['gaming', 'ips', 'qhd', '165hz', 'g-sync', 'hdr', 'elite'],
     specs: {

@@ -16,7 +16,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Xiaomi Mi Monitor 1A is an ultra-affordable 24-inch Full HD IPS display that delivers vibrant, wide-angle visuals for everyday office use and casual entertainment. Its near-borderless three-sided slim bezel design maximises screen real estate, and the standard IPS panel ensures consistent, easy-on-the-eyes colour accuracy throughout long work sessions.',
+    descriptionHe: 'מסך Xiaomi Mi Monitor 1A הוא מסך משרדי בגודל 24 אינץ׳ עם פאנל IPS ברזולוציית Full HD וזוויות צפייה רחבות, המתאים לשימוש משרדי יומיומי ולבידור. עיצוב המסגרת הדקה בשלושת הצדדים מגדיל את שטח התצוגה הזמין.',
     shortDescription: 'Budget-friendly 24" FHD IPS monitor for everyday use.',
+    shortDescriptionHe: 'מסך משרדי 24 אינץ׳ Full HD IPS.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=Mi+Monitor+1A'],
     tags: ['office', 'ips', 'full-hd', 'budget', 'slim-bezel'],
     specs: {
@@ -55,7 +57,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Xiaomi Mi Monitor 2K 27" steps up to a QHD IPS panel that renders text and images with outstanding clarity across a spacious 27-inch canvas. With 100% sRGB colour coverage and wide 178-degree viewing angles, it is an excellent value pick for office professionals and students who want a sharper picture without breaking the bank.',
+    descriptionHe: 'מסך Xiaomi Mi Monitor 2K 27 הוא מסך IPS בגודל 27 אינץ׳ ברזולוציית QHD, המציג טקסט ותמונות בבהירות טובה. כיסוי צבעים וזוויות צפייה של 178 מעלות מתאימים לעבודה משרדית וללימודים על מסך QHD מרווח.',
     shortDescription: 'Value-packed 27" QHD IPS monitor for office and study.',
+    shortDescriptionHe: 'מסך משרדי 27 אינץ׳ QHD IPS.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=Mi+Monitor+2K+27'],
     tags: ['office', 'ips', 'qhd', 'budget', '27-inch'],
     specs: {
@@ -94,7 +98,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Xiaomi G24i is a compact 24-inch gaming monitor that packs a 144Hz IPS panel into an accessible price bracket, making it the ideal entry point for gamers transitioning from standard displays. AMD FreeSync Premium eliminates screen tearing, and the fast 1ms MPRT response time keeps motion crisp during high-speed gameplay.',
+    descriptionHe: 'מסך הגיימינג Xiaomi G24i הוא מסך IPS קומפקטי בגודל 24 אינץ׳ עם קצב רענון של 144Hz. תמיכת AMD FreeSync Premium מסייעת לצמצם קריעות מסך, וזמן התגובה של 1ms MPRT תומך בתנועה חדה במשחקים מהירים.',
     shortDescription: 'Entry-level 24" 144Hz IPS gaming monitor at great value.',
+    shortDescriptionHe: 'מסך גיימינג 24 אינץ׳ 144Hz IPS.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=G24i'],
     tags: ['gaming', 'ips', 'full-hd', '144hz', 'freesync'],
     specs: {
@@ -133,7 +139,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Xiaomi G27i offers a 27-inch Full HD IPS gaming experience at a budget-conscious price. Its 100Hz refresh rate provides noticeably smoother motion than standard 60Hz panels, and AMD FreeSync Premium keeps the image tear-free. The slim, modern chassis fits seamlessly into any gaming or home office setup.',
+    descriptionHe: 'מסך הגיימינג Xiaomi G27i הוא מסך IPS בגודל 27 אינץ׳ ברזולוציית Full HD. קצב הרענון של 100Hz מספק תנועה חלקה יותר בהשוואה לפאנלים רגילים בני 60Hz, ותמיכת AMD FreeSync Premium מסייעת לשמור על תמונה יציבה. העיצוב הדק והמודרני משתלב בכל סביבת גיימינג או משרד ביתי.',
     shortDescription: 'Affordable 27" FHD IPS gaming monitor with 100Hz refresh.',
+    shortDescriptionHe: 'מסך גיימינג 27 אינץ׳ Full HD IPS עם רענון 100Hz.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=G27i'],
     tags: ['gaming', 'ips', 'full-hd', '100hz', 'freesync'],
     specs: {
@@ -172,7 +180,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Xiaomi G27Q hits the sweet spot for gaming monitors, combining a 27-inch QHD IPS panel with a 165Hz refresh rate at a price that punches well above its weight. AMD FreeSync Premium support and a fast 1ms response time deliver smooth, tear-free visuals, while the QHD resolution brings noticeable detail improvements over Full HD.',
+    descriptionHe: 'מסך הגיימינג Xiaomi G27Q משלב פאנל IPS בגודל 27 אינץ׳ ברזולוציית QHD עם קצב רענון של 165Hz. תמיכת AMD FreeSync Premium וזמן תגובה של 1ms מספקים תמונה יציבה, ורזולוציית QHD מעניקה שיפור פירוט לעומת Full HD.',
     shortDescription: 'Best-value 27" QHD IPS gaming monitor at 165Hz.',
+    shortDescriptionHe: 'מסך גיימינג 27 אינץ׳ QHD IPS עם 165Hz.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=G27Q'],
     tags: ['gaming', 'ips', 'qhd', '165hz', 'freesync', 'best-value'],
     specs: {
@@ -211,7 +221,9 @@ module.exports = [
     isFeatured: true,
     isPublished: true,
     description: 'The Xiaomi G34WQI is a 34-inch ultrawide gaming monitor with a 21:9 IPS panel delivering UltraWide QHD resolution at 144Hz. HDR support and AMD FreeSync Premium combine to produce vivid, lifelike scenes with exceptional depth, making it a compelling choice for gamers who want both expansive horizontal immersion and outstanding image quality.',
+    descriptionHe: 'מסך הגיימינג Xiaomi G34WQI הוא מסך רחב במיוחד בגודל 34 אינץ׳ עם פאנל IPS ביחס תמונה 21:9, המציג רזולוציית UltraWide QHD בקצב רענון של 144Hz. תמיכת HDR ו-AMD FreeSync Premium זמינות במסך הרחב הזה.',
     shortDescription: 'Expansive 34" ultrawide QHD IPS gaming monitor with HDR.',
+    shortDescriptionHe: 'מסך גיימינג רחב 34 אינץ׳ QHD IPS עם HDR ו-144Hz.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=G34WQI'],
     tags: ['gaming', 'ips', 'ultrawide', 'qhd', '144hz', 'hdr', 'freesync'],
     specs: {
@@ -250,7 +262,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Xiaomi Mi Curved Monitor 34" wraps a 1500R curved VA panel around your field of view in a sweeping 21:9 ultrawide format. The UltraWide QHD resolution and 144Hz refresh rate ensure every frame is both detailed and fluid, while AMD FreeSync Premium eliminates tearing for seamless immersive gameplay.',
+    descriptionHe: 'מסך Xiaomi Mi Curved Monitor 34 הוא מסך VA מעוקל בגודל 34 אינץ׳ ברדיוס עקמומיות 1500R, בפורמט רחב במיוחד ביחס 21:9. רזולוציית UltraWide QHD וקצב רענון של 144Hz, לצד תמיכת AMD FreeSync Premium, מסייעים לשמור על תנועה יציבה.',
     shortDescription: 'Immersive 34" curved ultrawide QHD VA gaming monitor.',
+    shortDescriptionHe: 'מסך גיימינג מעוקל 34 אינץ׳ Ultrawide QHD VA.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=Mi+Curved+34'],
     tags: ['gaming', 'va', 'curved', 'ultrawide', 'qhd', '144hz', 'freesync'],
     specs: {
@@ -289,7 +303,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Xiaomi A27i is a sleek 27-inch office monitor built around a Full HD IPS panel running at 100Hz, offering a meaningful refresh upgrade over standard office displays. Its minimalist aesthetic, thin bezels on three sides, and VESA compatibility make it a clean and flexible addition to any workspace or productivity setup.',
+    descriptionHe: 'מסך Xiaomi A27i הוא מסך משרדי בגודל 27 אינץ׳ עם פאנל IPS ברזולוציית Full HD הפועל בקצב רענון של 100Hz. העיצוב המינימליסטי, המסגרת הדקה בשלושת הצדדים ותמיכת VESA מתאימים לכל סביבת עבודה.',
     shortDescription: 'Sleek 27" FHD IPS office monitor with 100Hz refresh.',
+    shortDescriptionHe: 'מסך משרדי 27 אינץ׳ Full HD IPS עם רענון 100Hz.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=A27i'],
     tags: ['office', 'ips', 'full-hd', '100hz', 'slim-bezel'],
     specs: {
@@ -328,7 +344,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Xiaomi G27QI raises the bar with a 27-inch QHD IPS panel running at a rapid 180Hz, bridging the gap between mainstream and high-end gaming displays. HDR support delivers richer contrast and brightness for a more cinematic experience, while AMD FreeSync Premium ensures buttery-smooth, tear-free gaming at any frame rate.',
+    descriptionHe: 'מסך הגיימינג Xiaomi G27QI הוא מסך IPS בגודל 27 אינץ׳ ברזולוציית QHD עם קצב רענון של 180Hz. תמיכת HDR מוסיפה ניגודיות ובהירות לתמונה, ו-AMD FreeSync Premium מסייעת לשמור על תנועה יציבה.',
     shortDescription: 'High-refresh 27" QHD IPS gaming monitor at 180Hz with HDR.',
+    shortDescriptionHe: 'מסך גיימינג 27 אינץ׳ QHD IPS עם 180Hz ו-HDR.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=G27QI'],
     tags: ['gaming', 'ips', 'qhd', '180hz', 'hdr', 'freesync'],
     specs: {
@@ -367,7 +385,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Xiaomi Mi Monitor 1C is a refined version of the Mi 1A series, featuring a 24-inch Full HD IPS panel with a slightly updated design and improved colour tuning. It targets home users and first-time monitor buyers who want a reliable, no-frills display for browsing, studying, and streaming at a price that is hard to beat.',
+    descriptionHe: 'מסך Xiaomi Mi Monitor 1C הוא גרסה מעודכנת של סדרת Mi 1A, עם פאנל IPS בגודל 24 אינץ׳ ברזולוציית Full HD, עיצוב מעודכן וכיול צבעים משופר. המסך מיועד למשתמשי בית ולרוכשי מסך ראשון המחפשים תצוגה אמינה לגלישה, לימודים וצפייה.',
     shortDescription: 'Reliable 24" FHD IPS budget monitor for home and study.',
+    shortDescriptionHe: 'מסך ביתי אמין 24 אינץ׳ Full HD IPS.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=Mi+Monitor+1C'],
     tags: ['office', 'ips', 'full-hd', 'budget'],
     specs: {
@@ -406,7 +426,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Xiaomi G32i is a 32-inch curved Full HD VA gaming monitor that delivers a deeply immersive visual experience thanks to its 1500R curve radius and expansive screen size. At 165Hz with AMD FreeSync Premium support, it provides smooth, responsive gameplay perfect for action titles, racing games, and open-world adventures.',
+    descriptionHe: 'מסך הגיימינג המעוקל Xiaomi G32i הוא מסך VA בגודל 32 אינץ׳ ברזולוציית Full HD עם רדיוס עקמומיות 1500R. קצב רענון של 165Hz ותמיכת AMD FreeSync Premium מתאימים למשחקי אקשן, מרוצים והרפתקאות עולם פתוח.',
     shortDescription: 'Immersive 32" curved FHD VA gaming monitor at 165Hz.',
+    shortDescriptionHe: 'מסך גיימינג מעוקל 32 אינץ׳ Full HD VA עם 165Hz.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=G32i'],
     tags: ['gaming', 'va', 'curved', 'full-hd', '165hz', 'freesync'],
     specs: {
@@ -445,7 +467,9 @@ module.exports = [
     isFeatured: true,
     isPublished: true,
     description: 'The Xiaomi G27QI OLED brings quantum dot OLED technology to the 27-inch gaming segment, delivering infinite contrast, true blacks, and an ultra-fast 240Hz refresh rate that obliterates motion blur. NVIDIA G-Sync Compatible certification ensures flawless adaptive sync performance, while HDR support combined with the QD-OLED panel produces breathtaking, near-reference-quality visuals at a Xiaomi price.',
+    descriptionHe: 'מסך הגיימינג Xiaomi G27QI OLED הוא מסך QD-OLED בגודל 27 אינץ׳, עם רמות שחור עמוקות וניגודיות גבוהה וקצב רענון מהיר של 240Hz לצמצום טשטוש תנועה. תמיכה ב-NVIDIA G-Sync Compatible מסייעת לשמור על סנכרון בין המסך לכרטיס הגרפי, ותמיכת HDR לצד פאנל ה-QD-OLED תורמת לתמונה עשירה.',
     shortDescription: 'Breathtaking 27" QHD QD-OLED gaming monitor at 240Hz.',
+    shortDescriptionHe: 'מסך גיימינג 27 אינץ׳ QHD QD-OLED עם 240Hz ו-HDR.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=G27QI-OLED'],
     tags: ['gaming', 'qd-oled', 'qhd', '240hz', 'hdr', 'g-sync', 'oled'],
     specs: {

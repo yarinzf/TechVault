@@ -16,7 +16,9 @@ module.exports = [
     isFeatured: true,
     isPublished: true,
     description: 'The Corsair Xeneon 27QHD240 is a 27-inch QHD OLED gaming monitor that harnesses the inherent advantages of organic LED technology — infinite contrast, instantaneous 0.03ms pixel response, and self-illuminating pixels — to produce visuals that no conventional monitor can match. At 240Hz with NVIDIA G-Sync Compatible support and true HDR performance, it is the ideal display for competitive gamers and enthusiasts who refuse to compromise.',
+    descriptionHe: 'מסך הגיימינג Corsair Xeneon 27QHD240 מצויד בפאנל OLED בגודל 27 אינץ׳ ברזולוציית QHD, עם רמות שחור עמוקות וניגודיות גבוהה. קצב הרענון של 240Hz וזמן התגובה המהיר של 0.03ms, לצד תמיכת NVIDIA G-Sync Compatible ו-HDR, מספקים תנועה חדה ומגיבה.',
     shortDescription: 'Stunning 27" QHD OLED gaming monitor at 240Hz.',
+    shortDescriptionHe: 'מסך גיימינג 27 אינץ׳ QHD OLED עם 240Hz ו-HDR.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=27QHD240'],
     tags: ['gaming', 'oled', 'qhd', '240hz', 'hdr', 'g-sync'],
     specs: {
@@ -55,7 +57,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Corsair Xeneon 32UHD144 is a 32-inch 4K UHD IPS gaming monitor that pairs stunning pixel density with a 144Hz refresh rate, letting you enjoy breathtaking detail without sacrificing frame-rate smoothness. NVIDIA G-Sync Compatible certification and HDR support round out an impressive feature set that satisfies both competitive gamers and enthusiasts who appreciate visual fidelity.',
+    descriptionHe: 'מסך הגיימינג Corsair Xeneon 32UHD144 הוא מסך IPS בגודל 32 אינץ׳ ברזולוציית 4K UHD עם קצב רענון של 144Hz. תמיכה ב-NVIDIA G-Sync Compatible ו-HDR משלימות תמונה מפורטת עם תנועה יציבה.',
     shortDescription: 'Immersive 32" 4K IPS gaming monitor at 144Hz with HDR.',
+    shortDescriptionHe: 'מסך גיימינג 32 אינץ׳ 4K IPS עם 144Hz ו-HDR.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=32UHD144'],
     tags: ['gaming', 'ips', '4k', '144hz', 'hdr', 'g-sync'],
     specs: {
@@ -94,7 +98,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Corsair Xeneon 27QHD165 combines a 27-inch QHD IPS panel with a 165Hz refresh rate, striking the right balance between visual clarity and gaming responsiveness. AMD FreeSync Premium delivers adaptive sync across a wide frame rate range, and the height-adjustable stand with Corsair\'s characteristic clean industrial design ensures long-session comfort for dedicated players.',
+    descriptionHe: 'מסך הגיימינג Corsair Xeneon 27QHD165 הוא מסך IPS בגודל 27 אינץ׳ ברזולוציית QHD עם קצב רענון של 165Hz, בעיצוב תעשייתי נקי האופייני ל-Corsair. המעמד המתכוונן בגובה ותמיכת AMD FreeSync Premium תורמים לנוחות שימוש ולתנועה יציבה.',
     shortDescription: 'Well-rounded 27" QHD IPS gaming monitor at 165Hz.',
+    shortDescriptionHe: 'מסך גיימינג 27 אינץ׳ QHD IPS עם 165Hz ומעמד מתכוונן בגובה.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=27QHD165'],
     tags: ['gaming', 'ips', 'qhd', '165hz', 'freesync'],
     specs: {
@@ -133,7 +139,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Corsair Xeneon 27FHD240 is an esports-focused 27-inch Full HD IPS monitor with a 240Hz refresh rate engineered to keep competitive players ahead of the reaction curve. AMD FreeSync Premium ensures every frame is delivered without tearing, and the IPS panel maintains accurate, wide-angle colours even when viewed off-axis during intense gameplay.',
+    descriptionHe: 'מסך הגיימינג Corsair Xeneon 27FHD240 הוא מסך IPS בגודל 27 אינץ׳ ברזולוציית Full HD עם קצב רענון מהיר של 240Hz. תמיכת AMD FreeSync Premium מסייעת לצמצם קריעות מסך ולשמור על תנועה יציבה.',
     shortDescription: 'Esports-grade 27" FHD IPS gaming monitor at 240Hz.',
+    shortDescriptionHe: 'מסך גיימינג 27 אינץ׳ Full HD IPS עם 240Hz ו-AMD FreeSync Premium.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=27FHD240'],
     tags: ['gaming', 'ips', 'full-hd', '240hz', 'esports', 'freesync'],
     specs: {
@@ -172,7 +180,9 @@ module.exports = [
     isFeatured: true,
     isPublished: true,
     description: 'The Corsair Xeneon Flex 45WQHD240 is a one-of-a-kind 45-inch ultrawide OLED gaming monitor with a physically flexible panel that can be adjusted by hand from flat to 800R curved — no tools required. Spanning a breathtaking 21:9 canvas at UltraWide QHD resolution and running at 240Hz with NVIDIA G-Sync Compatible support and true OLED HDR, it is the most versatile and visually impressive large-format gaming display ever created.',
+    descriptionHe: 'מסך הגיימינג Corsair Xeneon Flex 45WQHD240 הוא מסך OLED רחב במיוחד בגודל 45 אינץ׳ עם פאנל גמיש, הניתן לכיפוף ידני ממצב שטוח ועד עקמומיות 800R ללא צורך בכלים. רזולוציית UltraWide QHD, קצב רענון של 240Hz וזמן תגובה של 0.03ms, לצד תמיכת NVIDIA G-Sync Compatible ו-HDR, מספקים תמונה רחבה עם תנועה חדה. מידת העקמומיות ניתנת להתאמה לפי העדפת המשתמש וסוג התוכן.',
     shortDescription: 'Unique 45" flexible ultrawide OLED gaming monitor at 240Hz.',
+    shortDescriptionHe: 'מסך גיימינג 45 אינץ׳ Ultrawide OLED עם פאנל גמיש ו-240Hz.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=45WQHD240'],
     tags: ['gaming', 'oled', 'ultrawide', 'curved', 'qhd', '240hz', 'hdr', 'g-sync', 'flexible'],
     specs: {
@@ -211,7 +221,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Corsair Xeneon 32QHD165 brings a large 32-inch QHD IPS canvas to the gaming desk at a 165Hz refresh rate, giving players extra screen real estate without sacrificing the smooth frame delivery that competitive titles demand. HDR support adds punch and depth to both games and movies, and the height-adjustable stand ensures the display sits exactly where you need it.',
+    descriptionHe: 'מסך הגיימינג Corsair Xeneon 32QHD165 הוא מסך IPS בגודל 32 אינץ׳ ברזולוציית QHD עם קצב רענון של 165Hz ותמיכת HDR, המעניקה עומק נוסף למשחקים ולסרטים. המעמד המתכוונן בגובה מסייע למיקום נוח, ותמיכת AMD FreeSync Premium מסייעת לשמור על תנועה יציבה.',
     shortDescription: 'Spacious 32" QHD IPS gaming monitor at 165Hz with HDR.',
+    shortDescriptionHe: 'מסך גיימינג 32 אינץ׳ QHD IPS עם 165Hz, HDR ומעמד מתכוונן בגובה.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=32QHD165'],
     tags: ['gaming', 'ips', 'qhd', '165hz', 'hdr', 'freesync', '32-inch'],
     specs: {
@@ -250,7 +262,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Corsair Xeneon 24FHD165 is a 24-inch Full HD IPS gaming monitor that delivers a smooth 165Hz gaming experience in a compact, affordable package. AMD FreeSync Premium support ensures adaptive sync eliminates tearing and stuttering, making it an accessible entry point into the Corsair Xeneon gaming monitor lineup without compromising on the essentials.',
+    descriptionHe: 'מסך הגיימינג Corsair Xeneon 24FHD165 הוא מסך IPS קומפקטי בגודל 24 אינץ׳ ברזולוציית Full HD עם קצב רענון של 165Hz. תמיכת AMD FreeSync Premium מסייעת לצמצם קריעות מסך ולתמוך בתנועה יציבה.',
     shortDescription: 'Compact and smooth 24" FHD IPS gaming monitor at 165Hz.',
+    shortDescriptionHe: 'מסך גיימינג 24 אינץ׳ Full HD IPS עם 165Hz ו-AMD FreeSync Premium.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=24FHD165'],
     tags: ['gaming', 'ips', 'full-hd', '165hz', 'freesync'],
     specs: {
@@ -289,7 +303,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Corsair iCUE Link XG27QHD is a 27-inch QHD IPS gaming monitor that integrates into the Corsair iCUE LINK ecosystem for centralised system monitoring, RGB lighting synchronisation, and temperature readouts directly through the display. At 180Hz with AMD FreeSync Premium and a height-adjustable stand, it merges Corsair ecosystem connectivity with capable gaming performance in a single sleek package.',
+    descriptionHe: 'מסך הגיימינג Corsair iCUE Link XG27QHD משתלב במערכת האקולוגית iCUE LINK של Corsair, המאפשרת ניטור מרכזי של המערכת, סנכרון תאורת RGB וקריאת טמפרטורות ישירות דרך המסך. פאנל IPS בגודל 27 אינץ׳ ברזולוציית QHD עם קצב רענון של 180Hz ותמיכת AMD FreeSync Premium מספקים תנועה יציבה, והמעמד המתכוונן בגובה מוסיף נוחות שימוש.',
     shortDescription: 'Smart 27" QHD IPS gaming monitor at 180Hz with iCUE integration.',
+    shortDescriptionHe: 'מסך גיימינג 27 אינץ׳ QHD IPS עם 180Hz ואינטגרציה למערכת iCUE LINK.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=XG27QHD'],
     tags: ['gaming', 'ips', 'qhd', '180hz', 'freesync', 'icue', 'rgb'],
     specs: {

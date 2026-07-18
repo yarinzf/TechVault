@@ -16,7 +16,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Cooler Master Tempest GP27U is a premium 27-inch 4K UHD IPS gaming monitor that refuses to compromise on either resolution or speed. Running at 144Hz with NVIDIA G-Sync Compatible support and a 1ms response time, it delivers razor-sharp 4K visuals with the fluidity that competitive gaming demands. HDR support and wide colour gamut coverage add cinematic depth to both games and creative content.',
+    descriptionHe: 'מסך הגיימינג Cooler Master Tempest GP27U הוא מסך IPS בגודל 27 אינץ׳ ברזולוציית 4K UHD, עם קצב רענון של 144Hz וזמן תגובה של 1ms. תמיכה ב-NVIDIA G-Sync Compatible מסייעת לצמצם קריעות מסך ולשמור על תנועה יציבה, ותמיכת HDR וכיסוי צבעים רחב מוסיפים עומק לתמונה במשחקים ובתוכן יצירתי כאחד. חיבוריות הכוללת HDMI 2.1 כפול, DisplayPort 1.4 ו-USB-C מתאימה למחשבים וקונסולות תואמים.',
     shortDescription: 'Premium 27" 4K IPS gaming monitor at 144Hz with HDR.',
+    shortDescriptionHe: 'מסך גיימינג 27 אינץ׳ 4K UHD IPS עם 144Hz ותמיכה ב-G-Sync Compatible.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=GP27U'],
     tags: ['gaming', 'ips', '4k', '144hz', 'hdr', 'g-sync'],
     specs: {
@@ -55,7 +57,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Cooler Master Tempest GP27Q is a 27-inch QHD IPS gaming monitor that balances sharp resolution with an aggressive 165Hz refresh rate for a well-rounded gaming experience. NVIDIA G-Sync Compatible support ensures tear-free frames at any frequency, and the height-adjustable ergonomic stand keeps you comfortable during marathon gaming sessions.',
+    descriptionHe: 'מסך הגיימינג Cooler Master Tempest GP27Q הוא מסך IPS בגודל 27 אינץ׳ ברזולוציית QHD, עם קצב רענון של 165Hz. תמיכה ב-NVIDIA G-Sync Compatible מסייעת לשמור על סנכרון בין המסך לכרטיס הגרפי ולצמצם קריעות מסך, והמעמד הארגונומי המתכוונן בגובה מאפשר ישיבה נוחה בזמן משחקים ארוכים.',
     shortDescription: 'Balanced 27" QHD IPS gaming monitor at 165Hz.',
+    shortDescriptionHe: 'מסך גיימינג 27 אינץ׳ QHD IPS עם 165Hz ומעמד ארגונומי.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=GP27Q'],
     tags: ['gaming', 'ips', 'qhd', '165hz', 'g-sync', 'ergonomic'],
     specs: {
@@ -94,7 +98,9 @@ module.exports = [
     isFeatured: true,
     isPublished: true,
     description: 'The Cooler Master Tempest GP2711 harnesses Mini LED backlighting to achieve exceptional local dimming with over 1,000 dimming zones, producing deep blacks and brilliant highlights alongside a blazing 240Hz refresh rate. Paired with QHD resolution, NVIDIA G-Sync Compatible, and comprehensive HDR support, this 27-inch powerhouse is built for gamers who demand the absolute best in both speed and image quality.',
+    descriptionHe: 'מסך הגיימינג Cooler Master Tempest GP2711 הוא מסך Mini LED בגודל 27 אינץ׳ ברזולוציית QHD, המשלב תאורה אחורית עם למעלה מ-1,000 אזורי עמעום מקומי (local dimming), התורמים לניגודיות גבוהה ולביצועי HDR משופרים. קצב הרענון של 240Hz ותמיכת NVIDIA G-Sync Compatible מסייעים לשמור על תנועה יציבה במהלך משחק.',
     shortDescription: 'Cutting-edge 27" QHD Mini LED gaming monitor at 240Hz with HDR.',
+    shortDescriptionHe: 'מסך גיימינג 27 אינץ׳ QHD Mini LED עם 240Hz ו-HDR.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=GP2711'],
     tags: ['gaming', 'mini-led', 'qhd', '240hz', 'hdr', 'g-sync'],
     specs: {
@@ -133,7 +139,9 @@ module.exports = [
     isFeatured: true,
     isPublished: true,
     description: 'The Cooler Master Tempest GP2711 QD-OLED takes the already-formidable GP2711 platform and replaces the backlight with a quantum dot OLED panel for infinite contrast, instantaneous pixel response, and vibrant quantum dot colour accuracy all in one. At 240Hz with NVIDIA G-Sync Compatible support and true HDR, it represents the pinnacle of 27-inch gaming monitor technology available today.',
+    descriptionHe: 'מסך הגיימינג Cooler Master Tempest GP2711 QD-OLED מצויד בפאנל QD-OLED בגודל 27 אינץ׳ ברזולוציית QHD, עם רמות שחור עמוקות וניגודיות גבוהה הודות להארה העצמאית של הפיקסלים. קצב הרענון של 240Hz וזמן התגובה המהיר של 0.03ms, לצד תמיכת NVIDIA G-Sync Compatible ו-HDR, מתאימים למשחקים הדורשים תנועה חדה.',
     shortDescription: 'Pinnacle 27" QHD QD-OLED gaming monitor at 240Hz.',
+    shortDescriptionHe: 'מסך גיימינג 27 אינץ׳ QD-OLED עם 240Hz, 0.03ms ו-HDR.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=GP2711-QD-OLED'],
     tags: ['gaming', 'qd-oled', 'qhd', '240hz', 'hdr', 'g-sync', 'oled'],
     specs: {
@@ -172,7 +180,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Cooler Master GM27-FFS is a 27-inch Full HD IPS gaming monitor that offers a smooth 165Hz refresh rate at an accessible price point. AMD FreeSync Premium ensures adaptive sync performance across a wide frame rate range, and the wide colour gamut IPS panel keeps colours looking vibrant and accurate whether you are gaming, streaming, or working.',
+    descriptionHe: 'מסך הגיימינג Cooler Master GM27-FFS הוא מסך IPS בגודל 27 אינץ׳ ברזולוציית Full HD עם קצב רענון של 165Hz, המתאים למשחקים וגם לשימוש יומיומי. תמיכה ב-AMD FreeSync Premium מסייעת לצמצם קריעות מסך ולשמור על תנועה יציבה.',
     shortDescription: 'Accessible 27" FHD IPS gaming monitor at 165Hz.',
+    shortDescriptionHe: 'מסך גיימינג 27 אינץ׳ Full HD IPS עם 165Hz ו-AMD FreeSync Premium.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=GM27-FFS'],
     tags: ['gaming', 'ips', 'full-hd', '165hz', 'freesync'],
     specs: {
@@ -211,7 +221,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Cooler Master GM34-CWQ is a 34-inch ultrawide curved VA gaming monitor that envelops you in a sweeping 21:9 panoramic view. With UltraWide QHD resolution and a fluid 165Hz refresh rate driven by AMD FreeSync Premium, every racing circuit, open-world landscape, and cinematic cutscene commands your full attention across its broad 1500R curved canvas.',
+    descriptionHe: 'מסך הגיימינג המעוקל Cooler Master GM34-CWQ הוא מסך VA רחב במיוחד בגודל 34 אינץ׳ ביחס תמונה 21:9 ורדיוס עקמומיות 1500R. רזולוציית UltraWide QHD וקצב רענון של 165Hz יחד עם תמיכת AMD FreeSync Premium מספקים תמונה רחבה ותנועה יציבה.',
     shortDescription: 'Panoramic 34" ultrawide curved QHD VA gaming monitor at 165Hz.',
+    shortDescriptionHe: 'מסך גיימינג מעוקל 34 אינץ׳ Ultrawide QHD VA עם 165Hz.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=GM34-CWQ'],
     tags: ['gaming', 'va', 'ultrawide', 'curved', 'qhd', '165hz', 'freesync'],
     specs: {
@@ -250,7 +262,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Cooler Master Tempest GP27Q White Edition delivers the same acclaimed 27-inch QHD IPS gaming performance as the standard GP27Q, wrapped in a clean white chassis for battlestations built around a bright, minimal aesthetic. NVIDIA G-Sync Compatible and 165Hz ensure the same tear-free, responsive gameplay, while the all-white design pairs beautifully with white peripherals and RGB lighting.',
+    descriptionHe: 'מסך הגיימינג Cooler Master Tempest GP27Q בגרסת הצבע הלבן מבוסס על אותו פאנל IPS בגודל 27 אינץ׳ ברזולוציית QHD וקצב רענון של 165Hz כמו הדגם הרגיל GP27Q, בעיצוב לבן נקי. תמיכה ב-NVIDIA G-Sync Compatible ומעמד ארגונומי כלולים גם בגרסה זו.',
     shortDescription: 'White-chassis 27" QHD IPS gaming monitor at 165Hz.',
+    shortDescriptionHe: 'מסך גיימינג 27 אינץ׳ QHD IPS בגרסת צבע לבן, עם 165Hz.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=GP27Q-W'],
     tags: ['gaming', 'ips', 'qhd', '165hz', 'g-sync', 'white'],
     specs: {
@@ -289,7 +303,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Cooler Master Exos EA27U is a 27-inch 4K UHD IPS professional monitor engineered for designers, architects, and content creators who need colour accuracy alongside premium build quality. Factory-calibrated with HDR support and a full suite of connectivity options including USB-C with power delivery, it slots seamlessly into a professional workflow demanding both visual fidelity and practical convenience.',
+    descriptionHe: 'מסך Cooler Master Exos EA27U הוא מסך מקצועי בגודל 27 אינץ׳ ברזולוציית 4K UHD, המיועד למעצבים, אדריכלים ויוצרי תוכן. הכיול מהמפעל תומך בעבודת צבע עקבית, וחיבור USB-C עם אספקת חשמל מאפשר עבודה בכבל אחד עם מחשבים ניידים תואמים. תמיכת HDR מוסיפה ניגודיות לתצוגה.',
     shortDescription: 'Factory-calibrated 27" 4K IPS professional monitor with HDR.',
+    shortDescriptionHe: 'מסך מקצועי 27 אינץ׳ 4K IPS מכויל מהמפעל, עם USB-C.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=EA27U'],
     tags: ['professional', 'ips', '4k', 'hdr', 'usb-c', 'color-accurate'],
     specs: {

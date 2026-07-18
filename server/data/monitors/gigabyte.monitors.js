@@ -15,7 +15,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Gigabyte G24F 2 is a 24-inch Full HD IPS gaming monitor with a 180Hz refresh rate that delivers smooth, responsive gameplay at an accessible entry-level price. Its Fast IPS panel achieves 1ms MPRT response time for minimal motion blur during fast-paced action, while AMD FreeSync Premium support provides adaptive sync compatibility across a wide range of GPUs. The slim bezel and compact footprint make it easy to pair in a dual-monitor setup or use as a dedicated gaming display on a tighter desk.',
+    descriptionHe: 'מסך הגיימינג Gigabyte G24F 2 הוא מסך בגודל 24 אינץ׳ ברזולוציית Full HD ופאנל IPS, עם קצב רענון של 180Hz. פאנל ה-Fast IPS משיג זמן תגובה של 1ms MPRT לצמצום טשטוש תנועה, ותמיכת AMD FreeSync Premium מתאימה למגוון כרטיסי מסך. עיצוב מסגרת דקה מאפשר שימוש נוח גם בעמדת עבודה מרובת מסכים.',
     shortDescription: '24" FHD IPS gaming monitor with 180Hz refresh rate and AMD FreeSync Premium at a great price.',
+    shortDescriptionHe: 'מסך גיימינג 24 אינץ׳ Full HD IPS עם 180Hz ו-AMD FreeSync Premium.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=G24F+2'],
     tags: ['gaming', 'ips', 'full-hd', '180hz', 'freesync'],
     specs: {
@@ -53,7 +55,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Gigabyte G27F 2 is a 27-inch Full HD IPS gaming monitor that steps up the screen size while keeping the same high-performance 180Hz refresh rate as the G24F 2. The Fast IPS panel delivers wide viewing angles and 1ms MPRT response time, ensuring motion clarity is maintained during competitive gaming sessions. AMD FreeSync Premium compatibility and a competitive price point make this one of the best-value 27-inch gaming monitors in Gigabyte\'s lineup.',
+    descriptionHe: 'מסך הגיימינג Gigabyte G27F 2 מגדיל את שטח המסך לגודל 27 אינץ׳, תוך שמירה על אותו קצב רענון גבוה של 180Hz כמו ה-G24F 2. פאנל ה-Fast IPS מספק זוויות צפייה רחבות וזמן תגובה של 1ms MPRT לשמירה על בהירות תנועה במשחקים תחרותיים. תמיכה ב-AMD FreeSync Premium כלולה גם היא.',
     shortDescription: '27" FHD IPS gaming monitor with 180Hz refresh rate, wide angles, and AMD FreeSync Premium.',
+    shortDescriptionHe: 'מסך גיימינג 27 אינץ׳ Full HD IPS עם 180Hz, זוויות צפייה רחבות ו-AMD FreeSync Premium.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=G27F+2'],
     tags: ['gaming', 'ips', 'full-hd', '180hz', 'freesync'],
     specs: {
@@ -91,7 +95,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Gigabyte G27Q is a 27-inch QHD IPS gaming monitor widely regarded as one of the best value-for-money QHD gaming displays available, pairing a crisp 1440p IPS panel with a solid 144Hz refresh rate at a competitive price. Its 1ms MPRT response time and AMD FreeSync Premium support deliver smooth, tear-free gameplay, while the IPS panel maintains consistent colors and wide viewing angles for both gaming and general use. The G27Q quickly became a best-seller for gamers upgrading from Full HD for the first time.',
+    descriptionHe: 'מסך הגיימינג Gigabyte G27Q הוא מסך בגודל 27 אינץ׳ ברזולוציית QHD, עם פאנל IPS וקצב רענון של 144Hz. זמן תגובה של 1ms MPRT ותמיכת AMD FreeSync Premium מסייעים לשמור על תנועה יציבה, ופאנל ה-IPS שומר על צבעים עקביים וזוויות צפייה רחבות לגיימינג ולשימוש כללי כאחד.',
     shortDescription: '27" QHD IPS gaming monitor with 144Hz, 1ms MPRT, and exceptional value for the resolution.',
+    shortDescriptionHe: 'מסך גיימינג 27 אינץ׳ QHD IPS עם 144Hz ו-1ms MPRT.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=G27Q'],
     tags: ['gaming', 'ips', 'qhd', '144hz', 'freesync', 'value'],
     specs: {
@@ -129,7 +135,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Gigabyte M27Q X is a 27-inch QHD IPS gaming monitor running at an impressive 240Hz, combining the pixel density of QHD with the ultra-smooth frame delivery demanded by competitive gamers and content creators alike. Its built-in KVM switch is a standout feature, allowing one keyboard and mouse to control two connected PCs seamlessly, making it a practical choice for dual-system setups. The height-adjustable stand, USB-C connectivity, and AMD FreeSync Premium support further cement this as one of the most versatile gaming monitors in its segment.',
+    descriptionHe: 'מסך הגיימינג Gigabyte M27Q X הוא מסך IPS בגודל 27 אינץ׳ ברזולוציית QHD עם קצב רענון של 240Hz. מתג KVM מובנה מאפשר לשלוט בשני מחשבים דרך מקלדת ועכבר אחד, מה שמתאים לעמדות עבודה עם שני מחשבים. מעמד מתכוונן בגובה, חיבור USB-C ותמיכת AMD FreeSync Premium כלולים גם הם.',
     shortDescription: '27" QHD IPS gaming monitor with 240Hz, built-in KVM switch, and USB-C connectivity.',
+    shortDescriptionHe: 'מסך גיימינג 27 אינץ׳ QHD IPS עם 240Hz, מתג KVM מובנה וחיבור USB-C.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=M27Q+X'],
     tags: ['gaming', 'ips', 'qhd', '240hz', 'freesync', 'kvm', 'usb-c'],
     specs: {
@@ -167,7 +175,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Gigabyte M32U is a 32-inch 4K IPS gaming monitor that hit the market at a price point that made 4K 144Hz gaming far more accessible than it had previously been, earning it immediate best-seller status. With HDMI 2.1 ports supporting native 4K 144Hz from next-gen consoles and PCs alike, and AMD FreeSync Premium Pro certification for both adaptive sync and HDR performance, this monitor handles every platform with ease. The height-adjustable ergonomic stand, built-in KVM switch, and USB-C input make it one of the most practical 4K gaming monitors available.',
+    descriptionHe: 'מסך הגיימינג Gigabyte M32U הוא מסך בגודל 32 אינץ׳ ברזולוציית 4K עם פאנל IPS, התומך ברענון של עד 144Hz. חיבורי HDMI 2.1 תומכים באותות רענון גבוה ממחשבים ומכשירים תואמים; פלט בפועל מקונסולות תלוי בדגם הקונסולה ובתמיכת המשחק. תמיכת AMD FreeSync מסייעת לשמירה על תנועה יציבה, לצד ביצועי HDR. מעמד ארגונומי מתכוונן בגובה, מתג KVM מובנה וחיבור USB-C כלולים גם הם.',
     shortDescription: '32" 4K IPS gaming monitor with 144Hz, HDMI 2.1, KVM switch, and HDR at a competitive price.',
+    shortDescriptionHe: 'מסך גיימינג 32 אינץ׳ 4K IPS עד 144Hz, עם HDMI 2.1 ומתג KVM מובנה.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=M32U'],
     tags: ['gaming', 'ips', '4k', '144hz', 'hdr', 'freesync', 'kvm', 'hdmi2.1'],
     specs: {
@@ -205,7 +215,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Gigabyte M28U is a 28-inch 4K IPS gaming monitor that delivers UHD sharpness at 144Hz in a slightly more compact form factor than 32-inch alternatives, appealing to gamers who want 4K density without a dominant screen presence. HDMI 2.1 ports enable native 4K 144Hz from compatible consoles and PCs, while AMD FreeSync Premium Pro provides adaptive sync with HDR support. The height-adjustable ergonomic stand and built-in KVM switch are practical additions that keep the M28U competitive at its price.',
+    descriptionHe: 'מסך הגיימינג Gigabyte M28U הוא מסך בגודל 28 אינץ׳ ברזולוציית 4K, בצפיפות פיקסלים גבוהה במסגרת קומפקטית יותר מחלופות בגודל 32 אינץ׳. חיבורי HDMI 2.1 תומכים באותות רענון גבוה ממכשירים תואמים; פלט בפועל מקונסולות תלוי בדגם הקונסולה ובתמיכת המשחק. תמיכת HDR זמינה לצד AMD FreeSync, התורמת לתנועה יציבה. המעמד הארגונומי המתכוונן בגובה ומתג ה-KVM המובנה כלולים גם הם.',
     shortDescription: '28" 4K IPS gaming monitor with 144Hz, HDMI 2.1, HDR, and a built-in KVM switch.',
+    shortDescriptionHe: 'מסך גיימינג 28 אינץ׳ 4K IPS עד 144Hz, עם HDMI 2.1 ומתג KVM מובנה.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=M28U'],
     tags: ['gaming', 'ips', '4k', '144hz', 'hdr', 'freesync', 'kvm', 'hdmi2.1'],
     specs: {
@@ -243,7 +255,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Gigabyte M34WQ is a 34-inch ultrawide QHD IPS gaming monitor that provides an immersive 21:9 field of view at a 144Hz refresh rate, making it ideal for games, creative work, and productivity that benefits from extra horizontal screen real estate. AMD FreeSync Premium support and 1ms MPRT response time ensure smooth, artefact-free motion across supported titles. The built-in KVM switch and USB-C connectivity add practical versatility for users who work between multiple machines.',
+    descriptionHe: 'מסך הגיימינג Gigabyte M34WQ הוא מסך רחב במיוחד בגודל 34 אינץ׳ ביחס תמונה 21:9 ופאנל IPS ברזולוציית QHD, עם קצב רענון של 144Hz. תמיכת AMD FreeSync Premium וזמן תגובה של 1ms MPRT מסייעים לשמור על תנועה יציבה במשחקים נתמכים. מתג KVM מובנה וחיבור USB-C מוסיפים גמישות למשתמשים העובדים בין מספר מחשבים.',
     shortDescription: '34" ultrawide QHD IPS gaming monitor with 144Hz, KVM switch, and USB-C connectivity.',
+    shortDescriptionHe: 'מסך גיימינג רחב 34 אינץ׳ Ultrawide QHD IPS עם 144Hz ומתג KVM.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=M34WQ'],
     tags: ['gaming', 'ips', 'ultrawide', 'qhd', '144hz', 'freesync', 'kvm'],
     specs: {
@@ -281,7 +295,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Gigabyte Aorus FI27Q-X is a 27-inch QHD IPS gaming monitor running at 240Hz, offering competitive-level refresh rate performance at QHD resolution for the Aorus gaming lineup. NVIDIA G-Sync Compatible certification ensures perfectly adaptive frame delivery across supported NVIDIA GPUs, while the robust height-adjustable stand brings full ergonomic positioning to a serious gaming setup. AIM Stabilizer Sync technology applies motion blur reduction simultaneously with adaptive sync for the clearest possible on-screen motion.',
+    descriptionHe: 'מסך הגיימינג Gigabyte Aorus FI27Q-X הוא מסך IPS בגודל 27 אינץ׳ ברזולוציית QHD עם קצב רענון של 240Hz. הסמכת NVIDIA G-Sync Compatible תומכת בסנכרון אדפטיבי עם כרטיסי מסך תואמי NVIDIA, והמעמד המתכוונן בגובה מספק תנוחת ישיבה ארגונומית מלאה. טכנולוגיית AIM Stabilizer Sync מפחיתה טשטוש תנועה במקביל לסנכרון האדפטיבי.',
     shortDescription: '27" QHD IPS gaming monitor with 240Hz, NVIDIA G-Sync Compatible, and AIM Stabilizer Sync.',
+    shortDescriptionHe: 'מסך גיימינג 27 אינץ׳ QHD IPS עם 240Hz, NVIDIA G-Sync Compatible ו-AIM Stabilizer Sync.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=FI27Q-X'],
     tags: ['gaming', 'ips', 'qhd', '240hz', 'gsync', 'aorus'],
     specs: {
@@ -319,7 +335,9 @@ module.exports = [
     isFeatured: true,
     isPublished: true,
     description: 'The Gigabyte Aorus FO32U2P is a 32-inch 4K QD-OLED gaming monitor that represents the pinnacle of Gigabyte\'s display technology, delivering the pixel-perfect contrast of OLED at 4K resolution with a blazing 240Hz refresh rate. Every pixel self-illuminates independently for true black levels, infinite contrast ratios, and 0.03ms response times that eclipse any LCD panel. NVIDIA G-Sync Compatible certification, HDR support, and DisplayPort 2.1 connectivity make this the most technically advanced consumer gaming monitor Gigabyte has ever produced.',
+    descriptionHe: 'מסך הגיימינג Gigabyte Aorus FO32U2P הוא מסך QD-OLED בגודל 32 אינץ׳ ברזולוציית 4K, עם הארה עצמאית של הפיקסלים התורמת לרמות שחור עמוקות ולניגודיות גבוהה, לצד קצב רענון מהיר של 240Hz. זמן תגובה של 0.03ms, הסמכת NVIDIA G-Sync Compatible, תמיכת HDR וחיבור DisplayPort 2.1 משלימים את המפרט.',
     shortDescription: '32" 4K QD-OLED gaming monitor with 240Hz, infinite contrast, 0.03ms response, and HDR.',
+    shortDescriptionHe: 'מסך גיימינג 32 אינץ׳ 4K QD-OLED עם 240Hz, 0.03ms ו-HDR.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=FO32U2P'],
     tags: ['gaming', 'qd-oled', '4k', '240hz', 'hdr', 'gsync', 'aorus', 'trending', 'featured'],
     specs: {
@@ -357,7 +375,9 @@ module.exports = [
     isFeatured: true,
     isPublished: true,
     description: 'The Gigabyte Aorus FO27Q3 is a 27-inch QHD QD-OLED gaming monitor that pushes refresh rate technology to 360Hz, combining the zero-compromise contrast quality of OLED with the ultra-high refresh performance demanded by elite esports competitors. Its 0.03ms response time and NVIDIA G-Sync Compatible certification deliver the sharpest, most responsive on-screen motion of any QHD monitor in Gigabyte\'s lineup. HDR support reveals the full expressive range of the QD-OLED panel, making this monitor as impressive for cinematic gaming as it is for competitive play.',
+    descriptionHe: 'מסך הגיימינג Gigabyte Aorus FO27Q3 הוא מסך QD-OLED בגודל 27 אינץ׳ ברזולוציית QHD עם קצב רענון של 360Hz. זמן תגובה של 0.03ms והסמכת NVIDIA G-Sync Compatible תומכים בתנועה חדה ומגיבה, ותמיכת HDR מוסיפה טווח צבעים לפאנל ה-QD-OLED.',
     shortDescription: '27" QHD QD-OLED gaming monitor with 360Hz, 0.03ms response, and HDR for elite esports.',
+    shortDescriptionHe: 'מסך גיימינג 27 אינץ׳ QHD QD-OLED עם 360Hz, 0.03ms ו-HDR.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=FO27Q3'],
     tags: ['gaming', 'qd-oled', 'qhd', '360hz', 'hdr', 'gsync', 'aorus', 'trending', 'featured', 'esports'],
     specs: {
@@ -395,7 +415,9 @@ module.exports = [
     isFeatured: true,
     isPublished: true,
     description: 'The Gigabyte Aorus CO49DQ is a 49-inch Dual QHD OLED super-ultrawide gaming monitor that delivers an unmatched panoramic gaming experience through its enormous 32:9 self-emissive OLED display surface. The OLED panel produces genuine black levels and infinite contrast ratios across the full width of the screen, while 144Hz refresh rate and NVIDIA G-Sync Compatible support ensure fluid, tear-free motion. HDR performance is extraordinary on this panel, as the per-pixel lighting control allows both absolute black and peak brightness to coexist simultaneously within a single frame.',
+    descriptionHe: 'מסך הגיימינג Gigabyte Aorus CO49DQ הוא מסך רחב במיוחד בגודל 49 אינץ׳ ברזולוציית Dual QHD ויחס תמונה פנורמי של 32:9. פאנל ה-OLED העצמי-מאיר תורם לרמות שחור עמוקות ולניגודיות גבוהה לרוחב המסך, וקצב רענון של 144Hz יחד עם הסמכת NVIDIA G-Sync Compatible מסייעים לשמור על תנועה יציבה. בקרת התאורה הפיקסלית תורמת לביצועי HDR, המאפשרים שחור עמוק ובהירות גבוהה בתוך אותה תמונה.',
     shortDescription: '49" Dual QHD OLED super-ultrawide gaming monitor with 144Hz, HDR, and G-Sync Compatible.',
+    shortDescriptionHe: 'מסך גיימינג פנורמי 49 אינץ׳ Dual QHD OLED עם 144Hz ו-HDR.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=CO49DQ'],
     tags: ['gaming', 'oled', 'ultrawide', 'dual-qhd', '144hz', 'hdr', 'gsync', 'aorus', 'featured'],
     specs: {
@@ -433,7 +455,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Gigabyte G34WQC A is a 34-inch curved ultrawide QHD VA gaming monitor offering an immersive 21:9 experience at an accessible price point. Its 1500R curved VA panel provides deep native contrast and rich color saturation that enhances atmospheric games and cinematic content, while the 144Hz refresh rate keeps competitive gameplay smooth. AMD FreeSync Premium support pairs with the curved ultrawide format to deliver some of the most engaging gaming visuals available under $400.',
+    descriptionHe: 'מסך הגיימינג המעוקל Gigabyte G34WQC A הוא מסך VA רחב במיוחד בגודל 34 אינץ׳ ביחס תמונה 21:9. הפאנל המעוקל ברדיוס 1500R מספק ניגודיות גבוהה, וקצב רענון של 144Hz שומר על תנועה יציבה במשחק תחרותי. תמיכת AMD FreeSync Premium כלולה גם היא.',
     shortDescription: '34" curved ultrawide QHD VA gaming monitor with 144Hz and AMD FreeSync Premium.',
+    shortDescriptionHe: 'מסך גיימינג מעוקל 34 אינץ׳ Ultrawide QHD VA עם 144Hz ו-AMD FreeSync Premium.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=G34WQC+A'],
     tags: ['gaming', 'va', 'ultrawide', 'qhd', 'curved', 'freesync'],
     specs: {
@@ -471,7 +495,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Gigabyte M27F A is a 27-inch Full HD IPS gaming monitor with a 165Hz refresh rate and the added convenience of a built-in KVM switch, making it a practical choice for gamers and users who operate multiple computers from one desk. The IPS panel produces wide viewing angles and accurate colors for both gaming and everyday use, while AMD FreeSync Premium ensures smooth adaptive sync across the supported frame rate range. USB-C input adds compatibility with modern laptops and mobile workstations.',
+    descriptionHe: 'מסך הגיימינג Gigabyte M27F A הוא מסך בגודל 27 אינץ׳ ברזולוציית Full HD ופאנל IPS עם קצב רענון של 165Hz, ומתג KVM מובנה לנוחות משתמשים העובדים ממספר מחשבים. פאנל ה-IPS מספק זוויות צפייה רחבות וצבעים מדויקים לגיימינג ולשימוש יומיומי כאחד, ותמיכת AMD FreeSync Premium מסייעת לשמור על תנועה יציבה. חיבור USB-C מוסיף תאימות למחשבים ניידים מודרניים.',
     shortDescription: '27" FHD IPS gaming monitor with 165Hz, built-in KVM switch, and USB-C connectivity.',
+    shortDescriptionHe: 'מסך גיימינג 27 אינץ׳ Full HD IPS עם 165Hz, מתג KVM וחיבור USB-C.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=M27F+A'],
     tags: ['gaming', 'ips', 'full-hd', '165hz', 'freesync', 'kvm', 'usb-c'],
     specs: {
@@ -509,7 +535,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Gigabyte Aorus CV27F is a 27-inch curved Full HD VA gaming monitor that brings the high-contrast visual depth of a VA panel together with the Aorus gaming brand\'s focus on performance and style. Its 165Hz refresh rate ensures fluid gameplay while the 1500R curved screen creates a more enveloping experience compared to flat displays. Aura-style RGB lighting on the rear adds visual character to the back of the monitor, while NVIDIA G-Sync Compatible support delivers adaptive sync with NVIDIA GPUs.',
+    descriptionHe: 'מסך הגיימינג Gigabyte Aorus CV27F הוא מסך VA מעוקל בגודל 27 אינץ׳ ברזולוציית Full HD, עם עקמומיות 1500R ומיתוג Aorus. קצב רענון של 165Hz שומר על תנועה יציבה, ותאורת RGB בגב המסך מוסיפה אופי חזותי. הסמכת NVIDIA G-Sync Compatible תומכת בסנכרון אדפטיבי עם כרטיסי מסך של NVIDIA.',
     shortDescription: '27" curved FHD VA gaming monitor with 165Hz, NVIDIA G-Sync Compatible, and RGB lighting.',
+    shortDescriptionHe: 'מסך גיימינג מעוקל 27 אינץ׳ Full HD VA עם 165Hz, G-Sync ותאורת RGB.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=CV27F'],
     tags: ['gaming', 'va', 'full-hd', '165hz', 'curved', 'gsync', 'aorus', 'rgb'],
     specs: {
@@ -547,7 +575,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Gigabyte G27QC A is a 27-inch curved QHD VA gaming monitor that steps up from Full HD resolution while retaining the immersive curvature and high-contrast VA panel characteristics. Its 165Hz refresh rate and 1ms MPRT response time deliver smooth, responsive gaming across a wide range of genres, while AMD FreeSync Premium eliminates tearing through the supported frame-rate range. For gamers looking for a curved QHD panel without spending on premium Aorus-branded models, the G27QC A offers a compelling combination of specs and value.',
+    descriptionHe: 'מסך הגיימינג המעוקל Gigabyte G27QC A הוא מסך VA בגודל 27 אינץ׳ המשדרג לרזולוציית QHD תוך שמירה על העקמומיות ומאפייני הניגודיות הגבוהה של הפאנל. קצב רענון של 165Hz וזמן תגובה של 1ms MPRT מסייעים לגיימינג יציב במגוון ז\'אנרים, ותמיכת AMD FreeSync Premium מסייעת לצמצם קריעות מסך.',
     shortDescription: '27" curved QHD VA gaming monitor with 165Hz refresh rate and AMD FreeSync Premium.',
+    shortDescriptionHe: 'מסך גיימינג מעוקל 27 אינץ׳ QHD VA עם 165Hz ו-AMD FreeSync Premium.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=G27QC+A'],
     tags: ['gaming', 'va', 'qhd', '165hz', 'curved', 'freesync'],
     specs: {
