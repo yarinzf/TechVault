@@ -15,7 +15,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Asus VP249QGR is a 24-inch Full HD IPS gaming monitor built for competitive play without breaking the bank. Its 144Hz refresh rate and 1ms response time deliver smooth, tear-free visuals ideal for fast-paced shooters and action titles. AMD FreeSync Premium support keeps frame delivery in sync with your GPU, while the slim-bezel design makes it an attractive pick for multi-monitor setups.',
+    descriptionHe: 'ה-Asus VP249QGR הוא מסך גיימינג בגודל 24 אינץ׳ עם רזולוציית Full HD ופאנל IPS, המיועד לגיימינג תחרותי במחיר נגיש. קצב רענון של 144Hz וזמן תגובה של 1ms מעניקים תנועה חדה ותגובתית המתאימה למשחקי יריות ופעולה מהירים, בעוד תמיכה ב-AMD FreeSync Premium שומרת על סנכרון עם כרטיס המסך ומסייעת לצמצם קריעות מסך. העיצוב עם מסגרות דקות מתאים למערכי ריבוי מסכים.',
     shortDescription: '24" FHD IPS gaming monitor with 144Hz refresh rate and AMD FreeSync Premium.',
+    shortDescriptionHe: 'מסך גיימינג בגודל 24 אינץ׳ עם רזולוציית Full HD, פאנל IPS וקצב רענון של 144Hz.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=VP249QGR'],
     tags: ['gaming', 'ips', 'full-hd', '144hz', 'freesync'],
     specs: {
@@ -53,7 +55,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Asus VG249Q1A is a 24-inch Full HD IPS monitor running at a buttery-smooth 165Hz refresh rate, making it an excellent entry point into high-refresh-rate gaming. Its IPS panel provides wide viewing angles and accurate colors while the 1ms MPRT response time keeps motion crisp during intense gameplay sessions. AMD FreeSync Premium eliminates screen tearing for a more immersive experience.',
+    descriptionHe: 'ה-Asus VG249Q1A הוא מסך בגודל 24 אינץ׳ עם רזולוציית Full HD ופאנל IPS, הפועל בקצב רענון חלק של 165Hz ומהווה נקודת כניסה טובה לגיימינג בקצב רענון גבוה. זמן תגובה של 1ms MPRT שומר על תנועה חדה במהלך משחקים אינטנסיביים, ופאנל ה-IPS מספק זוויות צפייה רחבות וצבעים מדויקים. תמיכה ב-AMD FreeSync Premium שומרת על סנכרון בין המסך לכרטיס הגרפי ומסייעת לצמצם קריעות מסך.',
     shortDescription: '24" FHD IPS gaming monitor with 165Hz refresh and AMD FreeSync Premium support.',
+    shortDescriptionHe: 'מסך גיימינג בגודל 24 אינץ׳ עם רזולוציית Full HD, פאנל IPS וקצב רענון של 165Hz.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=VG249Q1A'],
     tags: ['gaming', 'ips', 'full-hd', '165hz', 'freesync'],
     specs: {
@@ -91,7 +95,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Asus TUF Gaming VG27AQ combines a 27-inch QHD IPS panel with a 165Hz refresh rate to deliver stunning detail and silky-smooth motion. The ELMB Sync technology allows simultaneous use of Extreme Low Motion Blur and Adaptive-Sync, making it one of the most versatile gaming monitors in its class. Wide color gamut coverage and strong build quality make this monitor a lasting investment for serious gamers.',
+    descriptionHe: 'ה-Asus TUF Gaming VG27AQ משלב פאנל IPS בגודל 27 אינץ׳ ברזולוציית QHD עם קצב רענון של 165Hz, לפירוט חד ותנועה חלקה. טכנולוגיית ELMB Sync מאפשרת שימוש בו-זמני בהפחתת טשטוש תנועה ובסנכרון אדפטיבי, שילוב המעניק גמישות בין בהירות תנועה לתמונה יציבה. כיסוי צבעים רחב משלים מסך גיימינג המתאים הן לפירוט QHD חד והן לקצב רענון גבוה.',
     shortDescription: '27" QHD IPS gaming monitor with 165Hz, ELMB Sync, and wide color coverage.',
+    shortDescriptionHe: 'מסך גיימינג בגודל 27 אינץ׳ עם רזולוציית QHD, פאנל IPS, קצב רענון 165Hz ותמיכה ב-ELMB Sync.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=VG27AQ'],
     tags: ['gaming', 'ips', 'qhd', '165hz', 'freesync', 'tuf'],
     specs: {
@@ -129,7 +135,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Asus TUF Gaming VG27AQL1A steps up the formula with a 170Hz refresh rate on a 27-inch QHD IPS panel, pushing the boundaries of what mid-range gaming monitors can offer. ELMB Sync technology combines motion blur reduction with adaptive sync, and the robust stand provides tilt and height adjustment for ergonomic comfort during extended sessions. Its military-grade durability certification backs up the TUF Gaming promise.',
+    descriptionHe: 'ה-Asus TUF Gaming VG27AQL1A הוא מסך גיימינג בגודל 27 אינץ׳ עם רזולוציית QHD ופאנל IPS, המגיע לקצב רענון של 170Hz. טכנולוגיית ELMB Sync משלבת הפחתת טשטוש תנועה עם סנכרון אדפטיבי, והמעמד מאפשר כיוונון הטיה וגובה לנוחות בישיבות ממושכות. עיצוב סדרת TUF Gaming מיועד לעמידות בשימוש יומיומי.',
     shortDescription: '27" QHD IPS gaming monitor with 170Hz refresh rate and ergonomic adjustable stand.',
+    shortDescriptionHe: 'מסך גיימינג בגודל 27 אינץ׳ עם רזולוציית QHD, פאנל IPS וקצב רענון של 170Hz.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=VG27AQL1A'],
     tags: ['gaming', 'ips', 'qhd', '170hz', 'freesync', 'tuf'],
     specs: {
@@ -167,7 +175,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Asus TUF Gaming VG32VQ brings together a large 32-inch curved VA panel at QHD resolution with a 144Hz refresh rate, providing deep blacks and high contrast that IPS panels struggle to match. The 1500R curvature wraps the display naturally around your field of view, reducing eye strain during long gaming sessions. AMD FreeSync Premium and ELMB technology cover both adaptive sync and motion clarity for a well-rounded experience.',
+    descriptionHe: 'ה-Asus TUF Gaming VG32VQ הוא מסך קעור בגודל 32 אינץ׳ עם פאנל VA ורזולוציית QHD בקצב רענון של 144Hz, המספק שחורים עמוקים וניגודיות גבוהה האופייניים לטכנולוגיית VA. עקמומיות 1500R שומרת על יותר משטח המסך הרחב בטווח זווית צפייה אחידה, לתחושת צפייה נוחה לאורך מפגשי גיימינג ארוכים. תמיכה ב-AMD FreeSync Premium וטכנולוגיית ELMB משלימות חוויה מאוזנת של סנכרון אדפטיבי ובהירות תנועה.',
     shortDescription: '32" curved QHD VA gaming monitor with 144Hz, deep contrast, and FreeSync Premium.',
+    shortDescriptionHe: 'מסך גיימינג קעור מסדרת TUF Gaming בגודל 32 אינץ׳ עם רזולוציית QHD, פאנל VA וקצב רענון של 144Hz.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=VG32VQ'],
     tags: ['gaming', 'va', 'qhd', '144hz', 'curved', 'freesync', 'tuf'],
     specs: {
@@ -205,7 +215,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Asus ROG Swift PG279QM is a top-tier 27-inch QHD IPS gaming monitor running at an exceptional 240Hz, combining pixel density with high frame-rate performance. Designed for esports professionals and enthusiasts who refuse to compromise, it pairs NVIDIA G-Sync with ASUS ELMB for the sharpest possible motion clarity. The full-featured ergonomic stand and premium build quality make this monitor a centrepiece of any high-end gaming setup.',
+    descriptionHe: 'ה-Asus ROG Swift PG279QM הוא מסך גיימינג בגודל 27 אינץ׳ עם רזולוציית QHD, המגיע לקצב רענון גבוה של 240Hz ומשלב צפיפות פיקסלים גבוהה עם ביצועי קצב פריימים מהירים. תמיכה ב-NVIDIA G-Sync לצד טכנולוגיית ELMB מספקת בהירות תנועה גבוהה, שילוב המתאים למשחק מהיר ותחרותי. מעמד ארגונומי מלא משלים מסך גיימינג ברזולוציית QHD בקצב רענון גבוה.',
     shortDescription: '27" QHD IPS gaming monitor with 240Hz refresh rate and NVIDIA G-Sync for elite play.',
+    shortDescriptionHe: 'מסך גיימינג בגודל 27 אינץ׳ עם רזולוציית QHD, קצב רענון 240Hz ותמיכה ב-NVIDIA G-Sync.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=PG279QM'],
     tags: ['gaming', 'ips', 'qhd', '240hz', 'gsync', 'rog'],
     specs: {
@@ -243,7 +255,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Asus ROG Swift PG32UQX is a 32-inch 4K Mini LED gaming powerhouse featuring 1152 local dimming zones that produce stunning HDR contrast and peak brightness exceeding 1400 nits. Its NVIDIA G-Sync Ultimate certification guarantees the most refined adaptive sync experience available, while the 144Hz refresh rate keeps competitive gameplay smooth. This is the pinnacle of ROG display engineering, built for those who demand the absolute best in both image quality and gaming performance.',
+    descriptionHe: 'ה-Asus ROG Swift PG32UQX הוא מסך גיימינג בגודל 32 אינץ׳ עם רזולוציית 4K ופאנל Mini LED, הכולל 1152 אזורי עמעום מקומי המניבים ניגודיות HDR מרשימה ובהירות שיא מעל 1400 nits. תמיכה ב-NVIDIA G-Sync מבטיחה חוויית סנכרון אדפטיבי חלקה, וקצב הרענון של 144Hz שומר על משחק תחרותי זורם. השילוב של רזולוציית 4K, פאנל Mini LED וקצב רענון גבוה הופך אותו למסך גיימינג יוצא דופן ברמת התמונה שלו.',
     shortDescription: '32" 4K Mini LED gaming monitor with G-Sync Ultimate, 1400-nit peak HDR, and 1152 dimming zones.',
+    shortDescriptionHe: 'מסך גיימינג בגודל 32 אינץ׳ עם רזולוציית 4K, פאנל Mini LED ו-1152 אזורי עמעום מקומי.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=PG32UQX'],
     tags: ['gaming', 'mini-led', '4k', '144hz', 'gsync', 'hdr', 'rog'],
     specs: {
@@ -281,7 +295,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Asus ROG Swift PG27AQN pushes refresh rate technology to its absolute limit with an unprecedented 360Hz at QHD resolution on a 27-inch IPS panel. Designed specifically for elite esports competitors, it delivers every millisecond of advantage through razor-sharp motion clarity and near-instant response. NVIDIA G-Sync hardware module ensures perfectly smooth frame delivery, making this one of the fastest high-resolution gaming monitors ever produced.',
+    descriptionHe: 'ה-Asus ROG Swift PG27AQN מגיע לקצב רענון של 360Hz ברזולוציית QHD על פאנל IPS בגודל 27 אינץ׳, ומיועד למשחק תחרותי מהיר הדורש תגובה חדה. בהירות תנועה גבוהה וזמן תגובה מהיר תומכים בגיימינג ברמה תחרותית. תמיכה ב-NVIDIA G-Sync מבטיחה העברת פריימים חלקה ועקבית.',
     shortDescription: '27" QHD IPS gaming monitor with record-breaking 360Hz refresh rate and NVIDIA G-Sync.',
+    shortDescriptionHe: 'מסך גיימינג בגודל 27 אינץ׳ עם רזולוציית QHD, פאנל IPS וקצב רענון של 360Hz.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=PG27AQN'],
     tags: ['gaming', 'ips', 'qhd', '360hz', 'gsync', 'rog', 'esports'],
     specs: {
@@ -319,7 +335,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Asus ROG Swift OLED PG27AQDM redefines what a gaming monitor can look like, pairing a blazing 240Hz refresh rate with the stunning pixel-perfect black levels and infinite contrast of a QD-OLED panel. Every pixel self-illuminates independently, delivering instant transitions from absolute black to vibrant color that no traditional display technology can match. Combined with NVIDIA G-Sync compatibility and a 0.03ms response time, this monitor erases the line between what your GPU renders and what your eyes see.',
+    descriptionHe: 'ה-Asus ROG Swift OLED PG27AQDM משלב פאנל QD-OLED בגודל 27 אינץ׳ ברזולוציית QHD עם קצב רענון של 240Hz, ומציג רמות שחור עמוקות וניגודיות גבוהה הנובעת מהארה עצמאית של הפיקסלים. זמן תגובה מהיר של 0.03ms שומר על תמונה חדה בתנועה, בעוד תמיכה ב-NVIDIA G-Sync מסייעת לסנכרון עם כרטיס המסך. השילוב בין טכנולוגיית OLED לביצועי גיימינג מהירים מתאים לגיימרים המחפשים גם איכות תמונה וגם מהירות.',
     shortDescription: '27" QHD QD-OLED gaming monitor with 240Hz, 0.03ms response, and infinite contrast.',
+    shortDescriptionHe: 'מסך גיימינג בגודל 27 אינץ׳ עם פאנל QD-OLED, רזולוציית QHD וקצב רענון 240Hz.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=PG27AQDM'],
     tags: ['gaming', 'qd-oled', 'oled', 'qhd', '240hz', 'gsync', 'rog', 'trending'],
     specs: {
@@ -357,7 +375,9 @@ module.exports = [
     isFeatured: true,
     isPublished: true,
     description: 'The Asus ROG Swift OLED PG34WCDM is a 34-inch ultrawide QD-OLED monitor that transforms gaming and content creation into a truly cinematic experience. Its 175Hz refresh rate and 0.1ms response time combine with the OLED panel\'s self-emissive pixels to produce motion quality and contrast that no LCD panel can approach. The expansive 21:9 aspect ratio immerses you in gameplay while HDR support reveals detail across the full luminance range, making this one of the most desirable monitors in Asus\'s entire lineup.',
+    descriptionHe: 'ה-Asus ROG Swift OLED PG34WCDM הוא מסך גיימינג רחב במיוחד בגודל 34 אינץ׳ עם פאנל QD-OLED, המשלב גיימינג ויצירת תוכן בפאנל אחד. קצב רענון של 175Hz וזמן תגובה של 0.1ms נעזרים בהארה העצמאית של פיקסלי ה-OLED לאיכות תנועה וניגודיות גבוהות. יחס התמונה הרחב של 21:9 מרחיב את שדה הראייה במשחק, ותמיכת HDR חושפת פרטים על פני טווח הבהירות המלא.',
     shortDescription: '34" ultrawide QD-OLED gaming monitor with 175Hz, HDR, and cinematic immersion.',
+    shortDescriptionHe: 'מסך גיימינג רחב במיוחד בגודל 34 אינץ׳ עם פאנל QD-OLED, קצב רענון 175Hz ותמיכת HDR.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=PG34WCDM'],
     tags: ['gaming', 'qd-oled', 'oled', 'ultrawide', '175hz', 'hdr', 'gsync', 'rog', 'trending', 'featured'],
     specs: {
@@ -395,7 +415,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Asus ROG Strix XG27AQM is a 27-inch QHD IPS gaming monitor that reaches an impressive 270Hz, occupying a unique position between mainstream 240Hz and esports-focused 360Hz displays. ASUS ELMB Sync allows simultaneous use of motion blur reduction and NVIDIA G-Sync Compatible adaptive sync, giving you flexibility over how you prioritize image quality and motion clarity. A sturdy stand with full ergonomic adjustability and the iconic ROG Strix styling round out this premium package.',
+    descriptionHe: 'ה-Asus ROG Strix XG27AQM הוא מסך גיימינג בגודל 27 אינץ׳ עם רזולוציית QHD ופאנל IPS, המגיע לקצב רענון גבוה. טכנולוגיית ASUS ELMB Sync מאפשרת שימוש בו-זמני בהפחתת טשטוש תנועה ובתמיכה ב-NVIDIA G-Sync, לגיימינג הדורש גם בהירות תנועה וגם תמונה יציבה. מעמד עם כיוונון ארגונומי מלא ועיצוב ROG Strix משלימים מסך גיימינג ברזולוציית QHD.',
     shortDescription: '27" QHD IPS gaming monitor with 270Hz refresh rate and NVIDIA G-Sync Compatible support.',
+    shortDescriptionHe: 'מסך גיימינג בגודל 27 אינץ׳ עם רזולוציית QHD, פאנל IPS וקצב רענון גבוה.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=XG27AQM'],
     tags: ['gaming', 'ips', 'qhd', '270hz', 'gsync', 'rog'],
     specs: {
@@ -433,7 +455,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Asus ROG Strix XG32VQR is a 32-inch curved QHD VA gaming monitor delivering rich colors and deep contrast ratios that make dark scenes visually dramatic and immersive. The 144Hz refresh rate keeps gameplay fluid while the 1500R curved panel creates an enveloping viewing experience across the large screen area. With NVIDIA G-Sync Compatible support and Aura Sync RGB lighting on the rear, this monitor brings both performance and style to any gaming battlestation.',
+    descriptionHe: 'ה-Asus ROG Strix XG32VQR הוא מסך גיימינג קעור בגודל 32 אינץ׳ עם פאנל VA ורזולוציית QHD, המציג צבעים עשירים וניגודיות גבוהה האופייניים לטכנולוגיית VA. קצב רענון של 144Hz שומר על משחק זורם, והפאנל הקעור בעקמומיות 1500R משתרע על פני שטח מסך גדול. תמיכה ב-NVIDIA G-Sync שומרת על סנכרון עם כרטיס המסך, ותאורת Aura Sync RGB בגב המסך מוסיפה אפשרויות עיצוב חזותי לעמדת הגיימינג.',
     shortDescription: '32" curved QHD VA gaming monitor with 144Hz, deep contrast, and Aura Sync RGB.',
+    shortDescriptionHe: 'מסך גיימינג קעור מסדרת ROG Strix בגודל 32 אינץ׳ עם רזולוציית QHD, פאנל VA ותאורת Aura Sync RGB.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=XG32VQR'],
     tags: ['gaming', 'va', 'qhd', '144hz', 'curved', 'gsync', 'rog', 'rgb'],
     specs: {
@@ -471,7 +495,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Asus ProArt PA279CRV is a 27-inch 4K IPS professional monitor that ships factory-calibrated to Delta E less than 2, covering 99% of the sRGB and 99% of the DCI-P3 color spaces. Its Calman Verified status and hardware-level color uniformity compensation make it a trusted tool for photographers, video editors, and graphic designers who demand absolute color accuracy. The Thunderbolt 4 / USB-C connectivity supports single-cable daisy-chaining and 96W power delivery, keeping your workspace tidy and your laptop charged.',
+    descriptionHe: 'ה-Asus ProArt PA279CRV הוא מסך מקצועי בגודל 27 אינץ׳ עם רזולוציית 4K ופאנל IPS, המכויל מהיצרן ל-Delta E מתחת ל-2 ומכסה 99% ממרחבי הצבע sRGB ו-DCI-P3. הסמכת Calman Verified ופיצוי אחידות צבע ברמת החומרה הופכים אותו לכלי אמין לצלמים, לעורכי וידאו ולמעצבים גרפיים הזקוקים לדיוק צבעים. חיבור Thunderbolt 4 / USB-C תומך בשרשור מסכים בכבל יחיד ובאספקת חשמל של 96W, לשולחן עבודה מסודר יותר.',
     shortDescription: '27" 4K IPS professional monitor, factory-calibrated with Thunderbolt 4 and 99% DCI-P3.',
+    shortDescriptionHe: 'מסך מקצועי בגודל 27 אינץ׳ עם רזולוציית 4K, כיול מפעל ותמיכה ב-Thunderbolt 4.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=PA279CRV'],
     tags: ['professional', 'ips', '4k', 'color-accurate', 'usb-c', 'proart'],
     specs: {
@@ -509,7 +535,9 @@ module.exports = [
     isFeatured: true,
     isPublished: true,
     description: 'The Asus ProArt PA32UCX is a 32-inch 4K Mini LED professional reference monitor featuring 1152 local dimming zones and a peak brightness of 1200 nits for the most accurate HDR monitoring available outside a dedicated broadcast suite. Its factory-calibrated accuracy covers 99.5% of the Adobe RGB and DCI-P3 color spaces, satisfying the most demanding requirements of film colorists, post-production specialists, and high-end photographers. Thunderbolt 3 connectivity and a built-in SD card reader add practical value to this exceptional professional tool.',
+    descriptionHe: 'ה-Asus ProArt PA32UCX הוא מסך ייחוס מקצועי בגודל 32 אינץ׳ עם רזולוציית 4K ופאנל Mini LED, הכולל 1152 אזורי עמעום מקומי ובהירות שיא של 1200 nits לניטור HDR מדויק. הדיוק המכויל מהיצרן מכסה 99.5% ממרחבי הצבע Adobe RGB ו-DCI-P3, ומתאים לעבודה מקצועית עם צבע בתחומי הקולנוע והפוסט-פרודקשן. חיבור Thunderbolt 3 וקורא כרטיסי SD מובנה מוסיפים נוחות שימוש לכלי המקצועי הזה.',
     shortDescription: '32" 4K Mini LED professional reference monitor with 1200-nit HDR and 99.5% DCI-P3 coverage.',
+    shortDescriptionHe: 'מסך ייחוס מקצועי בגודל 32 אינץ׳ עם פאנל Mini LED, רזולוציית 4K ותמיכה ב-Thunderbolt 3.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=PA32UCX'],
     tags: ['professional', 'mini-led', '4k', 'hdr', 'color-accurate', 'proart', 'featured'],
     specs: {
@@ -547,7 +575,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Asus ProArt PA348CGV is a 34-inch ultrawide QHD IPS monitor bridging the gap between professional color work and creative content production. With 120Hz refresh rate support and Adaptive-Sync, it handles smooth video playback and light gaming alongside demanding color-critical tasks. A built-in USB-C hub with 90W power delivery, factory Delta E less than 2 calibration, and built-in speakers with DTS sound make this an all-in-one creative workstation display.',
+    descriptionHe: 'ה-Asus ProArt PA348CGV הוא מסך רחב במיוחד בגודל 34 אינץ׳ עם רזולוציית QHD ופאנל IPS, המשלב עבודה מקצועית עם צבע לצד יצירת תוכן. קצב רענון של 120Hz תומך בהפעלת וידאו חלקה וגיימינג קליל לצד משימות הדורשות דיוק צבעים. רכזת USB-C מובנית עם אספקת חשמל של 90W, כיול מפעל ל-Delta E מתחת ל-2 ורמקולים מובנים עם סאונד DTS משלימים מסך רב-תכליתי ליוצרי תוכן.',
     shortDescription: '34" ultrawide QHD IPS creator monitor with 120Hz, USB-C 90W, and factory color calibration.',
+    shortDescriptionHe: 'מסך ליוצרי תוכן רחב במיוחד בגודל 34 אינץ׳ עם רזולוציית QHD, פאנל IPS וחיבור USB-C 90W.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=PA348CGV'],
     tags: ['creator', 'ips', 'ultrawide', 'qhd', '120hz', 'usb-c', 'proart'],
     specs: {
@@ -585,7 +615,9 @@ module.exports = [
     isFeatured: true,
     isPublished: true,
     description: 'The Asus ProArt PA27DCE-K is a 27-inch 4K OLED professional display that delivers the infinite contrast ratios and true black levels that demanding creative professionals have long waited for in a calibrated OLED monitor. Factory calibrated to Delta E less than 1 and covering 99% of DCI-P3, it meets the rigorous demands of film, photography, and graphic design work. The glossy OLED panel produces a stunning image depth that LCD technology simply cannot replicate, making this a standout tool for anyone who works with HDR content.',
+    descriptionHe: 'ה-Asus ProArt PA27DCE-K הוא מסך מקצועי בגודל 27 אינץ׳ עם רזולוציית 4K ופאנל OLED, המספק ניגודיות גבוהה ורמות שחור עמוקות הודות להארה העצמאית של הפיקסלים. כיול מפעל ל-Delta E מתחת ל-1 וכיסוי של 99% ממרחב הצבע DCI-P3 מתאימים לעבודה מקצועית בתחומי הקולנוע, הצילום והעיצוב הגרפי. פאנל ה-OLED מספק עומק תמונה המתאים במיוחד לעבודה עם תוכן HDR.',
     shortDescription: '27" 4K OLED professional monitor with infinite contrast, Delta E<1 calibration, and 99% DCI-P3.',
+    shortDescriptionHe: 'מסך מקצועי בגודל 27 אינץ׳ עם פאנל OLED, רזולוציית 4K וכיול מפעל ל-Delta E מתחת ל-1.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=PA27DCE-K'],
     tags: ['professional', 'oled', '4k', 'hdr', 'color-accurate', 'proart', 'featured'],
     specs: {
@@ -623,7 +655,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Asus VA24EHF is a compact and affordable 24-inch Full HD IPS office monitor delivering clean, accurate visuals for everyday productivity. Its 100Hz refresh rate gives desktop usage a noticeably smoother feel compared to standard 60Hz panels, while Eye Care technologies including Low Blue Light and Flicker-Free certification protect your eyes during long work days. The ultra-slim bezel and compact footprint make it an ideal choice for space-conscious desk setups.',
+    descriptionHe: 'ה-Asus VA24EHF הוא מסך משרדי קומפקטי ומשתלם בגודל 24 אינץ׳ עם רזולוציית Full HD ופאנל IPS, המציג תמונה ברורה ומדויקת לעבודה יומיומית. קצב רענון של 100Hz מעניק לשימוש בשולחן העבודה תחושה חלקה יותר בהשוואה לפאנלים סטנדרטיים של 60Hz, וטכנולוגיות Eye Care כולל Low Blue Light ותקן Flicker-Free מסייעות להפחית הבהוב וחשיפה לאור כחול לאורך יום עבודה ארוך. המסגרות הדקות והמידות הקומפקטיות מתאימות לשולחנות עם מקום מוגבל.',
     shortDescription: '24" FHD IPS office monitor with 100Hz refresh rate and Eye Care low-blue-light technology.',
+    shortDescriptionHe: 'מסך משרדי בגודל 24 אינץ׳ עם רזולוציית Full HD, פאנל IPS וקצב רענון של 100Hz.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=VA24EHF'],
     tags: ['office', 'ips', 'full-hd', '100hz', 'eye-care'],
     specs: {
@@ -661,7 +695,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Asus VP32AQ is a 32-inch QHD IPS office monitor that steps up the workspace experience with greater screen real estate and sharper pixel density compared to Full HD alternatives. Its 75Hz refresh rate and ASUS Eye Care technology with Flicker-Free and Low Blue Light features make it well-suited for productivity-focused users who spend many hours in front of their screens. The broad connectivity options and solid build quality make this a reliable long-term workstation display.',
+    descriptionHe: 'ה-Asus VP32AQ הוא מסך משרדי בגודל 32 אינץ׳ עם רזולוציית QHD, המעניק שטח מסך רב יותר וצפיפות פיקסלים חדה יותר בהשוואה לחלופות Full HD. קצב רענון של 75Hz וטכנולוגיית Eye Care הכוללת Low Blue Light ו-Flicker-Free מתאימים למשתמשים המבלים שעות רבות מול המסך. מגוון חיבורים רחב משלים מסך תחנת עבודה לשימוש משרדי יומיומי.',
     shortDescription: '32" QHD IPS office monitor with Eye Care technology and ample screen space for productivity.',
+    shortDescriptionHe: 'מסך משרדי בגודל 32 אינץ׳ עם רזולוציית QHD ופאנל IPS, עם טכנולוגיית Eye Care.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=VP32AQ'],
     tags: ['office', 'ips', 'qhd', '75hz', 'eye-care'],
     specs: {
@@ -699,7 +735,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Asus BE24EQSB is a business-class 24-inch Full HD IPS monitor designed to meet the demands of professional office environments. An integrated pop-up webcam with IR for Windows Hello login, a built-in microphone, and a privacy shutter make it uniquely suited for video conferencing and hybrid work. The fully ergonomic stand with height, tilt, swivel, and pivot adjustment accommodates a wide range of working positions, while the daisy-chain DisplayPort output allows clean multi-monitor deployments.',
+    descriptionHe: 'ה-Asus BE24EQSB הוא מסך עסקי בגודל 24 אינץ׳ עם רזולוציית Full HD ופאנל IPS, המיועד לסביבות משרדיות מקצועיות. מצלמת רשת מובנית עם חיישן IR לזיהוי Windows Hello, מיקרופון מובנה ותריס פרטיות הופכים אותו למתאים במיוחד לשיחות ועידה ולעבודה היברידית. מעמד ארגונומי מלא עם כיוונון גובה, הטיה, סיבוב ופיבוט מתאים למגוון רחב של תנוחות עבודה, ופלט DisplayPort לשרשור מסכים מאפשר פריסה נקייה של מספר מסכים.',
     shortDescription: '24" FHD IPS business monitor with built-in webcam, Windows Hello IR, and full ergonomic stand.',
+    shortDescriptionHe: 'מסך עסקי בגודל 24 אינץ׳ עם רזולוציית Full HD, מצלמת רשת מובנית ותמיכה ב-Windows Hello.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=BE24EQSB'],
     tags: ['office', 'ips', 'full-hd', 'webcam', 'business', 'ergonomic'],
     specs: {
@@ -737,7 +775,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Asus TUF Gaming VG28UQL1A is a 28-inch 4K IPS gaming monitor with a 144Hz refresh rate, purpose-built for next-generation console and PC gaming. HDMI 2.1 ports enable 4K 144Hz input from compatible consoles including the PlayStation 5 and Xbox Series X, while the DSC compression on DisplayPort 1.4 maintains full 4K 144Hz with PC graphics cards. HDR support and wide color coverage elevate cinematic game content, making this monitor a compelling bridge between PC and console gaming.',
+    descriptionHe: 'ה-Asus TUF Gaming VG28UQL1A הוא מסך גיימינג בגודל 28 אינץ׳ עם רזולוציית 4K, התומך בקצב רענון של עד 144Hz. יציאות HDMI 2.1 תומכות בגיימינג בקצב רענון גבוה מקונסולות תואמות כמו PlayStation 5 ו-Xbox Series X, בעוד דחיסת DSC על DisplayPort 1.4 שומרת על 4K מלא ב-144Hz ממחשבי גיימינג. תמיכת HDR וכיסוי צבעים רחב משלימים מסך המתאים הן לגיימינג בקונסולה והן במחשב.',
     shortDescription: '28" 4K IPS gaming monitor with 144Hz, HDMI 2.1 for console 4K 144Hz, and HDR support.',
+    shortDescriptionHe: 'מסך גיימינג בגודל 28 אינץ׳ עם רזולוציית 4K, קצב רענון 144Hz ותמיכת HDMI 2.1 לקונסולות.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=VG28UQL1A'],
     tags: ['gaming', 'ips', '4k', '144hz', 'hdr', 'console', 'hdmi2.1', 'tuf'],
     specs: {
@@ -775,7 +815,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Asus ROG Swift PG35VQ is a 35-inch curved ultrawide VA gaming monitor that blends exceptional immersion with high-refresh-rate performance at 200Hz. With 512 local dimming zones and peak HDR brightness of over 1000 nits, it delivers HDR content with dramatic depth and accuracy. The 1800R curvature draws the ultrawide panel naturally into your peripheral vision, and NVIDIA G-Sync Ultimate hardware module guarantees perfectly smooth frame delivery without compromise.',
+    descriptionHe: 'ה-Asus ROG Swift PG35VQ הוא מסך גיימינג קעור ורחב במיוחד בגודל 35 אינץ׳ עם פאנל VA, המשלב קצב רענון גבוה עם חוויית צפייה רחבה. 512 אזורי עמעום מקומי ובהירות HDR שיא מעל 1000 nits מספקים תוכן HDR בעומק ובדיוק מרשימים. עקמומיות 1800R שומרת על שטח הפאנל הרחב בטווח זווית צפייה אחידה, ותמיכה ב-NVIDIA G-Sync שומרת על העברת פריימים חלקה.',
     shortDescription: '35" curved ultrawide QHD VA gaming monitor with 200Hz, G-Sync Ultimate, and 1000-nit HDR.',
+    shortDescriptionHe: 'מסך גיימינג קעור ורחב במיוחד בגודל 35 אינץ׳ עם פאנל VA, קצב רענון גבוה ותמיכת HDR.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=PG35VQ'],
     tags: ['gaming', 'va', 'ultrawide', 'qhd', 'curved', 'hdr', 'gsync', 'rog'],
     specs: {
@@ -813,7 +855,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Asus ROG Swift PG49WCD is a massive 49-inch dual-QHD OLED super-ultrawide monitor that replaces a dual-monitor setup with a single seamless display surface. Its OLED panel delivers self-emissive pixel-level contrast alongside a 144Hz refresh rate and NVIDIA G-Sync Compatible adaptive sync, ensuring both HDR media playback and gaming look extraordinary. The 32:9 aspect ratio spans an enormous field of view that pulls you into games, simulation titles, and multitasking environments like nothing else on the market.',
+    descriptionHe: 'ה-Asus ROG Swift PG49WCD הוא מסך גיימינג בגודל 49 אינץ׳ רחב במיוחד עם פאנל QD-OLED ורזולוציית Dual QHD, המחליף למעשה מערך דו-מסכי במשטח תצוגה יחיד ורציף. הפיקסלים העצמאיים המאירים בעצמם של פאנל ה-OLED מספקים ניגודיות גבוהה לצד קצב רענון של 144Hz ותמיכה ב-NVIDIA G-Sync, לתוכן HDR ולגיימינג כאחד. יחס התמונה הרחב של 32:9 מתאים למשחקים, לתוכן סימולציה ולריבוי משימות.',
     shortDescription: '49" Dual QHD OLED super-ultrawide gaming monitor with 144Hz, HDR, and G-Sync Compatible.',
+    shortDescriptionHe: 'מסך גיימינג ענק ורחב במיוחד בגודל 49 אינץ׳ עם פאנל QD-OLED, רזולוציית Dual QHD ויחס תמונה 32:9.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=PG49WCD'],
     tags: ['gaming', 'oled', 'ultrawide', 'dual-qhd', '144hz', 'hdr', 'gsync', 'rog', 'trending'],
     specs: {
@@ -851,7 +895,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Asus TUF Gaming VG24VQ is a 24-inch curved Full HD VA gaming monitor providing the immersive benefits of a curved display at an accessible price point. Its 144Hz refresh rate keeps fast-paced game content smooth while the VA panel\'s superior contrast ratio over IPS makes dark environments pop with detail and atmosphere. AMD FreeSync Premium eliminates screen tearing and the 1500R curvature naturally frames your field of view, making this a great entry into curved gaming displays.',
+    descriptionHe: 'ה-Asus TUF Gaming VG24VQ הוא מסך גיימינג קעור בגודל 24 אינץ׳ עם רזולוציית Full HD ופאנל VA, המעניק את יתרונות המסך הקעור במחיר נגיש. קצב רענון של 144Hz שומר על תוכן משחק מהיר וחלק, ופאנל ה-VA מספק ניגודיות גבוהה המדגישה פרטים באווירה בסביבות חשוכות. תמיכה ב-AMD FreeSync Premium שומרת על סנכרון אדפטיבי ומסייעת לצמצם קריעות מסך, והעקמומיות 1500R ממסגרת את שדה הראייה.',
     shortDescription: '24" curved FHD VA gaming monitor with 144Hz refresh rate and AMD FreeSync Premium.',
+    shortDescriptionHe: 'מסך גיימינג קעור בגודל 24 אינץ׳ עם רזולוציית Full HD, פאנל VA וקצב רענון של 144Hz.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=VG24VQ'],
     tags: ['gaming', 'va', 'full-hd', '144hz', 'curved', 'freesync', 'tuf'],
     specs: {
@@ -889,7 +935,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Asus ProArt Display PA27JCV is a 27-inch QHD IPS creator monitor delivering accurate, well-calibrated visuals for content creators who need reliable color reproduction without the expense of a flagship professional panel. Factory pre-calibrated to Delta E less than 2 across the sRGB and DCI-P3 color spaces, it handles photography, video, and graphic design workflows with confidence. A USB-C port with DisplayPort Alt Mode and 65W power delivery reduces cable clutter while keeping creative tools connected.',
+    descriptionHe: 'ה-Asus ProArt Display PA27JCV הוא מסך ליוצרי תוכן בגודל 27 אינץ׳ עם רזולוציית QHD ופאנל IPS, המספק תמונה מדויקת ומכוילת מהיצרן ליוצרים הזקוקים לשחזור צבעים אמין. כיול מפעל ל-Delta E מתחת ל-2 על פני מרחבי הצבע sRGB ו-DCI-P3 מתאים לעבודה בתהליכי צילום, עריכת וידאו ועיצוב גרפי. יציאת USB-C עם DisplayPort Alt Mode ואספקת חשמל של 65W מפשטת את החיבוריות סביב תחנת העבודה.',
     shortDescription: '27" QHD IPS creator monitor with factory color calibration, USB-C, and 99% sRGB coverage.',
+    shortDescriptionHe: 'מסך ליוצרי תוכן בגודל 27 אינץ׳ עם רזולוציית QHD, פאנל IPS וכיול צבעים מפעל.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=PA27JCV'],
     tags: ['creator', 'ips', 'qhd', '75hz', 'color-accurate', 'usb-c', 'proart'],
     specs: {
@@ -927,7 +975,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Asus ROG Swift PG27UQ was a landmark monitor when it launched as one of the first 4K 144Hz displays available to consumers, combining pixel density and refresh rate that had previously been mutually exclusive. Its 384-zone local dimming and DisplayHDR 1000 certification deliver HDR experiences with impressive contrast and peak brightness, while NVIDIA G-Sync hardware ensures smooth, tear-free frame delivery at any frame rate. A fully adjustable ergonomic stand and Aura Sync RGB lighting complete a premium package that defined the ROG Swift line.',
+    descriptionHe: 'ה-Asus ROG Swift PG27UQ היה מסך פורץ דרך בהשקתו, בהיותו אחד ממסכי ה-4K הראשונים שהציעו גם קצב רענון של 144Hz — שילוב שלא היה קיים קודם לכן בשוק הצרכני. 384 אזורי עמעום ותקן DisplayHDR 1000 מספקים חוויית HDR עם ניגודיות ובהירות שיא מרשימות, בעוד תמיכה ב-NVIDIA G-Sync מבטיחה העברת פריימים חלקה בכל קצב פריימים. מעמד מתכוונן במלואו ותאורת Aura Sync RGB משלימים חבילה שהגדירה את קו המוצרים של ROG Swift.',
     shortDescription: '27" 4K IPS gaming monitor with 144Hz, NVIDIA G-Sync, and DisplayHDR 1000 certification.',
+    shortDescriptionHe: 'מסך גיימינג בגודל 27 אינץ׳ עם רזולוציית 4K, קצב רענון 144Hz ותקן DisplayHDR 1000.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=PG27UQ'],
     tags: ['gaming', 'ips', '4k', '144hz', 'hdr', 'gsync', 'rog'],
     specs: {
