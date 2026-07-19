@@ -15,7 +15,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The HP V24i G5 is a no-frills 24-inch Full HD IPS office monitor that delivers reliable everyday performance at an entry-level price. Its 75Hz refresh rate smooths scrolling and video playback, and the three-sided micro-edge bezel creates a modern, open look suited to tight desk setups or multi-monitor arrangements. IPS technology ensures consistent color and brightness across wide viewing angles.',
+    descriptionHe: 'מסך HP V24i G5 הוא מסך משרדי בגודל 24 אינץ׳ ברזולוציית Full HD עם קצב רענון של 75Hz. הוא כולל עיצוב מסגרת דקה בשלושה צדדים ופאנל IPS.',
     shortDescription: 'Reliable 24" FHD IPS entry-level office monitor with 75Hz and micro-edge bezels.',
+    shortDescriptionHe: 'מסך משרדי 24 אינץ׳ Full HD IPS עם 75Hz ומסגרות דקות.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=HP+V24i+G5'],
     tags: ['office', 'ips', 'fhd', 'hp', 'budget', 'micro-edge'],
     specs: {
@@ -53,7 +55,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The HP V27i G5 steps up to a 27-inch Full HD IPS panel, giving everyday office users more screen space for multitasking and side-by-side document viewing. The micro-edge three-sided bezel design creates a clean, professional appearance on any desk, and 75Hz refresh rate with AMD FreeSync makes casual gaming on the same monitor an option without any additional investment.',
+    descriptionHe: 'מסך HP V27i G5 הוא מסך משרדי בגודל 27 אינץ׳ ברזולוציית Full HD, עם קצב רענון של 75Hz ותמיכת AMD FreeSync. הוא כולל עיצוב מסגרת דקה בשלושה צדדים.',
     shortDescription: 'Spacious 27" FHD IPS office monitor with micro-edge design and FreeSync.',
+    shortDescriptionHe: 'מסך משרדי 27 אינץ׳ Full HD IPS עם FreeSync.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=HP+V27i+G5'],
     tags: ['office', 'ips', 'fhd', 'hp', 'budget', 'micro-edge'],
     specs: {
@@ -91,7 +95,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The HP 24mh is a 24-inch Full HD IPS monitor that stands out from the budget crowd by including built-in dual speakers, removing the need for desktop speaker accessories. Its 75Hz refresh rate and AMD FreeSync make it equally capable for office productivity and casual gaming. The micro-edge display and height-tilt adjustability provide a comfortable and modern viewing setup.',
+    descriptionHe: 'מסך HP 24mh הוא מסך בגודל 24 אינץ׳ ברזולוציית Full HD, עם רמקולים כפולים מובנים, קצב רענון של 75Hz ותמיכת AMD FreeSync.',
     shortDescription: '24" FHD IPS office monitor with built-in speakers and 75Hz FreeSync display.',
+    shortDescriptionHe: 'מסך 24 אינץ׳ Full HD IPS עם רמקולים מובנים ו-FreeSync.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=HP+24mh'],
     tags: ['office', 'ips', 'fhd', 'hp', 'speakers', 'freesync'],
     specs: {
@@ -129,7 +135,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The HP M27fq is a 27-inch QHD IPS monitor from the M-series that brings sharper resolution and built-in audio to a mid-range price bracket. Its micro-edge display and dual integrated speakers make it a clean all-in-one solution for home office and hybrid work setups, with 75Hz refresh and AMD FreeSync adding light gaming capability on top of everyday productivity.',
+    descriptionHe: 'מסך HP M27fq מסדרת M הוא מסך בגודל 27 אינץ׳ ברזולוציית QHD, עם רמקולים כפולים מובנים, קצב רענון של 75Hz ותמיכת AMD FreeSync.',
     shortDescription: 'Sharp 27" QHD IPS office monitor with built-in speakers and FreeSync.',
+    shortDescriptionHe: 'מסך 27 אינץ׳ QHD IPS עם רמקולים מובנים ו-FreeSync.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=HP+M27fq'],
     tags: ['office', 'ips', 'qhd', 'hp', 'speakers', 'freesync', 'm-series'],
     specs: {
@@ -167,7 +175,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The HP M32f is a large-format 32-inch Full HD IPS monitor that maximizes desk presence without moving beyond a comfortable Full HD resolution for everyday tasks. Its dual built-in speakers and micro-edge design keep the setup minimal, while the wide 75Hz IPS panel provides accurate colors and generous viewing angles for both work and entertainment throughout the day.',
+    descriptionHe: 'מסך HP M32f הוא מסך בגודל 32 אינץ׳ ברזולוציית Full HD, עם רמקולים כפולים מובנים, פאנל IPS וקצב רענון של 75Hz.',
     shortDescription: 'Large 32" FHD IPS office monitor with built-in speakers and wide viewing angles.',
+    shortDescriptionHe: 'מסך 32 אינץ׳ Full HD IPS עם רמקולים מובנים.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=HP+M32f'],
     tags: ['office', 'ips', 'fhd', 'hp', 'speakers', 'large', 'm-series'],
     specs: {
@@ -205,7 +215,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The HP Z27k G3 is a 27-inch 4K IPS professional monitor built for workstation users who demand precise color fidelity and flexible connectivity. USB-C with Power Delivery enables a single-cable connection to a laptop for video, data, and charging simultaneously. The full-ergonomic height-adjustable stand allows the monitor to pivot, swivel, and tilt for a perfectly customized workspace.',
+    descriptionHe: 'מסך HP Z27k G3 הוא מסך מקצועי בגודל 27 אינץ׳ ברזולוציית 4K, עם חיבור USB-C התומך באספקת חשמל. המעמד מאפשר ציר, סיבוב והטיה.',
     shortDescription: 'Professional 27" 4K IPS workstation monitor with USB-C Power Delivery and ergonomic stand.',
+    shortDescriptionHe: 'מסך מקצועי 27 אינץ׳ 4K IPS עם USB-C.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=HP+Z27k+G3'],
     tags: ['professional', 'ips', '4k', 'hp', 'z-series', 'usb-c', 'ergonomic'],
     specs: {
@@ -243,7 +255,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The HP Z32k G3 brings 4K UHD resolution to a 32-inch IPS professional panel, providing the expansive, pixel-dense workspace that engineers, architects, and data scientists demand. USB-C with 96W Power Delivery simplifies connectivity to modern laptops, while the height-adjustable ergonomic stand with tilt, swivel, and pivot supports extended sessions in complete comfort.',
+    descriptionHe: 'מסך HP Z32k G3 הוא מסך מקצועי בגודל 32 אינץ׳ ברזולוציית 4K, עם חיבור USB-C התומך באספקת חשמל של 96W. המעמד מתכוונן בגובה, עם הטיה, סיבוב וציר.',
     shortDescription: 'Expansive 32" 4K IPS workstation monitor with USB-C and fully ergonomic stand.',
+    shortDescriptionHe: 'מסך מקצועי 32 אינץ׳ 4K IPS עם USB-C 96W.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=HP+Z32k+G3'],
     tags: ['professional', 'ips', '4k', 'hp', 'z-series', 'usb-c', 'ergonomic'],
     specs: {
@@ -281,7 +295,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The HP E24 G5 is a business-class 24-inch Full HD IPS monitor from the EliteDisplay E-series, designed for corporate environments that require reliable performance and ergonomic flexibility. Its height-adjustable, tilt, swivel, and pivot-capable stand adapts to any user posture, and the 60Hz IPS panel delivers the consistent, accurate colors needed for professional document and media work.',
+    descriptionHe: 'מסך HP E24 G5 מסדרת EliteDisplay E הוא מסך עסקי בגודל 24 אינץ׳ ברזולוציית Full HD. המעמד מאפשר התאמת גובה, הטיה, סיבוב וציר, וקצב הרענון הוא 60Hz.',
     shortDescription: 'Business-grade 24" FHD IPS EliteDisplay monitor with full ergonomic adjustment.',
+    shortDescriptionHe: 'מסך עסקי 24 אינץ׳ Full HD IPS מסדרת EliteDisplay.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=HP+E24+G5'],
     tags: ['office', 'ips', 'fhd', 'hp', 'e-series', 'ergonomic', 'business'],
     specs: {
@@ -319,7 +335,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The HP E27 G5 is a 27-inch Full HD IPS EliteDisplay monitor engineered for demanding business users who prioritize ergonomics and manageability. The height-adjustable stand with tilt, swivel, and portrait pivot supports any working posture, and the robust port selection including HDMI, DisplayPort, USB-C, and multiple USB-A ports makes it a versatile connectivity hub for any desk configuration.',
+    descriptionHe: 'מסך HP E27 G5 הוא מסך עסקי בגודל 27 אינץ׳ ברזולוציית Full HD מסדרת EliteDisplay. המעמד מאפשר התאמת גובה, הטיה, סיבוב וציר, וכולל חיבורי HDMI, DisplayPort, USB-C ומספר יציאות USB-A.',
     shortDescription: 'Versatile 27" FHD IPS business monitor with ergonomic stand and comprehensive connectivity.',
+    shortDescriptionHe: 'מסך עסקי 27 אינץ׳ Full HD IPS מסדרת EliteDisplay.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=HP+E27+G5'],
     tags: ['office', 'ips', 'fhd', 'hp', 'e-series', 'ergonomic', 'business'],
     specs: {
@@ -357,7 +375,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The HP E27q G5 brings QHD resolution to the EliteDisplay E-series, making it an ideal upgrade for business professionals who need sharper text and finer image detail on a 27-inch screen. The height-adjustable stand with full ergonomic adjustment addresses long-term comfort, while the IPS panel and 60Hz refresh rate deliver dependable, accurate visuals throughout the most demanding workdays.',
+    descriptionHe: 'מסך HP E27q G5 הוא מסך עסקי בגודל 27 אינץ׳ ברזולוציית QHD מסדרת EliteDisplay. המעמד מאפשר התאמה ארגונומית מלאה, ופאנל ה-IPS פועל בקצב רענון של 60Hz.',
     shortDescription: 'Sharp 27" QHD IPS business monitor with ergonomic stand and accurate IPS color.',
+    shortDescriptionHe: 'מסך עסקי 27 אינץ׳ QHD IPS מסדרת EliteDisplay.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=HP+E27q+G5'],
     tags: ['office', 'ips', 'qhd', 'hp', 'e-series', 'ergonomic', 'business'],
     specs: {
@@ -395,7 +415,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The HP OMEN 27q is a 27-inch QHD IPS gaming monitor that delivers the sharp resolution and fast refresh rate that modern gamers demand. Its 165Hz panel with 1ms response time handles fast-paced competitive titles with ease, while AMD FreeSync Premium and HDR support add visual fluidity and depth. The height-adjustable stand and sleek OMEN aesthetic make it a centerpiece for any gaming battlestation.',
+    descriptionHe: 'מסך HP OMEN 27q הוא מסך גיימינג בגודל 27 אינץ׳ ברזולוציית QHD, עם קצב רענון של 165Hz וזמן תגובה של 1ms. הוא כולל תמיכת AMD FreeSync Premium, תמיכת HDR ומעמד מתכוונן בגובה.',
     shortDescription: 'Competitive 27" QHD IPS OMEN gaming monitor with 165Hz, HDR, and FreeSync Premium.',
+    shortDescriptionHe: 'מסך גיימינג 27 אינץ׳ QHD 165Hz IPS מסדרת OMEN, עם HDR ו-FreeSync Premium.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=HP+OMEN+27q'],
     tags: ['gaming', 'ips', 'qhd', 'hp', 'omen', '165hz', 'hdr', 'freesync'],
     specs: {
@@ -434,7 +456,9 @@ module.exports = [
     isFeatured: true,
     isPublished: true,
     description: 'The HP OMEN 27u is a 27-inch 4K IPS gaming monitor that refuses to compromise between resolution and performance. Its 144Hz panel renders every scene in stunning Ultra HD detail while maintaining the smooth motion needed for fast gaming. HDR support with wide color coverage brings game environments to life with brilliant highlights and rich shadow detail, all housed in the bold, aggressive OMEN design language.',
+    descriptionHe: 'מסך HP OMEN 27u הוא מסך גיימינג בגודל 27 אינץ׳ ברזולוציית 4K, עם קצב רענון של 144Hz. הוא כולל תמיכת HDR וכיסוי צבעים רחב.',
     shortDescription: 'Stunning 27" 4K IPS OMEN gaming monitor with 144Hz speed and HDR brilliance.',
+    shortDescriptionHe: 'מסך גיימינג 27 אינץ׳ 4K 144Hz IPS מסדרת OMEN, עם HDR.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=HP+OMEN+27u'],
     tags: ['gaming', 'ips', '4k', 'hp', 'omen', '144hz', 'hdr', 'featured'],
     specs: {
@@ -472,7 +496,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The HP Pavilion 27 QHD is a 27-inch QHD IPS monitor that sits comfortably in the mid-range office and home segment, offering sharper-than-Full-HD resolution with built-in speakers for a complete desk setup out of the box. Its micro-edge design and 75Hz IPS panel make it an attractive all-rounder for streaming, productivity, and light gaming without the premium price tag.',
+    descriptionHe: 'מסך HP Pavilion 27 QHD הוא מסך בגודל 27 אינץ׳ ברזולוציית QHD, עם רמקולים מובנים, קצב רענון של 75Hz ותמיכת AMD FreeSync.',
     shortDescription: 'Mid-range 27" QHD IPS Pavilion monitor with built-in speakers and micro-edge design.',
+    shortDescriptionHe: 'מסך 27 אינץ׳ QHD IPS מסדרת Pavilion, עם רמקולים מובנים.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=HP+Pavilion+27+QHD'],
     tags: ['office', 'ips', 'qhd', 'hp', 'pavilion', 'speakers'],
     specs: {
@@ -511,7 +537,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The HP OMEN 34c is a 34-inch curved ultrawide VA gaming monitor that surrounds you with a sweeping 1000R curvature and a 21:9 aspect ratio, eliminating peripheral distractions and pulling you deeper into the game world. Its 165Hz refresh rate and 1ms response time keep fast action sharp and responsive, while HDR support enhances the already impressive depth and contrast of the VA panel.',
+    descriptionHe: 'מסך HP OMEN 34c הוא מסך גיימינג רחב במיוחד וקעור בגודל 34 אינץ׳, עם עקמומיות 1000R, יחס תמונה 21:9, קצב רענון של 165Hz וזמן תגובה של 1ms. הוא כולל תמיכת HDR ותמיכת AMD FreeSync Premium.',
     shortDescription: 'Immersive 34" curved ultrawide VA OMEN gaming monitor with 165Hz and HDR.',
+    shortDescriptionHe: 'מסך גיימינג רחב במיוחד 34 אינץ׳ קעור VA מסדרת OMEN, עם 165Hz ו-HDR.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=HP+OMEN+34c'],
     tags: ['gaming', 'va', 'ultrawide', 'curved', 'hp', 'omen', '165hz', 'hdr'],
     specs: {
@@ -549,7 +577,9 @@ module.exports = [
     isFeatured: true,
     isPublished: true,
     description: 'The HP Z34c G3 is a 34-inch ultrawide QHD IPS professional monitor engineered for the most demanding creative and analytical workloads. Its wide 21:9 canvas reduces the need to switch between windows, making it ideal for financial modeling, video editing timelines, and software development. USB-C connectivity with Power Delivery simplifies laptop integration, and the factory color calibration meets the exacting standards of professional color workflows.',
+    descriptionHe: 'מסך HP Z34c G3 הוא מסך מקצועי רחב במיוחד בגודל 34 אינץ׳ ברזולוציית UltraWide QHD, ביחס תמונה 21:9. הוא כולל חיבור USB-C וכיול צבעים מהמפעל.',
     shortDescription: 'Professional 34" ultrawide QHD IPS workstation monitor with USB-C and factory color calibration.',
+    shortDescriptionHe: 'מסך מקצועי רחב במיוחד 34 אינץ׳ Ultrawide QHD IPS עם USB-C וכיול מהמפעל.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=HP+Z34c+G3'],
     tags: ['professional', 'ips', 'ultrawide', 'hp', 'z-series', 'usb-c', 'color-accurate', 'featured'],
     specs: {

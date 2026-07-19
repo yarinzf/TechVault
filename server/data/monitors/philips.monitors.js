@@ -16,7 +16,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Philips 243V7QDAB is a reliable 24-inch Full HD IPS office monitor that gets the fundamentals right. Its 75Hz refresh rate keeps on-screen motion smooth during video calls and document scrolling, while the IPS panel ensures that colour remains consistent from any angle — making it equally effective whether you work alone or share your screen.',
+    descriptionHe: 'מסך Philips 243V7QDAB הוא מסך משרדי בגודל 24 אינץ׳ ברזולוציית Full HD, עם קצב רענון של 75Hz ופאנל IPS.',
     shortDescription: 'Reliable 24" FHD IPS office monitor with 75Hz smooth scrolling.',
+    shortDescriptionHe: 'מסך משרדי 24 אינץ׳ Full HD IPS עם 75Hz.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=243V7QDAB'],
     tags: ['office', 'ips', 'fhd', '24-inch'],
     specs: {
@@ -55,7 +57,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Philips 273V7QDAB scales the 243V7QDAB formula up to a 27-inch Full HD IPS panel, giving office workers more screen real estate for multitasking without a significant jump in price. The 75Hz refresh rate and wide IPS viewing angles make it a practical upgrade for anyone moving from a 24-inch display.',
+    descriptionHe: 'מסך Philips 273V7QDAB הוא מסך משרדי בגודל 27 אינץ׳ ברזולוציית Full HD, עם קצב רענון של 75Hz ופאנל IPS בעל זוויות צפייה רחבות.',
     shortDescription: 'Practical 27" FHD 75Hz IPS upgrade for desk multitaskers.',
+    shortDescriptionHe: 'מסך משרדי 27 אינץ׳ Full HD IPS עם 75Hz.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=273V7QDAB'],
     tags: ['office', 'ips', 'fhd', '27-inch'],
     specs: {
@@ -94,7 +98,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Philips 275E2FAE brings 4K UHD resolution to a 27-inch IPS panel for professionals and home users who want exceptional image detail. Built-in stereo speakers, a USB hub, and a sleek frameless design make it a versatile all-in-one display solution that works as well for video editing and photo work as it does for everyday office tasks.',
+    descriptionHe: 'מסך Philips 275E2FAE הוא מסך משרדי בגודל 27 אינץ׳ ברזולוציית 4K על פאנל IPS. הוא כולל רמקולים סטריאו מובנים, רכזת USB ועיצוב חסר מסגרת.',
     shortDescription: '27" 4K IPS office monitor with built-in speakers and USB hub.',
+    shortDescriptionHe: 'מסך משרדי 27 אינץ׳ 4K IPS עם רמקולים מובנים ורכזת USB.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=275E2FAE'],
     tags: ['office', 'ips', '4k', '27-inch', 'speakers', 'usb-hub'],
     specs: {
@@ -133,7 +139,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Philips 279P1 is a professional-grade 27-inch 4K IPS monitor that puts connectivity at the forefront with USB-C supporting 90W power delivery. DisplayHDR 600 certification, a Thunderbolt-compatible USB-C port, built-in pop-up webcam, and an ergonomic stand with full height and pivot adjustments make it a complete hot-desk workstation solution.',
+    descriptionHe: 'מסך Philips 279P1 הוא מסך מקצועי בגודל 27 אינץ׳ ברזולוציית 4K, עם חיבור USB-C התומך באספקת חשמל של 90W. הוא כולל הסמכת DisplayHDR 600, יציאת USB-C תואמת Thunderbolt, מצלמת רשת נשלפת ומעמד עם התאמת גובה וציר.',
     shortDescription: '27" 4K IPS professional monitor with USB-C 90W PD and pop-up webcam.',
+    shortDescriptionHe: 'מסך מקצועי 27 אינץ׳ 4K IPS עם USB-C 90W ומצלמת רשת נשלפת.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=279P1'],
     tags: ['professional', 'ips', '4k', '27-inch', 'usb-c', 'hdr', 'webcam'],
     specs: {
@@ -172,7 +180,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Philips 325E1C brings an affordable curved VA panel to the 32-inch QHD office space. Its 1800R curvature adds a gentle sense of immersion to productivity tasks, while the VA panel delivers richer contrast than comparable IPS displays — making documents and presentations look sharper and more vivid at a budget-friendly price point.',
+    descriptionHe: 'מסך Philips 325E1C הוא מסך משרדי קעור בגודל 32 אינץ׳ ברזולוציית QHD עם פאנל VA ועקמומיות 1800R.',
     shortDescription: '32" QHD curved VA office monitor with rich contrast at a budget price.',
+    shortDescriptionHe: 'מסך משרדי קעור 32 אינץ׳ QHD VA.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=325E1C'],
     tags: ['office', 'va', 'qhd', '32-inch', 'curved'],
     specs: {
@@ -211,7 +221,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Philips 346E2CUAE is a 34-inch ultrawide QHD IPS office monitor built around productivity and connectivity. With a 100Hz refresh rate, USB-C power delivery, and a sweeping 21:9 canvas, it lets you run two full-size document windows side by side without resorting to dual-monitor complexity — all in an elegant, desk-friendly form factor.',
+    descriptionHe: 'מסך Philips 346E2CUAE הוא מסך רחב במיוחד בגודל 34 אינץ׳ ברזולוציית UltraWide QHD, עם קצב רענון של 100Hz, תמיכת USB-C עם אספקת חשמל ופורמט תמונה 21:9 המספק שטח עבודה אופקי נוסף.',
     shortDescription: '34" UltraWide QHD 100Hz IPS office monitor with USB-C connectivity.',
+    shortDescriptionHe: 'מסך רחב במיוחד 34 אינץ׳ Ultrawide QHD 100Hz IPS עם USB-C.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=346E2CUAE'],
     tags: ['office', 'ips', 'ultrawide', '34-inch', '100hz', 'usb-c'],
     specs: {
@@ -250,7 +262,9 @@ module.exports = [
     isFeatured: true,
     isPublished: true,
     description: 'The Philips 499P9H is a breathtaking 49-inch Dual QHD curved VA super-ultrawide monitor that replaces an entire dual-monitor setup with one cohesive, panoramic display. Built-in speakers, a pop-up webcam, KVM switch functionality, and USB-C docking make it the ultimate all-in-one productivity hub for power users who need everything within reach.',
+    descriptionHe: 'מסך Philips 499P9H הוא מסך רחב במיוחד וקעור בגודל 49 אינץ׳ ברזולוציית Dual QHD. הוא כולל רמקולים מובנים, מצלמת רשת נשלפת, פונקציונליות מתג KVM וחיבור USB-C.',
     shortDescription: '49" Dual QHD curved super-ultrawide office monitor with KVM, webcam, and USB-C.',
+    shortDescriptionHe: 'מסך פנורמי קעור 49 אינץ׳ Dual QHD עם מתג KVM, מצלמת רשת ו-USB-C.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=499P9H'],
     tags: ['office', 'va', 'ultrawide', '49-inch', 'dual-qhd', 'curved', 'kvm', 'usb-c', 'speakers'],
     specs: {
@@ -289,7 +303,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Philips 242E2FE is a 24-inch Full HD IPS office monitor that steps up to a 100Hz refresh rate for noticeably smoother on-screen motion compared to standard 60Hz displays. Its frameless design and compact footprint make it ideal for small desks, and the flicker-free backlight with LowBlue mode helps reduce eye fatigue during extended work sessions.',
+    descriptionHe: 'מסך Philips 242E2FE הוא מסך משרדי בגודל 24 אינץ׳ ברזולוציית Full HD עם קצב רענון של 100Hz. הוא כולל עיצוב חסר מסגרת, תאורה ללא הבהוב ומצב LowBlue.',
     shortDescription: '24" FHD 100Hz IPS office monitor with flicker-free and LowBlue mode.',
+    shortDescriptionHe: 'מסך משרדי 24 אינץ׳ Full HD 100Hz IPS עם תאורה ללא הבהוב ומצב LowBlue.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=242E2FE'],
     tags: ['office', 'ips', 'fhd', '24-inch', '100hz', 'eye-care'],
     specs: {
@@ -328,7 +344,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Philips 272E1GAJ delivers a compelling entry-level gaming experience with its 27-inch Full HD curved VA panel running at 144Hz. The 1500R curvature pulls the wide image around you while AMD FreeSync Premium ensures consistently tear-free gameplay, and the deep VA contrast ratio makes dark environments in games look genuinely atmospheric.',
+    descriptionHe: 'מסך Philips 272E1GAJ הוא מסך גיימינג קעור בגודל 27 אינץ׳ ברזולוציית Full HD על פאנל VA, עם עקמומיות 1500R וקצב רענון של 144Hz. הוא כולל תמיכת AMD FreeSync Premium.',
     shortDescription: '27" FHD 144Hz curved VA gaming monitor with AMD FreeSync Premium.',
+    shortDescriptionHe: 'מסך גיימינג קעור 27 אינץ׳ Full HD 144Hz VA עם AMD FreeSync Premium.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=272E1GAJ'],
     tags: ['gaming', 'va', 'fhd', '27-inch', '144hz', 'curved', 'freesync'],
     specs: {
@@ -367,7 +385,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Philips 27M1F5500P is a 27-inch QHD IPS gaming monitor running at 165Hz with DisplayHDR 400 for a noticeably brighter and more vivid image than standard monitors. AMD FreeSync Premium keeps the action tear-free, and its Ambiglow lighting system adds an immersive ambient glow behind the panel that responds to on-screen content.',
+    descriptionHe: 'מסך Philips 27M1F5500P הוא מסך גיימינג בגודל 27 אינץ׳ ברזולוציית QHD מסדרת Momentum, עם קצב רענון של 165Hz ותמיכת DisplayHDR 400. הוא כולל תמיכת AMD FreeSync Premium ומערכת תאורה Ambiglow - תאורה סביבתית מאחורי המסך המגיבה לתוכן המוצג.',
     shortDescription: '27" QHD 165Hz IPS Momentum gaming monitor with HDR400 and Ambiglow.',
+    shortDescriptionHe: 'מסך גיימינג 27 אינץ׳ QHD 165Hz IPS מסדרת Momentum, עם HDR400 ו-Ambiglow.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=27M1F5500P'],
     tags: ['gaming', 'ips', 'qhd', '27-inch', '165hz', 'hdr', 'freesync', 'ambiglow'],
     specs: {
@@ -406,7 +426,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Philips 27M2N5500 is the latest evolution of the Momentum gaming line, pushing a 27-inch QHD IPS panel to an exhilarating 180Hz for ultra-smooth competitive gaming. DisplayHDR 400 certification and AMD FreeSync Premium Pro combine to deliver vivid, tear-free visuals that give players a genuine perceptual edge in fast-paced titles.',
+    descriptionHe: 'מסך Philips 27M2N5500 הוא מסך גיימינג מסדרת Momentum, עם פאנל IPS בגודל 27 אינץ׳ ברזולוציית QHD וקצב רענון של 180Hz. הוא כולל הסמכת DisplayHDR 400 ותמיכת AMD FreeSync.',
     shortDescription: '27" QHD 180Hz IPS Momentum gaming monitor — fast, fluid, HDR-ready.',
+    shortDescriptionHe: 'מסך גיימינג 27 אינץ׳ QHD 180Hz IPS מסדרת Momentum, עם HDR400.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=27M2N5500'],
     tags: ['gaming', 'ips', 'qhd', '27-inch', '180hz', 'hdr', 'freesync'],
     specs: {
@@ -445,7 +467,9 @@ module.exports = [
     isFeatured: true,
     isPublished: true,
     description: 'The Philips Momentum 558M1RY is a colossal 55-inch 4K VA gaming and console display that turns any living room into an immersive entertainment centre. With 144Hz refresh rate, HDMI 2.1 for next-gen console compatibility, DisplayHDR 1000, built-in Bowers & Wilkins speakers, and Ambiglow lighting, it is one of the most feature-rich big-screen gaming displays on the market.',
+    descriptionHe: 'מסך Philips Momentum 558M1RY הוא מסך בגודל 55 אינץ׳ ברזולוציית 4K על פאנל VA, עם קצב רענון של 144Hz. הוא כולל חיבורי HDMI 2.1 התומכים במכשירים תואמים; פלט בפועל מקונסולות תלוי בדגם הקונסולה ובתמיכת המשחק. הסמכת DisplayHDR 1000, רמקולי Bowers & Wilkins מובנים ותאורת Ambiglow כלולים.',
     shortDescription: '55" 4K 144Hz VA Momentum display with HDR1000, HDMI 2.1, and B&W speakers.',
+    shortDescriptionHe: 'מסך 55 אינץ׳ 4K 144Hz VA מסדרת Momentum, עם HDR1000 ו-HDMI 2.1.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=558M1RY'],
     tags: ['console', 'gaming', 'va', '4k', '55-inch', 'hdr', 'hdmi-2.1', 'speakers', 'ambiglow'],
     specs: {
@@ -484,7 +508,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Philips Momentum 436M6VBPAB is a 43-inch 4K VA console and living room monitor with DisplayHDR 1000 certification and built-in speakers with subwoofer. Its 60Hz refresh rate and broad console connectivity make it an ideal choice for players who want a TV-like big-screen experience with the response precision and image quality of a proper monitor.',
+    descriptionHe: 'מסך Philips Momentum 436M6VBPAB הוא מסך בגודל 43 אינץ׳ ברזולוציית 4K על פאנל VA, עם קצב רענון של 60Hz. הוא כולל הסמכת DisplayHDR 1000, רמקולים מובנים עם סאב-וופר וחיבורי HDMI 2.1.',
     shortDescription: '43" 4K VA console monitor with HDR1000 and built-in speakers.',
+    shortDescriptionHe: 'מסך 43 אינץ׳ 4K VA עם HDR1000 ורמקולים מובנים.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=436M6VBPAB'],
     tags: ['console', 'va', '4k', '43-inch', 'hdr', 'speakers'],
     specs: {
@@ -523,7 +549,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Philips 278E1A is a no-nonsense 27-inch 4K IPS office monitor offering UHD clarity for professionals who work with high-resolution media or simply want more detail on their desktop. Its slim-bezel design and VESA compatibility ensure it fits seamlessly into professional multi-monitor configurations.',
+    descriptionHe: 'מסך Philips 278E1A הוא מסך משרדי בגודל 27 אינץ׳ ברזולוציית 4K על פאנל IPS. הוא כולל עיצוב מסגרת דקה ותמיכת VESA.',
     shortDescription: '27" 4K IPS office monitor offering UHD clarity for professionals.',
+    shortDescriptionHe: 'מסך משרדי 27 אינץ׳ 4K IPS.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=278E1A'],
     tags: ['office', 'ips', '4k', '27-inch'],
     specs: {
@@ -562,7 +590,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Philips 345E2AE is a 34-inch ultrawide QHD IPS office monitor that provides the expansive 21:9 working canvas professionals need without the price premium of a gaming ultrawide. Multi-window productivity apps feel at home on its wide panel, and the IPS technology ensures colour remains accurate for any creative or analytical task.',
+    descriptionHe: 'מסך Philips 345E2AE הוא מסך רחב במיוחד בגודל 34 אינץ׳ ברזולוציית UltraWide QHD על פאנל IPS, ביחס תמונה 21:9 המספק שטח עבודה אופקי נוסף.',
     shortDescription: '34" UltraWide QHD IPS office monitor — expansive 21:9 workspace on a budget.',
+    shortDescriptionHe: 'מסך רחב במיוחד 34 אינץ׳ Ultrawide QHD IPS.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=345E2AE'],
     tags: ['office', 'ips', 'ultrawide', '34-inch'],
     specs: {
@@ -601,7 +631,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Philips 27E1N5600AE is a 27-inch QHD IPS office monitor that stands out for its USB-C connectivity with 65W power delivery, making it a streamlined hub for modern laptops. Its 75Hz refresh rate, slim bezels, and ergonomic height-adjustable stand create an ideal docking station display for hybrid workers who move between office and home.',
+    descriptionHe: 'מסך Philips 27E1N5600AE הוא מסך משרדי בגודל 27 אינץ׳ ברזולוציית QHD, עם חיבור USB-C התומך באספקת חשמל של 65W. הוא כולל קצב רענון של 75Hz, מסגרות דקות ומעמד מתכוונן בגובה.',
     shortDescription: '27" QHD IPS office monitor with USB-C 65W PD for laptop docking.',
+    shortDescriptionHe: 'מסך משרדי 27 אינץ׳ QHD IPS עם USB-C 65W.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=27E1N5600AE'],
     tags: ['office', 'ips', 'qhd', '27-inch', 'usb-c'],
     specs: {
@@ -640,7 +672,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Philips 24E1N5300AE is a compact 24-inch Full HD IPS office monitor with a 100Hz refresh rate that makes text scrolling and window transitions feel noticeably snappier than standard 60Hz displays. Its slim frame, flicker-free backlight, and LowBlue mode certification make it a practical everyday monitor for students and home office users.',
+    descriptionHe: 'מסך Philips 24E1N5300AE הוא מסך משרדי בגודל 24 אינץ׳ ברזולוציית Full HD עם קצב רענון של 100Hz. הוא כולל תאורה ללא הבהוב ומצב LowBlue.',
     shortDescription: '24" FHD 100Hz IPS compact office monitor with eye-care certification.',
+    shortDescriptionHe: 'מסך משרדי 24 אינץ׳ Full HD 100Hz IPS עם תאורה ללא הבהוב.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=24E1N5300AE'],
     tags: ['office', 'ips', 'fhd', '24-inch', '100hz', 'eye-care'],
     specs: {
@@ -679,7 +713,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Philips 32M2N6200S is a 32-inch QHD Mini LED gaming monitor that uses thousands of local dimming zones to produce HDR contrast and brightness levels far beyond what conventional LED displays can achieve. At 165Hz with AMD FreeSync Premium, it combines stunning picture quality with the smooth, responsive performance competitive gamers demand.',
+    descriptionHe: 'מסך Philips 32M2N6200S הוא מסך גיימינג בגודל 32 אינץ׳ ברזולוציית QHD עם טכנולוגיית תאורה אחורית Mini LED ומספר רב של אזורי עמעום מקומי. הוא כולל קצב רענון של 165Hz, תמיכת HDR ותמיכת AMD FreeSync Premium.',
     shortDescription: '32" QHD 165Hz Mini LED gaming monitor with advanced local dimming HDR.',
+    shortDescriptionHe: 'מסך גיימינג 32 אינץ׳ QHD 165Hz Mini LED עם HDR.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=32M2N6200S'],
     tags: ['gaming', 'mini-led', 'qhd', '32-inch', '165hz', 'hdr', 'freesync'],
     specs: {

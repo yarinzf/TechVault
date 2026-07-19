@@ -16,7 +16,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The BenQ GW2485TC is a 24-inch Full HD IPS office monitor with built-in USB-C connectivity that makes it an ideal hub for modern laptops and ultrabooks. Its integrated speakers, daisy-chain DisplayPort output, and eye-care technologies — including BenQ Brightness Intelligence and flicker-free backlight — make it a complete, cable-tidy desk solution.',
+    descriptionHe: 'מסך BenQ GW2485TC הוא מסך משרדי בגודל 24 אינץ׳ ברזולוציית Full HD עם פאנל IPS וחיבור USB-C. הוא כולל תמיכת Daisy-Chain של DisplayPort, רמקולים מובנים, טכנולוגיית Brightness Intelligence ותאורה ללא הבהוב.',
     shortDescription: '24" FHD IPS office monitor with USB-C, daisy-chain, and built-in speakers.',
+    shortDescriptionHe: 'מסך משרדי 24 אינץ׳ Full HD IPS עם USB-C, Daisy-Chain ורמקולים מובנים.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=GW2485TC'],
     tags: ['office', 'ips', 'fhd', '24-inch', 'usb-c', 'speakers', 'eye-care'],
     specs: {
@@ -55,7 +57,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The BenQ GW2780 is a perennial best-seller in the office monitor category, offering a 27-inch Full HD IPS panel with BenQ Brightness Intelligence technology that automatically adjusts screen brightness to match ambient lighting conditions. Its slim-bezel design, VESA compatibility, and gentle eye-care features make it a reliable workhorse for any desk.',
+    descriptionHe: 'מסך BenQ GW2780 הוא מסך משרדי בגודל 27 אינץ׳ עם פאנל IPS ברזולוציית Full HD, הכולל את טכנולוגיית Brightness Intelligence של BenQ המתאימה את בהירות המסך אוטומטית לתאורת הסביבה. המסך כולל מסגרת דקה ותמיכת VESA.',
     shortDescription: 'Best-selling 27" FHD IPS office monitor with Brightness Intelligence eye-care.',
+    shortDescriptionHe: 'מסך משרדי 27 אינץ׳ Full HD IPS עם Brightness Intelligence.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=GW2780'],
     tags: ['office', 'ips', 'fhd', '27-inch', 'eye-care'],
     specs: {
@@ -94,7 +98,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The BenQ GW2790QT is a 27-inch QHD IPS office monitor designed around professional productivity. USB-C with power delivery, a built-in KVM switch, daisy-chain support, and an ergonomic height-adjustable stand make it an outstanding choice for hybrid workers who need seamless switching between a work laptop and a personal machine at the same desk.',
+    descriptionHe: 'מסך BenQ GW2790QT הוא מסך משרדי בגודל 27 אינץ׳ ברזולוציית QHD עם פאנל IPS. הוא כולל חיבור USB-C עם אספקת חשמל, מתג KVM המאפשר שליטה בשני מחשבים מחוברים באמצעות מקלדת ועכבר אחד, תמיכת Daisy-Chain ומעמד מתכוונן בגובה.',
     shortDescription: '27" QHD IPS office monitor with USB-C, KVM switch, and ergonomic stand.',
+    shortDescriptionHe: 'מסך משרדי 27 אינץ׳ QHD IPS עם USB-C ומתג KVM.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=GW2790QT'],
     tags: ['office', 'ips', 'qhd', '27-inch', 'usb-c', 'kvm'],
     specs: {
@@ -133,7 +139,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The BenQ PD2705Q is a 27-inch QHD IPS creator monitor that comes factory-calibrated with Delta E < 3 for reliable colour accuracy out of the box. Its IPS panel covers 100% sRGB and 95% P3 colour spaces, while the ergonomic stand with height, tilt, swivel, and pivot makes extended creative sessions as physically comfortable as they are visually rewarding.',
+    descriptionHe: 'מסך BenQ PD2705Q הוא מסך ליוצרי תוכן בגודל 27 אינץ׳ ברזולוציית QHD, המכויל מהמפעל. המעמד מאפשר התאמת גובה, הטיה, סיבוב וציר.',
     shortDescription: '27" QHD IPS creator monitor with factory calibration and 95% P3 coverage.',
+    shortDescriptionHe: 'מסך ליוצרי תוכן 27 אינץ׳ QHD IPS עם כיול מהמפעל.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=PD2705Q'],
     tags: ['creator', 'ips', 'qhd', '27-inch', 'colour-accurate', 'p3'],
     specs: {
@@ -172,7 +180,9 @@ module.exports = [
     isFeatured: true,
     isPublished: true,
     description: 'The BenQ PD3220U is a flagship 32-inch 4K IPS creator monitor that delivers Thunderbolt 3 connectivity, DisplayHDR 400, and 100% sRGB and 95% P3 colour accuracy for professional photographers, video editors, and designers. Its daisy-chain capability, built-in KVM, and ergonomic stand make it the centrepiece of a professional creative workstation.',
+    descriptionHe: 'מסך BenQ PD3220U הוא מסך ליוצרי תוכן בגודל 32 אינץ׳ ברזולוציית 4K, עם חיבור Thunderbolt 3, תמיכת DisplayHDR 400 וכיול מהמפעל. הוא כולל תמיכת Daisy-Chain, מתג KVM מובנה ומעמד ארגונומי.',
     shortDescription: '32" 4K IPS creator flagship with Thunderbolt 3, HDR400, and professional calibration.',
+    shortDescriptionHe: 'מסך ליוצרי תוכן 32 אינץ׳ 4K IPS עם Thunderbolt 3 ו-HDR400.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=PD3220U'],
     tags: ['creator', 'ips', '4k', '32-inch', 'thunderbolt', 'hdr', 'kvm', 'colour-accurate'],
     specs: {
@@ -211,7 +221,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The BenQ PD3420Q is a 34-inch ultrawide QHD IPS creator monitor purpose-built for video production and graphic design. Its 21:9 aspect ratio provides a natural timeline view for video editing applications, while Thunderbolt 4 connectivity and a built-in KVM switch allow seamless management of multiple creative workstations from one elegant display.',
+    descriptionHe: 'מסך BenQ PD3420Q הוא מסך רחב במיוחד בגודל 34 אינץ׳ ברזולוציית UltraWide QHD, המיועד לעריכת וידאו ועיצוב גרפי. יחס התמונה 21:9 מספק תצוגת ציר זמן לתוכנות עריכת וידאו. הוא כולל חיבור Thunderbolt 4 ומתג KVM.',
     shortDescription: '34" UltraWide QHD IPS creator monitor with Thunderbolt 4 and KVM.',
+    shortDescriptionHe: 'מסך רחב במיוחד 34 אינץ׳ Ultrawide QHD IPS עם Thunderbolt 4 ומתג KVM.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=PD3420Q'],
     tags: ['creator', 'ips', 'ultrawide', '34-inch', 'thunderbolt', 'kvm', 'colour-accurate'],
     specs: {
@@ -250,7 +262,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The BenQ SW270C is a 27-inch QHD IPS professional monitor engineered specifically for photographers. Factory-calibrated with an individually tested report, it covers 99% Adobe RGB, 95% P3, and 100% sRGB colour spaces. The included Puck G2 controller provides one-handed access to colour modes, while the shading hood eliminates stray reflections during critical colour grading.',
+    descriptionHe: 'מסך BenQ SW270C הוא מסך מקצועי בגודל 27 אינץ׳ ברזולוציית QHD המיועד לצילום. הוא מכויל מהמפעל עם דוח בדיקה אישי לכל יחידה. בקר ה-Puck G2 המצורף מספק גישה למצבי הצבע, וגגון הצללה כלול.',
     shortDescription: '27" QHD IPS photographer monitor with 99% Adobe RGB and hardware calibration.',
+    shortDescriptionHe: 'מסך מקצועי 27 אינץ׳ QHD IPS לצילום, עם כיול חומרה.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=SW270C'],
     tags: ['professional', 'ips', 'qhd', '27-inch', 'adobe-rgb', 'photography', 'colour-accurate'],
     specs: {
@@ -289,7 +303,9 @@ module.exports = [
     isFeatured: true,
     isPublished: true,
     description: 'The BenQ SW321C is a 32-inch 4K IPS professional monitor built for the most demanding colour-critical workflows in photography and video production. It covers 99% Adobe RGB, 95% DCI-P3, and is factory-calibrated with a hardware validation report, while Thunderbolt 3 and USB-C connectivity ensure it integrates seamlessly into professional Mac and PC setups.',
+    descriptionHe: 'מסך BenQ SW321C הוא מסך מקצועי בגודל 32 אינץ׳ ברזולוציית 4K לצילום והפקת וידאו. המסך מכויל מהמפעל עם דוח אימות חומרה. חיבורי Thunderbolt 3 ו-USB-C כלולים.',
     shortDescription: '32" 4K IPS professional monitor with 99% Adobe RGB, DCI-P3, and Thunderbolt 3.',
+    shortDescriptionHe: 'מסך מקצועי 32 אינץ׳ 4K IPS מכויל מהמפעל, עם Thunderbolt 3.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=SW321C'],
     tags: ['professional', 'ips', '4k', '32-inch', 'adobe-rgb', 'dci-p3', 'thunderbolt', 'colour-accurate'],
     specs: {
@@ -328,7 +344,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The BenQ EW2880U is a 28-inch 4K IPS creator monitor that blends work and entertainment with DisplayHDR 400, USB-C with power delivery, and built-in speakers equipped with BenQ treVolo audio technology. Its compact 28-inch footprint makes it ideal for smaller desks where premium image quality and connectivity matter more than screen size.',
+    descriptionHe: 'מסך BenQ EW2880U הוא מסך ליוצרי תוכן בגודל 28 אינץ׳ ברזולוציית 4K, עם תמיכת DisplayHDR 400, חיבור USB-C עם אספקת חשמל ורמקולים מובנים בטכנולוגיית treVolo.',
     shortDescription: '28" 4K IPS creator monitor with HDR400, USB-C, and treVolo speakers.',
+    shortDescriptionHe: 'מסך ליוצרי תוכן 28 אינץ׳ 4K IPS עם HDR400, USB-C ורמקולי treVolo.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=EW2880U'],
     tags: ['creator', 'ips', '4k', '28-inch', 'hdr', 'usb-c', 'speakers'],
     specs: {
@@ -367,7 +385,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The BenQ EX2780Q is a 27-inch QHD IPS gaming monitor with a built-in 2.1-channel speaker system and remote control that blur the line between gaming monitor and entertainment display. AMD FreeSync Premium, a 144Hz refresh rate, and BenQ HDRi technology deliver a polished visual experience for both gaming sessions and media consumption.',
+    descriptionHe: 'מסך BenQ EX2780Q הוא מסך גיימינג בגודל 27 אינץ׳ ברזולוציית QHD, עם מערכת רמקולים 2.1 ושלט רחוק מובנים. הוא כולל תמיכת AMD FreeSync Premium, קצב רענון של 144Hz וטכנולוגיית BenQ HDRi.',
     shortDescription: '27" QHD 144Hz IPS gaming monitor with 2.1 speakers and remote control.',
+    shortDescriptionHe: 'מסך גיימינג 27 אינץ׳ QHD 144Hz IPS עם רמקולי 2.1 ושלט רחוק.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=EX2780Q'],
     tags: ['gaming', 'ips', 'qhd', '27-inch', '144hz', 'speakers', 'freesync'],
     specs: {
@@ -406,7 +426,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The BenQ EX2710Q is a popular 27-inch QHD IPS gaming monitor that pushes its refresh rate to 165Hz for a noticeable smoothness advantage over 144Hz panels. AMD FreeSync Premium, BenQ HDRi with two HDR modes, and the convenient remote control make it a refined all-rounder that gaming enthusiasts consistently choose for its balance of features and value.',
+    descriptionHe: 'מסך BenQ EX2710Q הוא מסך גיימינג בגודל 27 אינץ׳ ברזולוציית QHD עם קצב רענון של 165Hz. הוא כולל תמיכת AMD FreeSync Premium, טכנולוגיית BenQ HDRi בשני מצבי HDR ושלט רחוק.',
     shortDescription: '27" QHD 165Hz IPS gaming monitor with BenQ HDRi and remote control.',
+    shortDescriptionHe: 'מסך גיימינג 27 אינץ׳ QHD 165Hz IPS עם BenQ HDRi ושלט רחוק.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=EX2710Q'],
     tags: ['gaming', 'ips', 'qhd', '27-inch', '165hz', 'freesync', 'speakers'],
     specs: {
@@ -445,7 +467,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The BenQ EX3210U is a 32-inch 4K IPS gaming monitor that pairs DisplayHDR 600 with AMD FreeSync Premium Pro and a 144Hz refresh rate for an exceptional big-screen gaming experience. Its built-in 2.1-channel speaker system with subwoofer, HDMI 2.1 support, and USB-C connectivity make it a versatile centrepiece for a premium gaming and entertainment setup.',
+    descriptionHe: 'מסך BenQ EX3210U הוא מסך גיימינג בגודל 32 אינץ׳ ברזולוציית 4K, עם תמיכת DisplayHDR 600, תמיכת AMD FreeSync וקצב רענון של 144Hz. הוא כולל מערכת רמקולים 2.1 עם סאב-וופר, חיבורי HDMI 2.1 התומכים באותות רענון גבוה ממכשירים תואמים, וחיבור USB-C.',
     shortDescription: '32" 4K 144Hz IPS gaming monitor with HDR600, HDMI 2.1, and 2.1 speakers.',
+    shortDescriptionHe: 'מסך גיימינג 32 אינץ׳ 4K 144Hz IPS עם HDR600, HDMI 2.1 ורמקולי 2.1.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=EX3210U'],
     tags: ['gaming', 'ips', '4k', '32-inch', '144hz', 'hdr', 'hdmi-2.1', 'speakers', 'freesync'],
     specs: {
@@ -484,7 +508,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The BenQ MOBIUZ EX2510S is a compact 25-inch Full HD IPS gaming monitor running at 165Hz with AMD FreeSync Premium, making it an ideal secondary display or a first gaming monitor for players on a tighter budget. Its built-in 2.1-channel treVolo speaker system means you can enjoy rich game audio without a separate speaker purchase.',
+    descriptionHe: 'מסך BenQ MOBIUZ EX2510S הוא מסך גיימינג מסדרת MOBIUZ עם פאנל IPS ברזולוציית Full HD וקצב רענון של 165Hz. הוא כולל תמיכת AMD FreeSync Premium ומערכת רמקולים מובנית 2.1 בטכנולוגיית treVolo.',
     shortDescription: '25" FHD 165Hz IPS MOBIUZ gaming monitor with 2.1 treVolo speakers.',
+    shortDescriptionHe: 'מסך גיימינג Full HD 165Hz IPS מסדרת MOBIUZ, עם רמקולי treVolo 2.1.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=EX2510S'],
     tags: ['gaming', 'ips', 'fhd', '25-inch', '165hz', 'speakers', 'freesync'],
     specs: {
@@ -523,7 +549,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The BenQ MOBIUZ EX2710S is a best-selling 27-inch Full HD IPS gaming monitor with a 165Hz refresh rate and AMD FreeSync Premium that makes it an outstanding choice for competitive and casual gamers alike. The built-in 2.1 treVolo speaker system delivers room-filling audio, making it a truly self-contained gaming setup for players who want to minimise cable clutter.',
+    descriptionHe: 'מסך BenQ MOBIUZ EX2710S הוא מסך גיימינג בגודל 27 אינץ׳ ברזולוציית Full HD עם קצב רענון של 165Hz. מערכת הרמקולים המובנית 2.1 בטכנולוגיית treVolo ותמיכת AMD FreeSync Premium כלולות.',
     shortDescription: 'Best-selling 27" FHD 165Hz IPS MOBIUZ gaming monitor with 2.1 speakers.',
+    shortDescriptionHe: 'מסך גיימינג 27 אינץ׳ Full HD 165Hz IPS מסדרת MOBIUZ, עם רמקולי treVolo 2.1.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=EX2710S'],
     tags: ['gaming', 'ips', 'fhd', '27-inch', '165hz', 'speakers', 'freesync'],
     specs: {
@@ -562,7 +590,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The BenQ MOBIUZ EX2710R curves a 27-inch QHD VA panel at 1000R — one of the tightest curvatures available — for an immersive gaming experience that wraps the image naturally around your field of vision. At 165Hz with AMD FreeSync Premium and deep VA contrast, combined with the built-in 2.1 treVolo speaker system, it is a complete entertainment package in one display.',
+    descriptionHe: 'מסך BenQ MOBIUZ EX2710R הוא מסך גיימינג קעור בגודל 27 אינץ׳ ברזולוציית QHD, עם פאנל VA בעקמומיות 1000R. הוא כולל קצב רענון של 165Hz, תמיכת AMD FreeSync Premium ומערכת רמקולים מובנית 2.1 בטכנולוגיית treVolo.',
     shortDescription: '27" QHD 165Hz 1000R curved VA MOBIUZ gaming monitor with 2.1 speakers.',
+    shortDescriptionHe: 'מסך גיימינג קעור 27 אינץ׳ QHD 165Hz VA, בעקמומיות 1000R עם רמקולי treVolo.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=EX2710R'],
     tags: ['gaming', 'va', 'qhd', '27-inch', '165hz', 'curved', 'speakers', 'freesync'],
     specs: {
@@ -601,7 +631,9 @@ module.exports = [
     isFeatured: true,
     isPublished: true,
     description: 'The BenQ MOBIUZ EX3415R is a premium 34-inch ultrawide QHD curved IPS gaming monitor running at 144Hz, delivering a sweeping 21:9 field of view that makes open-world games, racing simulators, and cinematic titles feel genuinely breathtaking. DisplayHDR 400, AMD FreeSync Premium, a built-in 2.1 treVolo speaker system, and a 1900R curved panel form one of the most complete ultrawide gaming packages available.',
+    descriptionHe: 'מסך BenQ MOBIUZ EX3415R הוא מסך גיימינג רחב במיוחד וקעור בגודל 34 אינץ׳ ברזולוציית UltraWide QHD, ביחס תמונה 21:9 ורדיוס עקמומיות 1900R. הוא כולל קצב רענון של 144Hz, תמיכת DisplayHDR 400, תמיכת AMD FreeSync Premium ומערכת רמקולים מובנית 2.1 בטכנולוגיית treVolo.',
     shortDescription: '34" UltraWide QHD 144Hz curved IPS MOBIUZ gaming monitor — premium ultrawide.',
+    shortDescriptionHe: 'מסך גיימינג רחב במיוחד 34 אינץ׳ Ultrawide QHD 144Hz קעור, מסדרת MOBIUZ.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=EX3415R'],
     tags: ['gaming', 'ips', 'ultrawide', '34-inch', '144hz', 'curved', 'hdr', 'speakers', 'freesync'],
     specs: {
@@ -640,7 +672,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The BenQ MOBIUZ EX321UX is a 32-inch 4K Mini LED gaming monitor that uses 1152 local dimming zones to deliver HDR contrast and brightness that conventional LED displays cannot match. At 144Hz with AMD FreeSync Premium, Thunderbolt 4 connectivity, and HDMI 2.1, it is engineered for next-generation gaming at the highest possible visual standard.',
+    descriptionHe: 'מסך BenQ MOBIUZ EX321UX הוא מסך גיימינג בגודל 32 אינץ׳ ברזולוציית 4K עם טכנולוגיית תאורה אחורית Mini LED וכ-1,152 אזורי עמעום מקומי. הוא כולל קצב רענון של 144Hz, תמיכת AMD FreeSync Premium, חיבור Thunderbolt 4 וחיבורי HDMI 2.1 התומכים באותות רענון גבוה ממכשירים תואמים.',
     shortDescription: '32" 4K 144Hz Mini LED MOBIUZ gaming monitor with Thunderbolt 4 and 1152 dimming zones.',
+    shortDescriptionHe: 'מסך גיימינג 32 אינץ׳ 4K 144Hz Mini LED מסדרת MOBIUZ, עם Thunderbolt 4.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=EX321UX'],
     tags: ['gaming', 'mini-led', '4k', '32-inch', '144hz', 'hdr', 'thunderbolt', 'freesync'],
     specs: {
@@ -679,7 +713,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The BenQ GL2780 is a budget-friendly 27-inch Full HD TN office monitor that prioritises speed and value. Its TN panel delivers fast pixel response with a crisp image for everyday productivity tasks, and the classic BenQ eye-care features — flicker-free backlight and Low Blue Light mode — ensure comfortable extended use at a price that suits any budget.',
+    descriptionHe: 'מסך BenQ GL2780 הוא מסך משרדי בגודל 27 אינץ׳ ברזולוציית Full HD עם פאנל TN. הוא כולל תאורה ללא הבהוב ומצב Low Blue Light.',
     shortDescription: 'Budget 27" FHD TN office monitor with BenQ eye-care at an accessible price.',
+    shortDescriptionHe: 'מסך משרדי 27 אינץ׳ Full HD TN עם תאורה ללא הבהוב.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=GL2780'],
     tags: ['office', 'tn', 'fhd', '27-inch', 'eye-care', 'budget'],
     specs: {
@@ -718,7 +754,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The BenQ EW2780Q is a 27-inch QHD IPS creator and entertainment monitor that uses BenQ HDRi technology to intelligently adapt the HDR picture mode to suit the content being displayed — whether that is a movie, a game, or a design application. Its built-in 2.1 speakers and USB-C connectivity round out a feature set that bridges productivity and relaxation.',
+    descriptionHe: 'מסך BenQ EW2780Q הוא מסך ליוצרי תוכן בגודל 27 אינץ׳ ברזולוציית QHD עם טכנולוגיית BenQ HDRi - מצב תמונה המתאים את התצוגה אוטומטית לסוג התוכן המוצג. הוא כולל מערכת רמקולים מובנית 2.1 וחיבור USB-C.',
     shortDescription: '27" QHD IPS creator monitor with BenQ HDRi, USB-C, and 2.1 speakers.',
+    shortDescriptionHe: 'מסך ליוצרי תוכן 27 אינץ׳ QHD IPS עם BenQ HDRi, USB-C ורמקולי 2.1.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=EW2780Q'],
     tags: ['creator', 'ips', 'qhd', '27-inch', 'usb-c', 'speakers'],
     specs: {
@@ -757,7 +795,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The BenQ PD2725U is a 27-inch 4K IPS creator monitor with Thunderbolt 4 connectivity and DisplayHDR 400, combining top-tier colour accuracy with the convenience of a single-cable connection to a Mac or PC. Factory-calibrated to cover 95% P3 and 100% sRGB, it is the ideal compact 4K workstation monitor for creative professionals who demand both performance and portability.',
+    descriptionHe: 'מסך BenQ PD2725U הוא מסך ליוצרי תוכן בגודל 27 אינץ׳ ברזולוציית 4K, עם חיבור Thunderbolt 4 ותמיכת DisplayHDR 400. המסך מכויל מהמפעל.',
     shortDescription: '27" 4K IPS creator monitor with Thunderbolt 4, HDR400, and 95% P3 coverage.',
+    shortDescriptionHe: 'מסך ליוצרי תוכן 27 אינץ׳ 4K IPS עם Thunderbolt 4 ו-HDR400.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=PD2725U'],
     tags: ['creator', 'ips', '4k', '27-inch', 'thunderbolt', 'hdr', 'p3', 'colour-accurate'],
     specs: {
