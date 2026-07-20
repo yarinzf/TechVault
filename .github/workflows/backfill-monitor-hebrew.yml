@@ -1,0 +1,262 @@
+name: Production Monitor Hebrew Backfill
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: 'Type BACKFILL_313_MONITORS to confirm'
+        required: true
+
+concurrency:
+  group: production-monitor-hebrew-backfill
+  cancel-in-progress: false
+
+env:
+  SSH_KEY_PATH: /home/runner/.ssh/backfill_key
+  TARGET_COMMIT: f2244ac1a2ae92cf998e553748f151930ed10944
+
+jobs:
+  backfill:
+    name: Production Monitor Hebrew Backfill
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Verify confirmation input
+        run: |
+          if [ "${{ github.event.inputs.confirmation }}" != "BACKFILL_313_MONITORS" ]; then
+            echo "::error::Confirmation input did not match. Expected exactly: BACKFILL_313_MONITORS"
+            exit 1
+          fi
+          echo "Confirmation verified."
+
+      - name: Configure SSH
+        env:
+          _HOST: ${{ secrets.EC2_HOST }}
+          _USER: ${{ secrets.EC2_USER }}
+          _KEY:  ${{ secrets.EC2_SSH_KEY }}
+        run: |
+          MISSING=0
+          if [ -n "$_HOST" ]; then echo "EC2_HOST: present";    else echo "::error::EC2_HOST: MISSING";    MISSING=1; fi
+          if [ -n "$_USER" ]; then echo "EC2_USER: present";    else echo "::error::EC2_USER: MISSING";    MISSING=1; fi
+          if [ -n "$_KEY" ];  then echo "EC2_SSH_KEY: present"; else echo "::error::EC2_SSH_KEY: MISSING"; MISSING=1; fi
+          if [ "$MISSING" -eq 1 ]; then echo "::error::One or more required secrets are missing"; exit 1; fi
+          echo "Secret validation passed"
+
+          mkdir -p "$(dirname "$SSH_KEY_PATH")"
+          printf '%s\n' "$_KEY" > "$SSH_KEY_PATH"
+          chmod 600 "$SSH_KEY_PATH"
+          echo "Key written and permissions set"
+
+          ssh-keyscan -H "$_HOST" >> "$(dirname "$SSH_KEY_PATH")/known_hosts" 2>/dev/null || echo "::warning::ssh-keyscan failed (non-fatal)"
+          echo "SSH configured successfully"
+
+      - name: Production preflight verification
+        run: |
+          REMOTE_CMD=$(cat <<EOF
+          set -e
+          cd /opt/techvault || { echo "FAIL: project path /opt/techvault not found"; exit 1; }
+
+          BRANCH=\$(git rev-parse --abbrev-ref HEAD)
+          HEAD_SHA=\$(git rev-parse HEAD)
+          echo "Branch: \$BRANCH"
+          echo "HEAD: \$HEAD_SHA"
+          [ "\$BRANCH" = "main" ] || { echo "FAIL: branch is not main"; exit 1; }
+          [ "\$HEAD_SHA" = "$TARGET_COMMIT" ] || { echo "FAIL: HEAD (\$HEAD_SHA) does not match target commit ($TARGET_COMMIT)"; exit 1; }
+
+          if [ ! -f "server/scripts/backfillMonitorHebrew.js" ]; then
+            echo "FAIL: backfill script not found at server/scripts/backfillMonitorHebrew.js"; exit 1
+          fi
+          echo "Script present: server/scripts/backfillMonitorHebrew.js"
+
+          for SVC in mongodb backend frontend; do
+            CID=\$(docker compose ps -q "\$SVC" 2>/dev/null || true)
+            if [ -z "\$CID" ]; then echo "FAIL: \$SVC is not running (no container id)"; exit 1; fi
+            STATE=\$(docker inspect --format="{{.State.Status}}" "\$CID" 2>/dev/null || echo unknown)
+            echo "\$SVC state: \$STATE"
+            if [ "\$STATE" != "running" ]; then echo "FAIL: \$SVC state is \$STATE, expected running"; exit 1; fi
+          done
+
+          for SVC in mongodb backend; do
+            CID=\$(docker compose ps -q "\$SVC")
+            HEALTH=\$(docker inspect --format="{{if .State.Health}}{{.State.Health.Status}}{{else}}no-healthcheck{{end}}" "\$CID" 2>/dev/null || echo unknown)
+            echo "\$SVC health: \$HEALTH"
+            if [ "\$HEALTH" != "healthy" ] && [ "\$HEALTH" != "no-healthcheck" ]; then
+              echo "FAIL: \$SVC health is \$HEALTH, expected healthy"; exit 1
+            fi
+          done
+
+          echo "PREFLIGHT PASSED"
+          EOF
+          )
+          ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 "${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}" "$REMOTE_CMD"
+
+      - name: Create and verify MongoDB backup
+        run: |
+          REMOTE_CMD=$(cat <<'EOF'
+          set -e
+          sudo /opt/techvault/devops/scripts/backup-mongo.sh
+
+          BACKUP_ROOT="/opt/techvault/backups/mongodb"
+          LATEST=$(find "$BACKUP_ROOT" -maxdepth 1 -name "techvault_*.gz" -type f -printf "%T@ %p\n" 2>/dev/null | sort -rn | head -1 | cut -d" " -f2-)
+          if [ -z "$LATEST" ]; then echo "FAIL: no backup file found after running backup script"; exit 1; fi
+
+          SIZE=$(stat -c%s "$LATEST")
+          echo "Latest backup: $(basename "$LATEST") (${SIZE} bytes)"
+          if [ "$SIZE" -le 0 ]; then echo "FAIL: backup file size is not greater than zero"; exit 1; fi
+
+          if ! gzip -t "$LATEST" 2>/dev/null; then echo "FAIL: gzip integrity check failed"; exit 1; fi
+          echo "Backup integrity verified (gzip -t passed)"
+          echo "BACKUP PASSED"
+          EOF
+          )
+          ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 "${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}" "$REMOTE_CMD"
+
+      - name: Run production dry-run
+        id: dryrun
+        run: |
+          OUTPUT=$(ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
+            "${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}" \
+            'cd /opt/techvault && docker compose exec -T backend node scripts/backfillMonitorHebrew.js --dry-run')
+          echo "$OUTPUT"
+
+          CATALOG_TOTAL=$(echo "$OUTPUT" | sed -n 's/.*Source catalog total: \([0-9]*\).*/\1/p')
+          DUP_SKUS=$(echo "$OUTPUT" | sed -n 's/.*Duplicate source SKUs: \([0-9]*\).*/\1/p')
+
+          DATA_LINE=$(echo "$OUTPUT" | awk '/^├/{getline; print}')
+          read -r IDX SCANNED MATCHED MISSING SLUGMISMATCH WOULDMODIFY MODIFIED UNCHANGED <<< "$(echo "$DATA_LINE" | grep -oE '[0-9]+' | tr '\n' ' ')"
+
+          echo ""
+          echo "Parsed: catalogTotal=$CATALOG_TOTAL dupSkus=$DUP_SKUS scanned=$SCANNED matched=$MATCHED missing=$MISSING slugMismatch=$SLUGMISMATCH wouldModify=$WOULDMODIFY"
+
+          FAIL=0
+          [ "$CATALOG_TOTAL" = "313" ] || { echo "::error::Source catalog total is not 313 (got $CATALOG_TOTAL)"; FAIL=1; }
+          [ "$DUP_SKUS" = "0" ]        || { echo "::error::Duplicate source SKUs is not 0 (got $DUP_SKUS)"; FAIL=1; }
+          [ "$SCANNED" = "313" ]       || { echo "::error::scanned is not 313 (got $SCANNED)"; FAIL=1; }
+          [ "$MATCHED" = "313" ]       || { echo "::error::matched is not 313 (got $MATCHED)"; FAIL=1; }
+          [ "$MISSING" = "0" ]        || { echo "::error::missing is not 0 (got $MISSING)"; FAIL=1; }
+          [ "$SLUGMISMATCH" = "0" ]    || { echo "::error::slugMismatch is not 0 (got $SLUGMISMATCH)"; FAIL=1; }
+
+          if [ "$FAIL" -eq 1 ]; then
+            echo "::error::Dry-run safety counters did not match required values. Stopping before any write."
+            exit 1
+          fi
+
+          echo "DRY-RUN CHECKS PASSED (wouldModify=$WOULDMODIFY out of 0-313 expected range)"
+          echo "wouldmodify=$WOULDMODIFY" >> "$GITHUB_OUTPUT"
+
+      - name: Execute production backfill
+        id: realrun
+        run: |
+          OUTPUT=$(ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
+            "${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}" \
+            'cd /opt/techvault && docker compose exec -T -e NODE_ENV=production backend node scripts/backfillMonitorHebrew.js --execute-production')
+          echo "$OUTPUT"
+
+          DATA_LINE=$(echo "$OUTPUT" | awk '/^├/{getline; print}')
+          read -r IDX SCANNED MATCHED MISSING SLUGMISMATCH WOULDMODIFY MODIFIED UNCHANGED <<< "$(echo "$DATA_LINE" | grep -oE '[0-9]+' | tr '\n' ' ')"
+
+          echo ""
+          echo "Parsed: scanned=$SCANNED matched=$MATCHED missing=$MISSING slugMismatch=$SLUGMISMATCH modified=$MODIFIED unchanged=$UNCHANGED"
+
+          SUM=$((MODIFIED + UNCHANGED))
+
+          FAIL=0
+          [ "$SCANNED" = "313" ]     || { echo "::error::scanned is not 313 (got $SCANNED)"; FAIL=1; }
+          [ "$MATCHED" = "313" ]     || { echo "::error::matched is not 313 (got $MATCHED)"; FAIL=1; }
+          [ "$MISSING" = "0" ]      || { echo "::error::missing is not 0 (got $MISSING)"; FAIL=1; }
+          [ "$SLUGMISMATCH" = "0" ]  || { echo "::error::slugMismatch is not 0 (got $SLUGMISMATCH)"; FAIL=1; }
+          [ "$SUM" = "313" ]         || { echo "::error::modified+unchanged is not 313 (got $SUM)"; FAIL=1; }
+
+          if [ "$FAIL" -eq 1 ]; then
+            echo "::error::Real execution safety counters did not match required values. Partial completion is not accepted."
+            exit 1
+          fi
+
+          echo "REAL EXECUTION CHECKS PASSED (modified=$MODIFIED unchanged=$UNCHANGED)"
+          echo "modified=$MODIFIED" >> "$GITHUB_OUTPUT"
+          echo "unchanged=$UNCHANGED" >> "$GITHUB_OUTPUT"
+
+      - name: Verify idempotency
+        id: idempotency
+        run: |
+          OUTPUT=$(ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
+            "${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}" \
+            'cd /opt/techvault && docker compose exec -T -e NODE_ENV=production backend node scripts/backfillMonitorHebrew.js --execute-production')
+          echo "$OUTPUT"
+
+          DATA_LINE=$(echo "$OUTPUT" | awk '/^├/{getline; print}')
+          read -r IDX SCANNED MATCHED MISSING SLUGMISMATCH WOULDMODIFY MODIFIED UNCHANGED <<< "$(echo "$DATA_LINE" | grep -oE '[0-9]+' | tr '\n' ' ')"
+
+          echo ""
+          echo "Parsed: scanned=$SCANNED matched=$MATCHED missing=$MISSING slugMismatch=$SLUGMISMATCH wouldModify=$WOULDMODIFY modified=$MODIFIED unchanged=$UNCHANGED"
+
+          FAIL=0
+          [ "$SCANNED" = "313" ]     || { echo "::error::scanned is not 313 (got $SCANNED)"; FAIL=1; }
+          [ "$MATCHED" = "313" ]     || { echo "::error::matched is not 313 (got $MATCHED)"; FAIL=1; }
+          [ "$MISSING" = "0" ]      || { echo "::error::missing is not 0 (got $MISSING)"; FAIL=1; }
+          [ "$SLUGMISMATCH" = "0" ]  || { echo "::error::slugMismatch is not 0 (got $SLUGMISMATCH)"; FAIL=1; }
+          [ "$MODIFIED" = "0" ]     || { echo "::error::modified is not 0 on idempotency re-run (got $MODIFIED)"; FAIL=1; }
+          [ "$UNCHANGED" = "313" ]   || { echo "::error::unchanged is not 313 on idempotency re-run (got $UNCHANGED)"; FAIL=1; }
+          [ "$WOULDMODIFY" = "0" ]  || { echo "::error::wouldModify is not 0 on idempotency re-run (got $WOULDMODIFY)"; FAIL=1; }
+
+          if [ "$FAIL" -eq 1 ]; then
+            echo "::error::Idempotency check failed."
+            exit 1
+          fi
+
+          echo "IDEMPOTENCY CHECK PASSED"
+
+      - name: Final health checks
+        run: |
+          REMOTE_CMD=$(cat <<'EOF'
+          cd /opt/techvault
+          echo "=== Container status ==="
+          docker compose ps
+          echo ""
+          echo "=== Backend health endpoint ==="
+          curl -sf --max-time 10 http://localhost:5000/api/v1/health || echo "BACKEND_HEALTH_UNREACHABLE"
+          echo ""
+          echo "=== Frontend response ==="
+          curl -so /dev/null -w "HTTP_CODE:%{http_code}\n" --max-time 10 http://localhost:3000 || echo "FRONTEND_UNREACHABLE"
+          echo ""
+          echo "=== health-check.sh ==="
+          sudo /opt/techvault/devops/scripts/health-check.sh
+          EOF
+          )
+          OUTPUT=$(ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 "${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}" "$REMOTE_CMD")
+          echo "$OUTPUT"
+
+          RESULT_LINE=$(echo "$OUTPUT" | grep -E "^RESULT:" | tail -1)
+          echo ""
+          echo "Health script result line: $RESULT_LINE"
+
+          if echo "$RESULT_LINE" | grep -q "RESULT: HEALTHY"; then
+            echo "FINAL HEALTH: HEALTHY"
+          elif echo "$RESULT_LINE" | grep -q "RESULT: WARNING"; then
+            echo "::warning::health-check.sh reported WARNING, not HEALTHY:"
+            echo "$OUTPUT" | grep -E "\[WARNING\]" || true
+            echo "::error::health-check.sh did not return HEALTHY. Warnings must be explicitly reviewed, not silently accepted. Failing workflow."
+            exit 1
+          else
+            echo "::error::health-check.sh did not return a recognizable RESULT line (expected 'RESULT: HEALTHY')"
+            exit 1
+          fi
+
+      - name: Print summary
+        if: always()
+        run: |
+          {
+            echo "## Production Monitor Hebrew Backfill — Summary"
+            echo ""
+            echo "- Production commit: $TARGET_COMMIT"
+            echo "- Backup: verified (size > 0, gzip integrity passed)"
+            echo "- Dry-run would-modify: ${{ steps.dryrun.outputs.wouldmodify }}"
+            echo "- Real execution — modified: ${{ steps.realrun.outputs.modified }}, unchanged: ${{ steps.realrun.outputs.unchanged }}"
+            echo "- Idempotency: modified 0 / unchanged 313 confirmed"
+            echo "- Final health result: see 'Final health checks' step above"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Cleanup SSH key
+        if: always()
+        run: rm -f "$SSH_KEY_PATH"
