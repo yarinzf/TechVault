@@ -15,7 +15,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The MSI PRO MP241 is a 24-inch Full HD IPS office monitor designed for productivity-focused users. With a 75Hz refresh rate, anti-glare coating, and ergonomic tilt adjustment, it delivers a comfortable and clear viewing experience throughout the workday. Its slim bezels and compact footprint make it ideal for space-constrained desk setups.',
+    descriptionHe: 'מסך MSI PRO MP241 הוא מסך בגודל 24 אינץ׳ ברזולוציית Full HD, עם קצב רענון של 75Hz, ציפוי אנטי-רפלקטיבי והתאמת הטיה.',
     shortDescription: 'Compact 24" FHD IPS office monitor with 75Hz and anti-glare display.',
+    shortDescriptionHe: 'מסך קומפקטי 24 אינץ׳ Full HD IPS עם 75Hz.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=PRO+MP241'],
     tags: ['office', 'ips', 'fhd', 'msi', 'productivity'],
     specs: {
@@ -53,7 +55,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The MSI PRO MP271 offers a generous 27-inch Full HD IPS panel at a budget-friendly price point for office users. Its 75Hz refresh rate reduces motion blur during document scrolling and video calls, while the anti-glare surface keeps reflections in check under bright office lighting. Slim bezels on three sides enable clean multi-monitor configurations.',
+    descriptionHe: 'מסך MSI PRO MP271 הוא מסך בגודל 27 אינץ׳ ברזולוציית Full HD, עם קצב רענון של 75Hz וציפוי אנטי-רפלקטיבי. מסגרות דקות בשלושה צדדים ותמיכת VESA כלולות.',
     shortDescription: 'Affordable 27" FHD IPS display built for everyday office work.',
+    shortDescriptionHe: 'מסך משרדי 27 אינץ׳ Full HD IPS עם 75Hz וציפוי אנטי-רפלקטיבי.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=PRO+MP271'],
     tags: ['office', 'ips', 'fhd', 'msi', 'productivity'],
     specs: {
@@ -91,7 +95,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The MSI PRO MP271QP steps up to QHD resolution on a 27-inch IPS panel, giving office professionals a noticeably sharper canvas for spreadsheets, code, and design work. The height-adjustable stand accommodates a wide range of sitting and standing desk postures, and the 75Hz refresh rate smooths day-long scrolling sessions.',
+    descriptionHe: 'מסך MSI PRO MP271QP הוא מסך בגודל 27 אינץ׳ ברזולוציית QHD, עם מעמד מתכוונן בגובה, קצב רענון של 75Hz וחיבור USB-C.',
     shortDescription: 'Sharp 27" QHD IPS office monitor with ergonomic height-adjustable stand.',
+    shortDescriptionHe: 'מסך 27 אינץ׳ QHD IPS עם מעמד מתכוונן בגובה.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=PRO+MP271QP'],
     tags: ['office', 'ips', 'qhd', 'msi', 'ergonomic'],
     specs: {
@@ -129,7 +135,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The MSI Modern MD241P blends a sleek, minimalist aesthetic with practical office performance. Its 24-inch Full HD IPS panel is surrounded by ultra-thin bezels on three sides, and the built-in speakers save desk space by eliminating the need for external audio. The height-adjustable stand ensures all-day ergonomic comfort.',
+    descriptionHe: 'מסך MSI Modern MD241P הוא מסך בגודל 24 אינץ׳ ברזולוציית Full HD, עם מסגרות דקות בשלושה צדדים ורמקולים מובנים. המעמד מתכוונן בגובה.',
     shortDescription: 'Stylish 24" FHD IPS office monitor with built-in speakers and adjustable stand.',
+    shortDescriptionHe: 'מסך משרדי 24 אינץ׳ Full HD IPS עם רמקולים מובנים ומעמד מתכוונן.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=Modern+MD241P'],
     tags: ['office', 'ips', 'fhd', 'msi', 'modern', 'speakers'],
     specs: {
@@ -167,7 +175,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The MSI Modern MD272QP is a 27-inch QHD IPS monitor built for professionals who value both visual quality and ergonomics. Its ultra-slim bezels and clean white finish integrate gracefully into modern home offices, while the height-adjustable stand and 75Hz panel deliver the comfort and clarity needed for intensive document and content work.',
+    descriptionHe: 'מסך MSI Modern MD272QP הוא מסך בגודל 27 אינץ׳ ברזולוציית QHD, עם מסגרות דקות וגימור לבן. המעמד מתכוונן בגובה, וקצב הרענון הוא 75Hz.',
     shortDescription: 'Premium 27" QHD IPS office monitor with modern design and ergonomic stand.',
+    shortDescriptionHe: 'מסך משרדי 27 אינץ׳ QHD IPS עם מעמד מתכוונן בגובה וגימור לבן.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=Modern+MD272QP'],
     tags: ['office', 'ips', 'qhd', 'msi', 'modern', 'ergonomic'],
     specs: {
@@ -205,7 +215,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The MSI Optix G24C4 is a 24-inch curved Full HD VA gaming monitor that wraps the action around you with a 1500R curvature. Its 144Hz refresh rate and 1ms response time eliminate screen tearing and ghosting during fast-paced gaming sessions. AMD FreeSync Premium support synchronizes frame rates between your GPU and display for silky-smooth gameplay.',
+    descriptionHe: 'מסך MSI Optix G24C4 הוא מסך גיימינג קעור בגודל 24 אינץ׳ ברזולוציית Full HD, עם פאנל VA בעקמומיות 1500R. קצב רענון של 144Hz וזמן תגובה של 1ms, לצד תמיכת AMD FreeSync Premium, כלולים.',
     shortDescription: 'Immersive 24" curved FHD VA gaming monitor with 144Hz and FreeSync Premium.',
+    shortDescriptionHe: 'מסך גיימינג קעור 24 אינץ׳ Full HD 144Hz VA עם AMD FreeSync Premium.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=Optix+G24C4'],
     tags: ['gaming', 'va', 'curved', 'fhd', 'msi', '144hz'],
     specs: {
@@ -243,7 +255,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The MSI Optix G27C5 delivers a larger 27-inch curved VA gaming experience with a smooth 165Hz refresh rate and 1ms response time. The 1500R curvature creates an immersive field of view that pulls you deeper into every game, while AMD FreeSync Premium keeps gameplay free of tearing across the full refresh range.',
+    descriptionHe: 'מסך MSI Optix G27C5 הוא מסך גיימינג קעור בגודל 27 אינץ׳ ברזולוציית Full HD, עם פאנל VA בעקמומיות 1500R. קצב הרענון הוא 165Hz, וזמן התגובה עומד על 1ms; תמיכת AMD FreeSync Premium כלולה.',
     shortDescription: 'Large 27" curved FHD VA gaming monitor with buttery-smooth 165Hz refresh.',
+    shortDescriptionHe: 'מסך גיימינג קעור 27 אינץ׳ Full HD 165Hz VA.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=Optix+G27C5'],
     tags: ['gaming', 'va', 'curved', 'fhd', 'msi', '165hz'],
     specs: {
@@ -281,7 +295,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The MSI Optix G272 is a flat 27-inch Full HD IPS gaming monitor offering the color accuracy and wide viewing angles of IPS technology paired with a 144Hz refresh rate. Designed for competitive gamers who prefer a flat panel, it delivers crisp visuals and fast response without the curve, making it equally suited for work and play.',
+    descriptionHe: 'מסך MSI Optix G272 הוא מסך גיימינג שטוח בגודל 27 אינץ׳ ברזולוציית Full HD על פאנל IPS, עם קצב רענון של 144Hz וזוויות צפייה רחבות.',
     shortDescription: 'Flat 27" FHD IPS gaming monitor with wide-angle clarity and 144Hz speed.',
+    shortDescriptionHe: 'מסך גיימינג שטוח 27 אינץ׳ Full HD IPS עם 144Hz.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=Optix+G272'],
     tags: ['gaming', 'ips', 'fhd', 'msi', '144hz'],
     specs: {
@@ -319,7 +335,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The MSI Optix G273QF raises the bar with a 27-inch QHD IPS panel running at 165Hz, giving competitive gamers sharper detail than Full HD without sacrificing speed. AMD FreeSync Premium eliminates tearing, while the IPS panel ensures vivid colors and consistent brightness from virtually any viewing angle.',
+    descriptionHe: 'מסך MSI Optix G273QF הוא מסך גיימינג בגודל 27 אינץ׳ ברזולוציית QHD, עם קצב רענון של 165Hz. תמיכת AMD FreeSync Premium ופאנל IPS עם זוויות צפייה רחבות כלולים.',
     shortDescription: '27" QHD IPS gaming monitor combining 165Hz speed with crisp QHD detail.',
+    shortDescriptionHe: 'מסך גיימינג IPS בגודל 27 אינץ׳ QHD, קצב רענון 165Hz עם AMD FreeSync Premium.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=Optix+G273QF'],
     tags: ['gaming', 'ips', 'qhd', 'msi', '165hz', 'freesync'],
     specs: {
@@ -358,7 +376,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The MSI Optix MAG274QRF-QD combines a rapid 165Hz QHD IPS panel with Quantum Dot color technology, expanding the color gamut to cover 98% of the DCI-P3 color space. The result is strikingly vivid, accurate colors that benefit both gamers seeking visual immersion and content creators needing reliable color reproduction. The height-adjustable stand adds all-day ergonomic comfort.',
+    descriptionHe: 'מסך MSI Optix MAG274QRF-QD הוא מסך גיימינג בגודל 27 אינץ׳ ברזולוציית QHD, עם קצב רענון של 165Hz וטכנולוגיית Quantum Dot המרחיבה את כיסוי הצבעים. המעמד ניתן להתאמת גובה.',
     shortDescription: '27" QHD Quantum Dot IPS gaming monitor with 165Hz and wide color gamut.',
+    shortDescriptionHe: 'מסך גיימינג 27 אינץ׳ QHD 165Hz IPS עם טכנולוגיית Quantum Dot.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=MAG274QRF-QD'],
     tags: ['gaming', 'ips', 'qhd', 'msi', '165hz', 'quantum-dot', 'wide-color'],
     specs: {
@@ -396,7 +416,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The MSI Optix MAG274UPF brings true 4K UHD resolution to a 27-inch IPS gaming panel with a 144Hz refresh rate, bridging the gap between pixel-perfect fidelity and competitive performance. HDR support enhances contrast and highlights, while the height-adjustable stand and AMD FreeSync Premium make it a well-rounded choice for demanding gamers.',
+    descriptionHe: 'מסך MSI Optix MAG274UPF הוא מסך גיימינג בגודל 27 אינץ׳ ברזולוציית 4K על פאנל IPS, עם קצב רענון של 144Hz. תמיכת HDR, מעמד מתכוונן בגובה ותמיכת AMD FreeSync Premium כלולים.',
     shortDescription: 'Pixel-perfect 27" 4K IPS gaming monitor with 144Hz and HDR support.',
+    shortDescriptionHe: 'מסך גיימינג 27 אינץ׳ 4K 144Hz IPS עם HDR.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=MAG274UPF'],
     tags: ['gaming', 'ips', '4k', 'msi', '144hz', 'hdr'],
     specs: {
@@ -434,7 +456,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The MSI Optix MAG321CQR is a 32-inch curved QHD VA gaming monitor with a sweeping 1500R curvature and a 165Hz refresh rate. Its large VA panel delivers deep blacks and high contrast ratios, making dark game environments look dramatically more realistic. AMD FreeSync Premium keeps gameplay smooth across the entire refresh range.',
+    descriptionHe: 'מסך MSI Optix MAG321CQR הוא מסך גיימינג קעור בגודל 32 אינץ׳ ברזולוציית QHD, עם פאנל VA בעקמומיות 1500R וקצב רענון של 165Hz. פאנל ה-VA מספק ניגודיות גבוהה, ותמיכת AMD FreeSync Premium כלולה.',
     shortDescription: 'Large 32" curved QHD VA gaming monitor with deep contrast and 165Hz.',
+    shortDescriptionHe: 'מסך גיימינג קעור 32 אינץ׳ QHD 165Hz VA עם ניגודיות גבוהה.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=MAG321CQR'],
     tags: ['gaming', 'va', 'curved', 'qhd', 'msi', '165hz'],
     specs: {
@@ -473,7 +497,9 @@ module.exports = [
     isFeatured: true,
     isPublished: true,
     description: 'The MSI MEG342C QD-OLED is a flagship 34-inch ultrawide curved gaming monitor powered by a next-generation QD-OLED panel. It delivers true pixel-level black, an infinite contrast ratio, and stunning Quantum Dot colors at 175Hz — redefining what a gaming display can look and feel like. NVIDIA G-Sync Compatible support and HDR capability make every title look breathtaking.',
+    descriptionHe: 'מסך MSI MEG342C QD-OLED הוא מסך גיימינג רחב במיוחד וקעור בגודל 34 אינץ׳ עם פאנל QD-OLED, הפועל בקצב רענון של 175Hz. הפאנל תורם לרמות שחור עמוקות וניגודיות גבוהה, עם צבעי Quantum Dot. הסמכת NVIDIA G-Sync Compatible ותמיכת HDR כלולות.',
     shortDescription: 'Flagship 34" ultrawide curved QD-OLED gaming monitor with 175Hz and infinite contrast.',
+    shortDescriptionHe: 'מסך גיימינג רחב במיוחד 34 אינץ׳ קעור QD-OLED עם 175Hz.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=MEG342C+QD-OLED'],
     tags: ['gaming', 'qd-oled', 'ultrawide', 'curved', 'msi', '175hz', 'hdr', 'featured'],
     specs: {
@@ -511,7 +537,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The MSI MAG 341CQP QD-OLED offers the visual brilliance of a curved 34-inch QD-OLED ultrawide panel at a more accessible price point. Running at 165Hz with near-instantaneous 0.1ms response, it provides exceptional motion clarity for gaming while its infinite contrast and Quantum Dot color make every scene pop with life.',
+    descriptionHe: 'מסך MSI MAG 341CQP QD-OLED הוא מסך גיימינג רחב במיוחד וקעור בגודל 34 אינץ׳ עם פאנל QD-OLED, הפועל בקצב רענון של 165Hz וזמן תגובה של 0.1ms. הפאנל תורם לרמות שחור עמוקות ולצבעי Quantum Dot, עם תמיכת HDR והסמכת NVIDIA G-Sync Compatible.',
     shortDescription: 'Stunning 34" curved ultrawide QD-OLED gaming monitor with 165Hz and HDR.',
+    shortDescriptionHe: 'מסך גיימינג רחב במיוחד 34 אינץ׳ קעור QD-OLED עם 165Hz ו-HDR.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=MAG+341CQP'],
     tags: ['gaming', 'qd-oled', 'ultrawide', 'curved', 'msi', '165hz', 'hdr'],
     specs: {
@@ -549,7 +577,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The MSI Optix MAG401QR is an expansive 40-inch QHD VA gaming monitor that provides a massive, desk-filling canvas without the ultrawide aspect ratio. Its 144Hz refresh rate and 1ms response time keep fast-paced games smooth, while the large VA panel delivers the rich contrast and deep blacks that immersive gaming demands.',
+    descriptionHe: 'מסך MSI Optix MAG401QR הוא מסך גיימינג בגודל 40 אינץ׳ ברזולוציית QHD על פאנל VA, עם קצב רענון של 144Hz, זמן תגובה של 1ms ותמיכת AMD FreeSync Premium.',
     shortDescription: 'Massive 40" QHD VA gaming monitor with 144Hz for an expansive gaming experience.',
+    shortDescriptionHe: 'מסך גיימינג גדול 40 אינץ׳ QHD VA עם 144Hz.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=MAG401QR'],
     tags: ['gaming', 'va', 'qhd', 'msi', '144hz', 'large'],
     specs: {
@@ -588,7 +618,9 @@ module.exports = [
     isFeatured: true,
     isPublished: true,
     description: 'The MSI MAG 274QRFX QD-OLED pushes the boundaries of competitive gaming with a blazing 360Hz refresh rate on a 27-inch QHD QD-OLED panel. Combining the self-emissive precision of OLED technology with Quantum Dot color enhancement, it offers ultra-low input lag, true blacks, and vibrant color accuracy that give tournament-level players every possible advantage.',
+    descriptionHe: 'מסך MSI MAG 274QRFX QD-OLED הוא מסך גיימינג בגודל 27 אינץ׳ ברזולוציית QHD עם פאנל QD-OLED, הפועל בקצב רענון של 360Hz. הפאנל העצמי-מאיר תורם לרמות שחור עמוקות עם טכנולוגיית Quantum Dot. תמיכת HDR והסמכת NVIDIA G-Sync Compatible זמינות במסך.',
     shortDescription: 'Blazing 27" QHD QD-OLED gaming monitor with 360Hz for elite competitive play.',
+    shortDescriptionHe: 'מסך גיימינג 27 אינץ׳ QHD QD-OLED עם 360Hz.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=MAG+274QRFX'],
     tags: ['gaming', 'qd-oled', 'qhd', 'msi', '360hz', 'hdr', 'competitive', 'featured'],
     specs: {
@@ -626,7 +658,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The MSI Prestige PS341WU is a 34-inch ultrawide IPS creator monitor calibrated for color-critical work. Covering 98% of the DCI-P3 color space and achieving factory calibration with Delta E less than 2, it meets the exacting standards of photographers, video editors, and designers. The height-adjustable stand and built-in USB hub support a professional, organized workspace.',
+    descriptionHe: 'מסך MSI Prestige PS341WU הוא מסך ליוצרי תוכן רחב במיוחד בגודל 34 אינץ׳ ברזולוציית WQHD, המכויל מהמפעל לעבודת צבע עקבית. המעמד מאפשר התאמת גובה, ורכזת USB מובנית נכללת בו.',
     shortDescription: 'Color-accurate 34" ultrawide IPS creator monitor with factory calibration and USB hub.',
+    shortDescriptionHe: 'מסך ליוצרי תוכן רחב במיוחד 34 אינץ׳ WQHD IPS מכויל מהמפעל.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=Prestige+PS341WU'],
     tags: ['creator', 'ips', 'ultrawide', 'msi', 'color-accurate', 'professional'],
     specs: {
@@ -664,7 +698,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The MSI Creator PS321URV is a 32-inch 4K IPS display engineered for creative professionals who demand the highest fidelity. With factory-calibrated color accuracy covering 98% of DCI-P3 and HDR support, it faithfully represents colors as they will appear in final print and digital output. The height-adjustable stand and extensive connectivity make it a central hub for any professional workstation.',
+    descriptionHe: 'מסך MSI Creator PS321URV הוא מסך ליוצרי תוכן בגודל 32 אינץ׳ ברזולוציית 4K על פאנל IPS, עם תמיכת HDR. הכיול מהמפעל תומך בעבודת צבע עקבית. המעמד מתכוונן בגובה, וחיבורי HDMI, DisplayPort, USB-C ו-USB-A כלולים.',
     shortDescription: 'Professional 32" 4K IPS creator monitor with HDR and factory color calibration.',
+    shortDescriptionHe: 'מסך ליוצרי תוכן 32 אינץ׳ 4K IPS עם HDR, מכויל מהמפעל.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=Creator+PS321URV'],
     tags: ['creator', 'ips', '4k', 'msi', 'hdr', 'color-accurate', 'professional'],
     specs: {
@@ -702,7 +738,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The MSI Optix MAG274RFE is a 27-inch Full HD IPS gaming monitor offering a compelling 165Hz refresh rate at an approachable price. With AMD FreeSync Premium and a 1ms response time, it eliminates screen tearing and ghosting to deliver a smooth, responsive gaming experience suited to both beginners and experienced players upgrading from a 60Hz display.',
+    descriptionHe: 'מסך MSI Optix MAG274RFE הוא מסך גיימינג בגודל 27 אינץ׳ ברזולוציית Full HD, עם קצב רענון של 165Hz וזמן תגובה של 1ms, לצד תמיכת AMD FreeSync Premium.',
     shortDescription: 'Budget-friendly 27" FHD IPS gaming monitor with 165Hz and FreeSync Premium.',
+    shortDescriptionHe: 'מסך גיימינג 27 אינץ׳ Full HD 165Hz IPS עם AMD FreeSync Premium.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=MAG274RFE'],
     tags: ['gaming', 'ips', 'fhd', 'msi', '165hz', 'freesync'],
     specs: {
@@ -741,7 +779,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The MSI MAG 275CQRX QD-OLED merges the deep blacks and infinite contrast of QD-OLED technology with a 1800R curved 27-inch form factor running at 240Hz. Designed for gamers who want the best of both worlds — immersive curvature and bleeding-edge display technology — it delivers stunning visuals with HDR support and near-zero response time.',
+    descriptionHe: 'מסך MSI MAG 275CQRX QD-OLED הוא מסך גיימינג קעור בגודל 27 אינץ׳ ברזולוציית QHD, עם פאנל QD-OLED בעקמומיות 1800R הפועל בקצב רענון של 240Hz. הפאנל תורם לרמות שחור עמוקות, עם תמיכת HDR וזמן תגובה מהיר.',
     shortDescription: 'Curved 27" QHD QD-OLED gaming monitor with 240Hz and infinite contrast.',
+    shortDescriptionHe: 'מסך גיימינג קעור 27 אינץ׳ QHD QD-OLED עם 240Hz ו-HDR.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=MAG+275CQRX'],
     tags: ['gaming', 'qd-oled', 'curved', 'qhd', 'msi', '240hz', 'hdr'],
     specs: {

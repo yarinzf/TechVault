@@ -15,7 +15,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Dell SE2422H is a dependable 24-inch Full HD IPS monitor designed for everyday office use and home computing. Its IPS panel brings consistent color reproduction and generous viewing angles that make it suitable for both solo and collaborative work. A 75Hz refresh rate and AMD FreeSync support provide smooth visuals for general use and casual gaming alike. Dell\'s confidence in build quality is backed by a three-year Advanced Exchange Service warranty, making it a low-risk choice for businesses and individuals who value reliability.',
+    descriptionHe: 'מסך Dell SE2422H הוא מסך בגודל 24 אינץ׳ ברזולוציית Full HD עם פאנל IPS, קצב רענון של 75Hz ותמיכת AMD FreeSync. המסך כולל אחריות Advanced Exchange של דל לשלוש שנים.',
     shortDescription: '24" FHD IPS office monitor with 75Hz, AMD FreeSync, and Dell 3-year Advanced Exchange.',
+    shortDescriptionHe: 'מסך 24 אינץ׳ Full HD IPS עם 75Hz ו-AMD FreeSync.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=SE2422H'],
     tags: ['office', 'ips', 'full-hd', 'budget', 'best-seller'],
     specs: {
@@ -53,7 +55,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Dell SE2722H scales up the SE series to a 27-inch Full HD IPS display while maintaining the clean, professional aesthetic Dell business monitors are known for. The larger screen gives users more comfortable reading and working space compared to 24-inch alternatives, without the additional cost of moving to a QHD panel. IPS technology ensures consistent colors across wide viewing angles, making it equally useful for video calls and presentations. Dell\'s reliability-focused build is supported by a three-year warranty.',
+    descriptionHe: 'מסך Dell SE2722H הוא מסך בגודל 27 אינץ׳ ברזולוציית Full HD עם פאנל IPS השומר על עקביות צבעים בזוויות צפייה רחבות. המסך כולל אחריות של דל לשלוש שנים.',
     shortDescription: '27" FHD IPS office monitor with wide viewing angles and Dell 3-year warranty coverage.',
+    shortDescriptionHe: 'מסך 27 אינץ׳ Full HD IPS עם זוויות צפייה רחבות.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=SE2722H'],
     tags: ['office', 'ips', 'full-hd', 'budget'],
     specs: {
@@ -91,7 +95,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Dell S2421HN is a slim, refined 24-inch Full HD IPS monitor from Dell\'s S series, featuring an ultra-thin panel design and minimal bezels on three sides. It\'s built for users who prioritize aesthetics alongside function, fitting naturally into a tidy home office or creative studio. The IPS panel produces accurate, consistent color across a generous 178-degree viewing angle, and dual HDMI ports simplify connectivity for users switching between a laptop and a desktop. AMD FreeSync provides smooth, tear-free playback in games and video.',
+    descriptionHe: 'מסך Dell S2421HN הוא מסך בגודל 24 אינץ׳ ברזולוציית Full HD מסדרת S, עם עיצוב דק ומסגרות דקות בשלושה צדדים. פאנל ה-IPS מספק צבעים עקביים בזווית צפייה של 178 מעלות, ושני חיבורי HDMI כלולים. תמיכת AMD FreeSync כלולה לצמצום קריעות מסך.',
     shortDescription: '24" FHD IPS monitor with ultra-thin design, slim bezels, and dual HDMI ports.',
+    shortDescriptionHe: 'מסך 24 אינץ׳ Full HD IPS עם עיצוב דק ושני חיבורי HDMI.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=S2421HN'],
     tags: ['office', 'ips', 'full-hd', 'slim-design'],
     specs: {
@@ -129,7 +135,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Dell S2721DS has consistently been one of Dell\'s most popular monitors, earning praise for delivering a sharp 27-inch QHD IPS panel at a genuinely accessible price. The 2560x1440 resolution makes a visible difference for reading, spreadsheets, and any task where text sharpness matters. Three-sided ultra-thin bezels allow multiple S2721DS units to be arranged in a multi-monitor configuration with minimal gaps. AMD FreeSync eliminates tearing in casual gaming sessions without requiring specific GPU brands, making this a versatile all-rounder.',
+    descriptionHe: 'מסך Dell S2721DS הוא מסך בגודל 27 אינץ׳ ברזולוציית QHD עם פאנל IPS ומסגרות דקות בשלושה צדדים. תמיכת AMD FreeSync מסייעת לצמצם קריעות מסך.',
     shortDescription: '27" QHD IPS monitor with slim bezels — one of Dell\'s most popular and versatile office picks.',
+    shortDescriptionHe: 'מסך 27 אינץ׳ QHD IPS עם מסגרות דקות ו-AMD FreeSync.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=S2721DS'],
     tags: ['office', 'ips', 'qhd', 'best-seller', 'value'],
     specs: {
@@ -167,7 +175,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Dell S2722QC offers 4K UHD resolution on a 27-inch IPS display with the added convenience of USB-C connectivity that handles both video signal and up to 65W of laptop charging through a single cable. The result is a cleaner desk setup with far fewer cables. At 4K resolution, every pixel is sharp and text renders with remarkable clarity. AMD FreeSync provides smooth frame delivery for video streaming and light gaming, and the monitor\'s slim design integrates naturally into professional and home office environments.',
+    descriptionHe: 'מסך Dell S2722QC הוא מסך בגודל 27 אינץ׳ ברזולוציית 4K על פאנל IPS, עם חיבור USB-C התומך באות וידאו ובאספקת חשמל למחשב נייד. תמיכת AMD FreeSync כלולה.',
     shortDescription: '27" 4K IPS monitor with USB-C 65W charging for a clean single-cable laptop setup.',
+    shortDescriptionHe: 'מסך 27 אינץ׳ 4K IPS עם USB-C.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=S2722QC'],
     tags: ['office', 'ips', '4k', 'usb-c'],
     specs: {
@@ -205,7 +215,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Dell S3221QS brings 4K resolution to a 32-inch curved VA panel, creating an immersive viewing experience suited equally to productivity and home entertainment. The 1800R curvature gently wraps the display to match the natural curve of the eye, reducing edge distortion over the large 32-inch screen. VA technology provides excellent contrast ratios that make movies and content pop with deep blacks and vivid highlights. Dual HDMI ports and DisplayPort input offer flexible connectivity for desktops, laptops, and streaming devices.',
+    descriptionHe: 'מסך Dell S3221QS הוא מסך קעור בגודל 32 אינץ׳ ברזולוציית 4K על פאנל VA, עם עקמומיות 1800R. המסך כולל שני חיבורי HDMI וחיבור DisplayPort.',
     shortDescription: '32" 4K curved VA monitor with high contrast for immersive work and home entertainment.',
+    shortDescriptionHe: 'מסך קעור 32 אינץ׳ 4K VA.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=S3221QS'],
     tags: ['office', 'va', 'curved', '4k', 'entertainment'],
     specs: {
@@ -243,7 +255,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Dell P2722H is a professional-class 27-inch Full HD IPS monitor from Dell\'s P series, built for demanding office environments where ergonomics and image accuracy matter. The fully adjustable stand supports height, tilt, swivel, and pivot adjustments, allowing the display to be positioned precisely or rotated to portrait orientation for document work. ComfortView Plus low blue light filtering and flicker-free operation reduce visual fatigue during extended work sessions. A built-in USB hub expands connectivity directly at the desk.',
+    descriptionHe: 'מסך Dell P2722H הוא מסך עסקי בגודל 27 אינץ׳ ברזולוציית Full HD מסדרת P. המעמד מאפשר התאמת גובה, הטיה, סיבוב וציר. הוא כולל סינון אור כחול ComfortView Plus, תאורה ללא הבהוב ורכזת USB מובנית.',
     shortDescription: '27" FHD IPS professional monitor with full ergonomic adjustment, USB hub, and low blue light.',
+    shortDescriptionHe: 'מסך עסקי 27 אינץ׳ Full HD IPS עם מעמד ארגונומי מלא ו-ComfortView Plus.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=P2722H'],
     tags: ['professional', 'ips', 'full-hd', 'ergonomic', 'usb-hub'],
     specs: {
@@ -281,7 +295,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Dell P2723QE steps up the P series to 4K resolution on a 27-inch IPS panel, designed for professionals who need precise image detail alongside serious ergonomic flexibility. USB-C with 90W charging makes it the perfect dock for a high-end laptop workstation. The height-adjustable stand with swivel and pivot supports multiple working postures, and built-in USB-A ports provide charging and peripheral connections directly at the monitor. Dell\'s color calibration ensures sRGB accuracy suitable for design review and digital content work.',
+    descriptionHe: 'מסך Dell P2723QE הוא מסך מקצועי בגודל 27 אינץ׳ ברזולוציית 4K מסדרת P, עם חיבור USB-C התומך באספקת חשמל. המעמד מתכוונן בגובה, עם סיבוב וציר, ויציאות USB-A מובנות כלולות. הכיול של דל תומך בדיוק צבעים sRGB.',
     shortDescription: '27" 4K IPS professional monitor with USB-C 90W, height adjustment, and built-in USB hub.',
+    shortDescriptionHe: 'מסך מקצועי 27 אינץ׳ 4K IPS עם USB-C ומעמד ארגונומי.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=P2723QE'],
     tags: ['professional', 'ips', '4k', 'usb-c', 'ergonomic'],
     specs: {
@@ -319,7 +335,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Dell P3222QE provides 4K resolution across a generous 32-inch IPS panel for professionals who need significant screen real estate alongside detailed image accuracy. Dual USB-C ports offer flexible connectivity and 65W charging support, while a four-port USB-A hub at the back extends peripheral capacity. The fully adjustable ergonomic stand with height, tilt, swivel, and 90-degree pivot allows users to configure the display for everything from spreadsheet work to portrait-mode document review. Dell\'s color accuracy factory calibration covers 99% sRGB.',
+    descriptionHe: 'מסך Dell P3222QE הוא מסך מקצועי בגודל 32 אינץ׳ ברזולוציית 4K מסדרת P. חיבור USB-C ורכזת USB-A בת ארבע יציאות כלולים. המעמד הארגונומי המלא כולל התאמת גובה, הטיה, סיבוב וציר סיבוב של 90 מעלות.',
     shortDescription: '32" 4K IPS professional monitor with dual USB-C, USB hub, and full ergonomic adjustment.',
+    shortDescriptionHe: 'מסך מקצועי 32 אינץ׳ 4K IPS עם USB-C ומעמד ארגונומי מלא.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=P3222QE'],
     tags: ['professional', 'ips', '4k', 'usb-c', 'ergonomic', 'usb-hub'],
     specs: {
@@ -357,7 +375,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Dell UltraSharp U2722D is a flagship 27-inch QHD monitor that has become the go-to recommendation for professionals who demand factory-calibrated color accuracy, ergonomic flexibility, and comprehensive connectivity in a single display. Its IPS Black panel delivers up to twice the contrast of standard IPS panels, maintaining accurate colors while producing deeper blacks for a more dynamic image. USB-C Thunderbolt 4 with 90W charging and a robust four-port USB hub make it the anchor of a high-performance workstation for power users.',
+    descriptionHe: 'מסך Dell UltraSharp U2722D הוא מסך מקצועי בגודל 27 אינץ׳ ברזולוציית QHD, עם פאנל IPS Black. חיבור USB-C ורכזת USB-A בת ארבע יציאות כלולים במסך.',
     shortDescription: '27" QHD IPS Black professional monitor with Thunderbolt 4, 90W USB-C, and premium color accuracy.',
+    shortDescriptionHe: 'מסך מקצועי 27 אינץ׳ QHD IPS Black עם USB-C.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=U2722D'],
     tags: ['professional', 'ips', 'qhd', 'usb-c', 'thunderbolt', 'color-accurate', 'best-seller'],
     specs: {
@@ -395,7 +415,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Dell UltraSharp U2723QE upgrades the acclaimed UltraSharp line to 4K resolution on a 27-inch IPS Black panel that offers superior contrast to conventional IPS at the same color accuracy. Factory-calibrated Delta E values of less than 2 guarantee what you produce on screen matches your final output, making it indispensable for color-critical professional work. USB-C with 90W charging, Thunderbolt 4 Daisy Chain for multi-monitor setups, and a comprehensive USB hub complete the package for demanding professional workstations.',
+    descriptionHe: 'מסך Dell UltraSharp U2723QE הוא מסך מקצועי בגודל 27 אינץ׳ ברזולוציית 4K, עם פאנל IPS Black. המסך מכויל מהמפעל לעבודת צבע עקבית. חיבור USB-C ורכזת USB-A כלולים.',
     shortDescription: '27" 4K IPS Black professional monitor with Thunderbolt 4 daisy chain and Delta E < 2 calibration.',
+    shortDescriptionHe: 'מסך מקצועי 27 אינץ׳ 4K IPS Black עם USB-C, מכויל מהמפעל.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=U2723QE'],
     tags: ['professional', 'ips', '4k', 'usb-c', 'thunderbolt', 'color-accurate', 'daisy-chain'],
     specs: {
@@ -433,7 +455,9 @@ module.exports = [
     isFeatured: true,
     isPublished: true,
     description: 'The Dell UltraSharp U3223QE is the largest standard-aspect UltraSharp in the lineup, delivering 4K resolution across a 32-inch IPS Black panel with factory-certified color accuracy. The increased screen size compared to 27-inch models provides genuinely more workspace for complex creative projects, financial modeling, and multi-application workflows. Thunderbolt 4 with 90W power delivery enables seamless laptop connectivity, and the built-in USB hub with fast-charging USB-A ports serves as a full desk hub. Dell calibrates each unit to Delta E less than 2 before shipping.',
+    descriptionHe: 'מסך Dell UltraSharp U3223QE הוא מסך מקצועי בגודל 32 אינץ׳ ברזולוציית 4K על פאנל IPS Black, עם חיבור USB-C ורכזת USB-A מובנית. המסך מכויל מהמפעל.',
     shortDescription: '32" 4K IPS Black UltraSharp monitor with Thunderbolt 4, 90W USB-C, and factory calibration.',
+    shortDescriptionHe: 'מסך מקצועי 32 אינץ׳ 4K IPS Black, מכויל מהמפעל.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=U3223QE'],
     tags: ['professional', 'ips', '4k', 'usb-c', 'thunderbolt', 'color-accurate', 'featured'],
     specs: {
@@ -471,7 +495,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Dell UltraSharp U3424WE brings the UltraSharp standard of color accuracy and build quality to a 34-inch ultrawide format designed for multitasking professionals. The 21:9 IPS panel at 3440x1440 provides horizontal space equivalent to having two traditional monitors side by side, with consistent color accuracy from edge to edge. Thunderbolt 4 with 90W charging and a comprehensive USB hub handle all connectivity needs. A built-in KVM switch allows the monitor to control two computers from a single keyboard and mouse, which is invaluable in dual-workstation environments.',
+    descriptionHe: 'מסך Dell UltraSharp U3424WE הוא מסך רחב במיוחד בגודל 34 אינץ׳ ביחס תמונה 21:9, עם פאנל IPS ברזולוציית 3440x1440. חיבור USB-C ורכזת USB כלולים. מתג KVM מובנה מאפשר שליטה בשני מחשבים ממקלדת ועכבר אחד.',
     shortDescription: '34" ultrawide QHD IPS UltraSharp monitor with Thunderbolt 4, KVM switch, and pro color accuracy.',
+    shortDescriptionHe: 'מסך רחב במיוחד 34 אינץ׳ Ultrawide QHD IPS עם USB-C ומתג KVM.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=U3424WE'],
     tags: ['professional', 'ips', 'ultrawide', 'qhd', 'thunderbolt', 'kvm', 'usb-c'],
     specs: {
@@ -509,7 +535,9 @@ module.exports = [
     isFeatured: true,
     isPublished: true,
     description: 'The Dell UltraSharp U4924DW is the ultimate productivity display for professionals who work across multiple applications and datasets simultaneously. Its 49-inch Dual QHD IPS panel provides a 5120x1440 workspace that eliminates the need for a multi-monitor setup while offering a continuous, uninterrupted display surface. Color accuracy meets UltraSharp standards with Delta E less than 2 calibration, making it suitable for critical design and color work even at this expansive size. A built-in KVM switch, Thunderbolt 4, and 90W USB-C charging complete a feature set designed for the most demanding professional environments.',
+    descriptionHe: 'מסך Dell UltraSharp U4924DW הוא מסך רחב במיוחד בגודל 49 אינץ׳ ברזולוציית Dual QHD, עם שטח תצוגה של 5120x1440 פיקסלים. מתג KVM מובנה וחיבור USB-C כלולים. המסך עבר כיול מפעלי.',
     shortDescription: '49" Dual QHD IPS super-ultrawide UltraSharp monitor with KVM, Thunderbolt 4, and Delta E < 2.',
+    shortDescriptionHe: 'מסך פנורמי 49 אינץ׳ Dual QHD IPS עם מתג KVM, מכויל מהמפעל.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=U4924DW'],
     tags: ['professional', 'ips', 'ultrawide', 'dual-qhd', 'thunderbolt', 'kvm', 'featured'],
     specs: {
@@ -547,7 +575,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Dell S2422DG packs QHD resolution and a 165Hz refresh rate into a compact 24-inch gaming monitor, appealing to gamers who want a tight, immersive display without the larger footprint of a 27-inch panel. The IPS panel delivers accurate, consistent color and wide viewing angles alongside the 1ms response time needed for clean motion in fast-paced games. NVIDIA G-Sync Compatible certification ensures low-latency, tear-free performance for NVIDIA GPU users. At 24 inches, the higher pixel density of QHD makes the image noticeably sharper than at 27 inches.',
+    descriptionHe: 'מסך Dell S2422DG הוא מסך גיימינג בגודל 24 אינץ׳ ברזולוציית QHD, עם קצב רענון של 165Hz וזמן תגובה של 1ms. הסמכת NVIDIA G-Sync Compatible כלולה.',
     shortDescription: '24" QHD IPS gaming monitor with 165Hz and G-Sync Compatible for a compact high-performance setup.',
+    shortDescriptionHe: 'מסך גיימינג קומפקטי 24 אינץ׳ QHD 165Hz IPS עם G-Sync Compatible.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=S2422DG'],
     tags: ['gaming', 'ips', 'qhd', '165hz', 'g-sync', 'compact', 'best-seller'],
     specs: {
@@ -585,7 +615,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Dell S2722DGM delivers a curved 27-inch QHD gaming experience at an attractive price point, combining a 1500R curved VA panel with a 165Hz refresh rate. The curvature draws the screen into the peripheral field of view, enhancing immersion in open-world games and racing titles. VA technology brings higher contrast than IPS alternatives at this price, making dark scenes in games look more dramatic. AMD FreeSync Premium and NVIDIA G-Sync Compatible certifications give this monitor broad compatibility across gaming rigs.',
+    descriptionHe: 'מסך Dell S2722DGM הוא מסך גיימינג קעור בגודל 27 אינץ׳ ברזולוציית QHD, עם פאנל VA בעקמומיות 1500R וקצב רענון של 165Hz. תמיכת AMD FreeSync Premium כלולה.',
     shortDescription: '27" QHD curved VA gaming monitor with 165Hz, high contrast, and universal sync support.',
+    shortDescriptionHe: 'מסך גיימינג קעור 27 אינץ׳ QHD 165Hz VA עם AMD FreeSync Premium.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=S2722DGM'],
     tags: ['gaming', 'va', 'curved', 'qhd', '165hz', 'freesync', 'hdr'],
     specs: {
@@ -623,7 +655,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Dell S3222DGM scales the S2722DGM\'s curved VA gaming formula to a 32-inch screen, giving gamers a larger, more enveloping viewport without sacrificing the 165Hz performance or QHD resolution. At 32 inches, the 1500R curvature becomes even more pronounced and immersive, particularly noticeable in simulation and racing titles. The VA panel\'s high native contrast ratio brings out detail in shadowy environments that lower-contrast IPS panels tend to flatten. AMD FreeSync Premium and NVIDIA G-Sync Compatible certifications offer broad GPU compatibility.',
+    descriptionHe: 'מסך Dell S3222DGM הוא מסך גיימינג קעור בגודל 32 אינץ׳ ברזולוציית QHD, עם פאנל VA בעקמומיות 1500R וקצב רענון של 165Hz. המסך תומך ב-AMD FreeSync Premium.',
     shortDescription: '32" QHD curved VA gaming monitor with 165Hz for a larger, more immersive gaming experience.',
+    shortDescriptionHe: 'מסך גיימינג קעור 32 אינץ׳ QHD 165Hz VA עם AMD FreeSync Premium.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=S3222DGM'],
     tags: ['gaming', 'va', 'curved', 'qhd', '165hz', 'freesync', 'hdr'],
     specs: {
@@ -661,7 +695,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Dell S2721HGF is an entry-level curved gaming monitor that delivers a 144Hz VA panel experience at a budget-friendly price point. The 1800R curvature on a 27-inch screen creates noticeable immersion even at Full HD resolution, and the VA panel\'s high contrast ratio brings atmosphere to darker game environments. At 144Hz with AMD FreeSync Premium and NVIDIA G-Sync Compatible certifications, it provides genuinely smooth gameplay without requiring a flagship graphics card. A solid choice for gamers upgrading from a standard office display for the first time.',
+    descriptionHe: 'מסך Dell S2721HGF הוא מסך גיימינג קעור בגודל 27 אינץ׳ ברזולוציית Full HD, עם פאנל VA בעקמומיות 1800R וקצב רענון של 144Hz, לצד תמיכה ב-AMD FreeSync Premium.',
     shortDescription: '27" FHD curved VA gaming monitor with 144Hz — an immersive entry-level upgrade from office displays.',
+    shortDescriptionHe: 'מסך גיימינג קעור 27 אינץ׳ Full HD 144Hz VA עם AMD FreeSync Premium.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=S2721HGF'],
     tags: ['gaming', 'va', 'curved', 'full-hd', '144hz', 'freesync', 'hdr', 'budget-gaming'],
     specs: {
@@ -699,7 +735,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Dell G2724D represents the G series at its most accessible — a 27-inch QHD IPS gaming monitor running at 165Hz with a design that signals gaming intent through subtle styling without being ostentatious. The fast IPS panel delivers 1ms response time and accurate color reproduction, giving a competitive clarity advantage while also looking great in creative applications. AMD FreeSync Premium and NVIDIA G-Sync Compatible certifications cover all modern GPU platforms. Three-sided thin bezels allow multi-monitor configurations without distracting gaps.',
+    descriptionHe: 'מסך Dell G2724D הוא מסך גיימינג בגודל 27 אינץ׳ ברזולוציית QHD מסדרת G, עם קצב רענון של 165Hz וזמן תגובה של 1ms, וכן תמיכה ב-AMD FreeSync Premium.',
     shortDescription: '27" QHD IPS gaming monitor with 165Hz, 1ms, and clean design suitable for gaming and creative use.',
+    shortDescriptionHe: 'מסך גיימינג 27 אינץ׳ QHD 165Hz IPS עם AMD FreeSync Premium.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=G2724D'],
     tags: ['gaming', 'ips', 'qhd', '165hz', 'freesync', 'g-sync', 'hdr'],
     specs: {
@@ -737,7 +775,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Dell G3223Q is the flagship of Dell\'s G gaming series, combining 4K resolution with a 144Hz refresh rate on a 32-inch IPS panel — a specification tier that supports both breathtaking visual detail and competitive-speed gameplay. HDMI 2.1 enables 4K at 120Hz from PlayStation 5 and Xbox Series X, making this a natural choice for console and PC gamers who share a single display. NVIDIA G-Sync Compatible and AMD FreeSync Premium Pro certifications deliver certified HDR gaming with variable refresh rate support. At this level, it competes with monitors costing significantly more.',
+    descriptionHe: 'מסך Dell G3223Q הוא מסך גיימינג בגודל 32 אינץ׳ ברזולוציית 4K מסדרת G, עם קצב רענון של 144Hz. חיבורי HDMI 2.1 תומכים באותות רענון גבוה ממכשירים תואמים; פלט בפועל מקונסולות תלוי בדגם הקונסולה ובתמיכת המשחק. המסך תומך ב-NVIDIA G-Sync Compatible.',
     shortDescription: '32" 4K IPS gaming monitor with 144Hz, HDMI 2.1, and G-Sync Compatible for PC and console gaming.',
+    shortDescriptionHe: 'מסך גיימינג 32 אינץ׳ 4K 144Hz IPS עם HDMI 2.1 ו-G-Sync Compatible.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=G3223Q'],
     tags: ['gaming', 'ips', '4k', '144hz', 'g-sync', 'hdr', 'hdmi-2.1', 'console'],
     specs: {

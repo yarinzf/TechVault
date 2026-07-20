@@ -15,7 +15,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Lenovo ThinkVision T24i-30 is a business-class 24-inch Full HD IPS monitor engineered for the professional office environment. Its height-adjustable, tilt, swivel, and pivot-capable stand provides exceptional ergonomic flexibility, while built-in speakers and a comprehensive port selection simplify desktop connectivity. The 60Hz IPS panel delivers accurate, consistent colors ideal for productivity applications.',
+    descriptionHe: 'מסך Lenovo ThinkVision T24i-30 הוא מסך עסקי בגודל 24 אינץ׳ ברזולוציית Full HD, עם פאנל IPS. המעמד ניתן להתאמה בגובה, בהטיה, בסיבוב ובציר. הוא כולל רמקולים מובנים, חיבורי HDMI, DisplayPort, USB-A ו-USB-C.',
     shortDescription: 'Versatile 24" FHD IPS business monitor with ergonomic stand and built-in speakers.',
+    shortDescriptionHe: 'מסך עסקי 24 אינץ׳ Full HD IPS עם מעמד ארגונומי ורמקולים מובנים.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=ThinkVision+T24i-30'],
     tags: ['office', 'ips', 'fhd', 'lenovo', 'thinkvision', 'ergonomic', 'business'],
     specs: {
@@ -53,7 +55,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Lenovo ThinkVision T27h-30 is a 27-inch QHD IPS business monitor built for professionals who need sharp detail and streamlined connectivity. USB-C with Power Delivery allows a single cable to connect, charge, and display a laptop, reducing desk clutter. The full-ergonomic stand supports height adjustment, tilt, swivel, and pivot for a personalized working posture.',
+    descriptionHe: 'מסך Lenovo ThinkVision T27h-30 הוא מסך עסקי בגודל 27 אינץ׳ ברזולוציית QHD, עם חיבור USB-C התומך באספקת חשמל. המעמד הארגונומי המלא מאפשר התאמת גובה, הטיה, סיבוב וציר.',
     shortDescription: 'Efficient 27" QHD IPS office monitor with USB-C Power Delivery and ergonomic stand.',
+    shortDescriptionHe: 'מסך עסקי 27 אינץ׳ QHD IPS עם USB-C ומעמד ארגונומי מלא.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=ThinkVision+T27h-30'],
     tags: ['office', 'ips', 'qhd', 'lenovo', 'thinkvision', 'usb-c', 'business'],
     specs: {
@@ -91,7 +95,9 @@ module.exports = [
     isFeatured: true,
     isPublished: true,
     description: 'The Lenovo ThinkVision T32p-30 delivers 4K UHD resolution on a spacious 32-inch IPS panel, offering exceptional pixel density for detailed work in finance, engineering, and media production. USB-C connectivity with Power Delivery handles data, video, and charging in one cable, while the fully adjustable stand and comprehensive USB hub keep the workspace organized and efficient.',
+    descriptionHe: 'מסך Lenovo ThinkVision T32p-30 הוא מסך עסקי בגודל 32 אינץ׳ ברזולוציית 4K, עם פאנל IPS. חיבור USB-C תומך בהעברת נתונים, וידאו וטעינה. המעמד הארגונומי המלא ורכזת USB כלולים.',
     shortDescription: 'Expansive 32" 4K IPS business monitor with USB-C hub and full ergonomic stand.',
+    shortDescriptionHe: 'מסך עסקי 32 אינץ׳ 4K IPS עם USB-C ורכזת חיבורים.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=ThinkVision+T32p-30'],
     tags: ['office', 'ips', '4k', 'lenovo', 'thinkvision', 'usb-c', 'business', 'featured'],
     specs: {
@@ -129,7 +135,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Lenovo ThinkVision P27h-30 is a professional-grade 27-inch QHD IPS monitor with factory-calibrated color accuracy, covering 99% of the sRGB color space. Ideal for graphic designers, architects, and data analysts, it provides the color fidelity and sharp detail needed to make critical decisions confidently. The ergonomic stand and built-in speakers round out an all-in-one professional workstation experience.',
+    descriptionHe: 'מסך Lenovo ThinkVision P27h-30 הוא מסך מקצועי בגודל 27 אינץ׳ ברזולוציית QHD, המכויל מהמפעל. המעמד הארגונומי ורמקולים מובנים כלולים.',
     shortDescription: 'Color-calibrated 27" QHD IPS professional monitor with premium ergonomic stand.',
+    shortDescriptionHe: 'מסך מקצועי 27 אינץ׳ QHD IPS מכויל מהמפעל.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=ThinkVision+P27h-30'],
     tags: ['professional', 'ips', 'qhd', 'lenovo', 'thinkvision', 'color-accurate'],
     specs: {
@@ -167,7 +175,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Lenovo ThinkVision P32u-10 is a 32-inch 4K IPS professional monitor designed for the most demanding creative and engineering workflows. Its expansive canvas and high pixel density make it easy to view multiple documents or design layers simultaneously, while factory color calibration and Thunderbolt 3 connectivity ensure seamless integration into a high-performance workstation.',
+    descriptionHe: 'מסך Lenovo ThinkVision P32u-10 הוא מסך מקצועי בגודל 32 אינץ׳ ברזולוציית 4K, עם חיבור Thunderbolt 3. המסך כויל במפעל לעבודת צבע עקבית.',
     shortDescription: 'High-resolution 32" 4K IPS professional monitor with Thunderbolt connectivity.',
+    shortDescriptionHe: 'מסך מקצועי 32 אינץ׳ 4K IPS עם Thunderbolt 3, מכויל מהמפעל.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=ThinkVision+P32u-10'],
     tags: ['professional', 'ips', '4k', 'lenovo', 'thinkvision', 'thunderbolt'],
     specs: {
@@ -205,7 +215,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Lenovo ThinkVision X1 is a premium 27-inch QHD IPS professional monitor with an ultra-thin edge-to-edge design and integrated USB-C docking functionality. Its near-borderless display creates a seamless multi-monitor setup, while the integrated 4K webcam, microphone, and speakers eliminate the need for peripheral accessories — making it the ideal centerpiece for a minimalist executive workstation.',
+    descriptionHe: 'מסך Lenovo ThinkVision X1 הוא מסך מקצועי בגודל 27 אינץ׳ ברזולוציית QHD, עם עיצוב דק במיוחד וכמעט חסר מסגרת. הוא כולל מצלמת רשת 4K, מיקרופון ורמקולים מובנים, ושני חיבורי USB-C לתחנת עגינה.',
     shortDescription: 'Ultra-thin 27" QHD IPS professional monitor with integrated webcam, mic, and speakers.',
+    shortDescriptionHe: 'מסך מקצועי דק 27 אינץ׳ QHD IPS עם מצלמת רשת, מיקרופון ורמקולים מובנים.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=ThinkVision+X1'],
     tags: ['professional', 'ips', 'qhd', 'lenovo', 'thinkvision', 'ultra-thin', 'webcam'],
     specs: {
@@ -243,7 +255,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Lenovo L24i-40 is a compact and affordable 24-inch Full HD IPS monitor that strikes the right balance between performance and price for everyday office use and home computing. Its 75Hz refresh rate ensures smooth video playback and document scrolling, while the three-sided frameless design lets it blend seamlessly into both single and dual-monitor arrangements.',
+    descriptionHe: 'מסך Lenovo L24i-40 הוא מסך בגודל 24 אינץ׳ ברזולוציית Full HD, עם קצב רענון של 75Hz ועיצוב חסר מסגרת בשלושה צדדים.',
     shortDescription: 'Affordable 24" FHD IPS office monitor with 75Hz and frameless design.',
+    shortDescriptionHe: 'מסך 24 אינץ׳ Full HD IPS עם 75Hz ועיצוב חסר מסגרת.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=L24i-40'],
     tags: ['office', 'ips', 'fhd', 'lenovo', 'budget', 'frameless'],
     specs: {
@@ -281,7 +295,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Lenovo L27i-40 offers the generous screen real estate of a 27-inch Full HD IPS panel without breaking the budget. Its 75Hz refresh rate keeps motion smooth during everyday computing tasks, and the ultra-slim bezels on three sides create a modern, open look on any desk. Straightforward HDMI and VGA connectivity ensures compatibility with virtually any computer.',
+    descriptionHe: 'מסך Lenovo L27i-40 הוא מסך בגודל 27 אינץ׳ ברזולוציית Full HD, עם קצב רענון של 75Hz, מסגרות דקות בשלושה צדדים וחיבורי HDMI ו-VGA.',
     shortDescription: 'Space-efficient 27" FHD IPS office monitor with slim bezels and 75Hz.',
+    shortDescriptionHe: 'מסך 27 אינץ׳ Full HD IPS עם מסגרות דקות ו-75Hz.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=L27i-40'],
     tags: ['office', 'ips', 'fhd', 'lenovo', 'budget', 'frameless'],
     specs: {
@@ -319,7 +335,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Lenovo L27q-30 brings QHD sharpness to an accessible price point on a 27-inch IPS panel. Running at 75Hz, it provides a noticeable step up in clarity over Full HD monitors, making it an excellent choice for professionals who work with fine text, complex spreadsheets, or detailed graphics without requiring a premium budget.',
+    descriptionHe: 'מסך Lenovo L27q-30 הוא מסך בגודל 27 אינץ׳ ברזולוציית QHD, הפועל בקצב רענון של 75Hz.',
     shortDescription: 'Value-oriented 27" QHD IPS office monitor with sharp detail and clean design.',
+    shortDescriptionHe: 'מסך 27 אינץ׳ QHD IPS עם 75Hz.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=L27q-30'],
     tags: ['office', 'ips', 'qhd', 'lenovo', 'value'],
     specs: {
@@ -357,7 +375,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Lenovo L32p-30 is a 32-inch 4K IPS office monitor that delivers stunning pixel density on a large panel, making it well-suited for multi-tasking, coding, and detailed document work. Its 60Hz refresh rate and accurate IPS colors provide a reliable, comfortable viewing experience throughout the workday, and HDMI plus DisplayPort connectivity covers a wide range of computer and workstation setups.',
+    descriptionHe: 'מסך Lenovo L32p-30 הוא מסך בגודל 32 אינץ׳ ברזולוציית 4K, עם קצב רענון של 60Hz וחיבורי HDMI ו-DisplayPort.',
     shortDescription: 'Large 32" 4K IPS office monitor with high pixel density for detailed work.',
+    shortDescriptionHe: 'מסך גדול 32 אינץ׳ 4K IPS.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=L32p-30'],
     tags: ['office', 'ips', '4k', 'lenovo', 'large'],
     specs: {
@@ -395,7 +415,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Lenovo Legion Y27q-30 is a 27-inch QHD IPS gaming monitor that hits the sweet spot between resolution, refresh rate, and value. Its 165Hz panel delivers fluid motion for competitive gaming, while QHD resolution ensures enemies and environmental details are rendered with sharpness Full HD cannot match. AMD FreeSync Premium eliminates screen tearing for a clean, competitive edge.',
+    descriptionHe: 'מסך Lenovo Legion Y27q-30 הוא מסך גיימינג בגודל 27 אינץ׳ ברזולוציית QHD, עם קצב רענון של 165Hz ותמיכה ב-AMD FreeSync Premium.',
     shortDescription: 'Balanced 27" QHD IPS Legion gaming monitor with 165Hz and FreeSync Premium.',
+    shortDescriptionHe: 'מסך גיימינג 27 אינץ׳ QHD 165Hz IPS מסדרת Legion, עם AMD FreeSync Premium.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=Legion+Y27q-30'],
     tags: ['gaming', 'ips', 'qhd', 'lenovo', 'legion', '165hz', 'freesync'],
     specs: {
@@ -433,7 +455,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Lenovo Legion Y27f-30 is an entry point into the Legion gaming lineup, offering a 27-inch Full HD IPS panel with a 165Hz refresh rate that keeps gameplay smooth without the higher cost of a QHD display. For competitive FPS players where frame rate matters more than resolution, this monitor delivers a fast, responsive experience backed by AMD FreeSync Premium.',
+    descriptionHe: 'מסך Lenovo Legion Y27f-30 הוא מסך גיימינג בגודל 27 אינץ׳ ברזולוציית Full HD, עם קצב רענון של 165Hz וזמן תגובה מהיר, לצד תמיכה ב-AMD FreeSync Premium.',
     shortDescription: 'Entry-level 27" FHD IPS Legion gaming monitor with speedy 165Hz performance.',
+    shortDescriptionHe: 'מסך גיימינג 27 אינץ׳ Full HD 165Hz IPS מסדרת Legion.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=Legion+Y27f-30'],
     tags: ['gaming', 'ips', 'fhd', 'lenovo', 'legion', '165hz'],
     specs: {
@@ -471,7 +495,9 @@ module.exports = [
     isFeatured: true,
     isPublished: true,
     description: 'The Lenovo Legion Y32p-30 is a 32-inch 4K IPS gaming monitor that combines the vast detail of UHD resolution with a smooth 144Hz refresh rate, making it a top choice for gamers who refuse to compromise between visual fidelity and motion performance. HDR support deepens contrast and brightens highlights, while the height-adjustable stand enables ergonomic long-session gaming.',
+    descriptionHe: 'מסך Lenovo Legion Y32p-30 הוא מסך גיימינג בגודל 32 אינץ׳ ברזולוציית 4K, עם קצב רענון של 144Hz. תמיכת HDR ומעמד מתכוונן בגובה כלולים.',
     shortDescription: 'Premium 32" 4K IPS Legion gaming monitor with 144Hz speed and HDR support.',
+    shortDescriptionHe: 'מסך גיימינג 32 אינץ׳ 4K 144Hz IPS מסדרת Legion, עם HDR.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=Legion+Y32p-30'],
     tags: ['gaming', 'ips', '4k', 'lenovo', 'legion', '144hz', 'hdr', 'featured'],
     specs: {
@@ -509,7 +535,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Lenovo Legion Y34wz-30 is a 34-inch curved ultrawide VA gaming monitor that envelops you in the game with its sweeping 1500R curvature and 21:9 aspect ratio. The 165Hz refresh rate and 1ms response time ensure silky-smooth motion in fast-paced titles, while HDR support enhances the deep contrast and rich shadow detail that VA panels are celebrated for.',
+    descriptionHe: 'מסך Lenovo Legion Y34wz-30 הוא מסך גיימינג רחב במיוחד וקעור בגודל 34 אינץ׳, עם עקמומיות 1500R ויחס תמונה 21:9. קצב רענון של 165Hz וזמן תגובה של 1ms, לצד תמיכת HDR ו-AMD FreeSync Premium, כלולים.',
     shortDescription: 'Immersive 34" curved ultrawide VA Legion gaming monitor with 165Hz and HDR.',
+    shortDescriptionHe: 'מסך גיימינג רחב במיוחד 34 אינץ׳ קעור VA מסדרת Legion, עם 165Hz ו-HDR.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=Legion+Y34wz-30'],
     tags: ['gaming', 'va', 'ultrawide', 'curved', 'lenovo', 'legion', '165hz', 'hdr'],
     specs: {
@@ -547,7 +575,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Lenovo Legion R27i-30 brings the Legion gaming experience to a budget-conscious price point with a 27-inch Full HD IPS panel running at 165Hz. Designed as an accessible gateway into high-refresh-rate gaming, it pairs AMD FreeSync Premium with fast pixel response to deliver smooth, tear-free gameplay in virtually any genre without demanding a premium investment.',
+    descriptionHe: 'מסך Lenovo Legion R27i-30 הוא מסך גיימינג בגודל 27 אינץ׳ ברזולוציית Full HD, עם קצב רענון של 165Hz וזמן תגובה מהיר, וכן תמיכה ב-AMD FreeSync Premium.',
     shortDescription: 'Accessible 27" FHD IPS Legion gaming monitor with 165Hz at a competitive price.',
+    shortDescriptionHe: 'מסך גיימינג 27 אינץ׳ Full HD 165Hz IPS מסדרת Legion, עם AMD FreeSync Premium.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=Legion+R27i-30'],
     tags: ['gaming', 'ips', 'fhd', 'lenovo', 'legion', '165hz', 'budget'],
     specs: {
@@ -585,7 +615,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Lenovo Legion Y27gq-30 pushes competitive performance further with a 27-inch QHD IPS panel running at an ultra-smooth 240Hz, giving fast-reflex players a decisive advantage in fast-paced esports titles. HDR support adds visual depth while NVIDIA G-Sync Compatible certification ensures seamless, low-latency synchronization with NVIDIA GPUs. The height-adjustable stand accommodates any gaming posture.',
+    descriptionHe: 'מסך Lenovo Legion Y27gq-30 הוא מסך גיימינג בגודל 27 אינץ׳ ברזולוציית QHD, עם קצב רענון של 240Hz. תמיכת HDR והסמכת NVIDIA G-Sync Compatible כלולות, והמעמד מתכוונן בגובה.',
     shortDescription: 'High-speed 27" QHD IPS Legion gaming monitor with 240Hz and G-Sync Compatible.',
+    shortDescriptionHe: 'מסך גיימינג 27 אינץ׳ QHD 240Hz IPS מסדרת Legion, עם G-Sync Compatible.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=Legion+Y27gq-30'],
     tags: ['gaming', 'ips', 'qhd', 'lenovo', 'legion', '240hz', 'hdr', 'gsync'],
     specs: {
@@ -623,7 +655,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Lenovo Legion Y45w-30 is a jaw-dropping 45-inch curved ultrawide VA gaming monitor that redefines immersion. Its vast 21:9 canvas and sweeping 1800R curvature create a panoramic field of view that pulls you completely into open-world games, racing simulators, and cinematic titles. The 200Hz refresh rate and AMD FreeSync Premium keep the enormous display stutter-free, while HDR deepens every scene.',
+    descriptionHe: 'מסך Lenovo Legion Y45w-30 הוא מסך גיימינג רחב במיוחד וקעור בגודל 45 אינץ׳, עם עקמומיות 1800R ויחס תמונה 21:9. קצב רענון של 200Hz ותמיכת AMD FreeSync Premium כלולים, לצד תמיכת HDR.',
     shortDescription: 'Massive 45" curved ultrawide VA Legion gaming monitor with 200Hz and HDR.',
+    shortDescriptionHe: 'מסך גיימינג רחב במיוחד 45 אינץ׳ קעור VA מסדרת Legion, עם 200Hz ו-HDR.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=Legion+Y45w-30'],
     tags: ['gaming', 'va', 'ultrawide', 'curved', 'lenovo', 'legion', '200hz', 'hdr', 'large'],
     specs: {
@@ -661,7 +695,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Lenovo G27qe-20 is a 27-inch QHD IPS monitor from the G-series lineup, targeting everyday users who want sharper-than-Full-HD resolution for both work and casual gaming at 75Hz. Its slim profile and near-borderless three-sided design integrate elegantly into home office setups, and AMD FreeSync support adds basic adaptive sync for smoother gaming sessions.',
+    descriptionHe: 'מסך Lenovo G27qe-20 הוא מסך בגודל 27 אינץ׳ ברזולוציית QHD מסדרת G, עם קצב רענון של 75Hz. תמיכת AMD FreeSync ועיצוב חסר מסגרת כלולים.',
     shortDescription: 'Clean 27" QHD IPS office monitor with FreeSync and near-borderless design.',
+    shortDescriptionHe: 'מסך 27 אינץ׳ QHD IPS עם 75Hz ו-AMD FreeSync.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=G27qe-20'],
     tags: ['office', 'ips', 'qhd', 'lenovo', 'value', 'freesync'],
     specs: {
@@ -699,7 +735,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Lenovo G32qc-30 is a 32-inch curved QHD VA gaming monitor that wraps a large, high-contrast display around your field of view at an attractive price. Its 1500R curvature and VA panel combine deep blacks with the wide color coverage needed for visually stunning games, while the 165Hz refresh rate and 1ms response time keep fast action crisp and responsive.',
+    descriptionHe: 'מסך Lenovo G32qc-30 הוא מסך גיימינג קעור בגודל 32 אינץ׳ ברזולוציית QHD, עם פאנל VA בעקמומיות 1500R. קצב רענון של 165Hz וזמן תגובה של 1ms, לצד תמיכת AMD FreeSync Premium, כלולים.',
     shortDescription: 'Value-packed 32" curved QHD VA gaming monitor with 165Hz and rich contrast.',
+    shortDescriptionHe: 'מסך גיימינג קעור 32 אינץ׳ QHD 165Hz VA.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=G32qc-30'],
     tags: ['gaming', 'va', 'curved', 'qhd', 'lenovo', '165hz'],
     specs: {
@@ -737,7 +775,9 @@ module.exports = [
     isFeatured: false,
     isPublished: true,
     description: 'The Lenovo ThinkVision P34w-20 is a 34-inch ultrawide WQHD IPS creator monitor engineered for media professionals and power users who demand expansive screen real estate and accurate color. Its wide color gamut coverage and factory calibration serve video editors, photographers, and content creators who need to trust every hue, and the height-adjustable stand with USB hub keeps a professional workspace tidy.',
+    descriptionHe: 'מסך Lenovo ThinkVision P34w-20 הוא מסך ליוצרי תוכן רחב במיוחד בגודל 34 אינץ׳ ברזולוציית WQHD, עם כיסוי צבעים רחב וכיול מהמפעל. המעמד מתכוונן בגובה, ורכזת USB מובנית כלולה.',
     shortDescription: 'Professional 34" ultrawide WQHD IPS creator monitor with wide color gamut and USB hub.',
+    shortDescriptionHe: 'מסך ליוצרי תוכן רחב במיוחד 34 אינץ׳ WQHD IPS עם כיסוי צבעים רחב.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=ThinkVision+P34w-20'],
     tags: ['creator', 'ips', 'ultrawide', 'lenovo', 'thinkvision', 'color-accurate', 'professional'],
     specs: {
