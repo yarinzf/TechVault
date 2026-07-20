@@ -16,6 +16,8 @@ module.exports = [
     isPublished: true,
     description: 'The LG 24MR400-B offers a compelling upgrade over entry-level 60Hz monitors with its 100Hz IPS panel at a price that won\'t strain the budget. IPS technology brings genuine color accuracy and wide viewing angles to an affordable display, making it suitable for general computing, light office tasks, and everyday media consumption. The 100Hz refresh rate provides a noticeably smoother desktop experience and more comfortable scrolling compared to 60Hz alternatives. AMD FreeSync eliminates tearing in casual games without requiring a high-end GPU.',
     shortDescription: '24" FHD IPS monitor with 100Hz refresh for a smoother daily computing experience.',
+    descriptionHe: 'מסך LG 24MR400-B הוא מסך משרדי בגודל 24 אינץ׳ ברזולוציית Full HD, עם פאנל IPS, קצב רענון של 100Hz ותמיכת AMD FreeSync.',
+    shortDescriptionHe: 'מסך משרדי 24 אינץ׳ Full HD IPS עם 100Hz ו-AMD FreeSync.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=24MR400-B'],
     tags: ['office', 'ips', 'full-hd', 'budget', '100hz'],
     specs: {
@@ -54,6 +56,8 @@ module.exports = [
     isPublished: true,
     description: 'The LG 27MR400-B scales the winning formula of its 24-inch sibling to a more spacious 27-inch canvas. The IPS panel at Full HD resolution with 100Hz refresh makes for a smooth, color-accurate display that suits the home office, dorm room, or secondary workstation. Three-sided borderless design keeps bezels minimal for a clean, modern look on the desk. AMD FreeSync support extends its usefulness to casual gaming sessions where smooth frame delivery matters without high GPU demands.',
     shortDescription: '27" FHD IPS monitor with 100Hz and three-sided borderless design for modern workspaces.',
+    descriptionHe: 'מסך LG 27MR400-B הוא מסך משרדי בגודל 27 אינץ׳ ברזולוציית Full HD, עם פאנל IPS, קצב רענון של 100Hz, מסגרות דקות בשלושה צדדים ותמיכת AMD FreeSync.',
+    shortDescriptionHe: 'מסך משרדי 27 אינץ׳ Full HD IPS עם 100Hz ומסגרות דקות.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=27MR400-B'],
     tags: ['office', 'ips', 'full-hd', 'budget', '100hz'],
     specs: {
@@ -92,6 +96,8 @@ module.exports = [
     isPublished: true,
     description: 'The LG 27BQ75QB is a business-class 27-inch QHD monitor built for professionals who work with laptops and want to consolidate connections. Its USB-C port delivers video, data, and charging in one cable, and the ergonomic stand offers height adjustment to reduce neck strain during long work sessions. The IPS panel at 2560x1440 resolution produces crisp text and accurate colors suited to document work, spreadsheets, design reviews, and video calls. A built-in USB hub extends connectivity for peripherals at the desk.',
     shortDescription: '27" QHD IPS business monitor with USB-C hub and height-adjustable ergonomic stand.',
+    descriptionHe: 'מסך LG 27BQ75QB הוא מסך עסקי בגודל 27 אינץ׳ ברזולוציית QHD, עם פאנל IPS, חיבור USB-C, רכזת USB מובנית ומעמד מתכוונן בגובה.',
+    shortDescriptionHe: 'מסך עסקי 27 אינץ׳ QHD IPS עם USB-C ומעמד מתכוונן בגובה.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=27BQ75QB'],
     tags: ['office', 'ips', 'qhd', 'usb-c', 'ergonomic'],
     specs: {
@@ -130,6 +136,8 @@ module.exports = [
     isPublished: true,
     description: 'The LG 32UN880-B combines a stunning 32-inch 4K IPS display with LG\'s signature Ergo stand — a monitor arm built directly into the product that clamps to the desk and offers full articulation in every direction. This eliminates the need for a separate monitor arm while delivering the same flexibility. USB-C with 60W power delivery and a built-in USB hub make it the hub of a streamlined laptop workstation. The 4K IPS panel provides accurate, detailed images suitable for photo editing, design, and demanding productivity tasks.',
     shortDescription: '32" 4K IPS monitor with integrated Ergo arm stand, USB-C hub, and 4K color accuracy.',
+    descriptionHe: 'מסך LG 32UN880-B הוא מסך בגודל 32 אינץ׳ ברזולוציית 4K, עם פאנל IPS, מעמד Ergo המאפשר התאמה מלאה של מיקום המסך, חיבור USB-C ורכזת USB מובנית.',
+    shortDescriptionHe: 'מסך 32 אינץ׳ 4K IPS עם מעמד Ergo וחיבור USB-C.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=32UN880-B'],
     tags: ['creator', 'ips', '4k', 'usb-c', 'ergo-stand', 'ergonomic'],
     specs: {
@@ -168,6 +176,8 @@ module.exports = [
     isPublished: true,
     description: 'The LG 27UK650-W delivers 4K resolution on a 27-inch IPS display in an elegant white chassis designed for professional environments. Nano IPS color technology produces an expanded color gamut covering sRGB and DCI-P3, making it suitable for color-critical work in photography and graphic design. HDR10 support allows compatible content to be displayed with enhanced dynamic range. The monitor\'s white finish makes it a distinctive choice for creative studios and clean-desk aesthetics.',
     shortDescription: '27" 4K IPS monitor with HDR10 support and wide color gamut in an elegant white design.',
+    descriptionHe: 'מסך LG 27UK650-W הוא מסך בגודל 27 אינץ׳ ברזולוציית 4K, עם פאנל Nano IPS וכיסוי צבעים רחב הכולל sRGB ו-DCI-P3, בגוון לבן.',
+    shortDescriptionHe: 'מסך 27 אינץ׳ 4K Nano IPS עם כיסוי צבעים רחב, בעיצוב לבן.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=27UK650-W'],
     tags: ['office', 'ips', '4k', 'color-accurate', 'hdr'],
     specs: {
@@ -206,6 +216,8 @@ module.exports = [
     isPublished: true,
     description: 'The LG 32UQ750-W bridges the gap between professional office monitors and gaming displays by combining 4K resolution with a 144Hz refresh rate on a 32-inch IPS panel. Users who spend their days in creative applications and their evenings gaming no longer have to choose between visual quality and gaming performance. HDMI 2.1 ports support 4K at 120Hz from PlayStation 5 and Xbox Series X consoles, and AMD FreeSync Premium ensures smooth delivery across variable frame rates.',
     shortDescription: '32" 4K IPS monitor with 144Hz refresh, HDMI 2.1, and FreeSync Premium for work and play.',
+    descriptionHe: 'מסך LG 32UQ750-W הוא מסך בגודל 32 אינץ׳ ברזולוציית 4K, עם פאנל IPS, קצב רענון של 144Hz ותמיכת AMD FreeSync Premium. חיבורי HDMI 2.1 תומכים באותות רענון גבוה ממכשירים תואמים; הפלט בפועל תלוי בקונסולה ובתמיכת המשחק.',
+    shortDescriptionHe: 'מסך 32 אינץ׳ 4K IPS עם 144Hz, HDMI 2.1 ו-AMD FreeSync Premium.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=32UQ750-W'],
     tags: ['office', 'gaming', 'ips', '4k', '144hz', 'hdmi-2.1'],
     specs: {
@@ -244,6 +256,8 @@ module.exports = [
     isPublished: true,
     description: 'The LG UltraFine 5K 27MD5KL is engineered specifically for Apple Mac users who demand the highest possible pixel density. At 5120x2880 resolution on a 27-inch IPS panel, text and graphics are rendered with extraordinary sharpness — finer than most professional reference monitors. Thunderbolt 3 connectivity delivers 94W of charging to a connected MacBook Pro while transferring display data and enabling daisy-chaining of additional peripherals. Built-in stereo speakers and a camera round out this all-in-one professional workstation display.',
     shortDescription: '27" 5K IPS professional monitor with Thunderbolt 3 and 94W charging — optimized for Mac.',
+    descriptionHe: 'מסך LG UltraFine 5K 27MD5KL הוא מסך מקצועי בגודל 27 אינץ׳ ברזולוציית 5K, עם פאנל IPS, חיבור Thunderbolt 3, רמקולים ומצלמה מובנים.',
+    shortDescriptionHe: 'מסך מקצועי 27 אינץ׳ 5K IPS עם Thunderbolt 3.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=27MD5KL'],
     tags: ['professional', 'ips', '5k', 'thunderbolt', 'mac', 'featured'],
     specs: {
@@ -282,6 +296,8 @@ module.exports = [
     isPublished: true,
     description: 'The LG UltraGear 27GN750-B is a purpose-built competitive gaming monitor delivering a blistering 240Hz refresh rate on a 27-inch IPS panel. The 1ms GTG response time eliminates motion blur in high-speed gameplay, and the IPS panel\'s accurate color rendering gives a clear advantage in identifying enemy players against complex backgrounds. NVIDIA G-Sync Compatible and AMD FreeSync Premium certifications provide smooth, tear-free performance regardless of which GPU platform you use. Its clean aesthetic fits neatly into any gaming battlestation.',
     shortDescription: '27" FHD IPS competitive gaming monitor with 240Hz and 1ms for elite-level performance.',
+    descriptionHe: 'מסך LG UltraGear 27GN750-B הוא מסך גיימינג בגודל 27 אינץ׳ ברזולוציית Full HD, עם פאנל IPS, קצב רענון של 240Hz, זמן תגובה של 1ms ותמיכת AMD FreeSync Premium.',
+    shortDescriptionHe: 'מסך גיימינג 27 אינץ׳ Full HD IPS עם 240Hz ו-AMD FreeSync Premium.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=27GN750-B'],
     tags: ['gaming', 'ips', 'full-hd', '240hz', 'competitive', 'g-sync', 'freesync'],
     specs: {
@@ -320,6 +336,8 @@ module.exports = [
     isPublished: true,
     description: 'The LG UltraGear 27GP850-B consistently ranks as one of the most popular gaming monitors at its price point, and for good reason. Nano IPS technology delivers rapid response times alongside accurate, vibrant color — a combination that most competing VA or TN gaming monitors cannot match. QHD resolution gives a visible detail advantage in games while 165Hz (overclockable to 180Hz) keeps motion sharp throughout. NVIDIA G-Sync Compatible and AMD FreeSync Premium certifications make it a universally compatible upgrade for any gaming system.',
     shortDescription: '27" QHD Nano IPS gaming monitor with 165Hz, overclockable to 180Hz, and universal sync support.',
+    descriptionHe: 'מסך LG UltraGear 27GP850-B הוא מסך גיימינג בגודל 27 אינץ׳ ברזולוציית QHD, עם פאנל Nano IPS, קצב רענון של 165Hz, זמן תגובה של 1ms ותמיכת AMD FreeSync Premium.',
+    shortDescriptionHe: 'מסך גיימינג 27 אינץ׳ QHD Nano IPS עם 165Hz ו-AMD FreeSync Premium.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=27GP850-B'],
     tags: ['gaming', 'ips', 'qhd', '165hz', 'freesync', 'g-sync', 'best-seller'],
     specs: {
@@ -358,6 +376,8 @@ module.exports = [
     isPublished: true,
     description: 'The LG UltraGear 27GP950-B was among the first monitors to combine 4K resolution with a 144Hz gaming refresh rate on a Nano IPS panel. It handles the demands of both competitive gaming and high-fidelity visual experiences simultaneously, without requiring compromise. HDMI 2.1 connectivity allows it to receive 4K at 120Hz from next-generation gaming consoles, and NVIDIA G-Sync Ultimate certification guarantees the highest tier of tear-free, HDR gaming performance. DCI-P3 coverage exceeds 98%, making it useful for creative professionals as well.',
     shortDescription: '27" 4K Nano IPS gaming monitor with 144Hz, HDMI 2.1, and NVIDIA G-Sync Ultimate.',
+    descriptionHe: 'מסך LG UltraGear 27GP950-B הוא מסך גיימינג בגודל 27 אינץ׳ ברזולוציית 4K, עם פאנל Nano IPS, קצב רענון של 144Hz והסמכת NVIDIA G-Sync Ultimate. חיבורי HDMI 2.1 תומכים בקליטת אותות רענון גבוה ממכשירים תואמים; פלט הרענון בפועל תלוי בדגם הקונסולה ובתמיכת המשחק הספציפי.',
+    shortDescriptionHe: 'מסך גיימינג 27 אינץ׳ 4K Nano IPS עם 144Hz, HDMI 2.1 ו-NVIDIA G-Sync Ultimate.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=27GP950-B'],
     tags: ['gaming', 'ips', '4k', '144hz', 'g-sync', 'hdr', 'hdmi-2.1'],
     specs: {
@@ -396,6 +416,8 @@ module.exports = [
     isPublished: true,
     description: 'The LG UltraGear 27GR93U-B delivers the winning combination of 4K resolution and 144Hz gaming performance at a more accessible price point than its predecessor. IPS panel technology maintains color accuracy and wide viewing angles that remain consistent regardless of the game\'s lighting conditions. HDMI 2.1 support enables 4K at 120Hz for console gamers, while the DisplayPort 1.4 connection handles 4K at 144Hz for PC setups. AMD FreeSync Premium and NVIDIA G-Sync Compatible certifications provide flexibility across GPU manufacturers.',
     shortDescription: '27" 4K IPS gaming monitor with 144Hz, HDMI 2.1, and dual sync compatibility.',
+    descriptionHe: 'מסך LG UltraGear 27GR93U-B הוא מסך גיימינג בגודל 27 אינץ׳ ברזולוציית 4K, עם פאנל IPS, קצב רענון של 144Hz ותמיכת AMD FreeSync Premium. חיבורי HDMI 2.1 במסך תומכים באותות רענון גבוה ממכשירים תואמים; הפלט בפועל נקבע לפי דגם הקונסולה ותמיכת המשחק.',
+    shortDescriptionHe: 'מסך גיימינג 27 אינץ׳ 4K IPS עם 144Hz, HDMI 2.1 ו-AMD FreeSync Premium.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=27GR93U-B'],
     tags: ['gaming', 'ips', '4k', '144hz', 'hdr', 'hdmi-2.1', 'g-sync'],
     specs: {
@@ -434,6 +456,8 @@ module.exports = [
     isPublished: true,
     description: 'The LG UltraGear 32GP850-B expands the acclaimed GP850 gaming experience to a 32-inch display, giving gamers more screen real estate without sacrificing the speed and color quality that made the 27-inch version popular. Nano IPS technology delivers a 1ms response time alongside 98% DCI-P3 color coverage — a combination that benefits both gaming and creative work. At QHD resolution and 165Hz, the pixel density is comfortable and the motion is smooth even in demanding titles.',
     shortDescription: '32" QHD Nano IPS gaming monitor with 165Hz and 98% DCI-P3 color for gaming and creativity.',
+    descriptionHe: 'מסך LG UltraGear 32GP850-B הוא מסך גיימינג בגודל 32 אינץ׳ ברזולוציית QHD, עם פאנל Nano IPS, קצב רענון של 165Hz, זמן תגובה של 1ms ותמיכת AMD FreeSync Premium.',
+    shortDescriptionHe: 'מסך גיימינג 32 אינץ׳ QHD Nano IPS עם 165Hz ו-AMD FreeSync Premium.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=32GP850-B'],
     tags: ['gaming', 'ips', 'qhd', '165hz', 'freesync', 'color-accurate'],
     specs: {
@@ -472,6 +496,8 @@ module.exports = [
     isPublished: true,
     description: 'The LG UltraGear 32GQ950-B delivers a flagship 32-inch 4K gaming experience with Nano IPS One technology that pushes pixel response and color performance further than standard IPS. HDMI 2.1 and DisplayPort 1.4 enable 4K at 144Hz from PC and 4K at 120Hz from the latest gaming consoles. NVIDIA G-Sync Ultimate certification means it has passed rigorous testing for HDR brightness, low latency, and variable refresh rate performance. The result is one of the most complete large-format gaming monitors available.',
     shortDescription: '32" 4K Nano IPS gaming monitor with 144Hz, HDMI 2.1, and G-Sync Ultimate for premium play.',
+    descriptionHe: 'מסך LG UltraGear 32GQ950-B הוא מסך גיימינג בגודל 32 אינץ׳ ברזולוציית 4K, עם פאנל Nano IPS, קצב רענון של 144Hz והסמכת NVIDIA G-Sync Ultimate. חיבורי HDMI 2.1 תומכים בקליטת אותות רענון גבוה ממכשירים תואמים; הפלט בפועל תלוי בקונסולה המחוברת ובתמיכת המשחק.',
+    shortDescriptionHe: 'מסך גיימינג 32 אינץ׳ 4K Nano IPS עם 144Hz, HDMI 2.1 ו-NVIDIA G-Sync Ultimate.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=32GQ950-B'],
     tags: ['gaming', 'ips', '4k', '144hz', 'g-sync', 'hdr', 'hdmi-2.1', 'best-seller'],
     specs: {
@@ -510,6 +536,8 @@ module.exports = [
     isPublished: true,
     description: 'The LG UltraGear 34GP950G-B merges ultrawide immersion with premium Nano IPS gaming performance. Its 34-inch curved panel at 21:9 wraps around the field of view while the QHD resolution maintains sharpness across the wider canvas. At 160Hz with a 1ms response time, fast-paced titles remain crystal clear. NVIDIA G-Sync Ultimate certification ensures the monitor meets the highest standards for brightness, contrast, and latency. Flying simulators, racing games, and cinematic RPGs all benefit from the panoramic format.',
     shortDescription: '34" curved ultrawide QHD Nano IPS gaming monitor with 160Hz and G-Sync Ultimate.',
+    descriptionHe: 'מסך LG UltraGear 34GP950G-B הוא מסך גיימינג קעור רחב במיוחד בגודל 34 אינץ׳ ביחס תמונה 21:9 ברזולוציית QHD, עם פאנל Nano IPS, קצב רענון גבוה, זמן תגובה של 1ms והסמכת NVIDIA G-Sync Ultimate.',
+    shortDescriptionHe: 'מסך גיימינג קעור רחב במיוחד 34 אינץ׳ QHD Nano IPS עם קצב רענון גבוה ו-NVIDIA G-Sync Ultimate.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=34GP950G-B'],
     tags: ['gaming', 'ips', 'ultrawide', 'curved', 'qhd', '160hz', 'g-sync'],
     specs: {
@@ -548,6 +576,8 @@ module.exports = [
     isPublished: true,
     description: 'The LG UltraGear 38GL950G-B commands attention with its expansive 38-inch curved ultrawide display running at a native 144Hz. The Nano IPS panel covers 98% of DCI-P3 color space and delivers accurate visuals at the 3840x1600 resolution that makes the most of the 21:9 canvas. NVIDIA G-Sync Ultimate certification guarantees elite variable refresh rate performance with HDR tone mapping. This large-format curved ultrawide is the choice for gamers who want full peripheral immersion and world-class image quality simultaneously.',
     shortDescription: '38" curved ultrawide Nano IPS gaming monitor with 144Hz and G-Sync Ultimate certification.',
+    descriptionHe: 'מסך LG UltraGear 38GL950G-B הוא מסך גיימינג קעור רחב במיוחד בגודל 38 אינץ׳ ביחס תמונה 21:9 ברזולוציית UltraWide QHD, עם פאנל Nano IPS, קצב רענון של 144Hz והסמכת NVIDIA G-Sync Ultimate.',
+    shortDescriptionHe: 'מסך גיימינג קעור רחב במיוחד 38 אינץ׳ UltraWide QHD Nano IPS עם 144Hz ו-NVIDIA G-Sync Ultimate.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=38GL950G-B'],
     tags: ['gaming', 'ips', 'ultrawide', 'curved', 'qhd', '144hz', 'g-sync'],
     specs: {
@@ -586,6 +616,8 @@ module.exports = [
     isPublished: true,
     description: 'The LG UltraGear 45GR95QE is a landmark product combining OLED\'s instantaneous response and perfect black levels with the panoramic sweep of a 45-inch curved ultrawide display running at 240Hz. Every pixel is self-illuminating, so black areas are genuinely black — not dark gray as on LCD panels — producing contrast that makes games look more cinematic than ever before. The 21:9 format and 800R curvature create a deeply immersive environment, while AMD FreeSync Premium Pro ensures smooth variable frame rate delivery throughout. This is the display that redefines what gamers can expect from a single monitor.',
     shortDescription: '45" curved ultrawide QHD OLED gaming monitor with 240Hz and true pixel-perfect black levels.',
+    descriptionHe: 'מסך LG UltraGear 45GR95QE הוא מסך גיימינג קעור רחב במיוחד בגודל 45 אינץ׳ ביחס תמונה 21:9, עם פאנל OLED, קצב רענון של 240Hz וזמן תגובה של 0.03ms. הפאנל תורם לרמות שחור עמוקות וניגודיות גבוהה, לצד תמיכת AMD FreeSync Premium Pro.',
+    shortDescriptionHe: 'מסך גיימינג קעור רחב במיוחד 45 אינץ׳ OLED עם 240Hz ורמות שחור עמוקות.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=45GR95QE'],
     tags: ['gaming', 'oled', 'ultrawide', 'curved', 'qhd', '240hz', 'hdr', 'featured', 'trending'],
     specs: {
@@ -624,6 +656,8 @@ module.exports = [
     isPublished: true,
     description: 'The LG UltraGear 27GR95QE-B is one of the first 27-inch OLED gaming monitors, bringing pixel-level contrast and 0.03ms response time to a compact QHD display running at 240Hz. Every pixel self-illuminates and extinguishes independently, producing contrast ratios that conventional LED-backlit panels cannot approach. For competitive gaming this means perfectly rendered shadows with no clouding or haloing around bright elements — enemies can\'t hide in dark corners. AMD FreeSync Premium Pro and NVIDIA G-Sync Compatible certifications maximize compatibility across gaming platforms.',
     shortDescription: '27" QHD OLED gaming monitor with 240Hz, 0.03ms response, and true self-illuminating pixels.',
+    descriptionHe: 'מסך LG UltraGear 27GR95QE-B הוא מסך גיימינג בגודל 27 אינץ׳ ברזולוציית QHD, עם פאנל OLED, קצב רענון של 240Hz וזמן תגובה של 0.03ms. הפאנל העצמי-מאיר תורם לרמות שחור עמוקות, לצד תמיכת AMD FreeSync Premium Pro.',
+    shortDescriptionHe: 'מסך גיימינג 27 אינץ׳ QHD OLED עם 240Hz, 0.03ms ורמות שחור עמוקות.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=27GR95QE-B'],
     tags: ['gaming', 'oled', 'qhd', '240hz', 'hdr', 'trending', 'premium'],
     specs: {
@@ -662,6 +696,8 @@ module.exports = [
     isPublished: true,
     description: 'The LG UltraGear 32GQ850-B pushes QHD resolution to 240Hz on a 32-inch Nano IPS panel, a combination that gives competitive gamers running fast CPUs and GPUs a larger, sharper battlefield than standard 1080p 240Hz alternatives. Nano IPS One technology achieves a 1ms GTG response time while maintaining the color accuracy advantages that IPS is known for. AMD FreeSync Premium Pro certification enables HDR gaming with variable refresh rate support. A 32-inch screen at this speed is a compelling upgrade for players moving up from smaller displays.',
     shortDescription: '32" QHD Nano IPS gaming monitor with 240Hz and 1ms for high-speed QHD gaming.',
+    descriptionHe: 'מסך LG UltraGear 32GQ850-B הוא מסך גיימינג בגודל 32 אינץ׳ ברזולוציית QHD, עם פאנל Nano IPS, קצב רענון של 240Hz, זמן תגובה של 1ms ותמיכת AMD FreeSync Premium Pro.',
+    shortDescriptionHe: 'מסך גיימינג 32 אינץ׳ QHD Nano IPS עם 240Hz ו-AMD FreeSync Premium Pro.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=32GQ850-B'],
     tags: ['gaming', 'ips', 'qhd', '240hz', 'freesync'],
     specs: {
@@ -700,6 +736,8 @@ module.exports = [
     isPublished: true,
     description: 'The LG UltraGear 27GQ50F-B is an accessible entry point into LG\'s gaming monitor lineup, providing a 165Hz VA panel at Full HD resolution. The VA panel brings better contrast than typical entry-level TN options, making dark scenes in games appear richer and more atmospheric. At 165Hz with AMD FreeSync Premium support, frame delivery is smooth and tear-free across a wide range of hardware configurations. For gamers who want a fluid 165Hz experience without spending on QHD or 4K, this is a practical and affordable option.',
     shortDescription: '27" FHD VA gaming monitor with 165Hz and AMD FreeSync Premium at an entry-level price.',
+    descriptionHe: 'מסך LG UltraGear 27GQ50F-B הוא מסך גיימינג בגודל 27 אינץ׳ ברזולוציית Full HD, עם פאנל VA, קצב רענון של 165Hz ותמיכת AMD FreeSync Premium.',
+    shortDescriptionHe: 'מסך גיימינג VA בגודל 27 אינץ׳ Full HD, קצב רענון 165Hz עם AMD FreeSync Premium.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=27GQ50F-B'],
     tags: ['gaming', 'va', 'full-hd', '165hz', 'freesync', 'budget-gaming'],
     specs: {
@@ -738,6 +776,8 @@ module.exports = [
     isPublished: true,
     description: 'The LG UltraWide 34WN80C-B offers a curved 34-inch ultrawide canvas optimized for office productivity and content creation. The 21:9 IPS panel at QHD resolution provides the horizontal space to keep multiple applications open simultaneously — a full document, a video timeline, and a reference window all visible without switching tabs. USB-C with 60W power delivery connects a laptop with a single cable. The 1000R curvature reduces eye travel distance to screen edges and creates a more comfortable viewing experience during long sessions.',
     shortDescription: '34" curved ultrawide QHD IPS office monitor with USB-C 60W power delivery.',
+    descriptionHe: 'מסך LG UltraWide 34WN80C-B הוא מסך משרדי קעור רחב במיוחד בגודל 34 אינץ׳ ביחס תמונה 21:9 ברזולוציית QHD, עם פאנל IPS בעקמומיות 1000R וחיבור USB-C.',
+    shortDescriptionHe: 'מסך משרדי קעור רחב במיוחד 34 אינץ׳ QHD IPS עם USB-C.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=34WN80C-B'],
     tags: ['office', 'ips', 'ultrawide', 'curved', 'qhd', 'usb-c'],
     specs: {
@@ -776,6 +816,8 @@ module.exports = [
     isPublished: true,
     description: 'The LG UltraWide 34WQ75C-B updates the popular 34-inch ultrawide office formula with a 100Hz refresh rate that makes scrolling and multitasking feel perceptibly smoother than standard 60Hz alternatives. The IPS panel at 3440x1440 resolution provides ample horizontal space for complex workflows, and USB-C with 90W power delivery means a single cable connects a modern laptop to power, display, and data simultaneously. The non-curved flat panel design suits users who share the display or frequently move between seated positions.',
     shortDescription: '34" flat ultrawide QHD IPS office monitor with 100Hz refresh and 90W USB-C power delivery.',
+    descriptionHe: 'מסך LG UltraWide 34WQ75C-B הוא מסך משרדי רחב במיוחד בגודל 34 אינץ׳ ביחס תמונה 21:9 ברזולוציית QHD, עם פאנל IPS, קצב רענון של 100Hz וחיבור USB-C.',
+    shortDescriptionHe: 'מסך משרדי רחב במיוחד 34 אינץ׳ QHD IPS עם 100Hz ו-USB-C.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=34WQ75C-B'],
     tags: ['office', 'ips', 'ultrawide', 'qhd', '100hz', 'usb-c'],
     specs: {
@@ -814,6 +856,8 @@ module.exports = [
     isPublished: true,
     description: 'The LG UltraWide 49WQ95C-W replaces an entire dual-monitor setup with a single 49-inch super-ultrawide display at Dual QHD resolution. The 5120x1440 pixel canvas provides the equivalent horizontal space of two 27-inch QHD monitors side by side, with no gap or bezels in the middle. IPS panel technology across the full 32:9 span maintains color accuracy from edge to edge. USB-C with 90W charging, built-in KVM switch, and Thunderbolt 4 support make this a productivity powerhouse for professionals who demand maximum screen real estate.',
     shortDescription: '49" super-ultrawide Dual QHD IPS office monitor at 144Hz replacing a full dual-monitor setup.',
+    descriptionHe: 'מסך LG UltraWide 49WQ95C-W הוא מסך משרדי פנורמי בגודל 49 אינץ׳ ביחס תמונה 32:9 ברזולוציית Dual QHD, עם פאנל IPS, קצב רענון של 144Hz, חיבור USB-C ומתג KVM מובנה.',
+    shortDescriptionHe: 'מסך משרדי פנורמי 49 אינץ׳ Dual QHD IPS עם 144Hz, USB-C ומתג KVM.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=49WQ95C-W'],
     tags: ['office', 'ips', 'ultrawide', 'dual-qhd', '144hz', 'usb-c', 'kvm'],
     specs: {
@@ -852,6 +896,8 @@ module.exports = [
     isPublished: true,
     description: 'The LG DualUp 28MQ780-B challenges conventional monitor design with a tall 16:18 aspect ratio that gives programmers, writers, and financial analysts more vertical screen space than any standard widescreen display. The Nano IPS panel covers 98% of DCI-P3 for accurate color rendering, and the Ergo stand provides exceptional flexibility for positioning the unusually proportioned screen exactly where it\'s most useful. USB-C with 90W power delivery and a built-in USB hub simplify cable management for laptop users. For those who live in terminals, IDEs, and documents, this format is transformative.',
     shortDescription: '28" tall-format QHD IPS monitor with 16:18 aspect ratio delivering more vertical workspace.',
+    descriptionHe: 'מסך LG DualUp 28MQ780-B הוא מסך בגודל 28 אינץ׳ ברזולוציית QHD בפורמט אנכי גבוה, עם פאנל Nano IPS, מעמד Ergo, חיבור USB-C ורכזת USB מובנית.',
+    shortDescriptionHe: 'מסך 28 אינץ׳ QHD Nano IPS בפורמט אנכי גבוה, עם מעמד Ergo.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=28MQ780-B'],
     tags: ['creator', 'programming', 'ips', 'qhd', 'tall-format', 'usb-c', 'ergo'],
     specs: {
@@ -890,6 +936,8 @@ module.exports = [
     isPublished: true,
     description: 'The LG 24QP500-B delivers QHD resolution in a compact 24-inch format, giving users a noticeably sharper image compared to Full HD at the same screen size without the cost premium of larger displays. The IPS panel provides wide viewing angles and consistent color suitable for work tasks and general use. A three-sided borderless design keeps the footprint minimal for crowded desks or multi-monitor configurations. AMD FreeSync support provides smooth performance during casual gaming, rounding out a versatile everyday monitor.',
     shortDescription: '24" QHD IPS monitor with 75Hz and slim bezels for a sharp and compact workspace.',
+    descriptionHe: 'מסך LG 24QP500-B הוא מסך משרדי בגודל 24 אינץ׳ ברזולוציית QHD, עם פאנל IPS, קצב רענון של 75Hz, מסגרות דקות בשלושה צדדים ותמיכת AMD FreeSync.',
+    shortDescriptionHe: 'מסך משרדי 24 אינץ׳ QHD IPS עם 75Hz ומסגרות דקות.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=24QP500-B'],
     tags: ['office', 'ips', 'qhd', 'compact', 'budget'],
     specs: {
@@ -928,6 +976,8 @@ module.exports = [
     isPublished: true,
     description: 'The LG 32BP85U-W is a 32-inch 4K IPS business monitor styled in a clean white finish that suits modern office interiors. USB-C with 60W power delivery reduces desktop cable clutter for laptop users, and a height-adjustable stand accommodates the ergonomic needs of different users sharing the same workspace. The IPS panel provides consistent, accurate color performance across a wide viewing angle, making it suitable for document review, financial analysis, and content presentations where color fidelity matters.',
     shortDescription: '32" 4K IPS business monitor with USB-C, height adjustment, and clean white design.',
+    descriptionHe: 'מסך LG 32BP85U-W הוא מסך עסקי בגודל 32 אינץ׳ ברזולוציית 4K, עם פאנל IPS, חיבור USB-C ומעמד מתכוונן בגובה, בגוון לבן.',
+    shortDescriptionHe: 'מסך עסקי 32 אינץ׳ 4K IPS עם USB-C, בעיצוב לבן.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=32BP85U-W'],
     tags: ['office', 'ips', '4k', 'usb-c', 'ergonomic', 'white'],
     specs: {

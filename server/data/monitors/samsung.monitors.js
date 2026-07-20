@@ -16,6 +16,8 @@ module.exports = [
     isPublished: true,
     description: 'The Samsung S24C310E is a straightforward 24-inch Full HD monitor built for everyday office use. Its IPS panel delivers accurate colors and wide viewing angles, making it suitable for multi-user environments and shared workspaces. A slim bezel design keeps the footprint tidy, and the 75Hz refresh rate provides a noticeably smoother experience than standard 60Hz panels. AMD FreeSync support eliminates screen tearing during light gaming sessions. Easy-access tilt adjustment and VESA compatibility round out a practical, budget-friendly package.',
     shortDescription: 'Compact 24" FHD IPS office monitor with 75Hz refresh and AMD FreeSync.',
+    descriptionHe: 'מסך Samsung S24C310E הוא מסך משרדי בגודל 24 אינץ׳ ברזולוציית Full HD, עם פאנל IPS, קצב רענון של 75Hz ותמיכת AMD FreeSync.',
+    shortDescriptionHe: 'מסך משרדי 24 אינץ׳ Full HD IPS עם 75Hz ו-AMD FreeSync.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=S24C310E'],
     tags: ['office', 'ips', 'full-hd', 'budget', 'freesync'],
     specs: {
@@ -54,6 +56,8 @@ module.exports = [
     isPublished: true,
     description: 'The Samsung S27B800PX pairs a crisp 27-inch 4K IPS display with a versatile USB-C connection that handles video, data, and up to 90W of power delivery in a single cable. Designed for the modern professional, it features a fully ergonomic stand with height, tilt, swivel, and pivot adjustments so you can find the ideal working position throughout the day. The IPS panel ensures consistent, accurate colors from virtually any viewing angle, and the factory calibration makes it ready for serious color work straight out of the box.',
     shortDescription: '27" 4K IPS business monitor with 90W USB-C power delivery and ergonomic stand.',
+    descriptionHe: 'מסך Samsung S27B800PX הוא מסך עסקי בגודל 27 אינץ׳ ברזולוציית 4K, עם פאנל IPS, חיבור USB-C ומעמד ארגונומי מלא. המסך מכויל מהמפעל.',
+    shortDescriptionHe: 'מסך עסקי 27 אינץ׳ 4K IPS עם USB-C, מכויל מהמפעל.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=S27B800PX'],
     tags: ['office', 'ips', '4k', 'usb-c', 'ergonomic'],
     specs: {
@@ -92,6 +96,8 @@ module.exports = [
     isPublished: true,
     description: 'Step up to a larger canvas with the Samsung S32D800PX, a 32-inch 4K IPS monitor that balances professional productivity with creative capability. The expansive screen real estate is ideal for spreadsheets, CAD work, photo editing, and video timelines. USB-C connectivity simplifies cable management for laptop users, delivering display signal and charging power simultaneously. A height-adjustable ergonomic stand, built-in KVM switch support, and wide color coverage make this an all-in-one solution for demanding workstation users.',
     shortDescription: '32" 4K IPS monitor with USB-C, wide color coverage, and ergonomic height adjustment.',
+    descriptionHe: 'מסך Samsung S32D800PX הוא מסך בגודל 32 אינץ׳ ברזולוציית 4K, עם פאנל IPS, חיבור USB-C, מעמד מתכוונן בגובה, תמיכת מתג KVM וכיסוי צבעים רחב.',
+    shortDescriptionHe: 'מסך 32 אינץ׳ 4K IPS עם USB-C, מתג KVM וכיסוי צבעים רחב.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=S32D800PX'],
     tags: ['office', 'creator', 'ips', '4k', 'usb-c', 'ergonomic'],
     specs: {
@@ -130,6 +136,8 @@ module.exports = [
     isPublished: true,
     description: 'The Samsung ViewFinity S9 S27C902 sets a new benchmark for professional monitors with its extraordinary 5K resolution IPS panel. Photographers, video editors, and graphic designers benefit from the immense pixel density that renders fine details with unmatched clarity. Factory-calibrated color accuracy and Thunderbolt 4 connectivity position this as a centerpiece for a high-performance creative workstation. A built-in 4K SlimFit camera, matte anti-glare coating, and USB hub make it as functional as it is visually impressive.',
     shortDescription: '27" 5K IPS professional monitor with Thunderbolt 4 and factory-calibrated color accuracy.',
+    descriptionHe: 'מסך Samsung ViewFinity S9 S27C902 הוא מסך מקצועי בגודל 27 אינץ׳ ברזולוציית 5K, עם פאנל IPS וחיבור Thunderbolt 4. המסך מכויל מהמפעל וכולל מצלמת 4K SlimFit מובנית וציפוי אנטי-רפלקטיבי.',
+    shortDescriptionHe: 'מסך מקצועי 27 אינץ׳ 5K IPS עם Thunderbolt 4, מכויל מהמפעל.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=S27C902'],
     tags: ['professional', 'ips', '5k', 'thunderbolt', 'color-accurate', 'featured'],
     specs: {
@@ -168,6 +176,8 @@ module.exports = [
     isPublished: true,
     description: 'The Samsung Smart Monitor M5 S27BM500E blurs the line between a traditional PC monitor and a smart display. Running Samsung\'s Tizen OS, it operates as a standalone streaming hub with built-in apps for Netflix, YouTube, and more — no PC required. A 27-inch Full HD VA panel provides deep blacks and solid contrast for movie watching, while built-in stereo speakers save desk space. Wi-Fi and Bluetooth connectivity, plus Apple AirPlay 2 and DeX support, make this a highly versatile screen for a home office or living space.',
     shortDescription: '27" Smart Monitor with Tizen OS, built-in streaming apps, speakers, and AirPlay 2.',
+    descriptionHe: 'מסך Samsung Smart Monitor M5 S27BM500E הוא מסך בגודל 27 אינץ׳ ברזולוציית Full HD, עם פאנל VA ומערכת הפעלה Tizen המאפשרת גישה לאפליקציות סטרימינג נבחרות ללא חיבור למחשב, בכפוף לזמינות באזור המשתמש. רמקולים מובנים, Wi-Fi, Bluetooth ותמיכת Apple AirPlay 2 ו-Samsung DeX כלולים.',
+    shortDescriptionHe: 'מסך חכם 27 אינץ׳ Full HD VA עם Tizen, רמקולים מובנים ו-AirPlay 2.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=S27BM500E'],
     tags: ['office', 'smart-monitor', 'va', 'full-hd', 'streaming', 'speakers'],
     specs: {
@@ -206,6 +216,8 @@ module.exports = [
     isPublished: true,
     description: 'Samsung\'s Smart Monitor M7 S32BM703I brings the smart TV experience to a 32-inch 4K workspace display. The large VA panel delivers rich contrast and vivid color reproduction at 4K resolution, making it excellent for both productivity and entertainment. Tizen OS provides direct access to streaming platforms without a connected PC, and built-in stereo speakers eliminate the need for external audio. Remote work is made easy via Microsoft 365, Cisco Webex, and other pre-loaded productivity apps accessible directly on-screen.',
     shortDescription: '32" 4K Smart Monitor with Tizen OS, built-in speakers, and Microsoft 365 support.',
+    descriptionHe: 'מסך Samsung Smart Monitor M7 S32BM703I הוא מסך בגודל 32 אינץ׳ ברזולוציית 4K, עם פאנל VA ומערכת הפעלה Tizen המאפשרת גישה לאפליקציות סטרימינג ופרודוקטיביות נבחרות, בכפוף לזמינות באזור המשתמש. רמקולים מובנים כלולים.',
+    shortDescriptionHe: 'מסך חכם 32 אינץ׳ 4K VA עם Tizen ורמקולים מובנים.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=S32BM703I'],
     tags: ['office', 'smart-monitor', 'va', '4k', 'streaming', 'speakers'],
     specs: {
@@ -244,6 +256,8 @@ module.exports = [
     isPublished: true,
     description: 'The Samsung Smart Monitor M8 S32BM801U is the flagship of the Smart Monitor lineup, combining a premium 32-inch 4K display with a built-in 4K SlimFit camera for video conferencing and gesture control. Tizen OS provides a rich app ecosystem, and the integrated speakers offer clean, room-filling audio for media consumption. A stylish slim chassis with a magnetic camera attachment makes this the centerpiece of a refined home office setup. USB-C connectivity and Samsung DeX support extend productivity for mobile professionals.',
     shortDescription: '32" 4K premium Smart Monitor with built-in 4K SlimFit camera and Tizen OS.',
+    descriptionHe: 'מסך Samsung Smart Monitor M8 S32BM801U הוא מסך בגודל 32 אינץ׳ ברזולוציית 4K, עם פאנל VA ומערכת הפעלה Tizen. מצלמת 4K SlimFit מובנית עם חיבור מגנטי, רמקולים מובנים, חיבור USB-C ותמיכת Samsung DeX כלולים.',
+    shortDescriptionHe: 'מסך חכם 32 אינץ׳ 4K VA עם מצלמת 4K SlimFit מובנית ו-Tizen.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=S32BM801U'],
     tags: ['creator', 'smart-monitor', 'va', '4k', 'webcam', 'speakers', 'usb-c'],
     specs: {
@@ -282,6 +296,8 @@ module.exports = [
     isPublished: true,
     description: 'The Samsung Odyssey G3 S27AG320 is an accessible entry point into the Odyssey gaming ecosystem, offering a 165Hz refresh rate and 1ms response time at a wallet-friendly price. The VA panel punches above its class with high contrast ratios that make dark scenes in games appear rich and detailed. AMD FreeSync Premium ensures tear-free gameplay across a wide range of GPU loads. A three-sided borderless design and adjustable stand with tilt, swivel, and pivot give you flexibility in any gaming setup.',
     shortDescription: '27" FHD VA gaming monitor with 165Hz, 1ms response, and AMD FreeSync Premium.',
+    descriptionHe: 'מסך Samsung Odyssey G3 S27AG320 הוא מסך גיימינג בגודל 27 אינץ׳ ברזולוציית Full HD, עם פאנל VA, קצב רענון של 165Hz, זמן תגובה של 1ms ותמיכת AMD FreeSync Premium.',
+    shortDescriptionHe: 'מסך גיימינג 27 אינץ׳ Full HD VA עם 165Hz ו-AMD FreeSync Premium.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=S27AG320'],
     tags: ['gaming', 'va', 'full-hd', '165hz', 'freesync', 'budget-gaming'],
     specs: {
@@ -320,6 +336,8 @@ module.exports = [
     isPublished: true,
     description: 'Built for competitive gamers who demand every advantage, the Samsung Odyssey G4 S25BG400E delivers a blazing 240Hz refresh rate on a 25-inch IPS panel. The fast IPS technology brings vivid, accurate color reproduction alongside a 1ms GTG response time, so motion looks crisp during rapid gameplay. AMD FreeSync Premium support works across a broad compatible GPU range. The monitor\'s compact 25-inch form factor suits smaller desks and tournament setups where every inch of space matters.',
     shortDescription: '25" FHD IPS gaming monitor with 240Hz and 1ms response for competitive play.',
+    descriptionHe: 'מסך Samsung Odyssey G4 S25BG400E הוא מסך גיימינג בגודל 25 אינץ׳ ברזולוציית Full HD, עם פאנל IPS, קצב רענון של 240Hz, זמן תגובה של 1ms ותמיכת AMD FreeSync Premium.',
+    shortDescriptionHe: 'מסך גיימינג 25 אינץ׳ Full HD IPS עם 240Hz ו-AMD FreeSync Premium.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=S25BG400E'],
     tags: ['gaming', 'ips', 'full-hd', '240hz', 'competitive', 'freesync'],
     specs: {
@@ -358,6 +376,8 @@ module.exports = [
     isPublished: true,
     description: 'The Samsung Odyssey G5 S27AG500N hits the sweet spot between resolution, refresh rate, and price. Its 27-inch QHD VA panel delivers sharp 1440p visuals with the high contrast that VA technology is known for, making games look dramatic and immersive. At 165Hz with AMD FreeSync Premium, gameplay is smooth and responsive whether you\'re in open-world RPGs or competitive shooters. The three-sided borderless design and versatile stand make it a clean addition to any desk.',
     shortDescription: '27" QHD VA gaming monitor with 165Hz refresh and high contrast VA panel.',
+    descriptionHe: 'מסך Samsung Odyssey G5 S27AG500N הוא מסך גיימינג בגודל 27 אינץ׳ ברזולוציית QHD, עם פאנל VA, קצב רענון של 165Hz ותמיכת AMD FreeSync Premium.',
+    shortDescriptionHe: 'מסך גיימינג 27 אינץ׳ QHD VA עם 165Hz ו-AMD FreeSync Premium.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=S27AG500N'],
     tags: ['gaming', 'va', 'qhd', '165hz', 'freesync', 'best-seller'],
     specs: {
@@ -396,6 +416,8 @@ module.exports = [
     isPublished: true,
     description: 'Experience gaming and productivity in a new dimension with the Samsung Odyssey G5 S34C652V. This 34-inch curved ultrawide monitor wraps around your field of view with a 21:9 aspect ratio and QHD resolution that puts more game world on screen without needing a second display. The 1000R curvature matches the natural curve of the human eye, reducing fatigue during extended sessions. A 165Hz VA panel with AMD FreeSync Premium ensures smooth, tear-free performance across both gaming and creative workflows.',
     shortDescription: '34" curved ultrawide QHD VA gaming monitor with 165Hz and 1000R curvature.',
+    descriptionHe: 'מסך Samsung Odyssey G5 S34C652V הוא מסך גיימינג קעור רחב במיוחד בגודל 34 אינץ׳ ביחס תמונה 21:9 ברזולוציית QHD, עם פאנל VA בעקמומיות 1000R, קצב רענון של 165Hz ותמיכת AMD FreeSync Premium.',
+    shortDescriptionHe: 'מסך גיימינג קעור רחב במיוחד 34 אינץ׳ QHD VA עם 165Hz ו-AMD FreeSync Premium.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=S34C652V'],
     tags: ['gaming', 'va', 'ultrawide', 'curved', 'qhd', '165hz', 'freesync'],
     specs: {
@@ -434,6 +456,8 @@ module.exports = [
     isPublished: true,
     description: 'The Samsung Odyssey G6 S27BG650E combines a curved 1000R VA panel with a 240Hz refresh rate for an immersive and responsive gaming experience at QHD resolution. The deep curvature wraps the display into your peripheral vision, while the high contrast VA panel ensures dark environments look truly dark in cinematic games. Achieving 240Hz at 1440p gives a competitive edge in fast-paced titles without sacrificing visual quality. AMD FreeSync Premium Pro delivers HDR-compatible tear-free gameplay.',
     shortDescription: '27" QHD curved VA gaming monitor with 240Hz and AMD FreeSync Premium Pro.',
+    descriptionHe: 'מסך Samsung Odyssey G6 S27BG650E הוא מסך גיימינג קעור בגודל 27 אינץ׳ ברזולוציית QHD, עם פאנל VA בעקמומיות 1000R, קצב רענון של 240Hz ותמיכת AMD FreeSync Premium Pro.',
+    shortDescriptionHe: 'מסך גיימינג קעור 27 אינץ׳ QHD VA עם 240Hz ו-AMD FreeSync Premium Pro.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=S27BG650E'],
     tags: ['gaming', 'va', 'curved', 'qhd', '240hz', 'freesync-premium-pro'],
     specs: {
@@ -472,6 +496,8 @@ module.exports = [
     isPublished: true,
     description: 'The Samsung Odyssey G7 S28AG700N represents a rare combination: 4K resolution on a 28-inch gaming monitor running at 144Hz. The IPS panel provides accurate, vibrant color reproduction and wide viewing angles, making it equally at home in creative work and competitive gaming. At 4K and 144Hz simultaneously, every pixel and every frame counts. NVIDIA G-Sync Compatible and AMD FreeSync Premium Pro certifications mean it works seamlessly with the latest GPUs from both camps.',
     shortDescription: '28" 4K IPS gaming monitor with 144Hz, G-Sync Compatible, and FreeSync Premium Pro.',
+    descriptionHe: 'מסך Samsung Odyssey G7 S28AG700N הוא מסך גיימינג בגודל 28 אינץ׳ ברזולוציית 4K, עם פאנל IPS, קצב רענון של 144Hz ותמיכת AMD FreeSync Premium Pro.',
+    shortDescriptionHe: 'מסך גיימינג 28 אינץ׳ 4K IPS עם 144Hz ו-AMD FreeSync Premium Pro.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=S28AG700N'],
     tags: ['gaming', 'ips', '4k', '144hz', 'g-sync', 'freesync', 'best-seller'],
     specs: {
@@ -510,6 +536,8 @@ module.exports = [
     isPublished: true,
     description: 'The Samsung Odyssey Neo G7 S32BG750N harnesses Quantum Mini LED backlighting to deliver exceptional HDR performance on a 32-inch 4K panel. Thousands of micro-sized LEDs are grouped into precise dimming zones, producing deep blacks alongside brilliant highlights that standard LCD panels cannot match. At 165Hz with 1ms response time, this monitor handles both visually demanding and fast-paced gaming titles with equal confidence. NVIDIA G-Sync Compatible certification ensures smooth operation with modern NVIDIA graphics cards.',
     shortDescription: '32" 4K Mini LED gaming monitor with 165Hz, precise local dimming, and HDR support.',
+    descriptionHe: 'מסך Samsung Odyssey Neo G7 S32BG750N הוא מסך גיימינג בגודל 32 אינץ׳ ברזולוציית 4K, עם פאנל Mini LED, קצב רענון של 165Hz ותמיכת HDR. הבקרה המדויקת של אזורי התאורה תורמת לרמות שחור עמוקות ולבהירות גבוהה. הסמכת NVIDIA G-Sync Compatible כלולה.',
+    shortDescriptionHe: 'מסך גיימינג 32 אינץ׳ 4K Mini LED עם 165Hz ותמיכת HDR.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=S32BG750N'],
     tags: ['gaming', 'mini-led', '4k', '165hz', 'hdr', 'g-sync'],
     specs: {
@@ -548,6 +576,8 @@ module.exports = [
     isPublished: true,
     description: 'The Samsung Odyssey Neo G8 S32BG852N pushes the boundaries of gaming monitor technology by combining 4K resolution with a 240Hz refresh rate on a Quantum Mini LED panel. This combination was previously thought impossible to maintain at this screen size, but Samsung\'s Neo QLED backlighting technology delivers the brightness and contrast needed for certified DisplayHDR 2000 performance. Every fast-moving scene is rendered with crystal clarity, and local dimming zones ensure the deepest blacks don\'t compromise the brightest highlights.',
     shortDescription: '32" 4K Mini LED gaming monitor achieving 240Hz with DisplayHDR 2000 certification.',
+    descriptionHe: 'מסך Samsung Odyssey Neo G8 S32BG852N הוא מסך גיימינג בגודל 32 אינץ׳ ברזולוציית 4K, עם פאנל Mini LED, קצב רענון של 240Hz ותמיכת HDR. אזורי עמעום מדויקים תורמים לרמות שחור עמוקות לצד בהירות גבוהה, והמסך תומך ב-NVIDIA G-Sync Compatible.',
+    shortDescriptionHe: 'מסך גיימינג 32 אינץ׳ 4K Mini LED עם 240Hz ותמיכת HDR.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=S32BG852N'],
     tags: ['gaming', 'mini-led', '4k', '240hz', 'hdr', 'trending', 'premium'],
     specs: {
@@ -586,6 +616,8 @@ module.exports = [
     isPublished: true,
     description: 'The Samsung Odyssey G9 LS49AG954N delivers a panoramic 49-inch super-ultrawide gaming experience that replaces the need for a dual-monitor setup. Its 32:9 aspect ratio and 1000R curvature create a deeply immersive canvas for flight simulators, racing games, and open-world titles. A 240Hz VA panel with Mini LED backlighting and HDR2000 support ensures stunning brightness and contrast. With both AMD FreeSync Premium Pro and NVIDIA G-Sync compatibility, this behemoth works with virtually any high-end GPU.',
     shortDescription: '49" super-ultrawide Dual QHD curved VA gaming monitor with 240Hz and Mini LED backlighting.',
+    descriptionHe: 'מסך Samsung Odyssey G9 LS49AG954N הוא מסך גיימינג קעור פנורמי בגודל 49 אינץ׳ ביחס תמונה 32:9 ברזולוציית Dual QHD, עם פאנל VA בתאורת Mini LED אחורית, בעקמומיות 1000R, קצב רענון של 240Hz, תמיכת HDR ותמיכת AMD FreeSync Premium Pro.',
+    shortDescriptionHe: 'מסך גיימינג קעור פנורמי 49 אינץ׳ Dual QHD VA עם תאורת Mini LED, 240Hz ו-HDR.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=LS49AG954N'],
     tags: ['gaming', 'va', 'ultrawide', 'curved', 'dual-qhd', '240hz', 'hdr', 'super-ultrawide'],
     specs: {
@@ -624,6 +656,8 @@ module.exports = [
     isPublished: true,
     description: 'The Samsung Odyssey Neo G9 LS57CG952N is the most ambitious gaming monitor ever produced, stretching across 57 inches with a 32:9 aspect ratio and Dual QHD resolution. Quantum Mini LED backlighting with 2048 dimming zones achieves DisplayHDR 1000 certification, delivering breathtaking contrast and color depth. At 240Hz, even this enormous display keeps up with the fastest gameplay. The sheer scale creates an unrivaled sense of immersion in flight simulators, space games, and cinematic titles.',
     shortDescription: '57" super-ultrawide Dual QHD Mini LED gaming monitor with 240Hz and 2048 dimming zones.',
+    descriptionHe: 'מסך Samsung Odyssey Neo G9 LS57CG952N הוא מסך גיימינג פנורמי בגודל 57 אינץ׳ ביחס תמונה 32:9 ברזולוציית Dual QHD, עם פאנל Mini LED, קצב רענון של 240Hz ותמיכת HDR. אזורי עמעום מרובים תורמים לניגודיות גבוהה, לצד תמיכת AMD FreeSync Premium Pro.',
+    shortDescriptionHe: 'מסך גיימינג פנורמי 57 אינץ׳ Dual QHD Mini LED עם 240Hz ותמיכת HDR.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=LS57CG952N'],
     tags: ['gaming', 'mini-led', 'ultrawide', 'dual-qhd', '240hz', 'hdr', 'premium', 'super-ultrawide'],
     specs: {
@@ -662,6 +696,8 @@ module.exports = [
     isPublished: true,
     description: 'The Samsung Odyssey OLED G8 LS34BG850S represents the pinnacle of ultrawide gaming with Samsung\'s proprietary QD-OLED panel technology. Quantum Dot material layered over an OLED substrate produces colors and contrast far beyond what conventional displays can achieve, with true pixel-level black and instantaneous response. The 34-inch 21:9 ultrawide canvas at 175Hz feels like a cinematic window into the game world. A built-in USB hub, auto-brightness management, and Matte Display coating address real-world usability alongside the extraordinary visual performance.',
     shortDescription: '34" ultrawide QD-OLED gaming monitor with 175Hz, pixel-perfect black, and vibrant Quantum Dot color.',
+    descriptionHe: 'מסך Samsung Odyssey OLED G8 LS34BG850S הוא מסך גיימינג רחב במיוחד בגודל 34 אינץ׳ ביחס תמונה 21:9 ברזולוציית QHD, עם פאנל QD-OLED, קצב רענון של 175Hz וזמן תגובה של 0.1ms. הפאנל תורם לרמות שחור עמוקות ולצבעי Quantum Dot, עם ציפוי Matte Display, רכזת USB מובנית ותמיכת AMD FreeSync Premium Pro.',
+    shortDescriptionHe: 'מסך גיימינג רחב במיוחד 34 אינץ׳ QD-OLED עם 175Hz ורמות שחור עמוקות.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=LS34BG850S'],
     tags: ['gaming', 'qd-oled', 'ultrawide', 'qhd', '175hz', 'hdr', 'featured', 'premium'],
     specs: {
@@ -700,6 +736,8 @@ module.exports = [
     isPublished: true,
     description: 'The Samsung Odyssey OLED G6 LS27DG600S brings the stunning visual quality of QD-OLED technology to a 27-inch 1440p gaming monitor running at 240Hz. This combination of resolution, speed, and display technology puts it at the forefront of competitive gaming monitors that also happen to look incredible. True black levels eliminate any black crush or blooming around bright objects, while Quantum Dot enhancement pushes color volume beyond the limits of conventional OLED panels. AMD FreeSync Premium Pro and NVIDIA G-Sync compatibility make it universally compatible.',
     shortDescription: '27" QHD QD-OLED gaming monitor with 240Hz, perfect black levels, and Quantum Dot color.',
+    descriptionHe: 'מסך Samsung Odyssey OLED G6 LS27DG600S הוא מסך גיימינג בגודל 27 אינץ׳ ברזולוציית QHD, עם פאנל QD-OLED, קצב רענון של 240Hz וזמן תגובה של 0.03ms. הפאנל תורם לרמות שחור עמוקות ולצבעי Quantum Dot, לצד תמיכת AMD FreeSync Premium Pro.',
+    shortDescriptionHe: 'מסך גיימינג 27 אינץ׳ QHD QD-OLED עם 240Hz ורמות שחור עמוקות.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=LS27DG600S'],
     tags: ['gaming', 'qd-oled', 'qhd', '240hz', 'hdr', 'trending', 'premium'],
     specs: {
@@ -738,6 +776,8 @@ module.exports = [
     isPublished: true,
     description: 'The Samsung Odyssey Ark S55BG970N redefines what a gaming monitor can be. At 55 inches, it operates equally well in traditional landscape orientation and in an innovative Cockpit Mode where it rotates vertically and curves around the viewer for an unprecedented sense of immersion. Quantum Mini LED backlighting with over 1000 dimming zones produces DisplayHDR 10000-level peak brightness and impeccable contrast. A 4K VA panel at 165Hz paired with a wireless controller for on-screen menu navigation makes this the ultimate gaming centerpiece.',
     shortDescription: '55" 4K Mini LED gaming monitor with 165Hz, Cockpit Mode rotation, and HDR 10000 peak brightness.',
+    descriptionHe: 'מסך Samsung Odyssey Ark S55BG970N הוא מסך גיימינג בגודל 55 אינץ׳ ברזולוציית 4K, עם פאנל Mini LED וקצב רענון של 165Hz. המסך תומך במצב Cockpit המסובב אותו לאוריינטציה אנכית וקעורה, בתמיכת HDR, שלט אלחוטי לניווט בתפריט המסך ותמיכת AMD FreeSync Premium Pro.',
+    shortDescriptionHe: 'מסך גיימינג 55 אינץ׳ 4K Mini LED עם 165Hz, מצב Cockpit ותמיכת HDR.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=S55BG970N'],
     tags: ['gaming', 'mini-led', '4k', '165hz', 'hdr', 'premium', 'large-format'],
     specs: {
@@ -776,6 +816,8 @@ module.exports = [
     isPublished: true,
     description: 'The Samsung S32C390E brings a 32-inch curved VA display to home offices and general users at an accessible price. The 1800R curvature gently wraps the screen around your field of view, reducing the need to rotate your head toward screen edges during long work sessions. Full HD resolution is adequate for document work, web browsing, and media consumption, while the VA panel\'s deep contrast brings movies and streaming content to life. AMD FreeSync ensures artifact-free video and light gaming performance.',
     shortDescription: '32" FHD curved VA office monitor with 75Hz and 1800R curvature at an accessible price.',
+    descriptionHe: 'מסך Samsung S32C390E הוא מסך משרדי קעור בגודל 32 אינץ׳ ברזולוציית Full HD, עם פאנל VA בעקמומיות 1800R, קצב רענון של 75Hz ותמיכת AMD FreeSync.',
+    shortDescriptionHe: 'מסך משרדי קעור 32 אינץ׳ Full HD VA עם 75Hz ו-AMD FreeSync.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=S32C390E'],
     tags: ['office', 'va', 'curved', 'full-hd', 'budget'],
     specs: {
@@ -814,6 +856,8 @@ module.exports = [
     isPublished: true,
     description: 'The Samsung S24A600U packs QHD resolution into a compact 24-inch form factor, making it ideal for professionals who want a sharper image without moving to a larger display. USB-C connectivity with power delivery simplifies laptop connections to a single cable, and the height-adjustable ergonomic stand ensures comfort through long working days. The IPS panel offers accurate color reproduction and wide viewing angles, making it a reliable choice for design review, document editing, and video conferencing.',
     shortDescription: '24" QHD IPS business monitor with USB-C power delivery and ergonomic height adjustment.',
+    descriptionHe: 'מסך Samsung S24A600U הוא מסך עסקי בגודל 24 אינץ׳ ברזולוציית QHD, עם פאנל IPS, קצב רענון של 75Hz, חיבור USB-C ומעמד מתכוונן בגובה.',
+    shortDescriptionHe: 'מסך עסקי 24 אינץ׳ QHD IPS עם USB-C ומעמד מתכוונן בגובה.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=S24A600U'],
     tags: ['office', 'ips', 'qhd', 'usb-c', 'ergonomic'],
     specs: {
@@ -852,6 +896,8 @@ module.exports = [
     isPublished: true,
     description: 'The Samsung S27A700D is a well-rounded 27-inch QHD monitor designed for professionals who need accurate color, sharp detail, and flexible connectivity. Its IPS panel delivers consistent color performance across a wide viewing angle, and the Daisy Chain feature lets you connect multiple displays through a single DisplayPort cable for a clean multi-monitor setup. An ergonomic stand with height, tilt, swivel, and pivot adjustments, combined with three-sided borderless design, creates a refined and efficient workspace.',
     shortDescription: '27" QHD IPS office monitor with Daisy Chain support and ergonomic height-adjustable stand.',
+    descriptionHe: 'מסך Samsung S27A700D הוא מסך עסקי בגודל 27 אינץ׳ ברזולוציית QHD, עם פאנל IPS, קצב רענון של 75Hz, תמיכת חיבור בשרשור (Daisy Chain) דרך DisplayPort ומעמד ארגונומי מלא.',
+    shortDescriptionHe: 'מסך עסקי 27 אינץ׳ QHD IPS עם תמיכת Daisy Chain ומעמד ארגונומי מלא.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=S27A700D'],
     tags: ['office', 'ips', 'qhd', 'daisy-chain', 'ergonomic'],
     specs: {
@@ -890,6 +936,8 @@ module.exports = [
     isPublished: true,
     description: 'The Samsung ViewFinity S7 S32D700 is a 32-inch QHD IPS display calibrated for creative professionals who demand color accuracy and a comfortable large-screen canvas. Factory-calibrated Delta E values and sRGB coverage ensure that what you see on screen accurately represents your final output. The IPS panel and 32-inch screen size offer generous real estate for layer-heavy design projects, video editing timelines, and detailed illustration work. USB-C connectivity and an ergonomic stand make it a practical daily driver in professional studios.',
     shortDescription: '32" QHD IPS creator monitor with factory color calibration, USB-C, and height-adjustable stand.',
+    descriptionHe: 'מסך Samsung ViewFinity S7 S32D700 הוא מסך ליוצרי תוכן בגודל 32 אינץ׳ ברזולוציית QHD, עם פאנל IPS המכויל מהמפעל לעבודת צבע עקבית, חיבור USB-C ומעמד ארגונומי.',
+    shortDescriptionHe: 'מסך ליוצרי תוכן 32 אינץ׳ QHD IPS מכויל מהמפעל, עם USB-C.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=S32D700'],
     tags: ['creator', 'ips', 'qhd', 'color-accurate', 'usb-c', 'ergonomic'],
     specs: {
@@ -928,6 +976,8 @@ module.exports = [
     isPublished: true,
     description: 'The Samsung Odyssey G4 S32BG400E takes the winning formula of the G4 series and applies it to a larger 32-inch canvas. Full HD resolution at 240Hz on a fast IPS panel means competitive gamers get extremely smooth motion with accurate color representation — a step up from VA alternatives at similar speeds. AMD FreeSync Premium certification ensures tear-free performance across a wide range of frame rates. The larger screen size gives a more expansive field of view in first-person games without the pixel density drop of ultrawide panels.',
     shortDescription: '32" FHD IPS gaming monitor with 240Hz for smooth competitive gameplay on a larger screen.',
+    descriptionHe: 'מסך Samsung Odyssey G4 S32BG400E הוא מסך גיימינג בגודל 32 אינץ׳ ברזולוציית Full HD, עם פאנל IPS, קצב רענון של 240Hz ותמיכת AMD FreeSync Premium.',
+    shortDescriptionHe: 'מסך גיימינג 32 אינץ׳ Full HD IPS עם 240Hz ו-AMD FreeSync Premium.',
     images: ['https://placehold.co/800x600/1a1a2e/ffffff?text=S32BG400E'],
     tags: ['gaming', 'ips', 'full-hd', '240hz', 'freesync', 'competitive'],
     specs: {
