@@ -135,28 +135,49 @@ jobs:
           fi
           echo "Host files verified: server/scripts/backfillMonitorHebrew.js, server/models/Product.js, server/data/monitors"
 
-          if ! docker exec "$BACKEND_CID" test -f /app/models/Product.js; then
-            echo "FAIL: container missing /app/models/Product.js"; exit 1
+          APP_ROOT=""
+          for CANDIDATE in /app/server /app /usr/src/app/server /usr/src/app; do
+            if docker exec "$BACKEND_CID" test -f "$CANDIDATE/models/Product.js" && \
+               docker exec "$BACKEND_CID" test -d "$CANDIDATE/data/monitors"; then
+              APP_ROOT="$CANDIDATE"
+              break
+            fi
+          done
+
+          if [ -z "$APP_ROOT" ]; then
+            echo "FAIL: unable to locate backend application root"
+            docker exec "$BACKEND_CID" sh -lc '
+              echo "Working directory:"
+              pwd
+              echo "Candidate Product.js locations:"
+              find /app /usr/src/app -maxdepth 4 -type f -name Product.js 2>/dev/null || true
+              echo "Candidate monitor directories:"
+              find /app /usr/src/app -maxdepth 5 -type d -path "*/data/monitors" 2>/dev/null || true
+            '
+            exit 1
           fi
-          if ! docker exec "$BACKEND_CID" test -d /app/data/monitors; then
-            echo "FAIL: container missing /app/data/monitors"; exit 1
-          fi
-          echo "Container dependency paths verified: /app/models/Product.js, /app/data/monitors"
+          echo "Application root resolved: $APP_ROOT"
 
-          docker exec "$BACKEND_CID" mkdir -p /app/scripts
+          docker exec "$BACKEND_CID" mkdir -p "$APP_ROOT/scripts"
 
-          docker cp /opt/techvault/server/scripts/backfillMonitorHebrew.js "$BACKEND_CID":/app/scripts/backfillMonitorHebrew.js
+          docker cp /opt/techvault/server/scripts/backfillMonitorHebrew.js "$BACKEND_CID":"$APP_ROOT/scripts/backfillMonitorHebrew.js"
 
-          if ! docker exec "$BACKEND_CID" test -f /app/scripts/backfillMonitorHebrew.js; then
-            echo "FAIL: copied script not found inside container at /app/scripts/backfillMonitorHebrew.js"; exit 1
+          if ! docker exec "$BACKEND_CID" test -f "$APP_ROOT/scripts/backfillMonitorHebrew.js"; then
+            echo "FAIL: copied script not found inside container at $APP_ROOT/scripts/backfillMonitorHebrew.js"; exit 1
           fi
           echo "Script copied and present inside container"
 
-          if ! docker exec "$BACKEND_CID" node --check /app/scripts/backfillMonitorHebrew.js; then
+          if ! docker exec "$BACKEND_CID" node --check "$APP_ROOT/scripts/backfillMonitorHebrew.js"; then
             echo "FAIL: syntax check failed for copied script inside container"; exit 1
           fi
           echo "Syntax check passed for copied script"
 
+          printf '%s\n' "$APP_ROOT" > /tmp/techvault-monitor-backfill-app-root
+
+          echo "Backend container resolved"
+          echo "Application root resolved"
+          echo "Script copied"
+          echo "Syntax check passed"
           echo "PREPARATION PASSED"
           EOF
           )
@@ -167,7 +188,13 @@ jobs:
         run: |
           OUTPUT=$(ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
             "${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}" \
-            'cd /opt/techvault && docker compose exec -T backend node scripts/backfillMonitorHebrew.js --dry-run')
+            'cd /opt/techvault &&
+             APP_ROOT=$(cat /tmp/techvault-monitor-backfill-app-root) &&
+             case "$APP_ROOT" in
+               /app/server|/app|/usr/src/app/server|/usr/src/app) ;;
+               *) echo "FAIL: invalid saved application root: $APP_ROOT"; exit 1 ;;
+             esac &&
+             docker compose exec -T backend node "$APP_ROOT/scripts/backfillMonitorHebrew.js" --dry-run')
           echo "$OUTPUT"
 
           CATALOG_TOTAL=$(echo "$OUTPUT" | sed -n 's/.*Source catalog total: \([0-9]*\).*/\1/p')
@@ -200,7 +227,13 @@ jobs:
         run: |
           OUTPUT=$(ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
             "${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}" \
-            'cd /opt/techvault && docker compose exec -T -e NODE_ENV=production backend node scripts/backfillMonitorHebrew.js --execute-production')
+            'cd /opt/techvault &&
+             APP_ROOT=$(cat /tmp/techvault-monitor-backfill-app-root) &&
+             case "$APP_ROOT" in
+               /app/server|/app|/usr/src/app/server|/usr/src/app) ;;
+               *) echo "FAIL: invalid saved application root: $APP_ROOT"; exit 1 ;;
+             esac &&
+             docker compose exec -T -e NODE_ENV=production backend node "$APP_ROOT/scripts/backfillMonitorHebrew.js" --execute-production')
           echo "$OUTPUT"
 
           DATA_LINE=$(echo "$OUTPUT" | awk '/^├/{getline; print}')
@@ -232,7 +265,13 @@ jobs:
         run: |
           OUTPUT=$(ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
             "${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}" \
-            'cd /opt/techvault && docker compose exec -T -e NODE_ENV=production backend node scripts/backfillMonitorHebrew.js --execute-production')
+            'cd /opt/techvault &&
+             APP_ROOT=$(cat /tmp/techvault-monitor-backfill-app-root) &&
+             case "$APP_ROOT" in
+               /app/server|/app|/usr/src/app/server|/usr/src/app) ;;
+               *) echo "FAIL: invalid saved application root: $APP_ROOT"; exit 1 ;;
+             esac &&
+             docker compose exec -T -e NODE_ENV=production backend node "$APP_ROOT/scripts/backfillMonitorHebrew.js" --execute-production')
           echo "$OUTPUT"
 
           DATA_LINE=$(echo "$OUTPUT" | awk '/^├/{getline; print}')
@@ -306,6 +345,12 @@ jobs:
             echo "- Idempotency: modified 0 / unchanged 313 confirmed"
             echo "- Final health result: see 'Final health checks' step above"
           } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Cleanup remote temporary state
+        if: always()
+        run: |
+          ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 "${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}" \
+            'rm -f /tmp/techvault-monitor-backfill-app-root' || true
 
       - name: Cleanup SSH key
         if: always()
