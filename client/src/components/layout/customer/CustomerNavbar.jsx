@@ -10,6 +10,7 @@ import { useCart }     from '../../../hooks/useCart';
 import { useWishlist } from '../../../hooks/useWishlist';
 import { useTheme }    from '../../../context/ThemeContext';
 import { useLanguage } from '../../../context/LanguageContext';
+import { useAccessibility } from '../../../context/AccessibilityContext';
 import { productService } from '../../../features/products/api/product.service';
 import s from './CustomerNavbar.module.css';
 
@@ -42,6 +43,7 @@ export default function CustomerNavbar({ onOpenCart = () => {} }) {
   const { ids: wishIds }   = useWishlist();
   const { theme, toggle: toggleTheme } = useTheme();
   const { language, setLanguage, t } = useLanguage();
+  const { isOpen: a11yOpen, toggle: toggleA11y } = useAccessibility();
   const navigate  = useNavigate();
   const location  = useLocation();
 
@@ -137,6 +139,7 @@ export default function CustomerNavbar({ onOpenCart = () => {} }) {
               aria-autocomplete="list"
               aria-expanded={suggestions.length > 0}
               autoComplete="off"
+              dir={language === 'he' ? 'rtl' : 'ltr'}
             />
             <button type="submit" className={s.navSearchBtn} aria-label={t('btn.search')}>
               <Search size={17} />
@@ -145,7 +148,7 @@ export default function CustomerNavbar({ onOpenCart = () => {} }) {
 
           {/* Suggestions dropdown */}
           {suggestions.length > 0 && (
-            <div className={s.searchSuggestions} id="nav-suggestions" role="listbox">
+            <div className={s.searchSuggestions} id="nav-suggestions" role="listbox" dir={language === 'he' ? 'rtl' : 'ltr'}>
               {suggestions.map((p) => (
                 <div
                   key={p._id}
@@ -200,10 +203,10 @@ export default function CustomerNavbar({ onOpenCart = () => {} }) {
             )}
           </Link>
 
-          {/* Compare icon (UI only) */}
-          <button className={s.navIconBtn} data-tip={t('nav.compare')} aria-label={t('nav.compare')} type="button">
+          {/* Compare icon */}
+          <Link to="/compare" className={s.navIconBtn} data-tip={t('nav.compare')} aria-label={t('nav.compare')}>
             <GitCompare size={16} strokeWidth={1.8} />
-          </button>
+          </Link>
 
           <div className={s.navDivider} aria-hidden="true" />
 
@@ -219,7 +222,15 @@ export default function CustomerNavbar({ onOpenCart = () => {} }) {
           </button>
 
           {/* Accessibility button */}
-          <button className={s.navIconBtn} data-tip={t('a11y.title')} aria-label={t('a11y.title')} type="button">
+          <button
+            className={`${s.navIconBtn} ${a11yOpen ? s.active : ''}`}
+            data-tip={t('a11y.title')}
+            aria-label={t('a11y.title')}
+            aria-expanded={a11yOpen}
+            aria-controls="a11y-panel"
+            onClick={toggleA11y}
+            type="button"
+          >
             <AccessibilityIcon />
           </button>
 

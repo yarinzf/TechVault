@@ -34,6 +34,7 @@ function applyToDOM(s) {
 
 export function AccessibilityProvider({ children }) {
   const [settings, setSettings] = useState(load);
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     applyToDOM(settings);
@@ -57,9 +58,13 @@ export function AccessibilityProvider({ children }) {
 
   const reset = () => setSettings({ ...A11Y_DEFAULTS });
 
+  const open   = () => setIsOpen(true);
+  const close  = () => setIsOpen(false);
+  const toggle = () => setIsOpen(o => !o);
+
   return (
     <AccessibilityContext.Provider
-      value={{ settings, update, increaseFontSize, decreaseFontSize, reset, FONT_STEP }}
+      value={{ settings, update, increaseFontSize, decreaseFontSize, reset, FONT_STEP, isOpen, open, close, toggle }}
     >
       {children}
     </AccessibilityContext.Provider>

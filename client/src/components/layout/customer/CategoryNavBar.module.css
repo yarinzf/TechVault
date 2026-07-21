@@ -85,6 +85,16 @@
   font-weight: 600;
 }
 
+/* Emoji markers (Sapir's own row markers for deals/new/bestsellers/club) —
+   fixed to the row's own font-size/line-height so platform emoji glyph
+   metrics can never grow the 46px row height. Emoji codepoints always
+   render via the platform's color-emoji font regardless of font-family,
+   same as in the reference (which sets no special font for them either). */
+.itemEmoji {
+  font-size: 13px;
+  line-height: 1;
+}
+
 /* ── Responsive ──────────────────────────────────────────────────────────────── */
 @media (max-width: 767px) {
   .inner { padding: 0 12px; justify-content: flex-start; }

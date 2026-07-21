@@ -382,7 +382,7 @@ function GamerClubSection() {
 /* ── PolicyBar ────────────────────────────────────────────────────────────── */
 function PolicyBar() {
   return (
-    <div className={s.policyBar}>
+    <div className={s.policyBar} id="policyBar">
       <div className={s.policyInner}>
         <div className={s.policyHeadline}>למה לקנות אצלנו<span className={s.policyHeadlineAccent}>...</span></div>
         <div className={s.policyGrid}>
@@ -638,7 +638,7 @@ export default function HomePage() {
       </div>
 
       {/* ── Gamer Club ── */}
-      <div className={s.clubWrap}>
+      <div className={s.clubWrap} id="club-section">
         <div className={s.clubWrapInner}>
           <GamerClubSection />
         </div>

@@ -2,12 +2,12 @@ export const translations = {
   he: {
     /* ── Navbar ───────────────────────────────────────────────────────── */
     'nav.store':              'חנות',
-    'nav.search.placeholder': 'חפש מוצרים…',
+    'nav.search.placeholder': 'חפש מוצרים, מותגים, קטגוריות...',
     'nav.products_header':    'מוצרים',
     'nav.see_all_for':        'ראה כל התוצאות עבור',
     'nav.wishlist':           'מועדפים',
     'nav.cart':               'עגלה',
-    'nav.login':              'כניסה',
+    'nav.login':              'כניסה / הצטרפות',
     'nav.logout':             'יציאה',
     'nav.orders':             'הזמנות',
     'nav.profile':            'פרופיל',
@@ -26,11 +26,14 @@ export const translations = {
     'nav.breadcrumb_arialabel': 'ניווט ארגזי לחם',
     'nav.all_categories':     'כל הקטגוריות',
     'nav.all_products':       'כל המוצרים',
+    'nav.deals':              'מבצעים',
+    'nav.new_arrivals':       'חדש באתר',
+    'nav.bestsellers':        'הנמכרים ביותר',
+    'nav.club':               'המועדון שלנו',
 
     /* ── Promo bar ────────────────────────────────────────────────────── */
-    'promo.close_arialabel':  'סגור פס הכרזות',
     'promo.shipping_tag':     'משלוח חינם',
-    'promo.shipping_text':    'משלוח חינם לכל הארץ בהזמנות מעל ₪299',
+    'promo.shipping_text':    'משלוח חינם לכל הארץ בכל הזמנה',
     'promo.shipping_cta':     'לקנייה עכשיו ←',
     'promo.club_tag':         'מועדון גיימרים',
     'promo.club_text':        'הצטרפו למועדון TechVault — ₪50 בלבד לכל החיים. הטבות, נקודות ועוד',
@@ -1502,12 +1505,12 @@ export const translations = {
   en: {
     /* ── Navbar ───────────────────────────────────────────────────────── */
     'nav.store':              'Store',
-    'nav.search.placeholder': 'Search products…',
+    'nav.search.placeholder': 'Search products, brands, categories...',
     'nav.products_header':    'Products',
     'nav.see_all_for':        'See all results for',
     'nav.wishlist':           'Wishlist',
     'nav.cart':               'Cart',
-    'nav.login':              'Login',
+    'nav.login':              'Login / Register',
     'nav.logout':             'Logout',
     'nav.orders':             'Orders',
     'nav.profile':            'Profile',
@@ -1526,11 +1529,14 @@ export const translations = {
     'nav.breadcrumb_arialabel': 'Breadcrumb',
     'nav.all_categories':     'All Categories',
     'nav.all_products':       'All Products',
+    'nav.deals':              'Deals',
+    'nav.new_arrivals':       'New Arrivals',
+    'nav.bestsellers':        'Best Sellers',
+    'nav.club':               'Our Club',
 
     /* ── Promo bar ────────────────────────────────────────────────────── */
-    'promo.close_arialabel':  'Close announcement bar',
     'promo.shipping_tag':     'Free Shipping',
-    'promo.shipping_text':    'Free shipping nationwide on orders over ₪299',
+    'promo.shipping_text':    'Free shipping nationwide on every order',
     'promo.shipping_cta':     'Shop now →',
     'promo.club_tag':         'Gamer Club',
     'promo.club_text':        'Join the TechVault Club — just ₪50 for life. Perks, points, and more',

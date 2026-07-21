@@ -48,11 +48,15 @@
   position: relative;
   flex: 1;
   max-width: 580px;
+  min-width: 0; /* flex items default to min-width:auto, which locks to the
+                   input's intrinsic content width and overflows the nav row
+                   at narrow viewports unless explicitly overridden */
 }
 
 /* Sapir's .nav-search */
 .navSearch {
   flex: 1;
+  min-width: 0;
   display: flex;
   align-items: center;
   background: #15151D;
@@ -67,6 +71,9 @@
 }
 
 /* Sapir's .nav-search input */
+/* Direction/alignment follows the input's own dir="rtl|ltr" attribute (set
+   from the real LanguageContext state in CustomerNavbar.jsx), not a hardcoded
+   value here — so English mode renders LTR instead of forced RTL. */
 .navSearchInput {
   flex: 1;
   background: none;
@@ -76,8 +83,11 @@
   color: #F9FAFB;
   font-family: 'Inter', sans-serif;
   font-size: 14px;
-  direction: rtl;
-  text-align: right;
+  line-height: normal; /* the app-wide `input{font:inherit}` reset pulls in
+    body's line-height:1.6, inflating this field ~5px taller than Sapir's
+    reference (which never sets a line-height on inputs); scoped here only
+    so no other form field in the app is affected */
+  text-align: start;
   min-width: 0;
 }
 
@@ -168,7 +178,7 @@
   font-size: 12px;
   color: #94A3BB;
   border-top: 1px solid rgba(40,40,47,0.9);
-  text-align: right;
+  text-align: start;
   transition: background .15s, color .15s;
   font-family: 'Inter', sans-serif;
   background: none;
@@ -225,6 +235,12 @@
   border-color: #2563EB;
   color: #F9FAFB;
   background: rgba(37,99,235,0.06);
+}
+
+.navIconBtn.active {
+  border-color: #2563EB;
+  color: #2563EB;
+  background: rgba(37,99,235,0.08);
 }
 
 /* Tooltip via data-tip */
@@ -345,7 +361,7 @@
   transition: background 0.12s ease, color 0.12s ease;
   text-decoration: none;
   width: 100%;
-  text-align: right;
+  text-align: start;
   background: none;
   border: none;
 }
@@ -450,7 +466,7 @@
   transition: background 0.12s ease, color 0.12s ease;
   font-family: 'Inter', sans-serif;
   width: 100%;
-  text-align: right;
+  text-align: start;
   background: none;
   border: none;
   cursor: pointer;

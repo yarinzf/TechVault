@@ -1,3 +1,14 @@
+/* ── Fonts ──────────────────────────────────────────────────────────────────── */
+/* Logo display font, extracted from Sapir's reference (local asset, not a
+   remote/base64 blob) — used only for the "TechVault" wordmark. */
+@font-face {
+  font-family: 'Neuropol';
+  src: url('../assets/fonts/Neuropol.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* ── Reset ──────────────────────────────────────────────────────────────────── */
 *,
 *::before,
