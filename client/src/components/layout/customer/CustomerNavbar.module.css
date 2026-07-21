@@ -48,11 +48,15 @@
   position: relative;
   flex: 1;
   max-width: 580px;
+  min-width: 0; /* flex items default to min-width:auto, which locks to the
+                   input's intrinsic content width and overflows the nav row
+                   at narrow viewports unless explicitly overridden */
 }
 
 /* Sapir's .nav-search */
 .navSearch {
   flex: 1;
+  min-width: 0;
   display: flex;
   align-items: center;
   background: #15151D;
@@ -67,6 +71,9 @@
 }
 
 /* Sapir's .nav-search input */
+/* Direction/alignment is driven by the input's own dir="rtl|ltr" attribute
+   (set in CustomerNavbar.jsx from the real LanguageContext state), not
+   hardcoded here — so English mode renders LTR instead of forced RTL. */
 .navSearchInput {
   flex: 1;
   background: none;
@@ -74,10 +81,9 @@
   outline: none;
   padding: 10px 16px;
   color: #F9FAFB;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', var(--font-sans);
   font-size: 14px;
-  direction: rtl;
-  text-align: right;
+  text-align: start;
   min-width: 0;
 }
 
@@ -124,7 +130,7 @@
   cursor: pointer;
   transition: background .15s;
   font-size: 13px;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', var(--font-sans);
 }
 
 .suggestionItem:hover { background: rgba(255,255,255,0.04); }
@@ -168,9 +174,9 @@
   font-size: 12px;
   color: #94A3BB;
   border-top: 1px solid rgba(40,40,47,0.9);
-  text-align: right;
+  text-align: start;
   transition: background .15s, color .15s;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', var(--font-sans);
   background: none;
   border-right: none;
   border-left: none;
@@ -227,6 +233,12 @@
   background: rgba(37,99,235,0.06);
 }
 
+.navIconBtn.active {
+  border-color: #2563EB;
+  color: #2563EB;
+  background: rgba(37,99,235,0.08);
+}
+
 /* Tooltip via data-tip */
 .navIconBtn::after {
   content: attr(data-tip);
@@ -237,7 +249,7 @@
   background: #181821;
   color: #F9FAFB;
   font-size: 11px;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', var(--font-sans);
   padding: 3px 8px;
   border-radius: 5px;
   white-space: nowrap;
@@ -262,7 +274,7 @@
   display: flex;
   align-items: center;
   gap: 5px;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', var(--font-sans);
   font-size: 12px;
   font-weight: 600;
   transition: all .18s;
@@ -287,7 +299,7 @@
   display: flex;
   align-items: center;
   gap: 7px;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', var(--font-sans);
   font-size: 13px;
   font-weight: 500;
   transition: all .18s;
@@ -340,7 +352,7 @@
   padding: 10px 14px;
   color: #94A3BB;
   font-size: 13px;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', var(--font-sans);
   cursor: pointer;
   transition: background 0.12s ease, color 0.12s ease;
   text-decoration: none;
@@ -367,7 +379,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', var(--font-sans);
   font-size: 13px;
   font-weight: 600;
   transition: all .18s;
@@ -448,7 +460,7 @@
   color: #94A3BB;
   text-decoration: none;
   transition: background 0.12s ease, color 0.12s ease;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', var(--font-sans);
   width: 100%;
   text-align: right;
   background: none;
@@ -465,7 +477,7 @@
 .mobileLoginLink { color: #3B82F6; font-weight: 600; }
 
 /* ── Responsive ────────────────────────────────────────────────────────────── */
-@media (max-width: 767px) {
+@media (max-width: 899px) {
   .inner { padding: 0 16px; gap: 10px; }
   .hamburger { display: flex; }
   .navActions > *:not(.navCart):not(.hamburger) { display: none; }
@@ -474,7 +486,7 @@
   .searchWrap { flex: 1; }
 }
 
-@media (min-width: 768px) {
+@media (min-width: 900px) {
   .hamburger   { display: none; }
   .mobilePanel { display: none; }
 }

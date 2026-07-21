@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 import { Accessibility, X, Plus, Minus, RotateCcw, Type } from 'lucide-react';
 import { useAccessibility } from '../../../context/AccessibilityContext';
 import { useLanguage } from '../../../context/LanguageContext';
@@ -12,8 +12,7 @@ const TOGGLES = [
 ];
 
 export default function AccessibilityWidget() {
-  const [open, setOpen] = useState(false);
-  const { settings, update, increaseFontSize, decreaseFontSize, reset, FONT_STEP } =
+  const { settings, update, increaseFontSize, decreaseFontSize, reset, FONT_STEP, isOpen: open, toggle, close } =
     useAccessibility();
   const { t } = useLanguage();
   const panelRef = useRef(null);
@@ -26,18 +25,18 @@ export default function AccessibilityWidget() {
       if (
         panelRef.current   && !panelRef.current.contains(e.target) &&
         triggerRef.current && !triggerRef.current.contains(e.target)
-      ) setOpen(false);
+      ) close();
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
-  }, [open]);
+  }, [open, close]);
 
   /* Close on Escape */
   useEffect(() => {
-    const handler = (e) => { if (e.key === 'Escape') setOpen(false); };
+    const handler = (e) => { if (e.key === 'Escape') close(); };
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
-  }, []);
+  }, [close]);
 
   const fontPx = 16 + settings.fontScale * FONT_STEP;
 
@@ -46,7 +45,7 @@ export default function AccessibilityWidget() {
       <button
         ref={triggerRef}
         className={s.trigger}
-        onClick={() => setOpen(o => !o)}
+        onClick={toggle}
         aria-label={open ? t('a11y.close') : t('a11y.open')}
         aria-expanded={open}
         aria-controls="a11y-panel"
@@ -69,7 +68,7 @@ export default function AccessibilityWidget() {
             <span className={s.panelTitle}>{t('a11y.title')}</span>
             <button
               className={s.closeBtn}
-              onClick={() => setOpen(false)}
+              onClick={close}
               aria-label={t('a11y.close')}
               type="button"
             >

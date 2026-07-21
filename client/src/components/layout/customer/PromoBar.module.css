@@ -83,28 +83,14 @@
   text-decoration: none;
   transition: opacity .18s;
   letter-spacing: .02em;
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: 'Inter', var(--font-sans);
 }
 
 .cta:hover { opacity: .75; }
 
-.close {
-  position: absolute;
-  left: var(--sv-pad);
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  color: #94A3BB;
-  cursor: pointer;
-  font-size: 12px;
-  padding: 2px 6px;
-  transition: color .18s;
-  line-height: 1;
-}
-
-.close:hover { color: #F9FAFB; }
-
 @media (max-width: 767px) {
   .text { display: none; }
-  .close { left: 8px; }
 }

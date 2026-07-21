@@ -57,7 +57,6 @@
 }
 .heroSlideActive { opacity: 1; }
 
-.heroClubPanel,
 .heroProductPanel {
   position: relative;
   z-index: 1;
@@ -95,7 +94,7 @@
 }
 
 .heroTitle {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', var(--font-sans);
   font-size: 58px;
   font-weight: 800;
   line-height: 1.1;
@@ -179,66 +178,6 @@
 .slideDotActive { background: var(--sv-blue); width: 22px; border-radius: 4px; }
 .slideDot:hover:not(.slideDotActive) { background: rgba(255,255,255,0.3); }
 
-.heroStats {
-  display: flex;
-  gap: 32px;
-  margin-top: 40px;
-  padding-top: 32px;
-  border-top: 1px solid var(--sv-border);
-  flex-wrap: wrap;
-}
-
-.statNum   { font-size: 26px; font-weight: 700; color: #fff; line-height: 1; }
-.statNum span { color: var(--sv-mint); }
-.statLbl   { font-size: 12px; color: var(--sv-muted); margin-top: 3px; }
-
-/* ── Hero club panel (slide 1) ───────────────────────────────────────────── */
-.heroClubCard {
-  background: var(--sv-card);
-  border: 1px solid rgba(37,99,235,0.3);
-  border-radius: 18px;
-  padding: 28px;
-  width: 100%;
-  text-align: center;
-  position: relative;
-  box-shadow: 0 24px 64px rgba(0,0,0,0.4);
-}
-.heroClubCard::before {
-  content: '';
-  position: absolute; top: 0; left: 0; right: 0; height: 1px;
-  background: linear-gradient(90deg, transparent, var(--sv-blue), var(--sv-violet), transparent);
-  border-radius: 18px 18px 0 0;
-}
-.heroClubIcon {
-  width: 64px; height: 64px; border-radius: 18px;
-  background: rgba(37,99,235,0.12);
-  border: 1px solid rgba(37,99,235,0.25);
-  display: flex; align-items: center; justify-content: center;
-  margin: 0 auto 16px;
-  color: var(--sv-blue-l);
-}
-.heroClubTitle { font-size: 18px; font-weight: 700; color: #F9FAFB; margin-bottom: 16px; }
-.heroClubPerks { display: flex; flex-direction: column; gap: 9px; margin-bottom: 18px; text-align: right; }
-.heroClubPerk {
-  display: flex; align-items: center; gap: 8px;
-  font-size: 13px; color: var(--sv-muted);
-  background: rgba(37,99,235,0.05);
-  border: 1px solid rgba(37,99,235,0.1);
-  border-radius: 8px; padding: 7px 10px;
-}
-.heroClubPerk svg { stroke: var(--sv-success); flex-shrink: 0; }
-.heroClubPrice { font-size: 14px; color: var(--sv-muted); margin-bottom: 16px; }
-.heroClubPrice span { font-size: 26px; font-weight: 700; color: var(--sv-mint); }
-.heroClubBtn {
-  background: linear-gradient(135deg, var(--sv-blue), var(--sv-violet));
-  color: #fff; border: none; border-radius: 9px;
-  padding: 11px; width: 100%; font-size: 14px; font-weight: 600;
-  cursor: pointer; display: flex;
-  align-items: center; justify-content: center; gap: 8px;
-  transition: all .18s;
-}
-.heroClubBtn:hover { opacity: 0.9; transform: translateY(-1px); }
-
 /* Right product card */
 .heroPCard {
   background: var(--sv-card);
@@ -291,6 +230,7 @@
 }
 
 .heroPIcon      { color: var(--sv-blue); opacity: 0.7; position: relative; z-index: 1; }
+.heroPImgReal   { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; position: relative; z-index: 1; }
 .heroPImgLabel  {
   position: absolute;
   top: 10px; right: 10px; z-index: 2;
@@ -446,7 +386,7 @@
 .dealCta:hover { background: #1d4ed8; transform: translateY(-1px); }
 
 /* ── Section wrappers (Sapir gives each section its own full-width bg) ────── */
-.brandsWrap    { padding: 48px 0; background: var(--sv-bg); }
+.brandsWrap    { padding: 48px 0; background: var(--sv-bg); width: 100%; max-width: 100%; overflow-x: hidden; }
 .sellersWrap   { padding: 48px 0; background: var(--sv-surface); border-bottom: 1px solid var(--sv-border); }
 .recentWrap    { padding: 48px 0; background: var(--sv-surface); border-bottom: 1px solid var(--sv-border); }
 .clubWrap      { background: var(--sv-bg); border-bottom: 1px solid var(--sv-border); }
@@ -457,6 +397,7 @@
   max-width: var(--sv-max);
   margin: 0 auto;
   padding: 0 var(--sv-pad);
+  min-width: 0;
 }
 
 /* ── Section shared ───────────────────────────────────────────────────────── */
@@ -523,6 +464,7 @@
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   gap: 14px;
+  min-width: 0;
 }
 
 .brandCard {
@@ -537,6 +479,7 @@
   cursor: pointer;
   transition: all .2s;
   text-align: center;
+  min-width: 0;
 }
 .brandCard:hover {
   border-color: rgba(37,99,235,0.4);
@@ -1202,7 +1145,7 @@
 
 @media (max-width: 1024px) {
   .heroInner { grid-template-columns: 1fr; gap: 40px; }
-  .heroClubPanel, .heroProductPanel { display: none; }
+  .heroProductPanel { display: none; }
   .hero      { min-height: auto; }
   .floatBadge1, .floatBadge2 { display: none; }
   .productRow  { grid-template-columns: repeat(3, 1fr); }
@@ -1220,7 +1163,6 @@
   .heroTitle { font-size: 28px; }
   .heroCta { flex-direction: column; align-items: stretch; }
   .heroBtnPrimary, .heroBtnSecondary { justify-content: center; }
-  .heroStats { gap: 16px; }
 
   .dealStripInner { flex-direction: column; align-items: flex-start; gap: 16px; }
 
@@ -1234,6 +1176,19 @@
   .clubTitle   { font-size: 26px; }
   .reviewsGrid { grid-template-columns: 1fr; }
   .footerGrid  { grid-template-columns: 1fr; gap: 24px; }
+
+  /* Brands: a fixed 6-column grid can't fit narrow viewports without
+     overflowing the document — scroll the strip within its own container
+     instead of letting card content force the page wider. */
+  .brandsStrip {
+    display: flex;
+    grid-template-columns: none;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+  }
+  .brandsStrip::-webkit-scrollbar { display: none; }
+  .brandCard { flex: 0 0 92px; }
   .footerBottom { flex-direction: column; text-align: center; }
   .footerInner { padding: 32px 20px; }
 }

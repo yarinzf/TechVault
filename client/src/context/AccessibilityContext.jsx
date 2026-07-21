@@ -34,6 +34,11 @@ function applyToDOM(s) {
 
 export function AccessibilityProvider({ children }) {
   const [settings, setSettings] = useState(load);
+  // Panel open/closed state lives here (not as local component state) so
+  // more than one trigger — the floating AccessibilityWidget on every page,
+  // and the header icon button on the customer storefront — can open/close
+  // the same real panel instead of the header button being decorative.
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     applyToDOM(settings);
@@ -57,9 +62,13 @@ export function AccessibilityProvider({ children }) {
 
   const reset = () => setSettings({ ...A11Y_DEFAULTS });
 
+  const open   = () => setIsOpen(true);
+  const close  = () => setIsOpen(false);
+  const toggle = () => setIsOpen(v => !v);
+
   return (
     <AccessibilityContext.Provider
-      value={{ settings, update, increaseFontSize, decreaseFontSize, reset, FONT_STEP }}
+      value={{ settings, update, increaseFontSize, decreaseFontSize, reset, FONT_STEP, isOpen, open, close, toggle }}
     >
       {children}
     </AccessibilityContext.Provider>

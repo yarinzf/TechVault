@@ -5,8 +5,8 @@ import {
   Truck, RotateCcw, ShieldCheck, Headphones,
   Zap, ArrowLeft, Star, UserPlus,
   ChevronLeft,
-  Percent, Gift, Headset, Check,
-  Info, Clock, LayoutGrid, Tag, Armchair, Shield,
+  Percent, Gift, Headset,
+  LayoutGrid, Eye, Award, ImageOff,
 } from 'lucide-react';
 import { productService } from '../../features/products/api/product.service';
 import { useRecentlyViewed } from '../../hooks/useRecentlyViewed';
@@ -14,61 +14,9 @@ import { useTranslation } from '../../context/LanguageContext';
 import ProductCard from '../../features/products/components/ProductCard';
 import Footer from '../../components/layout/customer/Footer';
 import { BRANDS } from '../../constants/brands';
+import { CATEGORY_META } from '../../constants/categories';
 import { HOMEPAGE_REVIEWS } from '../../constants/reviews';
 import s from './HomePage.module.css';
-
-/* ── Hero slides (matches Sapir's .hero-slide markup exactly) ────────────── */
-const HERO_SLIDES = [
-  {
-    eyebrow: 'שירות תיקונים ואחריות מורחבת — מקצועי ומהיר',
-    titleLine1: 'קוד לא', titleLine2: 'צריך שקט',
-    descLine1: 'שירות תיקונים ואחריות מורחבת מקצועי ומהיר.',
-    descLine2: 'הצטרפו למועדון הגיימרים והפכו כל רכישה לחוויה משתלמת.',
-    ctaPrimary:   { Icon: ShieldCheck, label: 'הצטרף למועדון', to: '/register' },
-    ctaSecondary: { Icon: Info,        label: 'פרטים נוספים',  to: '/register' },
-    panel: 'club',
-  },
-  {
-    eyebrow: 'מבצעי פסח — כבר עכשיו באתר',
-    titleLine1: 'מבצעי פסח', titleLine2: 'כבר כאן',
-    descLine1: 'חג האביב מתחיל עם מבצעים מטורפים על אלפי מוצרים.',
-    descLine2: 'כולם בהנחה ענקית.',
-    ctaPrimary:   { Icon: Zap,   label: 'כל המבצעים', to: '/products?onSale=true' },
-    ctaSecondary: { Icon: Clock, label: 'מבצע שעתי',  to: '/products?onSale=true' },
-    panel: 'product',
-    product: {
-      Icon: Tag, label: 'פסח', labelBg: '#EF4444',
-      brand: 'מבצעי פסח', name: 'הנחה עד 40% על מוצרים נבחרים ומחשבים גיימינג',
-      rcount: 'אלפי לקוחות מרוצים', price: 'עד -40%', oldPrice: '', discount: '',
-      badge1: { lbl: 'מבצע',       val: 'זמן מוגבל',     Icon: Clock      },
-      badge2: { lbl: 'קטגוריות',   val: 'כל הקטגוריות',  Icon: LayoutGrid },
-    },
-  },
-  {
-    eyebrow: 'GTA 6 כבר כאן — תתכוננו',
-    titleLine1: 'GTA 6', titleLine2: 'כבר כאן',
-    descLine1: 'הדור הבא של הגיימינג מתחיל כאן.',
-    descLine2: 'כל הציוד שאתה צריך זמין במלאי מיידי.',
-    ctaPrimary:   { Icon: ShoppingCart, label: 'קנה עכשיו',     to: '/products' },
-    ctaSecondary: { Icon: LayoutGrid,   label: 'לקטלוג המלא',   to: '/products' },
-    panel: 'product',
-    product: {
-      Icon: Armchair, label: 'NEW', labelBg: '#9E6EF1',
-      brand: 'SecretLab', name: 'Titan Evo 2022 Gaming Chair',
-      rcount: '(2,341 ביקורות)', price: '₪2,199', oldPrice: '₪2,599', discount: '-15%',
-      badge1: { lbl: 'עומס מקסימלי', val: '180 ק"ג', Icon: Shield      },
-      badge2: { lbl: 'אחריות',       val: '5 שנים',  Icon: ShieldCheck },
-    },
-  },
-];
-
-/* ── Hero stats (static — matches Sapir's .hero-stats, outside slide fade) ── */
-const HERO_STATS = [
-  { num: '12K', accent: '+', lbl: 'מוצרים בקטלוג'   },
-  { num: '48',  accent: 'h', lbl: 'משלוח מהיר'       },
-  { num: '4.9', accent: '★', lbl: 'דירוג לקוחות'     },
-  { num: '50K', accent: '+', lbl: 'לקוחות מרוצים'    },
-];
 
 /* ── Static data ──────────────────────────────────────────────────────────── */
 const POLICY_ITEMS = [
@@ -445,30 +393,10 @@ function ReviewsSection() {
 /* ── HomePage ─────────────────────────────────────────────────────────────── */
 export default function HomePage() {
   const navigate = useNavigate();
+  const t = useTranslation();
 
-  /* Hero */
-  const [heroIdx,     setHeroIdx]     = useState(0);
-  const [heroVisible, setHeroVisible] = useState(true);
-  const heroTimerRef = useRef(null);
-
-  const goToSlide = (idx) => {
-    if (idx === heroIdx) return;
-    setHeroVisible(false);
-    setTimeout(() => { setHeroIdx(idx); setHeroVisible(true); }, 340);
-  };
-
-  useEffect(() => {
-    heroTimerRef.current = setInterval(() => {
-      setHeroVisible(false);
-      setTimeout(() => {
-        setHeroIdx(i => (i + 1) % HERO_SLIDES.length);
-        setHeroVisible(true);
-      }, 340);
-    }, 5000);
-    return () => clearInterval(heroTimerRef.current);
-  }, []);
-
-  /* Best sellers API */
+  /* Best sellers API — real data, also used to drive the hero (no dedicated
+     public "featured products" or "active campaigns" endpoint exists yet). */
   const [bestSellers,        setBestSellers]        = useState([]);
   const [loadingBestSellers, setLoadingBestSellers] = useState(true);
   const [errBestSellers,     setErrBestSellers]     = useState(false);
@@ -480,7 +408,48 @@ export default function HomePage() {
       .finally(() => setLoadingBestSellers(false));
   }, []);
 
-  const slide = HERO_SLIDES[heroIdx];
+  /* Hero — up to 3 real best-selling products drive the slides; a single
+     honest, non-numeric fallback slide covers the loading/empty case. */
+  const heroProducts     = bestSellers.slice(0, 3);
+  const hasHeroProducts  = heroProducts.length > 0;
+  const heroSlideCount   = hasHeroProducts ? heroProducts.length : 1;
+
+  const [heroIdx,     setHeroIdx]     = useState(0);
+  const [heroVisible, setHeroVisible] = useState(true);
+  const [heroImgError, setHeroImgError] = useState(false);
+  const heroTimerRef = useRef(null);
+
+  const goToSlide = (idx) => {
+    if (idx === heroIdx) return;
+    setHeroVisible(false);
+    setTimeout(() => { setHeroIdx(idx); setHeroVisible(true); }, 340);
+  };
+
+  useEffect(() => { setHeroImgError(false); }, [heroIdx]);
+
+  useEffect(() => {
+    if (heroIdx >= heroSlideCount) setHeroIdx(0);
+  }, [heroSlideCount, heroIdx]);
+
+  useEffect(() => {
+    if (heroSlideCount <= 1) return undefined;
+    heroTimerRef.current = setInterval(() => {
+      setHeroVisible(false);
+      setTimeout(() => {
+        setHeroIdx(i => (i + 1) % heroSlideCount);
+        setHeroVisible(true);
+      }, 340);
+    }, 5000);
+    return () => clearInterval(heroTimerRef.current);
+  }, [heroSlideCount]);
+
+  const currentProduct = hasHeroProducts ? heroProducts[heroIdx] : null;
+  const categoryMeta    = currentProduct ? CATEGORY_META.find(c => c.slug === currentProduct.category) : null;
+  const hasDiscount     = !!currentProduct && currentProduct.compareAtPrice != null && currentProduct.compareAtPrice > currentProduct.price;
+  const discountPct     = hasDiscount ? Math.round((1 - currentProduct.price / currentProduct.compareAtPrice) * 100) : null;
+  const hasRating       = !!currentProduct?.ratings?.count;
+  const starCount       = currentProduct ? Math.round(currentProduct.ratings?.average || 0) : 0;
+  const hasImage        = hasHeroProducts && !!currentProduct.images?.[0] && !heroImgError;
 
   return (
     <div className={s.page}>
@@ -492,116 +461,142 @@ export default function HomePage() {
 
         <div className={s.heroInner}>
 
-          {/* .hero-slides — slide content fades; stats + dots are static siblings */}
+          {/* .hero-slides — slide content fades; dots are a static sibling */}
           <div className={s.heroSlides}>
             <div className={`${s.heroSlide} ${heroVisible ? s.heroSlideActive : ''}`}>
-              <div className={s.heroEyebrow}>
-                <span className={s.eyebrowDot} aria-hidden="true" />
-                {slide.eyebrow}
+              {hasHeroProducts ? (
+                <>
+                  <div className={s.heroEyebrow}>
+                    <span className={s.eyebrowDot} aria-hidden="true" />
+                    {t('home.hero.bestsellers_eyebrow')}
+                  </div>
+                  <h1 className={s.heroTitle}>
+                    {t('home.hero.bestsellers_line1')}<br />
+                    <span className={s.heroTitleAccent}>{t('home.hero.bestsellers_line2')}</span>
+                  </h1>
+                  <p className={s.heroDesc}>
+                    {t('home.hero.bestsellers_desc')}
+                  </p>
+                  <div className={s.heroCta}>
+                    <button className={s.heroBtnPrimary} onClick={() => navigate(`/products/${currentProduct.slug}`)}>
+                      <Eye size={16} /> {t('home.hero.cta_view_product')}
+                    </button>
+                    <button className={s.heroBtnSecondary} onClick={() => navigate('/products?sort=popularity')}>
+                      <LayoutGrid size={16} /> {t('home.hero.cta_all_bestsellers')}
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className={s.heroEyebrow}>
+                    <span className={s.eyebrowDot} aria-hidden="true" />
+                    {t('home.hero.fallback_eyebrow')}
+                  </div>
+                  <h1 className={s.heroTitle}>
+                    {t('home.hero.fallback_line1')}<br />
+                    <span className={s.heroTitleAccent}>{t('home.hero.fallback_line2')}</span>
+                  </h1>
+                  <p className={s.heroDesc}>
+                    {t('home.hero.fallback_desc')}
+                  </p>
+                  <div className={s.heroCta}>
+                    <button className={s.heroBtnPrimary} onClick={() => navigate('/products')}>
+                      <ShoppingCart size={16} /> {t('home.hero.cta_catalog')}
+                    </button>
+                    <button className={s.heroBtnSecondary} onClick={() => navigate('/products')}>
+                      <LayoutGrid size={16} /> {t('home.hero.cta_categories')}
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+
+            {heroSlideCount > 1 && (
+              <div className={s.slideDots} role="tablist" aria-label={t('home.hero.slides_arialabel')}>
+                {heroProducts.map((_, i) => (
+                  <button
+                    key={i}
+                    className={`${s.slideDot} ${i === heroIdx ? s.slideDotActive : ''}`}
+                    onClick={() => goToSlide(i)}
+                    role="tab"
+                    aria-selected={i === heroIdx}
+                    aria-label={`${t('home.hero.slide_label')} ${i + 1}`}
+                  />
+                ))}
               </div>
-
-              <h1 className={s.heroTitle}>
-                {slide.titleLine1}<br />
-                <span className={s.heroTitleAccent}>{slide.titleLine2}</span>
-              </h1>
-              <p className={s.heroDesc}>
-                {slide.descLine1}<br />
-                {slide.descLine2}
-              </p>
-
-              <div className={s.heroCta}>
-                <button className={s.heroBtnPrimary} onClick={() => navigate(slide.ctaPrimary.to)}>
-                  <slide.ctaPrimary.Icon size={16} />
-                  {slide.ctaPrimary.label}
-                </button>
-                <button className={s.heroBtnSecondary} onClick={() => navigate(slide.ctaSecondary.to)}>
-                  <slide.ctaSecondary.Icon size={16} />
-                  {slide.ctaSecondary.label}
-                </button>
-              </div>
-            </div>
-
-            <div className={s.heroStats}>
-              {HERO_STATS.map(({ num, accent, lbl }) => (
-                <div key={lbl}>
-                  <div className={s.statNum}>{num}<span>{accent}</span></div>
-                  <div className={s.statLbl}>{lbl}</div>
-                </div>
-              ))}
-            </div>
-
-            <div className={s.slideDots} role="tablist" aria-label="מצגת גיבורים">
-              {HERO_SLIDES.map((_, i) => (
-                <button
-                  key={i}
-                  className={`${s.slideDot} ${i === heroIdx ? s.slideDotActive : ''}`}
-                  onClick={() => goToSlide(i)}
-                  role="tab"
-                  aria-selected={i === heroIdx}
-                  aria-label={`מצגת ${i + 1}`}
-                />
-              ))}
-            </div>
+            )}
           </div>
 
-          {/* Right panel: club panel (slide 0) or product panel (slides 1–2) */}
-          {slide.panel === 'club' ? (
-            <div className={`${s.heroClubPanel} ${heroVisible ? s.heroVisible : s.heroHidden}`}>
-              <div className={s.heroClubCard}>
-                <div className={s.heroClubIcon}><ShieldCheck size={32} strokeWidth={1.4} /></div>
-                <div className={s.heroClubTitle}>מועדון TechVault</div>
-                <div className={s.heroClubPerks}>
-                  <div className={s.heroClubPerk}><Check size={13} /> אחריות מורחבת 3 שנים</div>
-                  <div className={s.heroClubPerk}><Check size={13} /> תמיכה מועדפת 24/7</div>
-                  <div className={s.heroClubPerk}><Check size={13} /> עד 10% נקודות חזרה</div>
-                  <div className={s.heroClubPerk}><Check size={13} /> משלוח חינם תמיד</div>
-                </div>
-                <div className={s.heroClubPrice}>רק <span>₪50</span> לכל החיים</div>
-                <button className={s.heroClubBtn} onClick={() => navigate('/register')}>
-                  <UserPlus size={15} /> הצטרף עכשיו
-                </button>
+          {/* Right panel: real best-selling product, or a generic catalog panel */}
+          <div className={`${s.heroProductPanel} ${heroVisible ? s.heroVisible : s.heroHidden}`}>
+            <div className={s.heroPCard}>
+              <div className={s.heroPImg}>
+                {hasImage ? (
+                  <img
+                    src={currentProduct.images[0]}
+                    alt={currentProduct.name}
+                    className={s.heroPImgReal}
+                    onError={() => setHeroImgError(true)}
+                  />
+                ) : hasHeroProducts ? (
+                  <ImageOff size={56} strokeWidth={1.2} className={s.heroPIcon} />
+                ) : (
+                  <LayoutGrid size={72} strokeWidth={1.2} className={s.heroPIcon} />
+                )}
+                {hasHeroProducts && (
+                  <span className={s.heroPImgLabel} style={{ background: '#2563EB' }}>
+                    {t('home.hero.bestseller_tag')}
+                  </span>
+                )}
               </div>
+
+              {hasHeroProducts ? (
+                <>
+                  <div className={s.heroPBrand}>{currentProduct.brand}</div>
+                  <div className={s.heroPName}>{currentProduct.name}</div>
+                  {hasRating && (
+                    <div className={s.heroPRating}>
+                      <span className={s.heroPStars}>
+                        {'★'.repeat(Math.min(starCount, 5))}{'☆'.repeat(Math.max(0, 5 - starCount))}
+                      </span>
+                      <span className={s.heroPRcount}>({currentProduct.ratings.count})</span>
+                    </div>
+                  )}
+                  <div className={s.heroPPriceRow}>
+                    <span className={s.heroPPrice}>₪{Number(currentProduct.price).toLocaleString()}</span>
+                    {hasDiscount && <span className={s.heroPOld}>₪{Number(currentProduct.compareAtPrice).toLocaleString()}</span>}
+                    {hasDiscount && <span className={s.heroPDiscount}>-{discountPct}%</span>}
+                  </div>
+                  <button className={s.heroPAddBtn} onClick={() => navigate(`/products/${currentProduct.slug}`)}>
+                    <Eye size={15} /> {t('home.hero.cta_view_product')}
+                  </button>
+                  <div className={s.floatBadge1} aria-hidden="true">
+                    <span className={s.floatLbl}>{t('home.hero.rank_badge_label')}</span>
+                    <span className={s.floatVal}>
+                      <Award size={12} /> {t('home.hero.rank_badge_value').replace('{n}', heroIdx + 1)}
+                    </span>
+                  </div>
+                  {categoryMeta && (
+                    <div className={s.floatBadge2} aria-hidden="true">
+                      <span className={s.floatLbl}>{t('home.hero.category_badge_label')}</span>
+                      <span className={s.floatVal}>
+                        <categoryMeta.Icon size={12} />
+                        {t(categoryMeta.labelKey)}
+                      </span>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <>
+                  <div className={s.heroPBrand}>TechVault</div>
+                  <div className={s.heroPName}>{t('home.hero.fallback_panel_title')}</div>
+                  <button className={s.heroPAddBtn} onClick={() => navigate('/products')}>
+                    <LayoutGrid size={15} /> {t('home.hero.cta_categories')}
+                  </button>
+                </>
+              )}
             </div>
-          ) : (
-            <div className={`${s.heroProductPanel} ${heroVisible ? s.heroVisible : s.heroHidden}`}>
-              <div className={s.heroPCard}>
-                <div className={s.heroPImg}>
-                  <slide.product.Icon size={80} strokeWidth={1.2} className={s.heroPIcon} />
-                  <span className={s.heroPImgLabel} style={{ background: slide.product.labelBg }}>
-                    {slide.product.label}
-                  </span>
-                </div>
-                <div className={s.heroPBrand}>{slide.product.brand}</div>
-                <div className={s.heroPName}>{slide.product.name}</div>
-                <div className={s.heroPRating}>
-                  <span className={s.heroPStars}>★★★★★</span>
-                  <span className={s.heroPRcount}>{slide.product.rcount}</span>
-                </div>
-                <div className={s.heroPPriceRow}>
-                  <span className={s.heroPPrice}>{slide.product.price}</span>
-                  {slide.product.oldPrice && <span className={s.heroPOld}>{slide.product.oldPrice}</span>}
-                  {slide.product.discount && <span className={s.heroPDiscount}>{slide.product.discount}</span>}
-                </div>
-                <button className={s.heroPAddBtn} onClick={() => navigate('/products?onSale=true')}>
-                  <Zap size={15} /> כל המבצעים
-                </button>
-                <div className={s.floatBadge1} aria-hidden="true">
-                  <span className={s.floatLbl}>{slide.product.badge1.lbl}</span>
-                  <span className={s.floatVal}>
-                    <slide.product.badge1.Icon size={12} />
-                    {slide.product.badge1.val}
-                  </span>
-                </div>
-                <div className={s.floatBadge2} aria-hidden="true">
-                  <span className={s.floatLbl}>{slide.product.badge2.lbl}</span>
-                  <span className={s.floatVal}>
-                    <slide.product.badge2.Icon size={12} />
-                    {slide.product.badge2.val}
-                  </span>
-                </div>
-              </div>
-            </div>
-          )}
+          </div>
         </div>
       </section>
 

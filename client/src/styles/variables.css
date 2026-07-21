@@ -187,7 +187,7 @@
   --sv-gold:    #F59E0B;
   --sv-red:     #ef4444;
 
-  --sv-font:    'Inter', sans-serif;
+  --sv-font:    'Inter', var(--font-sans);
   --sv-max:     1440px;
   --sv-pad:     64px;
 
