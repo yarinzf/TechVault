@@ -21,10 +21,6 @@
   overflow-x: auto;
   scrollbar-width: none;
   gap: 0;
-  /* Keeps the container's own padding visible as breathing room when
-     scrollIntoView({inline:'start'}) brings the "all categories" control
-     into view, instead of scrolling it flush against the edge. */
-  scroll-padding-inline: var(--sv-pad);
 }
 
 .inner::-webkit-scrollbar { display: none; }
@@ -47,6 +43,7 @@
   border-top: none;
   border-right: none;
   border-bottom: none;
+  font-family: 'Inter', sans-serif;
   height: 100%;
   flex-shrink: 0;
 }
@@ -90,6 +87,6 @@
 
 /* ── Responsive ──────────────────────────────────────────────────────────────── */
 @media (max-width: 767px) {
-  .inner { padding: 0 12px; justify-content: flex-start; scroll-padding-inline: 12px; }
+  .inner { padding: 0 12px; justify-content: flex-start; }
   .catNavAll { border-left: none; }
 }

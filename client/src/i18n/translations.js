@@ -28,15 +28,16 @@ export const translations = {
     'nav.all_products':       'כל המוצרים',
 
     /* ── Promo bar ────────────────────────────────────────────────────── */
+    'promo.close_arialabel':  'סגור פס הכרזות',
     'promo.shipping_tag':     'משלוח חינם',
-    'promo.shipping_text':    'משלוח חינם לכל הארץ בכל הזמנה',
+    'promo.shipping_text':    'משלוח חינם לכל הארץ בהזמנות מעל ₪299',
     'promo.shipping_cta':     'לקנייה עכשיו ←',
-    'promo.new_tag':          'מוצרים חדשים',
-    'promo.new_text':         'מוצרים חדשים מתווספים לקטלוג באופן שוטף',
-    'promo.new_cta':          'לצפייה בקטלוג ←',
-    'promo.stock_tag':        'מלאי ומשלוח',
-    'promo.stock_text':       'זמינות מלאי ופרטי משלוח מוצגים בעמוד כל מוצר',
-    'promo.stock_cta':        'לכל המוצרים ←',
+    'promo.club_tag':         'מועדון גיימרים',
+    'promo.club_text':        'הצטרפו למועדון TechVault — ₪50 בלבד לכל החיים. הטבות, נקודות ועוד',
+    'promo.club_cta':         'הצטרפו עכשיו ←',
+    'promo.warranty_tag':     'אחריות יצרן',
+    'promo.warranty_text':    'אחריות יצרן מלאה על כל המוצרים באתר — ללא תנאים',
+    'promo.warranty_cta':     'למדיניות שלנו ←',
 
     /* ── Categories modal ─────────────────────────────────────────────── */
     'modal.section_computers':   'מחשבים ורכיבים',
@@ -179,27 +180,6 @@ export const translations = {
     'home.section.trending':        'טרנדינג עכשיו',
     'home.section.trending_badge':  'חם',
     'home.section.best_sellers':    'הנמכרים ביותר',
-
-    /* ── Homepage hero (real best-sellers, or honest generic fallback) ──── */
-    'home.hero.bestsellers_eyebrow':    'מהנמכרים ביותר באתר',
-    'home.hero.bestsellers_line1':      'המוצרים ה',
-    'home.hero.bestsellers_line2':      'הכי אהובים',
-    'home.hero.bestsellers_desc':       'לקוחות רבים כבר בחרו במוצרים האלה. גלו למה.',
-    'home.hero.cta_view_product':       'לצפייה במוצר',
-    'home.hero.cta_all_bestsellers':    'לכל הנמכרים',
-    'home.hero.fallback_eyebrow':       'ברוכים הבאים לחנות שלנו',
-    'home.hero.fallback_line1':         'הציוד שלך',
-    'home.hero.fallback_line2':         'מתחיל כאן',
-    'home.hero.fallback_desc':          'מגוון רחב של מוצרי טכנולוגיה וגיימינג במקום אחד.',
-    'home.hero.fallback_panel_title':   'גלו את כל המוצרים שלנו',
-    'home.hero.cta_catalog':            'לקטלוג המוצרים',
-    'home.hero.cta_categories':         'לכל הקטגוריות',
-    'home.hero.slides_arialabel':       'מוצרים נבחרים',
-    'home.hero.slide_label':            'שקופית',
-    'home.hero.bestseller_tag':         'מהנמכרים',
-    'home.hero.rank_badge_label':       'דירוג מכירות',
-    'home.hero.rank_badge_value':       'מקום {n} בנמכרים',
-    'home.hero.category_badge_label':   'קטגוריה',
 
     /* ── Product card ─────────────────────────────────────────────────── */
     'product.out_of_stock':         'אזל מהמלאי',
@@ -1548,15 +1528,16 @@ export const translations = {
     'nav.all_products':       'All Products',
 
     /* ── Promo bar ────────────────────────────────────────────────────── */
+    'promo.close_arialabel':  'Close announcement bar',
     'promo.shipping_tag':     'Free Shipping',
-    'promo.shipping_text':    'Free shipping nationwide on every order',
+    'promo.shipping_text':    'Free shipping nationwide on orders over ₪299',
     'promo.shipping_cta':     'Shop now →',
-    'promo.new_tag':          'New Arrivals',
-    'promo.new_text':         'New products are added to the catalog regularly',
-    'promo.new_cta':          'Browse the catalog →',
-    'promo.stock_tag':        'Stock & Shipping',
-    'promo.stock_text':       'Stock availability and shipping details shown on every product page',
-    'promo.stock_cta':        'See all products →',
+    'promo.club_tag':         'Gamer Club',
+    'promo.club_text':        'Join the TechVault Club — just ₪50 for life. Perks, points, and more',
+    'promo.club_cta':         'Join now →',
+    'promo.warranty_tag':     'Manufacturer Warranty',
+    'promo.warranty_text':    'Full manufacturer warranty on every product on the site — no conditions',
+    'promo.warranty_cta':     'See our policy →',
 
     /* ── Categories modal ─────────────────────────────────────────────── */
     'modal.section_computers':   'Computers & Components',
@@ -1699,27 +1680,6 @@ export const translations = {
     'home.section.trending':        'Trending Now',
     'home.section.trending_badge':  'Hot',
     'home.section.best_sellers':    'Best Sellers',
-
-    /* ── Homepage hero (real best-sellers, or honest generic fallback) ──── */
-    'home.hero.bestsellers_eyebrow':    'From our best sellers',
-    'home.hero.bestsellers_line1':      'Our most',
-    'home.hero.bestsellers_line2':      'loved products',
-    'home.hero.bestsellers_desc':       'Many customers already chose these products. Find out why.',
-    'home.hero.cta_view_product':       'View product',
-    'home.hero.cta_all_bestsellers':    'See all best sellers',
-    'home.hero.fallback_eyebrow':       'Welcome to our store',
-    'home.hero.fallback_line1':         'Your gear',
-    'home.hero.fallback_line2':         'starts here',
-    'home.hero.fallback_desc':          'A wide range of technology and gaming products in one place.',
-    'home.hero.fallback_panel_title':   'Discover all our products',
-    'home.hero.cta_catalog':            'Browse the catalog',
-    'home.hero.cta_categories':         'All categories',
-    'home.hero.slides_arialabel':       'Featured products',
-    'home.hero.slide_label':            'Slide',
-    'home.hero.bestseller_tag':         'Best seller',
-    'home.hero.rank_badge_label':       'Sales rank',
-    'home.hero.rank_badge_value':       '#{n} best seller',
-    'home.hero.category_badge_label':   'Category',
 
     /* ── Product card ─────────────────────────────────────────────────── */
     'product.out_of_stock':         'Out of Stock',

@@ -8,10 +8,8 @@ import {
 import { useAuth }     from '../../../hooks/useAuth';
 import { useCart }     from '../../../hooks/useCart';
 import { useWishlist } from '../../../hooks/useWishlist';
-import { useCompare }  from '../../../features/compare/context/CompareProvider';
 import { useTheme }    from '../../../context/ThemeContext';
 import { useLanguage } from '../../../context/LanguageContext';
-import { useAccessibility } from '../../../context/AccessibilityContext';
 import { productService } from '../../../features/products/api/product.service';
 import s from './CustomerNavbar.module.css';
 
@@ -38,21 +36,12 @@ function AccessibilityIcon() {
   );
 }
 
-/* ── Theme icon (sun/moon, shared by desktop + mobile toggles) ──────────────── */
-function ThemeIcon({ theme }) {
-  return theme === 'dark'
-    ? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="16" height="16" aria-hidden="true"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-    : <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="16" height="16" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>;
-}
-
 export default function CustomerNavbar({ onOpenCart = () => {} }) {
   const { user, logout }   = useAuth();
   const { totalItems }     = useCart();
   const { ids: wishIds }   = useWishlist();
-  const { items: compareItems } = useCompare();
   const { theme, toggle: toggleTheme } = useTheme();
   const { language, setLanguage, t } = useLanguage();
-  const { isOpen: a11yOpen, toggle: toggleA11y } = useAccessibility();
   const navigate  = useNavigate();
   const location  = useLocation();
 
@@ -148,7 +137,6 @@ export default function CustomerNavbar({ onOpenCart = () => {} }) {
               aria-autocomplete="list"
               aria-expanded={suggestions.length > 0}
               autoComplete="off"
-              dir={language === 'he' ? 'rtl' : 'ltr'}
             />
             <button type="submit" className={s.navSearchBtn} aria-label={t('btn.search')}>
               <Search size={17} />
@@ -157,7 +145,7 @@ export default function CustomerNavbar({ onOpenCart = () => {} }) {
 
           {/* Suggestions dropdown */}
           {suggestions.length > 0 && (
-            <div className={s.searchSuggestions} id="nav-suggestions" role="listbox" dir={language === 'he' ? 'rtl' : 'ltr'}>
+            <div className={s.searchSuggestions} id="nav-suggestions" role="listbox">
               {suggestions.map((p) => (
                 <div
                   key={p._id}
@@ -212,20 +200,9 @@ export default function CustomerNavbar({ onOpenCart = () => {} }) {
             )}
           </Link>
 
-          {/* Compare icon */}
-          <button
-            className={s.navIconBtn}
-            data-tip={t('nav.compare')}
-            aria-label={compareItems.length > 0 ? `${t('nav.compare')} (${compareItems.length})` : t('nav.compare')}
-            onClick={() => navigate('/compare')}
-            type="button"
-          >
+          {/* Compare icon (UI only) */}
+          <button className={s.navIconBtn} data-tip={t('nav.compare')} aria-label={t('nav.compare')} type="button">
             <GitCompare size={16} strokeWidth={1.8} />
-            {compareItems.length > 0 && (
-              <span className={s.cartCount} aria-hidden="true">
-                {compareItems.length}
-              </span>
-            )}
           </button>
 
           <div className={s.navDivider} aria-hidden="true" />
@@ -241,16 +218,8 @@ export default function CustomerNavbar({ onOpenCart = () => {} }) {
             {language === 'he' ? 'עב' : 'EN'}
           </button>
 
-          {/* Accessibility button — opens the real AccessibilityWidget panel */}
-          <button
-            className={`${s.navIconBtn} ${a11yOpen ? s.active : ''}`}
-            data-tip={t('a11y.title')}
-            aria-label={t('a11y.title')}
-            aria-expanded={a11yOpen}
-            aria-controls="a11y-panel"
-            onClick={toggleA11y}
-            type="button"
-          >
+          {/* Accessibility button */}
+          <button className={s.navIconBtn} data-tip={t('a11y.title')} aria-label={t('a11y.title')} type="button">
             <AccessibilityIcon />
           </button>
 
@@ -262,7 +231,10 @@ export default function CustomerNavbar({ onOpenCart = () => {} }) {
             onClick={toggleTheme}
             type="button"
           >
-            <ThemeIcon theme={theme} />
+            {theme === 'dark'
+              ? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="16" height="16"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+              : <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="16" height="16"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+            }
           </button>
 
           <div className={s.navDivider} aria-hidden="true" />
@@ -358,31 +330,10 @@ export default function CustomerNavbar({ onOpenCart = () => {} }) {
             <LayoutGrid size={16} />{t('nav.all_products')}
           </Link>
 
-          <Link to="/wishlist" className={s.mobilePanelLink} onClick={() => setMobileOpen(false)}>
-            <Heart size={16} fill={hasWishItems ? '#f43f5e' : 'none'} stroke={hasWishItems ? '#f43f5e' : 'currentColor'} />
-            {t('nav.wishlist')}{hasWishItems ? ` (${wishIds.size})` : ''}
-          </Link>
-          <button type="button" className={s.mobilePanelLink} onClick={() => { setMobileOpen(false); navigate('/compare'); }}>
-            <GitCompare size={16} />{t('nav.compare')}{compareItems.length > 0 ? ` (${compareItems.length})` : ''}
-          </button>
-
-          <div className={s.mobileDivider} />
-
-          <button type="button" className={s.mobilePanelLink} onClick={() => setLanguage(nextLang)}>
-            <Globe size={16} />{t('lang.toggle')}: {language === 'he' ? 'עב' : 'EN'}
-          </button>
-          <button type="button" className={s.mobilePanelLink} onClick={toggleTheme}>
-            <ThemeIcon theme={theme} />{theme === 'dark' ? t('theme.light') : t('theme.dark')}
-          </button>
-          <button type="button" className={s.mobilePanelLink} onClick={toggleA11y}>
-            <AccessibilityIcon />{t('a11y.title')}
-          </button>
-
-          <div className={s.mobileDivider} />
-
           {user ? (
             <>
               <Link to="/orders"   className={s.mobilePanelLink} onClick={() => setMobileOpen(false)}><Package size={16} />{t('nav.orders')}</Link>
+              <Link to="/wishlist" className={s.mobilePanelLink} onClick={() => setMobileOpen(false)}><Heart size={16} />{t('nav.wishlist')}</Link>
               <Link to="/profile"  className={s.mobilePanelLink} onClick={() => setMobileOpen(false)}><User size={16} />{t('nav.profile')}</Link>
               {['warehouse', 'admin', 'superadmin'].includes(user?.role) && (
                 <Link to="/admin/inventory" className={s.mobilePanelLink} onClick={() => setMobileOpen(false)}><Package size={16} />{t('nav.warehouse')}</Link>
