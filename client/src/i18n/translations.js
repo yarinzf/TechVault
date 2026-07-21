@@ -47,6 +47,12 @@ export const translations = {
     'brands.title_line2': 'מובילים',
     'brands.view_all':    'כל המותגים',
 
+    /* ── Best sellers (homepage) ──────────────────────────────────────── */
+    'bestsellers.title_line1': 'הנמכרים',
+    'bestsellers.title_line2': 'ביותר',
+    'bestsellers.view_all':    'לכל המוצרים',
+    'bestsellers.empty':       'אין כרגע מוצרים נמכרים להצגה',
+
     /* ── Categories modal ─────────────────────────────────────────────── */
     'modal.section_computers':   'מחשבים ורכיבים',
     'modal.section_peripherals': 'ציוד היקפי',
@@ -1554,6 +1560,12 @@ export const translations = {
     'brands.title_line1': 'Leading',
     'brands.title_line2': 'Brands',
     'brands.view_all':    'All Brands',
+
+    /* ── Best sellers (homepage) ──────────────────────────────────────── */
+    'bestsellers.title_line1': 'Best',
+    'bestsellers.title_line2': 'Sellers',
+    'bestsellers.view_all':    'View All Products',
+    'bestsellers.empty':       'No best-selling products to show right now',
 
     /* ── Categories modal ─────────────────────────────────────────────── */
     'modal.section_computers':   'Computers & Components',

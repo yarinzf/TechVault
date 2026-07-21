@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Heart, Plus, Loader } from 'lucide-react';
+import { Heart, Plus, Loader, ImageOff } from 'lucide-react';
 import { useCart }     from '../../../hooks/useCart';
 import { useWishlist } from '../../../hooks/useWishlist';
 import { useToast }    from '../../../hooks/useToast';
@@ -8,16 +8,18 @@ import { useLanguage } from '../../../context/LanguageContext';
 import { getLocalizedProductName } from '../utils/localizedProduct';
 import s from './ProductCard.module.css';
 
-export default function ProductCard({ product, rank }) {
+export default function ProductCard({ product, rank, fit = 'cover' }) {
   const { addItem }              = useCart();
   const { isInWishlist, toggle } = useWishlist();
   const { toast }                = useToast();
   const { t, language }          = useLanguage();
   const navigate                 = useNavigate();
   const [adding, setAdding]      = useState(false);
+  const [imgError, setImgError]  = useState(false);
 
   const wished = isInWishlist(product._id);
   const displayName = getLocalizedProductName(product, language);
+  const hasImage = !imgError && !!product.images?.[0];
 
   const handleWishlist = (e) => {
     e.stopPropagation();
@@ -108,12 +110,23 @@ export default function ProductCard({ product, rank }) {
     >
       {/* ── Image area (.pc-img) ── */}
       <div className={s.imageWrap}>
-        <img
-          className={s.image}
-          src={product.images?.[0] || ''}
-          alt={displayName}
-          loading="lazy"
-        />
+        {hasImage
+          ? (
+            <img
+              className={s.image}
+              src={product.images[0]}
+              alt={displayName}
+              loading="lazy"
+              style={fit === 'contain' ? { objectFit: 'contain' } : undefined}
+              onError={() => setImgError(true)}
+            />
+          )
+          : (
+            <div className={s.imageFallback} aria-hidden="true">
+              <ImageOff size={28} strokeWidth={1.5} />
+            </div>
+          )
+        }
 
         {/* Rank badge — top right (.pc-rank) */}
         {rank != null && (

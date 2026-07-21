@@ -141,6 +141,8 @@ function DealBanner() {
 
 /* ── ProductSection ───────────────────────────────────────────────────────── */
 function ProductSection({ titleBase, titleEm, badge, products, loading, error, viewAllHref, showRanks }) {
+  const t = useTranslation();
+
   if (loading) return (
     <section className={s.section}>
       <div className={s.sectionHead}>
@@ -157,7 +159,19 @@ function ProductSection({ titleBase, titleEm, badge, products, loading, error, v
     </section>
   );
 
-  if (error || !products.length) return null;
+  if (error || !products.length) return (
+    <section className={s.section}>
+      <div className={s.sectionHead}>
+        <div className={s.sectionLeft}>
+          <h2 className={s.sectionTitle}>
+            {titleBase}{titleEm && <> <span className={s.sectionTitleEm}>{titleEm}</span></>}
+          </h2>
+          {badge && <span className={s.sectionBadge}>{badge}</span>}
+        </div>
+      </div>
+      <div className={s.sectionEmpty}>{t('bestsellers.empty')}</div>
+    </section>
+  );
 
   return (
     <section className={s.section}>
@@ -169,14 +183,14 @@ function ProductSection({ titleBase, titleEm, badge, products, loading, error, v
           {badge && <span className={s.sectionBadge}>{badge}</span>}
         </div>
         {viewAllHref && (
-          <Link to={viewAllHref} className={s.viewAll}>
-            כל המוצרים <ChevronLeft size={14} />
+          <Link to={viewAllHref} className={`${s.viewAll} ${s.sellersViewAll}`}>
+            {t('bestsellers.view_all')} <ChevronLeft size={14} />
           </Link>
         )}
       </div>
       <div className={s.productRow}>
         {products.slice(0, 5).map((p, i) => (
-          <ProductCard key={p._id} product={p} rank={showRanks ? i + 1 : undefined} />
+          <ProductCard key={p._id} product={p} rank={showRanks ? i + 1 : undefined} fit="contain" />
         ))}
       </div>
     </section>
@@ -442,6 +456,7 @@ function ReviewsSection() {
 /* ── HomePage ─────────────────────────────────────────────────────────────── */
 export default function HomePage() {
   const navigate = useNavigate();
+  const t = useTranslation();
 
   /* Hero */
   const [heroIdx,     setHeroIdx]     = useState(0);
@@ -471,13 +486,26 @@ export default function HomePage() {
   const [errBestSellers,     setErrBestSellers]     = useState(false);
 
   useEffect(() => {
-    productService.getBestSellers(8)
-      .then(p => setBestSellers(p))
+    // The dedicated /products/best-sellers endpoint doesn't project real
+    // campaign discount fields (discountedPrice/discountPercent), so it can
+    // never reflect an active campaign. The general catalog query with the
+    // same real popularity sort (salesCount desc) returns the full product
+    // document, including genuine campaign pricing when one is active.
+    productService.list({ sort: 'popularity', limit: 8 })
+      .then(({ products }) => setBestSellers(products))
       .catch(() => setErrBestSellers(true))
       .finally(() => setLoadingBestSellers(false));
   }, []);
 
   const slide = HERO_SLIDES[heroIdx];
+
+  // Only show an original/strikethrough price when a genuine active
+  // campaign discount exists (discountedPrice). Otherwise clear
+  // compareAtPrice so ProductCard's static-compareAtPrice fallback can't
+  // display a discount that isn't actually backed by a real campaign.
+  const bestSellersForDisplay = bestSellers.map(p => (
+    p.discountedPrice != null ? p : { ...p, compareAtPrice: null }
+  ));
 
   return (
     <div className={s.page}>
@@ -613,9 +641,9 @@ export default function HomePage() {
       <div className={s.sellersWrap}>
         <div className={s.sectionInner}>
           <ProductSection
-            titleBase="הנמכרים"
-            titleEm="ביותר"
-            products={bestSellers}
+            titleBase={t('bestsellers.title_line1')}
+            titleEm={t('bestsellers.title_line2')}
+            products={bestSellersForDisplay}
             loading={loadingBestSellers}
             error={errBestSellers}
             viewAllHref="/products?sort=popularity"

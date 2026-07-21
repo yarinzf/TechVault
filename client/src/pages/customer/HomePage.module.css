@@ -518,11 +518,28 @@
   margin-inline-start: auto;
 }
 
+/* Same direction-aware fix, scoped to Best Sellers only (see .brandsViewAll
+   above for the full explanation). Recently Viewed's own .viewAll usage is
+   unaffected since it doesn't receive this additional class. */
+.sellersViewAll {
+  margin-right: 0;
+  margin-inline-start: auto;
+}
+
+/* Compact, honest empty state — shown only when the real API returns zero
+   products or fails; never a fake/fallback product list. */
+.sectionEmpty {
+  padding: 32px 0;
+  text-align: center;
+  color: var(--sv-muted);
+  font-size: 13px;
+}
+
 /* ── Product row ──────────────────────────────────────────────────────────── */
 .productRow {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 12px;
+  gap: 18px;
 }
 
 .skeletonCard {
@@ -1213,7 +1230,19 @@
 
 /* ── Responsive ───────────────────────────────────────────────────────────── */
 @media (max-width: 1200px) {
-  .productRow { grid-template-columns: repeat(4, 1fr); }
+  /* Best Sellers shows 5 real products; a wrapping grid (4/3/2 columns)
+     always strands one lone card on its own row. A bounded, horizontally
+     scrollable strip keeps ~4 cards visible with the 5th reachable by
+     scroll instead — same pattern already used for Brands/CategoryNavBar. */
+  .productRow {
+    display: flex;
+    grid-template-columns: none;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+  }
+  .productRow::-webkit-scrollbar { display: none; }
+  .productRow > * { flex: 0 0 200px; }
 }
 
 @media (max-width: 1024px) {
@@ -1221,7 +1250,6 @@
   .heroClubPanel, .heroProductPanel { display: none; }
   .hero      { min-height: auto; }
   .floatBadge1, .floatBadge2 { display: none; }
-  .productRow  { grid-template-columns: repeat(3, 1fr); }
   .policyGrid  { grid-template-columns: repeat(2, 1fr); gap: 16px; }
   .policyItem  { border-inline-end: none; padding: 16px; border: 1px solid var(--sv-border); border-radius: 10px; }
   .clubBanner  { grid-template-columns: 1fr; }
@@ -1243,7 +1271,7 @@
   .main        { padding: 40px 20px; gap: 56px; }
   .sectionTitle { font-size: 22px; }
 
-  .productRow  { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .productRow > * { flex: 0 0 168px; }
   .policyGrid  { grid-template-columns: repeat(2, 1fr); }
   .policyItem  { padding: 12px; }
   .policyInner { padding: 0 20px; }
@@ -1268,7 +1296,6 @@
 }
 
 @media (max-width: 480px) {
-  .productRow  { grid-template-columns: 1fr 1fr; }
   .policyGrid  { grid-template-columns: 1fr; }
   .policyItem  { border-inline-end: none; }
   .clubStatsGrid { grid-template-columns: repeat(2, 1fr); }
