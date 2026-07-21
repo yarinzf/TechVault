@@ -42,6 +42,11 @@ export const translations = {
     'promo.warranty_text':    'אחריות יצרן מלאה על כל המוצרים באתר — ללא תנאים',
     'promo.warranty_cta':     'למדיניות שלנו ←',
 
+    /* ── Leading brands (homepage) ────────────────────────────────────── */
+    'brands.title_line1': 'מותגים',
+    'brands.title_line2': 'מובילים',
+    'brands.view_all':    'כל המותגים',
+
     /* ── Categories modal ─────────────────────────────────────────────── */
     'modal.section_computers':   'מחשבים ורכיבים',
     'modal.section_peripherals': 'ציוד היקפי',
@@ -1544,6 +1549,11 @@ export const translations = {
     'promo.warranty_tag':     'Manufacturer Warranty',
     'promo.warranty_text':    'Full manufacturer warranty on every product on the site — no conditions',
     'promo.warranty_cta':     'See our policy →',
+
+    /* ── Leading brands (homepage) ────────────────────────────────────── */
+    'brands.title_line1': 'Leading',
+    'brands.title_line2': 'Brands',
+    'brands.view_all':    'All Brands',
 
     /* ── Categories modal ─────────────────────────────────────────────── */
     'modal.section_computers':   'Computers & Components',

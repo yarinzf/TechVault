@@ -13,7 +13,7 @@ import { useRecentlyViewed } from '../../hooks/useRecentlyViewed';
 import { useTranslation } from '../../context/LanguageContext';
 import ProductCard from '../../features/products/components/ProductCard';
 import Footer from '../../components/layout/customer/Footer';
-import { BRANDS } from '../../constants/brands';
+import { LEADING_BRANDS } from '../../constants/brands';
 import { HOMEPAGE_REVIEWS } from '../../constants/reviews';
 import s from './HomePage.module.css';
 
@@ -185,34 +185,31 @@ function ProductSection({ titleBase, titleEm, badge, products, loading, error, v
 
 /* ── BrandsSection ────────────────────────────────────────────────────────── */
 function BrandsSection() {
-  const navigate = useNavigate();
+  const t = useTranslation();
   return (
     <section className={s.section}>
       <div className={s.sectionHead}>
         <div className={s.sectionLeft}>
           <h2 className={s.sectionTitle}>
-            מותגים <span className={s.sectionTitleEm}>מובילים</span>
+            {t('brands.title_line1')} <span className={s.sectionTitleEm}>{t('brands.title_line2')}</span>
           </h2>
         </div>
-        <Link to="/products" className={s.viewAll}>
-          כל המותגים <ChevronLeft size={14} />
+        <Link to="/products" className={`${s.viewAll} ${s.brandsViewAll}`}>
+          {t('brands.view_all')} <ChevronLeft size={14} />
         </Link>
       </div>
       <div className={s.brandsStrip}>
-        {BRANDS.map(brand => (
-          <button
+        {LEADING_BRANDS.map(brand => (
+          <Link
             key={brand.id}
+            to={`/products?${brand.queryType}=${brand.queryValue}`}
             className={s.brandCard}
-            onClick={() => navigate(`/products?brand=${brand.slug}`)}
           >
             <div className={s.brandLogoWrap}>
-              {brand.iconUrl
-                ? <img src={brand.iconUrl} alt={brand.name} className={s.brandImg} />
-                : <span className={s.brandText}>{brand.name}</span>
-              }
+              <img src={brand.iconUrl} alt={brand.name} className={s.brandImg} />
             </div>
             <div className={s.brandName}>{brand.name}</div>
-          </button>
+          </Link>
         ))}
       </div>
     </section>

@@ -446,7 +446,7 @@
 .dealCta:hover { background: #1d4ed8; transform: translateY(-1px); }
 
 /* ── Section wrappers (Sapir gives each section its own full-width bg) ────── */
-.brandsWrap    { padding: 48px 0; background: var(--sv-bg); }
+.brandsWrap    { padding: 48px 0; background: var(--sv-bg); width: 100%; max-width: 100%; overflow-x: hidden; }
 .sellersWrap   { padding: 48px 0; background: var(--sv-surface); border-bottom: 1px solid var(--sv-border); }
 .recentWrap    { padding: 48px 0; background: var(--sv-surface); border-bottom: 1px solid var(--sv-border); }
 .clubWrap      { background: var(--sv-bg); border-bottom: 1px solid var(--sv-border); }
@@ -457,6 +457,7 @@
   max-width: var(--sv-max);
   margin: 0 auto;
   padding: 0 var(--sv-pad);
+  min-width: 0;
 }
 
 /* ── Section shared ───────────────────────────────────────────────────────── */
@@ -505,6 +506,18 @@
 }
 .viewAll:hover { color: var(--sv-blue); }
 
+/* Brands-section-only alignment fix: the shared .viewAll's physical
+   margin-right:auto only pushes the link to the opposite edge in RTL (the
+   margin faces the title, consuming the gap between them); in LTR that same
+   physical side faces away from the title, so the link never separates from
+   it. margin-inline-start:auto is direction-aware and correctly pushes the
+   link away from the title (opposite edge) in both directions. Scoped here
+   so Best Sellers / Recently Viewed, which also use .viewAll, are unaffected. */
+.brandsViewAll {
+  margin-right: 0;
+  margin-inline-start: auto;
+}
+
 /* ── Product row ──────────────────────────────────────────────────────────── */
 .productRow {
   display: grid;
@@ -523,6 +536,7 @@
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   gap: 14px;
+  min-width: 0;
 }
 
 .brandCard {
@@ -537,6 +551,8 @@
   cursor: pointer;
   transition: all .2s;
   text-align: center;
+  text-decoration: none;
+  min-width: 0;
 }
 .brandCard:hover {
   border-color: rgba(37,99,235,0.4);
@@ -1236,6 +1252,19 @@
   .footerGrid  { grid-template-columns: 1fr; gap: 24px; }
   .footerBottom { flex-direction: column; text-align: center; }
   .footerInner { padding: 32px 20px; }
+
+  /* Brands: a fixed 6-column grid can't fit narrow viewports without
+     overflowing the document — scroll the strip within its own bounded
+     container instead of letting card content force the page wider. */
+  .brandsStrip {
+    display: flex;
+    grid-template-columns: none;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+  }
+  .brandsStrip::-webkit-scrollbar { display: none; }
+  .brandCard { flex: 0 0 96px; }
 }
 
 @media (max-width: 480px) {
