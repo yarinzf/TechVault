@@ -517,7 +517,10 @@
 .sellersWrap   { padding: 48px 0; background: var(--sv-surface); border-bottom: 1px solid var(--sv-border); }
 .recentWrap    { padding: 48px 0; background: var(--sv-surface); border-bottom: 1px solid var(--sv-border); }
 .clubWrap      { background: var(--sv-bg); border-bottom: 1px solid var(--sv-border); }
-.clubWrapInner { max-width: var(--sv-max); margin: 0 auto; padding: 48px var(--sv-pad); }
+/* +16px top/bottom vs. the original 48px — a little more breathing room
+   from the Weekly Deal section above and the policy bar below; the mobile
+   breakpoint below dials this back to +8px so mobile stays compact. */
+.clubWrapInner { max-width: var(--sv-max); margin: 0 auto; padding: 64px var(--sv-pad); }
 .reviewsWrap   { padding: 56px 0; background: var(--sv-bg); border-bottom: 1px solid var(--sv-border); }
 
 .sectionInner {
@@ -1006,10 +1009,11 @@
   margin-bottom: 12px;
   width: fit-content;
   font-weight: 500;
+  font-family: var(--sv-font);
 }
 
 .clubTitle {
-  font-family: 'Inter', var(--font-heading);
+  font-family: var(--sv-font);
   font-size: 26px;
   font-weight: 800;
   color: #F9FAFB;
@@ -1019,6 +1023,7 @@
 .clubTitleAccent { color: var(--sv-violet); }
 
 .clubDesc {
+  font-family: var(--sv-font);
   font-size: 14px;
   color: var(--sv-muted);
   line-height: 1.6;
@@ -1041,8 +1046,8 @@
   color: var(--sv-violet);
 }
 .clubPerkText { flex: 1; }
-.clubPerkTitle { font-size: 14px; font-weight: 600; color: var(--sv-text); }
-.clubPerkDesc { font-size: 12px; color: var(--sv-muted); margin-top: 2px; }
+.clubPerkTitle { font-family: var(--sv-font); font-size: 14px; font-weight: 600; color: var(--sv-text); }
+.clubPerkDesc { font-family: var(--sv-font); font-size: 12px; color: var(--sv-muted); margin-top: 2px; }
 
 .clubCta { display: flex; gap: 12px; align-items: center; }
 
@@ -1057,7 +1062,7 @@
   padding: 13px 28px;
   font-size: 15px;
   font-weight: 600;
-  font-family: var(--font-sans);
+  font-family: var(--sv-font);
   cursor: pointer;
   transition: background 0.15s ease, transform 0.1s ease;
 }
@@ -1071,7 +1076,7 @@
   padding: 13px 24px;
   font-size: 14px;
   font-weight: 500;
-  font-family: var(--font-sans);
+  font-family: var(--sv-font);
   cursor: pointer;
   transition: border-color 0.15s ease, color 0.15s ease;
 }
@@ -1341,6 +1346,7 @@
   .policyItem  { padding: 12px; }
   .policyInner { padding: 0 20px; }
   .clubTitle   { font-size: 26px; }
+  .clubWrapInner { padding: 56px var(--sv-pad); }
   .reviewsGrid { grid-template-columns: 1fr; }
   .footerGrid  { grid-template-columns: 1fr; gap: 24px; }
   .footerBottom { flex-direction: column; text-align: center; }
