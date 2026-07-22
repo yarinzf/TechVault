@@ -53,6 +53,19 @@ export const translations = {
     'bestsellers.view_all':    'לכל המוצרים',
     'bestsellers.empty':       'אין כרגע מוצרים נמכרים להצגה',
 
+    /* ── Weekly deal (homepage) ────────────────────────────────────────── */
+    'weeklyDeal.badge':           'מבצע השבוע',
+    'weeklyDeal.limited_offer':   'מבצע לזמן מוגבל',
+    'weeklyDeal.ends_in':         'המבצע מסתיים בעוד',
+    'weeklyDeal.days':            'ימים',
+    'weeklyDeal.hours':           'שעות',
+    'weeklyDeal.minutes':        'דקות',
+    'weeklyDeal.seconds':        'שניות',
+    'weeklyDeal.view_product':   'לצפייה במוצר',
+    'weeklyDeal.add_to_cart':    'הוסף לעגלה',
+    'weeklyDeal.save':            'חיסכון',
+    'weeklyDeal.discount':        'הנחה',
+
     /* ── Categories modal ─────────────────────────────────────────────── */
     'modal.section_computers':   'מחשבים ורכיבים',
     'modal.section_peripherals': 'ציוד היקפי',
@@ -1594,6 +1607,19 @@ export const translations = {
     'bestsellers.title_line2': 'Sellers',
     'bestsellers.view_all':    'View All Products',
     'bestsellers.empty':       'No best-selling products to show right now',
+
+    /* ── Weekly deal (homepage) ────────────────────────────────────────── */
+    'weeklyDeal.badge':           'Weekly Deal',
+    'weeklyDeal.limited_offer':   'Limited-time offer',
+    'weeklyDeal.ends_in':         'Offer ends in',
+    'weeklyDeal.days':            'Days',
+    'weeklyDeal.hours':           'Hours',
+    'weeklyDeal.minutes':        'Minutes',
+    'weeklyDeal.seconds':        'Seconds',
+    'weeklyDeal.view_product':   'View product',
+    'weeklyDeal.add_to_cart':    'Add to cart',
+    'weeklyDeal.save':            'Save',
+    'weeklyDeal.discount':        'Discount',
 
     /* ── Categories modal ─────────────────────────────────────────────── */
     'modal.section_computers':   'Computers & Components',

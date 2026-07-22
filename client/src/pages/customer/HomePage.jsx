@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import {
   Monitor, ShoppingCart,
@@ -7,10 +7,15 @@ import {
   ChevronLeft,
   Percent, Gift, Headset, Check,
   Info, Clock, LayoutGrid, Tag, Armchair, Shield,
+  Flame, ImageOff, Plus, Loader,
 } from 'lucide-react';
 import { productService } from '../../features/products/api/product.service';
+import { campaignService } from '../../features/campaigns/api/campaign.service';
 import { useRecentlyViewed } from '../../hooks/useRecentlyViewed';
-import { useTranslation } from '../../context/LanguageContext';
+import { useTranslation, useLanguage } from '../../context/LanguageContext';
+import { useCart } from '../../hooks/useCart';
+import { useToast } from '../../hooks/useToast';
+import { getSpecLabel } from '../../features/products/utils/specLabels';
 import ProductCard from '../../features/products/components/ProductCard';
 import Footer from '../../components/layout/customer/Footer';
 import { LEADING_BRANDS } from '../../constants/brands';
@@ -85,21 +90,69 @@ const CLUB_STATS = [
   { num: '24',   accent: '/7', lbl: 'תמיכה VIP'    },
 ];
 
-/* ── Deal countdown ───────────────────────────────────────────────────────── */
-function DealCountdown() {
-  const [secs, setSecs] = useState(() => {
-    const now = new Date();
-    const end = new Date(now);
-    const toSat = (6 - now.getDay() + 7) % 7 || 7;
-    end.setDate(now.getDate() + toSat);
-    end.setHours(23, 59, 59, 999);
-    return Math.max(0, Math.floor((end - now) / 1000));
-  });
+/* ── Weekly deal: response validation ────────────────────────────────────── */
+// Defensive — the endpoint should only ever return a fully-formed deal or
+// `{ deal: null }`, but the client never trusts that blindly. Anything
+// short of a complete, numerically sane shape is treated as "no deal".
+function isValidWeeklyDeal(deal) {
+  if (!deal || typeof deal !== 'object') return false;
+  const p = deal.product;
+  if (!p || typeof p !== 'object') return false;
+  if (!p.id || !p.slug || !p.name) return false;
+  if (typeof p.price !== 'number' || !Number.isFinite(p.price)) return false;
+  if (typeof p.discountedPrice !== 'number' || !Number.isFinite(p.discountedPrice)) return false;
+  if (typeof deal.discountPercent !== 'number' || !Number.isFinite(deal.discountPercent)) return false;
+  return !Number.isNaN(Date.parse(deal.endDate));
+}
+
+/* ── Weekly deal: conservative generic spec extractor ────────────────────── */
+// Shows at most 3 real, meaningful spec values — never invents an
+// attribute. Reuses the project's existing spec-label dictionary
+// (features/products/utils/specLabels.js) so known keys translate the same
+// way they do on the product detail page; unknown keys fall back to the
+// raw key as-is (no fabricated label).
+function extractWeeklyDealSpecs(specs, language) {
+  if (!specs || typeof specs !== 'object' || Array.isArray(specs)) return [];
+  const entries = specs instanceof Map ? [...specs.entries()] : Object.entries(specs);
+  const picked = [];
+  for (const [key, value] of entries) {
+    if (picked.length >= 3) break;
+    if (!key || /^[_$]/.test(key)) continue;              // internal-looking keys
+    if (value == null || Array.isArray(value)) continue;   // can't render cleanly
+    if (typeof value === 'object') continue;                // empty/nested object
+    const strVal = String(value).trim();
+    if (strVal === '') continue;
+    picked.push(`${getSpecLabel(key, language)}: ${strVal}`);
+  }
+  return picked;
+}
+
+/* ── Deal countdown — derives only from the server's endDate, never from a
+   client-stored/resettable timer, so a reload never resets it ─────────── */
+function DealCountdown({ endDate, onExpire }) {
+  const { t } = useLanguage();
+  const targetRef = useRef(Date.parse(endDate));
+  const expiredRef = useRef(false);
+  const [secs, setSecs] = useState(() => Math.max(0, Math.floor((targetRef.current - Date.now()) / 1000)));
 
   useEffect(() => {
-    const id = setInterval(() => setSecs(v => Math.max(0, v - 1)), 1000);
+    targetRef.current = Date.parse(endDate);
+    expiredRef.current = false;
+
+    const tick = () => {
+      const remaining = Math.max(0, Math.floor((targetRef.current - Date.now()) / 1000));
+      setSecs(remaining);
+      if (remaining <= 0 && !expiredRef.current) {
+        expiredRef.current = true;
+        clearInterval(id);
+        onExpire?.();
+      }
+    };
+
+    tick();
+    const id = setInterval(tick, 1000);
     return () => clearInterval(id);
-  }, []);
+  }, [endDate, onExpire]);
 
   const d  = String(Math.floor(secs / 86400)).padStart(2, '0');
   const h  = String(Math.floor((secs % 86400) / 3600)).padStart(2, '0');
@@ -107,35 +160,131 @@ function DealCountdown() {
   const sc = String(secs % 60).padStart(2, '0');
 
   return (
-    <div className={s.countdown} dir="ltr">
-      <div className={s.cblock}><span className={s.cnum}>{d}</span><div className={s.clbl}>ימים</div></div>
+    <div className={s.countdown} dir="ltr" aria-live="off">
+      <div className={s.cblock}><span className={s.cnum}>{d}</span><div className={s.clbl}>{t('weeklyDeal.days')}</div></div>
       <span className={s.csep}>:</span>
-      <div className={s.cblock}><span className={s.cnum}>{h}</span><div className={s.clbl}>שעות</div></div>
+      <div className={s.cblock}><span className={s.cnum}>{h}</span><div className={s.clbl}>{t('weeklyDeal.hours')}</div></div>
       <span className={s.csep}>:</span>
-      <div className={s.cblock}><span className={s.cnum}>{m}</span><div className={s.clbl}>דקות</div></div>
+      <div className={s.cblock}><span className={s.cnum}>{m}</span><div className={s.clbl}>{t('weeklyDeal.minutes')}</div></div>
       <span className={s.csep}>:</span>
-      <div className={s.cblock}><span className={s.cnum}>{sc}</span><div className={s.clbl}>שניות</div></div>
+      <div className={s.cblock}><span className={s.cnum}>{sc}</span><div className={s.clbl}>{t('weeklyDeal.seconds')}</div></div>
     </div>
   );
 }
 
-/* ── DealBanner (strip only) ──────────────────────────────────────────────── */
-function DealBanner() {
+/* ── WeeklyDealSection — real campaign + product data only; renders nothing
+   when there is no valid active deal (never a fallback labelled "Weekly
+   Deal", never a substituted product) ───────────────────────────────────── */
+function WeeklyDealSection({ deal, onExpire }) {
+  const { t, language } = useLanguage();
   const navigate = useNavigate();
+  const { addItem } = useCart();
+  const { toast } = useToast();
+  const [imgError, setImgError] = useState(false);
+  const [adding, setAdding] = useState(false);
+
+  if (!deal) return null;
+
+  const { product } = deal;
+  const hasImage = !imgError && !!product.image;
+  const outOfStock = !(product.stock > 0);
+  // Category leads the sub-line (a real, structured fact) followed by up to
+  // 3 real spec values — capped together so the single-line layout never
+  // wraps awkwardly.
+  const specs = [product.category?.name, ...extractWeeklyDealSpecs(product.specs, language)]
+    .filter(Boolean)
+    .slice(0, 3);
+
+  // Round before formatting — avoids floating-point display artifacts
+  // (e.g. 5599.300000000001) without ever recalculating from compareAtPrice.
+  const price       = Math.round(product.price * 100) / 100;
+  const salePrice   = Math.round(product.discountedPrice * 100) / 100;
+  const savings     = Math.round((price - salePrice) * 100) / 100;
+
+  const goToProduct = () => navigate(`/products/${product.slug}`);
+
+  const handleAddToCart = async (e) => {
+    e.stopPropagation();
+    if (outOfStock || adding) return;
+    setAdding(true);
+    try {
+      await addItem(product.id, 1, {
+        name: product.name,
+        price: salePrice,
+        image: product.image ?? '',
+        originalPrice: price,
+      });
+      toast.success(`${product.name} ${t('product.added_to_cart_toast')}`);
+    } catch (err) {
+      toast.error(err.message || t('product.cannot_add_toast'));
+    } finally {
+      setAdding(false);
+    }
+  };
+
   return (
-    <div className={s.dealStrip}>
-      <div className={s.dealStripInner}>
-        <span className={s.dealBadge}><Zap size={12} /> פלאש סייל</span>
-        <div className={s.dealText}>
-          <div className={s.dealTitle}>מבצע השבוע — ציוד גיימינג עד 30% הנחה</div>
-          <div className={s.dealSub}>RTX 4090, RX 7900 XTX, ועוד · מלאי מוגבל</div>
+    <section className={s.wdSection} aria-labelledby="weekly-deal-heading">
+      <div className={s.sectionInner}>
+        <div className={s.wdCard}>
+          <div className={s.wdVisual}>
+            {hasImage ? (
+              <img
+                className={s.wdImg}
+                src={product.image}
+                alt={product.name}
+                loading="lazy"
+                onError={() => setImgError(true)}
+              />
+            ) : (
+              <div className={s.wdImgFallback} aria-hidden="true">
+                <ImageOff size={28} strokeWidth={1.5} />
+              </div>
+            )}
+          </div>
+
+          <div className={s.wdContent}>
+            <span className={`${s.dealBadge} ${s.wdBadgeStrong}`}>
+              <Flame size={12} />
+              <span id="weekly-deal-heading">{t('weeklyDeal.badge')}</span>
+              {deal.campaignTitle && (
+                <>
+                  <span className={s.wdBadgeSep}>·</span>
+                  <span className={s.wdBadgeSub}>{deal.campaignTitle}</span>
+                </>
+              )}
+            </span>
+            {product.brand && <div className={s.wdBrand}>{product.brand}</div>}
+            <h2 className={s.wdTitle}>{product.name}</h2>
+            {specs.length > 0 && (
+              <p className={s.wdSub}>{specs.join(' · ')}</p>
+            )}
+            <div className={s.wdPriceRow}>
+              <span className={s.wdPrice}>₪{salePrice.toLocaleString()}</span>
+              <span className={s.wdPriceOld}>₪{price.toLocaleString()}</span>
+              <span className={s.wdDisc} title={`${t('weeklyDeal.save')} ₪${savings.toLocaleString()}`}>−{deal.discountPercent}%</span>
+            </div>
+          </div>
+
+          <div className={s.wdAction}>
+            <DealCountdown endDate={deal.endDate} onExpire={onExpire} />
+            <div className={s.wdButtons}>
+              <button className={s.dealCta} onClick={goToProduct}>
+                <ArrowLeft size={15} /> {t('weeklyDeal.view_product')}
+              </button>
+              <button
+                className={s.wdAddBtn}
+                onClick={handleAddToCart}
+                disabled={outOfStock || adding}
+                aria-label={outOfStock ? t('product.out_of_stock') : t('weeklyDeal.add_to_cart')}
+                title={outOfStock ? t('product.out_of_stock') : t('weeklyDeal.add_to_cart')}
+              >
+                {adding ? <Loader size={15} className={s.spin} /> : <Plus size={15} />}
+              </button>
+            </div>
+          </div>
         </div>
-        <DealCountdown />
-        <button className={s.dealCta} onClick={() => navigate('/products?onSale=true')}>
-          <ArrowLeft size={15} /> ראו המבצעים
-        </button>
       </div>
-    </div>
+    </section>
   );
 }
 
@@ -497,6 +646,28 @@ export default function HomePage() {
       .finally(() => setLoadingBestSellers(false));
   }, []);
 
+  /* Weekly deal — real campaign endpoint. No active deal is a normal state,
+     not an error; loading/error/invalid responses all resolve to `null` so
+     the section simply doesn't render (never a fallback labelled "Weekly
+     Deal", never a substituted product). */
+  const [weeklyDeal, setWeeklyDeal] = useState(null);
+
+  const fetchWeeklyDeal = useCallback(() => {
+    campaignService.getWeeklyDeal()
+      .then((deal) => setWeeklyDeal(isValidWeeklyDeal(deal) ? deal : null))
+      .catch(() => setWeeklyDeal(null));
+  }, []);
+
+  useEffect(() => { fetchWeeklyDeal(); }, [fetchWeeklyDeal]);
+
+  // Countdown reaching zero hides the section immediately and triggers
+  // exactly one refetch (in case the campaign was extended or a new one
+  // started) — the countdown's own expiredRef guarantees this fires once.
+  const handleDealExpire = useCallback(() => {
+    setWeeklyDeal(null);
+    fetchWeeklyDeal();
+  }, [fetchWeeklyDeal]);
+
   const slide = HERO_SLIDES[heroIdx];
 
   // Only show an original/strikethrough price when a genuine active
@@ -652,8 +823,8 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* ── Deal banner (full width) ── */}
-      <DealBanner />
+      {/* ── Weekly deal (full width, renders nothing when there's no active deal) ── */}
+      <WeeklyDealSection deal={weeklyDeal} onExpire={handleDealExpire} />
 
       {/* ── Recently Viewed (bg: --surface) ── */}
       <div className={s.recentWrap}>

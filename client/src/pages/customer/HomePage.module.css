@@ -346,26 +346,35 @@
 .floatLbl { font-size: 10px; color: var(--sv-muted); margin-bottom: 2px; }
 .floatVal { font-size: 13px; font-weight: 700; color: var(--sv-mint); display: flex; align-items: center; gap: 4px; white-space: nowrap; }
 
-/* ── Deal banner (strip only) ─────────────────────────────────────────────── */
-.dealStrip {
-  background: linear-gradient(135deg, #0a1628 0%, #0e0e20 55%, #091318 100%);
-  border-top: 1px solid rgba(37,99,235,0.2);
-  border-bottom: 1px solid rgba(37,99,235,0.2);
-  position: relative;
-  overflow: hidden;
+/* ── Weekly deal — compact campaign card (matches Sapir's .weekly-deal-section) ── */
+.wdSection {
+  padding: 32px 0;
+  background: var(--sv-bg);
 }
 
-.dealStrip::before {
+.wdCard {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(120deg, #0a1628 0%, #15151D 60%, #0A0A0F 100%);
+  border: 1px solid rgba(37,99,235,0.22);
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding: 22px 26px;
+}
+
+.wdCard::before {
   content: '';
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse at 20% 50%, rgba(37,99,235,0.12) 0%, transparent 60%),
-    radial-gradient(ellipse at 80% 50%, rgba(158,110,241,0.08) 0%, transparent 60%);
+    radial-gradient(ellipse at 15% 50%, rgba(37,99,235,0.14) 0%, transparent 55%),
+    radial-gradient(ellipse at 90% 50%, rgba(158,110,241,0.1) 0%, transparent 55%);
   pointer-events: none;
 }
 
-.dealStrip::after {
+.wdCard::after {
   content: '';
   position: absolute;
   top: 0; left: 0; right: 0;
@@ -373,38 +382,84 @@
   background: linear-gradient(90deg, transparent, var(--sv-blue), var(--sv-violet), transparent);
 }
 
-.dealStripInner {
-  max-width: var(--sv-max);
-  margin: 0 auto;
-  padding: 28px var(--sv-pad);
+.wdVisual {
+  flex-shrink: 0;
+  width: 128px;
+  height: 128px;
+  border-radius: 14px;
+  background: radial-gradient(60% 60% at 50% 40%, rgba(37,99,235,0.22), transparent 70%), rgba(255,255,255,0.02);
+  border: 1px solid rgba(37,99,235,0.25);
   display: flex;
   align-items: center;
-  gap: 28px;
+  justify-content: center;
   position: relative;
   z-index: 1;
-  flex-wrap: wrap;
+  overflow: hidden;
 }
+.wdImg { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 8px 16px rgba(37,99,235,0.3)); }
+.wdImgFallback { display: flex; align-items: center; justify-content: center; color: var(--sv-muted); width: 100%; height: 100%; }
+
+.wdContent { flex: 1; min-width: 0; position: relative; z-index: 1; }
 
 .dealBadge {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: rgba(239,68,68,0.15);
-  border: 1px solid rgba(239,68,68,0.3);
-  border-radius: 7px;
-  padding: 5px 14px;
   font-size: 11px;
   font-weight: 700;
-  color: var(--sv-red);
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  flex-shrink: 0;
   white-space: nowrap;
+  margin-bottom: 8px;
 }
+.wdBadgeStrong {
+  background: linear-gradient(135deg, var(--sv-blue), var(--sv-violet));
+  border: none;
+  color: #fff;
+  font-size: 11.5px;
+  padding: 5px 12px;
+  border-radius: 7px;
+  box-shadow: 0 4px 12px -2px rgba(37,99,235,0.5);
+}
+.wdBadgeSep { opacity: 0.5; font-weight: 400; text-transform: none; }
+.wdBadgeSub { font-weight: 500; opacity: 0.8; text-transform: none; letter-spacing: normal; }
 
-.dealText  { flex: 1; min-width: 160px; }
-.dealTitle { font-family: 'Inter', sans-serif; font-size: 22px; font-weight: 700; color: #F9FAFB; }
-.dealSub   { font-size: 13px; color: var(--sv-muted); margin-top: 3px; }
+.wdBrand { font-size: 12px; color: var(--sv-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 2px; }
+.wdTitle { font-family: 'Inter', sans-serif; font-size: 18px; font-weight: 800; color: #F9FAFB; margin: 0 0 3px; }
+.wdSub   { font-size: 12px; color: var(--sv-muted); margin: 0 0 8px; }
+
+.wdPriceRow { display: flex; align-items: baseline; gap: 9px; flex-wrap: wrap; }
+.wdPrice    { font-size: 24px; font-weight: 800; color: #fff; letter-spacing: -0.01em; }
+.wdPriceOld { font-size: 13px; color: var(--sv-muted); text-decoration: line-through; }
+.wdDisc     { background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.3); color: var(--sv-success); font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
+
+.wdAction { flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 8px; position: relative; z-index: 1; }
+.wdButtons { display: flex; align-items: center; gap: 6px; width: 100%; }
+.wdButtons .dealCta { flex: 1; }
+
+.wdAddBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 10px;
+  color: var(--sv-text);
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.wdAddBtn:hover:not(:disabled) { background: rgba(37,99,235,0.15); border-color: rgba(37,99,235,0.4); }
+.wdAddBtn:disabled { opacity: 0.4; cursor: not-allowed; }
+.wdAddBtn:focus-visible, .dealCta:focus-visible { outline: 2px solid var(--sv-blue-l); outline-offset: 2px; }
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+.spin { animation: spin 0.75s linear infinite; }
 
 .countdown {
   display: flex;
@@ -429,6 +484,7 @@
 .dealCta {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 7px;
   background: var(--sv-blue);
   color: #fff;
@@ -443,7 +499,18 @@
   white-space: nowrap;
   transition: background 0.15s ease, transform 0.1s ease;
 }
-.dealCta:hover { background: #1d4ed8; transform: translateY(-1px); }
+.dealCta:hover { background: var(--sv-blue-dk); transform: translateY(-1px); }
+
+/* Sapir's exact weekly-deal breakpoint (820px, distinct from the rest of
+   the page's 767px mobile cutoff) — stacks the card vertically, centers
+   content, and shrinks the visual box. */
+@media (max-width: 820px) {
+  .wdCard    { flex-direction: column; text-align: center; gap: 16px; padding: 22px 20px; }
+  .wdVisual  { width: 96px; height: 96px; }
+  .wdPriceRow { justify-content: center; }
+  .wdAction  { width: 100%; }
+  .wdAction .countdown { justify-content: center; }
+}
 
 /* ── Section wrappers (Sapir gives each section its own full-width bg) ────── */
 .brandsWrap    { padding: 48px 0; background: var(--sv-bg); width: 100%; max-width: 100%; overflow-x: hidden; }
@@ -1265,8 +1332,6 @@
   .heroCta { flex-direction: column; align-items: stretch; }
   .heroBtnPrimary, .heroBtnSecondary { justify-content: center; }
   .heroStats { gap: 16px; }
-
-  .dealStripInner { flex-direction: column; align-items: flex-start; gap: 16px; }
 
   .main        { padding: 40px 20px; gap: 56px; }
   .sectionTitle { font-size: 22px; }
