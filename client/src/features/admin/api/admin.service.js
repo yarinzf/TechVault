@@ -218,6 +218,19 @@ export const adminService = {
     }
   },
 
+  // Reuses the existing warehouse inventory endpoint as the Admin product
+  // search source — it already supports name/SKU search, pagination, and
+  // returns stock/isPublished (unlike the public product list, which
+  // filters unpublished/deleted products out before this code ever sees
+  // them). Errors are NOT swallowed here (unlike most methods in this file)
+  // so callers can distinguish a genuine search failure from an empty
+  // result and show the correct translated state. `signal` lets callers
+  // abort a stale in-flight request when the search query changes.
+  async searchProducts(params = {}, signal) {
+    const { data, meta } = await api.get(`/admin/inventory/list${qs(params)}`, { signal });
+    return { products: data?.products ?? data ?? [], meta };
+  },
+
   async createCampaign(dto) {
     const { data } = await api.post('/admin/campaigns', dto);
     return data?.campaign ?? data;

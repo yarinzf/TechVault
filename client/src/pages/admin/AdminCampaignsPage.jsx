@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
     Tag,
     Plus,
@@ -30,9 +30,46 @@ import {
 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { adminService } from '../../features/admin/api/admin.service';
-import { productService } from '../../features/products/api/product.service';
+import { useTranslation, useLanguage } from '../../context/LanguageContext';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
+
+const PLACEMENT_NONE        = 'none';
+const PLACEMENT_WEEKLY_DEAL = 'homepage_weekly_deal';
+
+const ERROR_CODE_KEYS = {
+    WEEKLY_DEAL_NO_PRODUCT:           'admin.campaigns.err_WEEKLY_DEAL_NO_PRODUCT',
+    WEEKLY_DEAL_MULTIPLE_PRODUCTS:    'admin.campaigns.err_WEEKLY_DEAL_MULTIPLE_PRODUCTS',
+    WEEKLY_DEAL_PRODUCT_NOT_FOUND:    'admin.campaigns.err_WEEKLY_DEAL_PRODUCT_NOT_FOUND',
+    WEEKLY_DEAL_PRODUCT_DELETED:      'admin.campaigns.err_WEEKLY_DEAL_PRODUCT_DELETED',
+    WEEKLY_DEAL_PRODUCT_UNPUBLISHED:  'admin.campaigns.err_WEEKLY_DEAL_PRODUCT_UNPUBLISHED',
+    WEEKLY_DEAL_PRODUCT_OUT_OF_STOCK: 'admin.campaigns.err_WEEKLY_DEAL_PRODUCT_OUT_OF_STOCK',
+    WEEKLY_DEAL_OVERLAP:              'admin.campaigns.err_WEEKLY_DEAL_OVERLAP',
+};
+
+// Maps a thrown request error to a stable, translated Admin message. Prefers
+// the backend's stable error `code` (set by server/middleware fetch wrapper)
+// over matching the English message string, since messages can change wording
+// without notice while codes are a deliberate API contract.
+const mapBackendError = (err, t) => {
+    const key = ERROR_CODE_KEYS[err?.code];
+    if (key) return t(key);
+    if (err?.message) return err.message;
+    return t('admin.campaigns.err_save');
+};
+
+// A product is Weekly-Deal-eligible only if in stock, published, and not
+// deleted. In practice the Admin product picker sources from the public
+// product list endpoint, which already excludes unpublished/deleted products
+// server-side — so only the stock check is currently reachable here. The
+// isPublished/isDeleted checks are kept as a defensive guarantee in case that
+// upstream filtering ever changes.
+const isProductEligibleForWeeklyDeal = (p) => {
+    if (p?.isDeleted)          return { eligible: false, reasonKey: 'admin.campaigns.product_deleted' };
+    if (p?.isPublished === false) return { eligible: false, reasonKey: 'admin.campaigns.product_unpublished' };
+    if (!(p?.stock > 0))       return { eligible: false, reasonKey: 'admin.campaigns.product_out_of_stock' };
+    return { eligible: true, reasonKey: null };
+};
 
 const parseMoney = (value) => {
     const amount = Number.parseFloat(String(value).replace(/[₪,]/g, ''));
@@ -41,20 +78,40 @@ const parseMoney = (value) => {
 
 const formatMoney = (value) => `₪${Number(value).toLocaleString()}`;
 
-const toIsoDate = (dateValue) => {
-    if (!dateValue) return '';
-    return new Date(dateValue).toISOString().slice(0, 10);
+// Local-timezone display (day/month/year) — avoids the UTC drift that
+// toISOString()-based slicing could introduce for users outside UTC.
+const formatDisplayDate = (value) => {
+    if (!value) return '';
+    const d = new Date(value);
+    if (Number.isNaN(d.getTime())) return '';
+    const pad = (n) => String(n).padStart(2, '0');
+    return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
 };
 
-const formatDisplayDate = (isoDate) => {
-    if (!isoDate) return '';
-    const [y, m, d] = isoDate.split('-');
-    return `${d}/${m}/${y}`;
+// `datetime-local` inputs need `YYYY-MM-DDTHH:mm` in the browser's own local
+// time — this reads the stored ISO value back into that local representation.
+const toDateTimeLocal = (value) => {
+    if (!value) return '';
+    const d = new Date(value);
+    if (Number.isNaN(d.getTime())) return '';
+    const pad = (n) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 };
 
+// `datetime-local` values have no timezone offset — the JS Date constructor
+// already interprets them as local time, so this round-trips without drift.
+const fromDateTimeLocalToIso = (value) => {
+    if (!value) return '';
+    const d = new Date(value);
+    return Number.isNaN(d.getTime()) ? '' : d.toISOString();
+};
+
+// `disabled` (manually turned off) is distinct from `ended` (dates elapsed
+// naturally while still enabled) — a campaign can be disabled regardless of
+// where its date range currently sits, so this check comes first.
 const deriveCampaignStatus = (c) => {
     const now = new Date();
-    if (!c.isActive) return 'ended';
+    if (!c.isActive) return 'disabled';
     if (new Date(c.startDate) > now) return 'scheduled';
     if (new Date(c.endDate) < now) return 'ended';
     return 'active';
@@ -65,8 +122,9 @@ const normalizeCampaign = (c) => ({
     id:             c._id,
     name:           c.name,
     discount:       c.discountPercent,
-    startDate:      toIsoDate(c.startDate),
-    endDate:        toIsoDate(c.endDate),
+    startDate:      c.startDate,
+    endDate:        c.endDate,
+    placement:      c.placement ?? PLACEMENT_NONE,
     isActive:       c.isActive,
     status:         deriveCampaignStatus(c),
     revenue:        '₪0',
@@ -111,22 +169,35 @@ const getStatusColor = (status) => {
         case 'active':    return 'bg-[#10b981]/10 text-[#10b981] border-[#10b981]/20';
         case 'scheduled': return 'bg-[#3b82f6]/10 text-[#3b82f6] border-[#3b82f6]/20';
         case 'ended':     return 'bg-[#8b8b99]/10 text-[#8b8b99] border-[#8b8b99]/20';
+        case 'disabled':  return 'bg-[#ef4444]/10 text-[#ef4444] border-[#ef4444]/20';
         default:          return 'bg-secondary text-muted-foreground border-border';
     }
 };
 
-const getStatusText = (status) => {
+const getStatusText = (status, t) => {
     switch (status) {
-        case 'active':    return 'פעיל';
-        case 'scheduled': return 'מתוזמן';
-        case 'ended':     return 'הסתיים';
+        case 'active':    return t('admin.campaigns.status_active');
+        case 'scheduled': return t('admin.campaigns.status_scheduled');
+        case 'ended':     return t('admin.campaigns.status_ended');
+        case 'disabled':  return t('admin.campaigns.status_disabled');
         default:          return status;
     }
 };
 
+// Placement is a separate signal from campaign status (active/scheduled/
+// ended) — a Weekly Deal can be scheduled, active, or disabled just like any
+// standard campaign, so this badge never overrides or duplicates status text.
+const getPlacementBadgeColor = (placement) =>
+    placement === PLACEMENT_WEEKLY_DEAL
+        ? 'bg-[#7c3aed]/10 text-[#7c3aed] border-[#7c3aed]/20'
+        : 'bg-secondary text-muted-foreground border-border';
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function AdminCampaignsPage() {
+    const t = useTranslation();
+    const { language } = useLanguage();
+    const dir = language === 'he' ? 'rtl' : 'ltr';
     const [campaigns,   setCampaigns]   = useState([]);
     const [loading,     setLoading]     = useState(true);
     const [activeModal, setActiveModal] = useState(null);
@@ -169,7 +240,7 @@ export default function AdminCampaignsPage() {
     };
 
     const handleDelete = async (campaign) => {
-        if (!window.confirm(`מחק את הקמפיין "${campaign.name}"?`)) return;
+        if (!window.confirm(`${t('admin.campaigns.confirm_delete')} "${campaign.name}"?`)) return;
         setPendingId(campaign._id);
         try {
             await adminService.deleteCampaign(campaign._id);
@@ -192,12 +263,12 @@ export default function AdminCampaignsPage() {
     };
 
     return (
-        <div className="p-8" dir="rtl">
+        <div className="p-8" dir={dir}>
             <div className="flex items-center justify-between mb-8">
                 <div>
-                    <h1 className="text-3xl text-foreground mb-2">קמפיינים ומבצעים</h1>
+                    <h1 className="text-3xl text-foreground mb-2">{t('admin.campaigns.heading')}</h1>
                     <p className="text-muted-foreground">
-                        ניהול כל המבצעים והקמפיינים השיווקיים • {campaigns.length} קמפיינים
+                        {t('admin.campaigns.subtitle')} • {campaigns.length} {t('admin.campaigns.heading')}
                     </p>
                 </div>
                 <button
@@ -206,15 +277,15 @@ export default function AdminCampaignsPage() {
                     className="flex items-center gap-2 bg-[#2563eb] text-white px-4 py-2 rounded-lg hover:bg-[#2563eb]/90 transition-colors"
                 >
                     <Plus className="w-4 h-4" />
-                    קמפיין חדש
+                    {t('admin.campaigns.new')}
                 </button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-                <StatBox icon={Tag}          label="קמפיינים פעילים" value={activeCampaigns}          color="#10b981" />
-                <StatBox icon={DollarSign}   label="סה״כ הכנסות"    value={formatMoney(totalRevenue)} color="#2563eb" />
-                <StatBox icon={Wallet}       label="תקציב כולל"     value={formatMoney(totalSpent)} sub={`/ ${formatMoney(totalBudget)}`} color="#7c3aed" />
-                <StatBox icon={ShoppingCart} label="סה״כ הזמנות"    value={totalOrders.toLocaleString()} color="#fbbf24" />
+                <StatBox icon={Tag}          label={t('admin.campaigns.stat_active')}  value={activeCampaigns}          color="#10b981" />
+                <StatBox icon={DollarSign}   label={t('admin.campaigns.stat_revenue')} value={formatMoney(totalRevenue)} color="#2563eb" />
+                <StatBox icon={Wallet}       label={t('admin.campaigns.stat_budget')}  value={formatMoney(totalSpent)} sub={`/ ${formatMoney(totalBudget)}`} color="#7c3aed" />
+                <StatBox icon={ShoppingCart} label={t('admin.campaigns.stat_orders')}  value={totalOrders.toLocaleString()} color="#fbbf24" />
             </div>
 
             {loading ? (
@@ -224,8 +295,8 @@ export default function AdminCampaignsPage() {
             ) : campaigns.length === 0 ? (
                 <div className="text-center py-20">
                     <Tag className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
-                    <p className="text-foreground mb-1">אין קמפיינים עדיין</p>
-                    <p className="text-sm text-muted-foreground">לחץ על "קמפיין חדש" כדי להתחיל</p>
+                    <p className="text-foreground mb-1">{t('admin.campaigns.empty')}</p>
+                    <p className="text-sm text-muted-foreground">{t('admin.campaigns.empty_hint')}</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -300,14 +371,18 @@ function StatBox({ icon: Icon, label, value, sub, color }) {
 // ─── Campaign card ────────────────────────────────────────────────────────────
 
 function CampaignCard({ campaign, openModal, onToggle, onDelete, isPending }) {
+    const t = useTranslation();
     return (
         <div className="bg-card border border-border rounded-lg p-6 hover:border-[#2563eb]/30 transition-all">
             <div className="flex items-start justify-between mb-4">
                 <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
+                    <div className="flex items-center gap-3 mb-2 flex-wrap">
                         <h3 className="text-lg text-foreground">{campaign.name}</h3>
                         <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium border ${getStatusColor(campaign.status)}`}>
-                            {getStatusText(campaign.status)}
+                            {getStatusText(campaign.status, t)}
+                        </span>
+                        <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium border ${getPlacementBadgeColor(campaign.placement)}`}>
+                            {campaign.placement === PLACEMENT_WEEKLY_DEAL ? t('admin.campaigns.badge_weekly_deal') : t('admin.campaigns.badge_standard')}
                         </span>
                     </div>
                     <div className="flex items-center gap-4 text-xs text-muted-foreground">
@@ -320,56 +395,56 @@ function CampaignCard({ campaign, openModal, onToggle, onDelete, isPending }) {
                 </div>
 
                 <div className="flex gap-1.5">
-                    <IconButton title="ערוך" onClick={() => openModal('edit', campaign)} icon={Edit} disabled={isPending} />
+                    <IconButton title={t('admin.campaigns.edit_title')} onClick={() => openModal('edit', campaign)} icon={Edit} disabled={isPending} />
                     <IconButton
-                        title={campaign.status === 'active' ? 'השהה' : 'הפעל'}
-                        icon={campaign.status === 'active' ? Pause : Play}
-                        color={campaign.status === 'active' ? '#fbbf24' : '#10b981'}
+                        title={campaign.isActive ? t('admin.campaigns.pause') : t('admin.campaigns.resume')}
+                        icon={campaign.isActive ? Pause : Play}
+                        color={campaign.isActive ? '#fbbf24' : '#10b981'}
                         onClick={() => onToggle(campaign)}
                         disabled={isPending}
                     />
-                    <IconButton title="מחק" icon={Trash2} color="#ef4444" onClick={() => onDelete(campaign)} disabled={isPending} />
+                    <IconButton title={t('admin.campaigns.delete')} icon={Trash2} color="#ef4444" onClick={() => onDelete(campaign)} disabled={isPending} />
                 </div>
             </div>
 
             <div className="mb-4">
-                <p className="text-xs text-muted-foreground mb-1">הכנסה מהקמפיין</p>
+                <p className="text-xs text-muted-foreground mb-1">{t('admin.campaigns.revenue_label')}</p>
                 <p className="text-2xl text-foreground">{campaign.revenue}</p>
             </div>
 
             <div className="flex items-center gap-4 mb-4 text-xs flex-wrap">
-                <CompactMetric icon={Target}       label="יעד:"    value={campaign.revenueTarget}             color="#2563eb" />
-                <CompactMetric icon={ShoppingCart} label="הזמנות:" value={campaign.ordersCount.toLocaleString()} color="#10b981" />
-                <CompactMetric icon={Percent}      label="הנחה:"   value={`${campaign.discount}%`}           color="#fbbf24" />
-                <CompactMetric icon={Package}      label="מוצרים:" value={campaign.totalProducts}             color="#7c3aed" />
+                <CompactMetric icon={Target}       label={t('admin.campaigns.target')} value={campaign.revenueTarget}             color="#2563eb" />
+                <CompactMetric icon={ShoppingCart} label={t('admin.campaigns.orders')} value={campaign.ordersCount.toLocaleString()} color="#10b981" />
+                <CompactMetric icon={Percent}      label={t('admin.campaigns.discount')} value={`${campaign.discount}%`}           color="#fbbf24" />
+                <CompactMetric icon={Package}      label={t('admin.campaigns.products')} value={campaign.totalProducts}             color="#7c3aed" />
             </div>
 
             <div className="mb-4">
                 <div className="flex items-center justify-between mb-2">
                     <div>
-                        <p className="text-xs text-muted-foreground mb-0.5">תקציב מבצע</p>
+                        <p className="text-xs text-muted-foreground mb-0.5">{t('admin.campaigns.budget')}</p>
                         <p className="text-lg text-foreground font-medium">{campaign.budget}</p>
                     </div>
                     <button type="button" onClick={() => openModal('add-budget', campaign)} className="flex items-center gap-1 text-xs text-[#2563eb] hover:text-[#2563eb]/80 transition-colors">
                         <Plus className="w-3 h-3" />
-                        <span>הוסף תקציב</span>
+                        <span>{t('admin.campaigns.add_budget')}</span>
                     </button>
                 </div>
 
                 <div className="flex items-center justify-between text-xs mb-2">
-                    <span className="text-muted-foreground">הוצאו: {campaign.spent}</span>
+                    <span className="text-muted-foreground">{t('admin.campaigns.spent')} {campaign.spent}</span>
                 </div>
 
                 <ProgressBar value={getBudgetPercent(campaign)} />
 
                 <div className="flex items-center justify-between text-xs">
-                    <span className="text-[#10b981]">נותר: {formatMoney(getRemainingBudget(campaign))}</span>
-                    <span className="text-muted-foreground">{campaign.status !== 'scheduled' ? `${Math.round(getBudgetPercent(campaign))}% נוצל` : '0% נוצל'}</span>
+                    <span className="text-[#10b981]">{t('admin.campaigns.remaining')} {formatMoney(getRemainingBudget(campaign))}</span>
+                    <span className="text-muted-foreground">{campaign.status !== 'scheduled' ? Math.round(getBudgetPercent(campaign)) : 0}% {t('admin.campaigns.utilized')}</span>
                 </div>
             </div>
 
             <div className="flex items-center gap-3 mb-4 text-xs bg-secondary/20 rounded-lg p-3">
-                <span className="text-muted-foreground">{campaign.totalProducts} מוצרים:</span>
+                <span className="text-muted-foreground">{campaign.totalProducts} {t('admin.campaigns.products')}</span>
                 <TrendCount icon={TrendingUp}   value={campaign.productStats.growing}   color="#10b981" />
                 <TrendCount icon={Minus}        value={campaign.productStats.stable}    color="#fbbf24" />
                 <TrendCount icon={TrendingDown} value={campaign.productStats.declining} color="#ef4444" />
@@ -378,11 +453,11 @@ function CampaignCard({ campaign, openModal, onToggle, onDelete, isPending }) {
             <div className="flex gap-2 pt-3 border-t border-border">
                 <button type="button" onClick={() => openModal('analytics', campaign)} className="flex-1 flex items-center justify-center gap-1.5 bg-[#2563eb] text-white px-2.5 py-1.5 rounded-md hover:bg-[#2563eb]/90 transition-colors text-xs font-medium">
                     <BarChart3 className="w-3.5 h-3.5" />
-                    <span>ניתוח ביצועים</span>
+                    <span>{t('admin.campaigns.analytics_btn')}</span>
                 </button>
                 <button type="button" onClick={() => openModal('products', campaign)} className="flex-1 flex items-center justify-center gap-1.5 bg-secondary border border-border text-foreground px-2.5 py-1.5 rounded-md hover:bg-secondary/70 transition-colors text-xs">
                     <Package className="w-3.5 h-3.5" />
-                    <span>{campaign.totalProducts} מוצרים</span>
+                    <span>{campaign.totalProducts} {t('admin.campaigns.products_btn')}</span>
                 </button>
             </div>
         </div>
@@ -392,59 +467,99 @@ function CampaignCard({ campaign, openModal, onToggle, onDelete, isPending }) {
 // ─── Create / Edit modal ──────────────────────────────────────────────────────
 
 function CreateEditModal({ campaign, onSave, closeModal }) {
+    const t = useTranslation();
     const isCreate = campaign == null;
     const [form, setForm] = useState({
         name:            campaign?.name     ?? '',
         discountPercent: campaign?.discount ?? '',
-        startDate:       campaign?.startDate ?? '',
-        endDate:         campaign?.endDate   ?? '',
+        startDate:       toDateTimeLocal(campaign?.startDate),
+        endDate:         toDateTimeLocal(campaign?.endDate),
+        placement:       campaign?.placement ?? PLACEMENT_NONE,
     });
     const [selectedProducts, setSelectedProducts] = useState(campaign?.products ?? []);
-    const [availableProducts, setAvailableProducts] = useState([]);
+    const [searchResults, setSearchResults] = useState([]);
     const [productSearch, setProductSearch] = useState('');
+    // 'idle' only before the very first request resolves; every subsequent
+    // state is 'loading' | 'success' | 'empty' | 'error'.
+    const [searchState, setSearchState] = useState('idle');
     const [saving, setSaving] = useState(false);
     const [error,  setError]  = useState('');
+    const [notice, setNotice] = useState('');
+    const abortRef = useRef(null);
 
+    const isWeeklyDeal = form.placement === PLACEMENT_WEEKLY_DEAL;
+
+    // Server-side search (name or SKU) against the full catalog via the
+    // existing Admin inventory endpoint — reused as-is, no backend change.
+    // Debounced ~300ms, and any in-flight request is aborted the moment a
+    // newer query is issued so a slow, stale response can never overwrite
+    // the results of a query the Admin already moved past.
     useEffect(() => {
-        productService.list({ limit: 100 })
-            .then(({ products }) => setAvailableProducts(
-                products.filter((p) => /^[0-9a-fA-F]{24}$/.test(p._id))
-            ))
-            .catch(() => {});
-    }, []);
+        const handle = setTimeout(() => {
+            if (abortRef.current) abortRef.current.abort();
+            const controller = new AbortController();
+            abortRef.current = controller;
+            setSearchState('loading');
+            adminService.searchProducts({ search: productSearch, limit: 20 }, controller.signal)
+                .then(({ products }) => {
+                    setSearchResults(products.filter((p) => /^[0-9a-fA-F]{24}$/.test(p._id)));
+                    setSearchState(products.length === 0 ? 'empty' : 'success');
+                })
+                .catch((err) => {
+                    if (err?.name === 'AbortError') return; // superseded by a newer query — ignore silently
+                    setSearchState('error');
+                });
+        }, 300);
+        return () => clearTimeout(handle);
+    }, [productSearch]);
 
     const handle = (field) => (e) => setForm((f) => ({ ...f, [field]: e.target.value }));
 
-    const toggleProduct = (p) => {
-        setSelectedProducts((prev) => {
-            const exists = prev.some((s) => s._id === p._id);
-            return exists ? prev.filter((s) => s._id !== p._id) : [...prev, { _id: p._id, name: p.name, sku: p.sku, price: p.price }];
-        });
+    const handlePlacementChange = (value) => {
+        setNotice('');
+        if (value === PLACEMENT_WEEKLY_DEAL && selectedProducts.length > 1) {
+            setSelectedProducts((prev) => prev.slice(0, 1));
+            setNotice(t('admin.campaigns.weekly_deal_replaced_notice'));
+        }
+        setForm((f) => ({ ...f, placement: value }));
     };
 
-    const filteredProducts = availableProducts.filter((p) =>
-        !productSearch || p.name.toLowerCase().includes(productSearch.toLowerCase()) || p.sku?.toLowerCase().includes(productSearch.toLowerCase())
-    );
+    // Standard campaigns: normal multi-select toggle. Weekly Deal: selecting a
+    // product always replaces any previous selection (single-product rule),
+    // and ineligible products (out of stock/unpublished/deleted) can't be
+    // selected at all — the button is disabled before this ever runs.
+    const toggleProduct = (p) => {
+        if (isWeeklyDeal && !isProductEligibleForWeeklyDeal(p).eligible) return;
+
+        setSelectedProducts((prev) => {
+            const exists = prev.some((s) => s._id === p._id);
+            if (exists) return prev.filter((s) => s._id !== p._id);
+            const next = { _id: p._id, name: p.name, sku: p.sku, price: p.price, stock: p.stock };
+            return isWeeklyDeal ? [next] : [...prev, next];
+        });
+    };
 
     const submit = async (e) => {
         e.preventDefault();
         setError('');
-        if (!form.name.trim())                return setError('שם הקמפיין חובה');
-        if (!form.discountPercent)            return setError('אחוז הנחה חובה');
-        if (!form.startDate || !form.endDate) return setError('תאריכי התחלה וסיום חובה');
-        if (form.endDate <= form.startDate)   return setError('תאריך הסיום חייב להיות אחרי תאריך ההתחלה');
+        if (!form.name.trim())                return setError(t('admin.campaigns.err_name'));
+        if (!form.discountPercent)            return setError(t('admin.campaigns.err_discount'));
+        if (!form.startDate || !form.endDate) return setError(t('admin.campaigns.err_dates'));
+        if (form.endDate <= form.startDate)   return setError(t('admin.campaigns.err_date_order'));
+        if (isWeeklyDeal && selectedProducts.length === 0) return setError(t('admin.campaigns.err_weekly_deal_no_product'));
 
         setSaving(true);
         try {
             await onSave({
                 name:            form.name.trim(),
                 discountPercent: Number(form.discountPercent),
-                startDate:       form.startDate,
-                endDate:         form.endDate,
+                startDate:       fromDateTimeLocalToIso(form.startDate),
+                endDate:         fromDateTimeLocalToIso(form.endDate),
                 products:        selectedProducts.map((p) => p._id),
+                placement:       form.placement,
             });
         } catch (err) {
-            setError(err?.response?.data?.error?.message ?? err.message ?? 'שגיאה בשמירה');
+            setError(mapBackendError(err, t));
         } finally {
             setSaving(false);
         }
@@ -453,11 +568,11 @@ function CreateEditModal({ campaign, onSave, closeModal }) {
     return (
         <ModalShell closeModal={closeModal} maxWidth="max-w-lg">
             <div className="relative p-6 pb-4">
-                <button type="button" onClick={closeModal} className="absolute top-4 left-4 p-2 hover:bg-secondary/50 rounded-lg transition-colors">
+                <button type="button" onClick={closeModal} className="absolute top-4 start-4 p-2 hover:bg-secondary/50 rounded-lg transition-colors">
                     <X className="w-5 h-5 text-muted-foreground" />
                 </button>
                 <div className="text-center">
-                    <h2 className="text-xl text-foreground mb-1">{isCreate ? 'קמפיין חדש' : 'ערוך מבצע'}</h2>
+                    <h2 className="text-xl text-foreground mb-1">{isCreate ? t('admin.campaigns.modal_create') : t('admin.campaigns.modal_edit')}</h2>
                     {!isCreate && <p className="text-sm text-muted-foreground">{campaign.name}</p>}
                 </div>
             </div>
@@ -465,25 +580,54 @@ function CreateEditModal({ campaign, onSave, closeModal }) {
             <form onSubmit={submit} className="px-6 pb-6 overflow-y-auto max-h-[calc(90vh-140px)] scrollbar-thin">
                 <div className="space-y-4">
                     {error && (
-                        <div className="flex items-center gap-2 bg-[#ef4444]/10 border border-[#ef4444]/20 rounded-lg px-3 py-2 text-sm text-[#ef4444]">
+                        <div className="flex items-center gap-2 bg-[#ef4444]/10 border border-[#ef4444]/20 rounded-lg px-3 py-2 text-sm text-[#ef4444]" role="alert">
                             <AlertCircle className="w-4 h-4 flex-shrink-0" />
                             {error}
                         </div>
                     )}
 
-                    <ControlledInput label="שם הקמפיין" value={form.name} onChange={handle('name')} placeholder="לדוגמה: מבצע פסח 2026" required />
-                    <ControlledInput label="אחוז הנחה" type="number" min="1" max="90" value={form.discountPercent} onChange={handle('discountPercent')} placeholder="1-90" required icon={Percent} />
+                    <ControlledInput label={t('admin.campaigns.name_label')} value={form.name} onChange={handle('name')} placeholder={t('admin.campaigns.name_ph')} required />
+                    <ControlledInput label={t('admin.campaigns.discount_label')} type="number" min="1" max="90" value={form.discountPercent} onChange={handle('discountPercent')} placeholder="1-90" required icon={Percent} />
                     <div className="grid grid-cols-2 gap-3">
-                        <ControlledInput label="תאריך התחלה" type="date" value={form.startDate} onChange={handle('startDate')} required small />
-                        <ControlledInput label="תאריך סיום"  type="date" value={form.endDate}   onChange={handle('endDate')}   required small />
+                        <ControlledInput label={t('admin.campaigns.start_date')} type="datetime-local" value={form.startDate} onChange={handle('startDate')} required small />
+                        <ControlledInput label={t('admin.campaigns.end_date')}   type="datetime-local" value={form.endDate}   onChange={handle('endDate')}   required small />
+                    </div>
+
+                    {/* Placement selector */}
+                    <div>
+                        <label className="block text-xs text-muted-foreground mb-2" id="campaign-placement-label">
+                            {t('admin.campaigns.placement_label')}
+                        </label>
+                        <div className="grid grid-cols-2 gap-2" role="radiogroup" aria-labelledby="campaign-placement-label">
+                            <button
+                                type="button"
+                                role="radio"
+                                aria-checked={!isWeeklyDeal}
+                                onClick={() => handlePlacementChange(PLACEMENT_NONE)}
+                                className={`px-3 py-2.5 rounded-lg border text-sm transition-colors ${!isWeeklyDeal ? 'bg-[#2563eb]/10 border-[#2563eb] text-[#2563eb]' : 'border-border text-foreground hover:bg-secondary/50'}`}
+                            >
+                                {t('admin.campaigns.placement_none')}
+                            </button>
+                            <button
+                                type="button"
+                                role="radio"
+                                aria-checked={isWeeklyDeal}
+                                onClick={() => handlePlacementChange(PLACEMENT_WEEKLY_DEAL)}
+                                className={`px-3 py-2.5 rounded-lg border text-sm transition-colors ${isWeeklyDeal ? 'bg-[#2563eb]/10 border-[#2563eb] text-[#2563eb]' : 'border-border text-foreground hover:bg-secondary/50'}`}
+                            >
+                                {t('admin.campaigns.placement_weekly_deal')}
+                            </button>
+                        </div>
+                        {notice && <p className="text-xs text-[#fbbf24] mt-2">{notice}</p>}
+                        {isWeeklyDeal && <p className="text-xs text-muted-foreground mt-2">{t('admin.campaigns.weekly_deal_one_product_hint')}</p>}
                     </div>
 
                     {/* Product picker */}
                     <div>
                         <p className="text-xs text-muted-foreground mb-2">
-                            מוצרים בקמפיין
+                            {t('admin.campaigns.products_label')}
                             {selectedProducts.length > 0 && (
-                                <span className="mr-1 text-[#2563eb]">({selectedProducts.length} נבחרו)</span>
+                                <span className="mr-1 text-[#2563eb]">({selectedProducts.length} {t('admin.campaigns.selected')})</span>
                             )}
                         </p>
 
@@ -501,32 +645,50 @@ function CreateEditModal({ campaign, onSave, closeModal }) {
 
                         {/* Search */}
                         <div className="relative mb-1">
-                            <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+                            <Search className="absolute end-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
                             <input
                                 type="text"
                                 value={productSearch}
                                 onChange={(e) => setProductSearch(e.target.value)}
-                                placeholder="חפש מוצר לפי שם או SKU..."
-                                className="w-full bg-input-background border border-border rounded-lg pr-9 pl-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-[#2563eb] focus:outline-none transition-colors"
+                                placeholder={t('admin.campaigns.search_prod')}
+                                aria-label={t('admin.campaigns.search_label')}
+                                className="w-full bg-input-background border border-border rounded-lg ps-3 pe-9 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-[#2563eb] focus:outline-none transition-colors"
                             />
                         </div>
+                        {!productSearch && (
+                            <p className="text-xs text-muted-foreground mb-1">{t('admin.campaigns.search_type_hint')}</p>
+                        )}
 
                         {/* Product list */}
                         <div className="max-h-44 overflow-y-auto border border-border rounded-lg divide-y divide-border/50">
-                            {filteredProducts.length === 0 ? (
-                                <p className="text-xs text-muted-foreground text-center py-4">אין תוצאות</p>
-                            ) : filteredProducts.map((p) => {
+                            {searchState === 'loading' || searchState === 'idle' ? (
+                                <p className="text-xs text-muted-foreground text-center py-4">{t('admin.campaigns.searching')}</p>
+                            ) : searchState === 'error' ? (
+                                <p className="text-xs text-[#ef4444] text-center py-4" role="alert">{t('admin.campaigns.search_failed')}</p>
+                            ) : searchState === 'empty' ? (
+                                <p className="text-xs text-muted-foreground text-center py-4">{t('admin.campaigns.search_no_match')}</p>
+                            ) : searchResults.map((p) => {
                                 const isSelected = selectedProducts.some((s) => s._id === p._id);
+                                const eligibility = isWeeklyDeal ? isProductEligibleForWeeklyDeal(p) : { eligible: true, reasonKey: null };
+                                const isDisabled = isWeeklyDeal && !eligibility.eligible;
                                 return (
                                     <button
                                         key={p._id}
                                         type="button"
                                         onClick={() => toggleProduct(p)}
-                                        className={`w-full text-right px-3 py-2 transition-colors flex items-center justify-between gap-2 ${isSelected ? 'bg-[#2563eb]/10' : 'hover:bg-secondary/50'}`}
+                                        disabled={isDisabled}
+                                        aria-disabled={isDisabled}
+                                        aria-pressed={isSelected}
+                                        className={`w-full text-start px-3 py-2 transition-colors flex items-center justify-between gap-2 ${isDisabled ? 'opacity-40 cursor-not-allowed' : isSelected ? 'bg-[#2563eb]/10' : 'hover:bg-secondary/50'}`}
                                     >
                                         <div className="min-w-0">
                                             <p className={`text-sm truncate ${isSelected ? 'text-[#2563eb]' : 'text-foreground'}`}>{p.name}</p>
-                                            <p className="text-xs text-muted-foreground">{p.sku} · ₪{p.price?.toLocaleString()}</p>
+                                            <p className="text-xs text-muted-foreground">
+                                                {p.sku} · ₪{p.price?.toLocaleString()} · {t('admin.campaigns.stock_label')}: {p.stock ?? '—'}
+                                            </p>
+                                            {isDisabled && (
+                                                <p className="text-xs text-[#ef4444]">{t(eligibility.reasonKey)}</p>
+                                            )}
                                         </div>
                                         {isSelected && <Check className="w-4 h-4 text-[#2563eb] flex-shrink-0" />}
                                     </button>
@@ -541,7 +703,7 @@ function CreateEditModal({ campaign, onSave, closeModal }) {
                         className="w-full bg-[#2563eb] text-white py-3.5 rounded-xl font-medium hover:bg-[#2563eb]/90 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
                     >
                         <Save className="w-4 h-4" />
-                        {saving ? 'שומר...' : isCreate ? 'צור קמפיין' : 'שמור שינויים'}
+                        {saving ? t('admin.campaigns.saving') : isCreate ? t('admin.campaigns.create_btn') : t('admin.campaigns.save_btn')}
                     </button>
                 </div>
             </form>
@@ -564,7 +726,7 @@ function ControlledInput({ label, value, onChange, type = 'text', placeholder, r
                     max={max}
                     className={`w-full bg-input-background border border-border rounded-lg ${small ? 'px-3 text-sm' : 'px-4'} py-2.5 text-foreground focus:border-[#2563eb] focus:outline-none transition-colors`}
                 />
-                {Icon && <Icon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />}
+                {Icon && <Icon className="absolute end-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />}
             </div>
         </div>
     );
