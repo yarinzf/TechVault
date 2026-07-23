@@ -1,0 +1,432 @@
+/* ── Floating launcher (matches Sapir's .sw-fab) ─────────────────────────────
+   Positioned at the logical inline-end, opposite the AccessibilityWidget
+   (which sits at inset-inline-start) — this keeps the two floating controls
+   in opposite corners in both Hebrew (RTL) and English (LTR), matching
+   Sapir's literal bottom-left placement in Hebrew without hardcoding a
+   physical side that would collide with the accessibility button once the
+   page mirrors to LTR. */
+.fab {
+  position: fixed;
+  bottom: var(--space-6);
+  inset-inline-end: var(--space-6);
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--sv-blue), var(--sv-violet));
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 28px rgba(37, 99, 235, 0.4);
+  /* CustomerLayout's sticky header uses a hardcoded z-index:9999 (outside
+     the app's --z-* scale) — this widget must sit above it explicitly,
+     the same way Sapir's own reference uses large fixed z-index values for
+     exactly this reason rather than the page's normal stacking scale. */
+  z-index: 10000;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s;
+}
+.fab:hover { transform: scale(1.08) translateY(-2px); box-shadow: 0 12px 36px rgba(37, 99, 235, 0.5); }
+.fabOpen { transform: scale(0.9); }
+.fabIcon { stroke: #fff; }
+.fabBadge {
+  position: absolute;
+  top: -2px;
+  /* Same side as the fab's own inset-inline-end (matches Sapir's
+     top-left corner in Hebrew) — not -start, which would be the opposite
+     corner. */
+  inset-inline-end: -2px;
+  background: var(--sv-red, #ef4444);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  min-width: 19px;
+  height: 19px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--sv-bg);
+  padding: 0 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fab, .fab:hover, .fabOpen, .panel, .msgRow { transition: none; animation: none; }
+}
+
+@media (max-width: 480px) {
+  .fab { inset-inline-end: var(--space-4); bottom: var(--space-4); width: 54px; height: 54px; }
+  .fabIcon { width: 22px; height: 22px; }
+}
+
+/* ── Overlay ──────────────────────────────────────────────────────────────
+   A decorative dim layer only. pointer-events:none means it never captures
+   clicks, wheel, or touch — the page behind it stays fully interactive and
+   independently scrollable. The close button remains the only explicit
+   close mechanism (no click-outside-to-close). */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 10001;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.3s, visibility 0.3s;
+}
+.overlayOpen { opacity: 1; visibility: visible; }
+
+/* ── Slide-in panel — anchored to the logical inline-start, which resolves
+   to the physical RIGHT edge in RTL (matching Sapir's literal `right:0`
+   panel exactly) and the physical LEFT edge in LTR English. Verified with
+   a standalone reduced-case test: `inset-inline-end` resolves to the LEFT
+   edge in RTL, which is why the FAB (matching Sapir's literal `left:26px`)
+   uses -end, while this panel (matching Sapir's literal `right:0`) must
+   use -start — the two are deliberately opposite logical properties.
+
+   Fixed, full-height, flex column: header/input stay flex-shrink:0 while
+   only .scrollArea grows and scrolls — the page behind never scrolls or
+   locks because nothing here touches document.body. ──────────────────── */
+.panel {
+  position: fixed;
+  inset-block: 0;
+  inset-inline-end: auto;
+  inset-inline-start: -440px;
+  width: 420px;
+  max-width: 100vw;
+  /* Sapir's page sets `html,body{font-size:15px}` site-wide; our app's root
+     stays at the browser default (16px) so the rest of the site is
+     untouched, but that meant every unconstrained dimension in this widget
+     (button intrinsic sizing, textarea line-height, etc.) cascaded ~6.7%
+     larger than Sapir's own render — measured directly: quick-card 80.1px
+     vs Sapir's 74.5px, advice-card 69.2px vs 64px, input row 71.8px vs 67px.
+     Re-establishing the same 15px base, scoped to just this panel, removes
+     that drift without changing global typography anywhere else. */
+  font-size: 15px;
+  background: rgba(15, 15, 22, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-inline-end: 1px solid rgba(255, 255, 255, 0.08);
+  z-index: 10002;
+  display: flex;
+  flex-direction: column;
+  pointer-events: auto;
+  transition: inset-inline-start 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  /* box-shadow has no logical-property equivalent — the panel rests at the
+     physical right edge in RTL (shadow bleeds left, matching Sapir exactly)
+     and the physical left edge in LTR (shadow must bleed right instead). */
+  box-shadow: -16px 0 60px rgba(0, 0, 0, 0.5);
+}
+.panel[dir='ltr'] { box-shadow: 16px 0 60px rgba(0, 0, 0, 0.5); }
+.panelOpen { inset-inline-start: 0; }
+
+@media (max-width: 900px) {
+  .panel { width: 380px; }
+}
+@media (max-width: 480px) {
+  /* .panelOpen must be repeated here — same specificity as .panel's own
+     mobile override above, and source order alone would otherwise let this
+     block's closed-state offset win over the earlier (but equal-specificity)
+     .panelOpen rule, leaving the panel stuck off-screen when "open". Full
+     width on mobile does not imply a modal: the panel still behaves as a
+     structured sidebar (fixed header/input, scrolling middle), and the body
+     is never locked. */
+  .panel { width: 100vw; inset-inline-start: -100vw; border-inline-end: none; }
+  .panelOpen { inset-inline-start: 0; }
+}
+
+/* ── Header ───────────────────────────────────────────────────────────────
+   Plain flex row: DOM order is back-button → avatar → title/status, and
+   native flexbox direction-reversal (driven by the panel's own `dir`
+   attribute) mirrors this automatically in LTR — no manual logical-side
+   overrides are needed for the back button's position. */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.02);
+}
+.headerInfo { display: flex; align-items: center; gap: 10px; }
+.backBtn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--sv-border);
+  border-radius: 10px;
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--sv-muted); transition: all 0.15s; flex-shrink: 0;
+}
+.backBtn:hover { color: var(--sv-text); border-color: rgba(37, 99, 235, 0.4); }
+.avatar {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--sv-blue), var(--sv-violet));
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.avatar svg { stroke: #fff; }
+.headerTitle { font-size: 14px; font-weight: 700; color: var(--sv-text); font-family: var(--sv-font); }
+.headerStatus { font-size: 11px; color: var(--sv-muted); display: flex; align-items: center; gap: 5px; margin-top: 2px; }
+.dot { width: 7px; height: 7px; border-radius: 50%; background: var(--sv-success); flex-shrink: 0; }
+.closeBtn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--sv-border);
+  border-radius: 10px;
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--sv-muted); transition: all 0.15s; flex-shrink: 0;
+}
+.closeBtn:hover { color: var(--sv-text); border-color: rgba(239, 68, 68, 0.3); }
+
+.fab:focus-visible, .backBtn:focus-visible, .closeBtn:focus-visible, .sendBtn:focus-visible,
+.attachBtn:focus-visible, .quickCard:focus-visible, .adviceCard:focus-visible, .secondaryLink:focus-visible,
+.faqChip:focus-visible, .msgAction:focus-visible, .input:focus-visible {
+  outline: 2px solid var(--sv-blue-l);
+  outline-offset: 2px;
+}
+
+/* ── Scroll area — the ONLY scrolling region in the panel. min-height:0 lets
+   it actually shrink inside the flex column instead of overflowing past the
+   fixed header/input; overscroll-behavior:contain stops scroll chaining so
+   reaching the top/bottom here never scrolls the page behind it. Wrapped in
+   .scrollAreaWrap so the blue scroll-affordance can be absolutely
+   positioned against its bottom edge without overlapping the fixed input
+   row (a flex sibling outside this wrapper entirely). ──────────────────── */
+.scrollAreaWrap {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.scrollArea {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+}
+/* Sapir's own "more content below" cue is the global blue scrollbar
+   (`::-webkit-scrollbar-thumb{background:var(--blue)}`) — recreated here
+   scoped to the widget's own scroll area only, so the rest of the site's
+   scrollbars are untouched. Still a real, always-present native scrollbar
+   (never hidden), preserving normal wheel/keyboard scrolling. */
+.scrollArea::-webkit-scrollbar { width: 5px; }
+.scrollArea::-webkit-scrollbar-track { background: var(--sv-bg); }
+.scrollArea::-webkit-scrollbar-thumb { background: var(--sv-blue); border-radius: 3px; }
+
+/* A second, test-observable affordance layered on top of the blue
+   scrollbar: a thin blue fade pinned to the bottom edge of the scroll
+   area, visible only while more content exists below the current scroll
+   position (mirrors the scrollbar thumb not yet reaching the end of its
+   track). pointer-events:none so it never blocks clicks on the content
+   beneath it, and it never overlaps the fixed input row since it is
+   confined to .scrollAreaWrap, not the whole panel. */
+.scrollIndicator {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 28px;
+  background: linear-gradient(to bottom, rgba(37, 99, 235, 0) 0%, rgba(37, 99, 235, 0.16) 100%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.scrollIndicatorVisible { opacity: 1; }
+
+/* ── Welcome / home options ───────────────────────────────────────────────── */
+.welcome { text-align: center; padding: 6px 4px 4px; }
+.welcomeIcon {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--sv-blue), var(--sv-violet));
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 10px;
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.3);
+}
+.welcomeIcon svg { stroke: #fff; }
+.welcomeTitle { font-size: 14.5px; font-weight: 700; color: var(--sv-muted); margin-bottom: 10px; }
+.welcomeGreet { font-size: 19px; font-weight: 700; color: var(--sv-text); margin-bottom: 3px; font-family: var(--sv-font); }
+.welcomeSub { font-size: 13px; color: var(--sv-muted); margin-bottom: 16px; }
+
+.quickGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-bottom: 9px; }
+.quickGrid > *:last-child:nth-child(odd) { grid-column: 1 / -1; }
+.quickCard {
+  background: var(--sv-card, var(--sv-surface));
+  border: 1px solid var(--sv-border);
+  border-radius: 14px;
+  padding: 14px 10px;
+  display: flex; flex-direction: column; align-items: center; gap: 7px;
+  cursor: pointer; transition: all 0.18s; text-align: center;
+  font-family: var(--sv-font);
+}
+.quickCard:hover:not(:disabled) { border-color: rgba(37, 99, 235, 0.4); transform: translateY(-2px); background: rgba(37, 99, 235, 0.05); }
+.quickCard:disabled { opacity: 0.5; cursor: not-allowed; }
+.quickCardIcon {
+  width: 22px; height: 22px;
+  display: flex; align-items: center; justify-content: center;
+}
+.quickCardIcon svg { stroke: var(--sv-blue-l); }
+.quickCard span:last-child { font-size: 11.5px; font-weight: 600; color: var(--sv-text); line-height: 1.35; }
+
+.adviceCard {
+  width: 100%;
+  display: flex; align-items: center; gap: 12px; text-align: start;
+  background: rgba(37, 99, 235, 0.08);
+  border: 1.5px solid rgba(37, 99, 235, 0.4);
+  border-radius: 14px;
+  padding: 13px 14px;
+  margin-bottom: 16px;
+  cursor: pointer;
+  transition: all 0.18s;
+  font-family: var(--sv-font);
+}
+.adviceCard:hover:not(:disabled) { background: rgba(37, 99, 235, 0.13); border-color: rgba(37, 99, 235, 0.6); transform: translateY(-2px); }
+.adviceCard:disabled { opacity: 0.5; cursor: not-allowed; }
+.adviceIcon {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: rgba(37, 99, 235, 0.18); flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.adviceIcon svg { stroke: var(--sv-blue-l); }
+.adviceText { display: flex; flex-direction: column; gap: 2px; }
+.adviceTitle { font-size: 13.5px; font-weight: 700; color: var(--sv-text); line-height: 1.2; }
+.adviceSub { font-size: 11px; color: var(--sv-muted); line-height: 1.2; }
+
+.secondaryLinks { display: flex; gap: 8px; margin-bottom: 16px; }
+.secondaryLink {
+  flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
+  background: none; border: 1px solid var(--sv-border); border-radius: 10px; padding: 8px;
+  font-size: 11.5px; font-weight: 600; color: var(--sv-muted); cursor: pointer;
+  transition: all 0.15s; font-family: var(--sv-font);
+}
+.secondaryLink:hover:not(:disabled) { color: var(--sv-text); border-color: rgba(255, 255, 255, 0.2); }
+.secondaryLink:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.faqLabel {
+  font-size: 10.5px; font-weight: 700; color: var(--sv-muted);
+  text-transform: uppercase; letter-spacing: 0.06em;
+  margin: 0 0 10px; text-align: start;
+}
+.faqChips { display: flex; flex-wrap: wrap; gap: 8px; }
+.faqChip {
+  background: var(--sv-surface); border: 1px solid var(--sv-border); border-radius: 20px;
+  padding: 8px 14px; font-size: 12px; font-weight: 600; color: var(--sv-blue-l);
+  cursor: pointer; transition: all 0.15s; font-family: var(--sv-font);
+}
+.faqChip:hover:not(:disabled) { border-color: rgba(37, 99, 235, 0.4); background: rgba(37, 99, 235, 0.08); }
+.faqChip:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ── Messages ─────────────────────────────────────────────────────────────── */
+.messages { display: flex; flex-direction: column; gap: 4px; }
+.msgRow { display: flex; flex-direction: column; max-width: 82%; margin-bottom: 10px; animation: aiChatPop 0.25s ease both; }
+.msgUser { align-self: flex-start; align-items: flex-start; }
+.msgBot  { align-self: flex-end; align-items: flex-end; }
+@keyframes aiChatPop { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+.bubble {
+  padding: 11px 15px;
+  border-radius: 16px;
+  font-size: 13.5px;
+  line-height: 1.55;
+  white-space: pre-line;
+  font-family: var(--sv-font);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.msgUser .bubble { background: var(--sv-blue); color: #fff; border-end-start-radius: 4px; }
+.msgBot .bubble   { background: var(--sv-surface); border: 1px solid var(--sv-border); color: var(--sv-text); border-end-end-radius: 4px; }
+.msgTime { font-size: 10px; color: var(--sv-dim, var(--sv-muted)); margin-top: 4px; padding: 0 4px; }
+
+.msgAction {
+  align-self: flex-start;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: inherit;
+  cursor: pointer;
+  font-family: var(--sv-font);
+  transition: background 0.15s;
+}
+.msgBot .msgAction { background: rgba(37, 99, 235, 0.12); border-color: rgba(37, 99, 235, 0.3); color: var(--sv-blue-l); }
+.msgAction:hover { background: rgba(37, 99, 235, 0.22); }
+
+/* ── Typing indicator (aria-hidden — never announced) ────────────────────── */
+.typingRow {
+  display: flex; gap: 4px; align-items: center; padding: 13px 16px;
+  background: var(--sv-surface); border: 1px solid var(--sv-border);
+  border-radius: 16px; border-end-end-radius: 4px;
+  align-self: flex-end; width: fit-content; margin-bottom: 10px;
+}
+.typingDot { width: 6px; height: 6px; border-radius: 50%; background: var(--sv-muted); animation: aiChatTyping 1.2s infinite; }
+.typingDot:nth-child(2) { animation-delay: 0.2s; }
+.typingDot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes aiChatTyping { 0%, 60%, 100% { opacity: 0.3; transform: translateY(0); } 30% { opacity: 1; transform: translateY(-3px); } }
+
+/* ── Input row (fixed, flex-shrink:0 — never scrolls) ─────────────────────
+   DOM order matches Sapir exactly: attach button → input → send button.
+   Plain flex row + the panel's own `dir` attribute mirrors this natively in
+   LTR, same as the header's back-button ordering — no manual logical-side
+   overrides needed. */
+.inputRow {
+  display: flex; align-items: flex-end; gap: 8px;
+  padding: 14px 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  flex-shrink: 0;
+}
+.attachBtn {
+  background: none;
+  border: none;
+  color: var(--sv-muted);
+  cursor: pointer;
+  width: 32px; height: 32px;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 8px;
+  transition: all 0.15s;
+}
+.attachBtn:hover { color: var(--sv-blue-l); background: rgba(37, 99, 235, 0.08); }
+.input {
+  flex: 1;
+  background: var(--sv-surface);
+  border: 1px solid var(--sv-border);
+  border-radius: 20px;
+  padding: 10px 16px;
+  color: var(--sv-text);
+  font-family: var(--sv-font);
+  font-size: 13px;
+  /* Explicit line-height pins the single-row height to Sapir's measured
+     38px (10px padding × 2 + 2px border + 16px line box) regardless of the
+     browser's default textarea metrics, which otherwise render taller than
+     a native `<input>` (Sapir uses `<input type="text">`; this app keeps a
+     textarea for the already-approved Shift+Enter newline support). */
+  line-height: 16px;
+  outline: none;
+  resize: none;
+  max-height: 88px;
+  transition: border-color 0.15s;
+}
+.input:focus { border-color: rgba(37, 99, 235, 0.4); }
+.input:disabled { opacity: 0.6; }
+.sendBtn {
+  background: var(--sv-blue);
+  border: none;
+  border-radius: 50%;
+  width: 38px; height: 38px;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all 0.15s;
+}
+.sendBtn svg { stroke: #fff; }
+.sendBtn:hover:not(:disabled) { background: var(--sv-blue-dk); transform: scale(1.06); }
+.sendBtn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.srOnly {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}

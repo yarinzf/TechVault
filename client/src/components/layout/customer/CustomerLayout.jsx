@@ -5,6 +5,7 @@ import PromoBar        from './PromoBar';
 import CategoryNavBar  from './CategoryNavBar';
 import CartDrawer      from '../../ui/CartDrawer';
 import ToastContainer  from '../../feedback/Toast/Toast';
+import AIChatWidget    from '../../ai-chat/AIChatWidget';
 
 export default function CustomerLayout() {
   const [cartOpen, setCartOpen] = useState(false);
@@ -22,6 +23,7 @@ export default function CustomerLayout() {
         <Outlet />
       </main>
       <ToastContainer />
+      <AIChatWidget />
     </div>
   );
 }
