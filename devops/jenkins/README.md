@@ -1,24 +1,27 @@
 # Jenkins — host plan and access model
 
 This document describes how to stand up Jenkins for the DevOps assignment.
-**Nothing here has been installed yet** — this is a plan to execute later,
-deliberately, not something this repository's tooling does automatically.
+**Nothing here has been installed or created yet** — `devops/terraform-jenkins/`
+and `devops/ansible-jenkins/` are prepared, validated code, not a running
+host. Creating the actual EC2 instance and running the playbook are
+deliberate, separate, later steps — see "Complete setup sequence" below.
 
-## Two files, two purposes
+## Three files, three purposes
 
 | File | Targets | Status |
 |---|---|---|
 | `Jenkinsfile` | Production (`devops/terraform/`, `devops/ansible/`) | Pipeline-as-code exists; no evidence it has ever run |
-| `Jenkinsfile.assignment` | The isolated assignment environment (`devops/terraform-assignment/`, `devops/ansible-assignment/`) | New — this is the one to actually run for grading |
+| `Jenkinsfile.assignment` | The isolated assignment environment (`devops/terraform-assignment/`, `devops/ansible-assignment/`) | Committed; no evidence it has ever run — needs a Jenkins host to run on |
+| *(this Jenkins host itself)* | `devops/terraform-jenkins/` + `devops/ansible-jenkins/` | Code prepared and locally validated; no AWS resource created yet |
 
-## Where should Jenkins itself live?
+## Jenkins host architecture — Option A, now implemented as code
 
-### Option A — Dedicated Jenkins host, separate from the assignment app server (recommended)
-
-A small, persistent EC2 instance runs Jenkins only. It provisions and
-deploys to the assignment application instance created by
-`devops/terraform-assignment/`, over SSH, the same way your workstation
-would.
+**Option A — a dedicated Jenkins EC2, separate from both production and the
+assignment application server — is the architecture implemented here**, via
+[`devops/terraform-jenkins/`](../terraform-jenkins/) (its own Terraform root
+module, own state, own key pair, own security group) and
+[`devops/ansible-jenkins/`](../ansible-jenkins/) (provisions Jenkins, Docker,
+Node.js, Terraform, and Ansible onto that instance).
 
 **Why this is the recommended option:** the assignment app instance is
 meant to be disposable — created, redeployed, and eventually `terraform
@@ -31,21 +34,70 @@ Keeping the controller on a separate, stable host means the assignment app
 instance can be torn down and recreated freely without ever touching the
 thing that manages it.
 
-### Option B — Jenkins co-located on the assignment app instance
+### Option B — Jenkins co-located on the assignment app instance (alternative, not implemented here)
 
-Jenkins runs directly on the same instance that also runs the TechVault
-containers. `devops/terraform-assignment/variables.tf` supports this via
-`enable_jenkins_port = true` (opens a configurable port, default 8080, to a
-configurable CIDR).
+Jenkins would run directly on the same instance that also runs the
+TechVault containers. `devops/terraform-assignment/variables.tf` still
+supports the wiring for this via `enable_jenkins_port` (opens a configurable
+port, default `false`, to a configurable CIDR) — but no Ansible tasks exist
+anywhere in this repository to actually install Jenkins onto that instance;
+choosing Option B would mean writing that provisioning yourself, reusing
+`devops/ansible-jenkins/provision.yml`'s Jenkins/Java/Nginx tasks as a
+starting point against the assignment app's inventory group instead.
 
 Simpler to stand up (one instance total), but every `terraform destroy` /
 recreate cycle for the app also takes Jenkins down with it, and Jenkins ends
 up sharing resources (CPU/RAM/disk) with the containers it's supposed to be
 deploying.
 
-**Recommendation: Option A.** The cost difference is one extra small EC2
-instance (see cost note in `devops/docs/DEVOPS_ASSIGNMENT.md`), which is
-worth it for not coupling Jenkins's lifecycle to the thing it's grading.
+**Recommendation stands: Option A.** The cost difference is one extra EC2
+instance (see "Cost and cleanup" in `devops/docs/DEVOPS_ASSIGNMENT.md`),
+which is worth it for not coupling Jenkins's lifecycle to the thing it's
+grading.
+
+## Complete setup sequence (none of this has been run yet)
+
+1. Create a dedicated Jenkins AWS key pair in the EC2 console (must not be
+   `techvault-key` or the assignment app's key pair).
+2. `cd devops/terraform-jenkins && cp terraform.tfvars.example terraform.tfvars`
+   — fill in `key_pair_name`, `allowed_ssh_cidr` (gitignored, never commit).
+3. `terraform init && terraform validate && terraform plan && terraform apply`
+   in `devops/terraform-jenkins/`.
+4. Generate `devops/ansible-jenkins/inventory.ini` from
+   `terraform output -raw jenkins_public_ip` (gitignored — see
+   `inventory.example.ini` for the format).
+5. `ansible-playbook -i inventory.ini provision.yml` from
+   `devops/ansible-jenkins/`.
+6. Open `http://<jenkins-public-ip>/` in a browser (port 80, via Nginx —
+   port 8080 is never publicly reachable).
+7. Retrieve the initial admin password:
+   `ssh ... sudo cat /var/lib/jenkins/secrets/initialAdminPassword`.
+8. Complete the setup wizard (paste the password).
+9. Install the required plugins (list below) and create the first admin
+   account.
+10. Add the assignment credentials (list below) under Manage Jenkins →
+    Credentials.
+11. Create the pipeline job — Definition: "Pipeline script from SCM", Script
+    Path: `devops/jenkins/Jenkinsfile.assignment`.
+12. Add the job parameters (`ASSIGNMENT_KEY_PAIR_NAME`, `ASSIGNMENT_SSH_CIDR`,
+    etc. — see "Required job parameters" below; Jenkins reads these from the
+    `parameters {}` block in the Jenkinsfile itself once the job is created).
+13. Create the instructor user and role (see "Instructor user and permission
+    model" below).
+14. Test login as the instructor account — confirm no admin access.
+15. Run the pipeline.
+
+## Required tools on the Jenkins host
+
+Installed automatically by `devops/ansible-jenkins/provision.yml` — nothing
+to do manually here:
+
+- Git, curl
+- Docker Engine + Compose plugin
+- Node.js 20+ / npm
+- Terraform (>= 1.6, via HashiCorp's apt repository)
+- Ansible
+- Jenkins itself (via `pkg.jenkins.io`, OpenJDK 17)
 
 ## Required plugins
 
@@ -146,13 +198,34 @@ Account IDs, ARNs, and any real credential values are deliberately omitted.
   at any path, committed or not — they live only in Jenkins credentials
   (`AWS_ASSIGNMENT_CREDENTIALS_ID`) or a local, gitignored AWS profile.
 
+**`devops/terraform-jenkins/` needs the identical permission categories** —
+one more EC2 instance + one more security group, nothing else. Either reuse
+the same scoped IAM user for both this module and the assignment
+application's Terraform (they need the same shape of access), or create a
+second, equally-scoped one for stronger separation — both are reasonable;
+just never widen the policy to cover more than these two modules need, and
+never point either at `AdministratorAccess`.
+
 ## Public URL and HTTPS
 
-Whichever option (A or B) is chosen, Jenkins needs its own public URL,
-separate from `https://techvault.co.il`:
+**Implemented**, not just planned: `devops/terraform-jenkins/` opens 80/443
+(never 8080) in its security group, and
+`devops/ansible-jenkins/templates/jenkins-nginx.conf.j2` puts Nginx in front
+of Jenkins on those ports. Jenkins itself is additionally bound to
+`127.0.0.1:8080` via a systemd override — a second, independent layer of
+protection, not just a security-group rule — and `provision.yml`'s
+validation section actually inspects the live listening socket to prove
+that binding is correct, rather than assuming it from configuration alone.
+See `devops/ansible-jenkins/README.md` "Jenkins binding mechanism" for the
+full detail.
 
-- Put a reverse proxy (Nginx, same pattern as `devops/nginx/techvault.conf`)
-  in front of Jenkins's default port (8080), with its own Let's Encrypt
-  certificate for a distinct (sub)domain, e.g. `jenkins.<your-domain>`.
-- Open only that proxy's port (443) to the internet; keep Jenkins's raw port
-  bound to `127.0.0.1` or restricted to the proxy host if co-located.
+- First setup: reach Jenkins over `http://<jenkins-public-ip>/` — no domain
+  required. Note the public IP changes on stop/start unless you enabled an
+  Elastic IP (`enable_elastic_ip = true` in `devops/terraform-jenkins/`) —
+  see that module's README "Elastic IP decision" before deciding whether to
+  ever stop this host.
+- HTTPS: a deliberate, separate, manual step performed later, once a real
+  domain points at the Jenkins host — see
+  `devops/ansible-jenkins/README.md` "HTTPS architecture decision" for the
+  exact command and its one documented caveat (re-running the playbook
+  afterward reverts the manual Certbot edit).

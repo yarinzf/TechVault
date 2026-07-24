@@ -1,0 +1,20 @@
+# Copy this file to terraform.tfvars and fill in real values.
+# terraform.tfvars is gitignored — never commit real values.
+#
+# This is the JENKINS HOST environment. Nothing here should ever match
+# production (devops/terraform/terraform.tfvars) or the assignment
+# application environment (devops/terraform-assignment/terraform.tfvars) —
+# in particular, key_pair_name must be a THIRD, dedicated key pair.
+
+environment_name = "jenkins-assignment"
+app_name         = "techvault"
+aws_region       = "eu-central-1"
+instance_type    = "t3.medium"                  # see variables.tf for the t3.small tradeoff
+key_pair_name    = "techvault-jenkins-key"       # a NEW key pair — must NOT be "techvault-key" or the assignment app's key pair
+allowed_ssh_cidr = "203.0.113.10/32"             # replace with YOUR real IP/32 — never 0.0.0.0/0
+volume_size_gb   = 40
+jenkins_domain   = ""                            # leave empty for HTTP-only first setup
+
+# See README.md "Elastic IP decision" — only set true if you plan to stop
+# this host between work sessions and need the public IP to survive that.
+enable_elastic_ip = false

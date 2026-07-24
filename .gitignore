@@ -49,7 +49,16 @@ devops/terraform-assignment/tfplan
 devops/terraform-assignment/*.tfvars
 !devops/terraform-assignment/*.tfvars.example
 
-# Terraform state files (extra safety, covers both directories above)
+# Terraform — Jenkins host (separate from production and assignment app above)
+devops/terraform-jenkins/.terraform/
+devops/terraform-jenkins/.terraform.lock.hcl
+devops/terraform-jenkins/terraform.tfstate
+devops/terraform-jenkins/terraform.tfstate.backup
+devops/terraform-jenkins/tfplan
+devops/terraform-jenkins/*.tfvars
+!devops/terraform-jenkins/*.tfvars.example
+
+# Terraform state files (extra safety, covers all three directories above)
 *.tfstate
 *.tfstate.*
 .terraform/
@@ -61,6 +70,10 @@ devops/ansible/.vault_password
 # Ansible — DevOps assignment environment
 devops/ansible-assignment/inventory.ini
 devops/ansible-assignment/.vault_password
+
+# Ansible — Jenkins host
+devops/ansible-jenkins/inventory.ini
+devops/ansible-jenkins/.vault_password
 
 # SSH private keys — never commit, production or assignment
 *.pem

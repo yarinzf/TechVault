@@ -1,0 +1,21 @@
+---
+# Non-secret defaults for the Jenkins host. Override with -e on the
+# ansible-playbook command line, or edit this file directly.
+
+environment_name: jenkins-assignment
+
+# Leave empty for the first setup — Jenkins is reached over the bare public
+# IP via HTTP. Set it once a real domain points at the Jenkins host AND you
+# are ready to add HTTPS manually (see README.md "HTTPS architecture
+# decision" — same reasoning and same manual process as the assignment
+# application server).
+jenkins_domain: ""
+
+node_major_version: 20
+
+# Idempotent: only creates a swapfile if none is already active. Recommended
+# true regardless of instance size — cheap insurance against a Docker build +
+# npm build + Jenkins JVM all competing for memory at once. See README.md for
+# the t3.small vs t3.medium tradeoff this pairs with.
+create_swap: true
+swap_size_mb: 2048

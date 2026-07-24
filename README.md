@@ -12,9 +12,11 @@ Socket.IO live features, and a full Docker Compose deployment.
 |---|---|
 | [`ARCHITECTURE.md`](ARCHITECTURE.md) | Application architecture — layers, request flow, module map, tech stack |
 | [`devops/docs/DEVOPS_ASSIGNMENT.md`](devops/docs/DEVOPS_ASSIGNMENT.md) | Infrastructure/DevOps: production vs. the isolated assignment environment, Terraform, Ansible, Jenkins |
-| [`devops/terraform-assignment/README.md`](devops/terraform-assignment/README.md) | Assignment Terraform module — state isolation, safe commands |
-| [`devops/ansible-assignment/README.md`](devops/ansible-assignment/README.md) | Assignment Ansible playbook — TLS modes, secrets, safety gate |
-| [`devops/jenkins/README.md`](devops/jenkins/README.md) | Jenkins host plan, plugins, instructor permission model |
+| [`devops/terraform-assignment/README.md`](devops/terraform-assignment/README.md) | Assignment application Terraform module — state isolation, safe commands |
+| [`devops/ansible-assignment/README.md`](devops/ansible-assignment/README.md) | Assignment application Ansible playbook — HTTPS decision, secrets, safety gate |
+| [`devops/terraform-jenkins/README.md`](devops/terraform-jenkins/README.md) | Jenkins host Terraform module — sizing decisions, state isolation |
+| [`devops/ansible-jenkins/README.md`](devops/ansible-jenkins/README.md) | Jenkins host Ansible playbook — tool installation, Docker permission model, HTTPS decision |
+| [`devops/jenkins/README.md`](devops/jenkins/README.md) | Jenkins host architecture, complete setup sequence, plugins, instructor permission model |
 
 ## Stack
 
@@ -50,6 +52,7 @@ cd client && npm run build   # frontend production build
 
 Production (`techvault.co.il`) is already live and is deployed independently
 of the Terraform/Ansible/Jenkins pipeline described below — see
-`devops/docs/DEVOPS_ASSIGNMENT.md` for the full picture, including why a
-second, fully isolated environment exists purely for the assignment
-pipeline and is never allowed to touch the production server.
+`devops/docs/DEVOPS_ASSIGNMENT.md` for the full picture, including why two
+additional, fully isolated environments exist purely for the assignment
+(a disposable application server and a persistent Jenkins host) and are
+never allowed to touch the production server.

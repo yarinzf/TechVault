@@ -1,0 +1,514 @@
+---
+# TechVault — Ansible provisioning playbook for the Jenkins HOST
+#
+# Targets: the Ubuntu 22.04 EC2 instance created by devops/terraform-jenkins/
+# Must NEVER target devops/ansible/inventory.ini, devops/ansible-assignment/
+# (the application server), or the real production host.
+#
+# Usage (manual):
+#   ansible-playbook -i inventory.ini provision.yml
+#
+# This playbook provisions the HOST and its tooling only. It does not touch
+# TechVault application code, does not create a Jenkins job, and does not
+# automate the Jenkins setup wizard, admin account, or instructor
+# credentials — see README.md for those manual steps.
+
+- name: Provision Jenkins host
+  hosts: jenkins_assignment
+  become: true
+
+  tasks:
+
+    # ── Safety gate ────────────────────────────────────────────────────────────
+    - name: Refuse to run against anything but the jenkins_assignment inventory group
+      assert:
+        that:
+          - "'jenkins_assignment' in group_names"
+        fail_msg: >-
+          This playbook must only run against hosts in the [jenkins_assignment]
+          inventory group. Refusing to continue — check inventory.ini.
+        success_msg: "Target confirmed: jenkins_assignment group"
+
+    # ── Base system ────────────────────────────────────────────────────────────
+    - name: Update apt cache
+      apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Install base packages
+      apt:
+        name:
+          - git
+          - curl
+          - unzip
+          - jq
+          - ca-certificates
+          - gnupg
+          - python3
+          - apt-transport-https
+          - software-properties-common
+          - nginx
+        state: present
+
+    # ── Java (Jenkins-supported version) ──────────────────────────────────────
+    # Java 17 is supported by the Jenkins package line this playbook currently
+    # targets, and is available directly from Ubuntu 22.04's own repositories
+    # (no extra PPA needed). Jenkins' Java support requirements can and do
+    # change between LTS lines — this is not a permanent guarantee. Verify the
+    # current Jenkins Java support policy before a future real provisioning
+    # run if substantial time has passed since this playbook was last used or
+    # reviewed.
+    - name: Install OpenJDK 17 (headless)
+      apt:
+        name: openjdk-17-jdk-headless
+        state: present
+
+    # ── Jenkins (official apt repository, keyring-based — no apt_key) ────────
+    # Follows Jenkins' own current documented installation commands exactly
+    # (https://www.jenkins.io/doc/book/installing/linux/#debianubuntu) rather
+    # than the deprecated apt_key module / classic trusted.gpg keyring.
+    - name: Ensure /usr/share/keyrings directory exists
+      file:
+        path:  /usr/share/keyrings
+        state: directory
+        mode:  "0755"
+
+    - name: Download Jenkins apt GPG key
+      get_url:
+        url:  https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
+        dest: /usr/share/keyrings/jenkins-keyring.asc
+        mode: "0644"
+
+    - name: Add Jenkins apt repository
+      apt_repository:
+        repo:     "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/"
+        state:    present
+        filename: jenkins
+
+    - name: Install Jenkins
+      apt:
+        name: jenkins
+        state: present
+        update_cache: true
+
+    # ── Bind Jenkins to localhost only ─────────────────────────────────────────
+    # Jenkins's own port (8080) is never opened in the security group (see
+    # devops/terraform-jenkins/main.tf) — this is a second, independent layer
+    # of protection: even if the security group were ever misconfigured,
+    # Jenkins itself must refuse to listen on any interface but loopback.
+    #
+    # SINGLE authoritative mechanism: a systemd drop-in override. Modern
+    # Jenkins Debian/Ubuntu installations are systemd-managed, and the
+    # package's systemd unit reads its extra startup arguments from the
+    # JENKINS_OPTS environment variable — this is the mechanism the current
+    # systemd-based package actually uses, not the legacy /etc/default/jenkins
+    # + JENKINS_ARGS convention from the older, non-systemd init scripts.
+    # /etc/default/jenkins is intentionally NOT edited by this playbook —
+    # keeping only one configuration source avoids the ambiguity of two
+    # mechanisms potentially disagreeing about which one actually wins.
+    #
+    # This is still not trusted blindly: the validation section near the end
+    # of this play inspects the effective systemd environment AND the real
+    # bound socket after the override is applied and Jenkins has restarted —
+    # those checks, not this comment, are what prove this works on a given
+    # host. The socket check is authoritative; the environment check is a
+    # troubleshooting aid on top of it.
+    - name: Create systemd override directory for Jenkins
+      file:
+        path:  /etc/systemd/system/jenkins.service.d
+        state: directory
+        mode:  "0755"
+      notify: daemon-reload
+
+    - name: Write systemd override — bind address and explicit PATH
+      copy:
+        dest: /etc/systemd/system/jenkins.service.d/override.conf
+        content: |
+          [Service]
+          Environment="JENKINS_OPTS=--httpListenAddress=127.0.0.1 --httpPort=8080"
+          Environment="PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+        mode: "0644"
+      notify:
+        - daemon-reload
+        - restart jenkins
+
+    - name: Enable and start Jenkins service
+      service:
+        name: jenkins
+        state: started
+        enabled: true
+
+    - name: Flush handlers so daemon-reload and the Jenkins restart happen before we continue
+      meta: flush_handlers
+
+    # ── Docker Engine + Compose plugin ────────────────────────────────────────
+    - name: Add Docker GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker apt repository
+      apt_repository:
+        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+        state: present
+
+    - name: Install Docker Engine and Compose plugin
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-compose-plugin
+        state: present
+        update_cache: true
+
+    - name: Enable and start Docker service
+      service:
+        name: docker
+        state: started
+        enabled: true
+
+    # SECURITY NOTE: adding the jenkins user to the docker group is
+    # effectively equivalent to giving Jenkins root on this host — the Docker
+    # socket has no privilege separation of its own, and any container it can
+    # run can be used to reach the host filesystem as root. This is the same
+    # tradeoff every Docker-in-Jenkins setup makes; it's accepted here because
+    # this host runs nothing except this Jenkins instance, and Jenkins access
+    # itself is already gated by the instructor-role model in
+    # devops/jenkins/README.md. Do not extend this host to run anything else.
+    - name: Add jenkins user to docker group
+      user:
+        name: jenkins
+        groups: docker
+        append: true
+      notify: restart jenkins
+
+    - name: Add ubuntu user to docker group
+      user:
+        name: ubuntu
+        groups: docker
+        append: true
+
+    - name: Flush handlers so the running Jenkins process picks up the new docker group
+      meta: flush_handlers
+
+    - name: Confirm jenkins user is configured with docker group membership
+      command: id jenkins
+      register: jenkins_id_check
+      changed_when: false
+      failed_when: "'docker' not in jenkins_id_check.stdout"
+
+    # ── Node.js 20+ / npm ──────────────────────────────────────────────────────
+    - name: Create keyrings directory
+      file:
+        path:  /etc/apt/keyrings
+        state: directory
+        mode:  "0755"
+
+    - name: Download NodeSource GPG key (ASCII-armored)
+      get_url:
+        url:  "https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key"
+        dest: /etc/apt/keyrings/nodesource.asc
+        mode: "0644"
+
+    # NodeSource's own documented setup dearmors the key before use — a
+    # signed-by keyring generally needs the binary GPG format, not the raw
+    # ASCII-armored download; skipping this step is a common cause of
+    # "NO_PUBKEY" / signature-verification failures on a fresh host.
+    - name: Dearmor NodeSource GPG key into binary keyring format
+      command: gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg /etc/apt/keyrings/nodesource.asc
+      args:
+        creates: /etc/apt/keyrings/nodesource.gpg
+
+    - name: Add NodeSource apt repository
+      apt_repository:
+        repo:     "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_{{ node_major_version }}.x nodistro main"
+        state:    present
+        filename: nodesource
+
+    - name: Install Node.js
+      apt:
+        name: nodejs
+        state: present
+        update_cache: true
+
+    # ── Terraform (official HashiCorp apt repository, keyring-based) ─────────
+    - name: Download HashiCorp GPG key (ASCII-armored)
+      get_url:
+        url:  https://apt.releases.hashicorp.com/gpg
+        dest: /etc/apt/keyrings/hashicorp.asc
+        mode: "0644"
+
+    - name: Dearmor HashiCorp GPG key into binary keyring format
+      command: gpg --dearmor -o /etc/apt/keyrings/hashicorp.gpg /etc/apt/keyrings/hashicorp.asc
+      args:
+        creates: /etc/apt/keyrings/hashicorp.gpg
+
+    - name: Add HashiCorp apt repository
+      apt_repository:
+        repo:     "deb [signed-by=/etc/apt/keyrings/hashicorp.gpg] https://apt.releases.hashicorp.com {{ ansible_distribution_release }} main"
+        state:    present
+        filename: hashicorp
+
+    - name: Install Terraform
+      apt:
+        name: terraform
+        state: present
+        update_cache: true
+
+    # ── Ansible (so Jenkins jobs can run ansible-playbook themselves) ────────
+    - name: Install Ansible
+      apt:
+        name: ansible
+        state: present
+
+    # ── Swap (idempotent) ──────────────────────────────────────────────────────
+    # Checks specifically for OUR swapfile by path, not just "is any swap
+    # active" — if some other swap already exists (e.g. a swap partition on a
+    # customized AMI), create_swap: true still ensures /swapfile specifically
+    # gets created/activated rather than silently no-op'ing because something
+    # unrelated happened to already be active.
+    #
+    # KNOWN LIMITATION: changing swap_size_mb after the first successful run
+    # has no effect on an already-created /swapfile (fallocate is skipped via
+    # `creates:`). Delete /swapfile manually first if you need to resize it.
+    - name: Check current swap
+      command: swapon --show
+      register: swap_status
+      changed_when: false
+
+    - name: Create swapfile
+      command: "fallocate -l {{ swap_size_mb }}M /swapfile"
+      args:
+        creates: /swapfile
+      when:
+        - create_swap | bool
+        - "'/swapfile' not in swap_status.stdout"
+
+    - name: Set swapfile permissions
+      file:
+        path: /swapfile
+        mode: "0600"
+      when:
+        - create_swap | bool
+        - "'/swapfile' not in swap_status.stdout"
+
+    - name: Format swapfile
+      command: mkswap /swapfile
+      when:
+        - create_swap | bool
+        - "'/swapfile' not in swap_status.stdout"
+
+    - name: Enable swapfile
+      command: swapon /swapfile
+      when:
+        - create_swap | bool
+        - "'/swapfile' not in swap_status.stdout"
+
+    - name: Persist swapfile in fstab
+      lineinfile:
+        path: /etc/fstab
+        line: "/swapfile none swap sw 0 0"
+      when: create_swap | bool
+
+    # ── Nginx reverse proxy ───────────────────────────────────────────────────
+    - name: Create webroot for a future manual Certbot HTTP-01 challenge
+      file:
+        path:  /var/www/certbot
+        state: directory
+        owner: www-data
+        group: www-data
+        mode:  "0755"
+
+    - name: Template Jenkins Nginx site config
+      template:
+        src:  jenkins-nginx.conf.j2
+        dest: /etc/nginx/sites-available/jenkins
+      notify: reload nginx
+
+    - name: Enable Jenkins Nginx site
+      file:
+        src:   /etc/nginx/sites-available/jenkins
+        dest:  /etc/nginx/sites-enabled/jenkins
+        state: link
+      notify: reload nginx
+
+    - name: Disable the default Nginx site
+      file:
+        path:  /etc/nginx/sites-enabled/default
+        state: absent
+      notify: reload nginx
+
+    - name: Enable and start Nginx service
+      service:
+        name: nginx
+        state: started
+        enabled: true
+
+    - name: Flush handlers so Nginx is validated and serving before we continue
+      meta: flush_handlers
+
+    # ── Validation — proves the host, not just the tasks, is correct ─────────
+    # Fails the play on a real problem rather than reporting soft/best-effort
+    # success. changed_when: false throughout — these are checks, not changes.
+    - name: Validate Java is installed
+      command: java -version
+      register: java_check
+      changed_when: false
+      failed_when: java_check.rc != 0
+
+    - name: Validate git is installed
+      command: git --version
+      register: git_check
+      changed_when: false
+      failed_when: git_check.rc != 0
+
+    - name: Validate Docker is installed
+      command: docker --version
+      register: docker_check
+      changed_when: false
+      failed_when: docker_check.rc != 0
+
+    - name: Validate Docker Compose plugin is installed
+      command: docker compose version
+      register: compose_check
+      changed_when: false
+      failed_when: compose_check.rc != 0
+
+    - name: Validate Node.js is installed
+      command: node --version
+      register: node_check
+      changed_when: false
+      failed_when: node_check.rc != 0
+
+    - name: Validate npm is installed
+      command: npm --version
+      register: npm_check
+      changed_when: false
+      failed_when: npm_check.rc != 0
+
+    - name: Validate Terraform is installed
+      command: terraform version
+      register: terraform_check
+      changed_when: false
+      failed_when: terraform_check.rc != 0
+
+    - name: Validate Ansible is installed
+      command: ansible-playbook --version
+      register: ansible_check
+      changed_when: false
+      failed_when: ansible_check.rc != 0
+
+    - name: Confirm the jenkins service user can resolve every required tool
+      command: sudo -u jenkins bash -lc 'which git curl docker terraform ansible-playbook node npm'
+      register: jenkins_path_check
+      changed_when: false
+      failed_when: jenkins_path_check.rc != 0
+
+    - name: Confirm Jenkins service is active
+      command: systemctl is-active jenkins
+      register: jenkins_active
+      changed_when: false
+      failed_when: jenkins_active.stdout != "active"
+
+    - name: Inspect effective Jenkins systemd environment (troubleshooting + soft proof)
+      command: systemctl show jenkins --property=Environment
+      register: jenkins_env_check
+      changed_when: false
+      failed_when: "'JENKINS_OPTS=--httpListenAddress=127.0.0.1 --httpPort=8080' not in jenkins_env_check.stdout"
+
+    - name: Inspect merged Jenkins service definition (troubleshooting only)
+      command: systemctl cat jenkins
+      register: jenkins_unit_check
+      changed_when: false
+
+    - name: Inspect effective Jenkins ExecStart (troubleshooting only)
+      command: systemctl show jenkins --property=ExecStart
+      register: jenkins_execstart_check
+      changed_when: false
+
+    # Authoritative check — does not trust configuration, inspects the real
+    # listening socket. Uses argv (a list) rather than one command string, so
+    # there is no ambiguous shell-like tokenization of "sport = :8080" to get
+    # subtly wrong across Ansible/Python versions.
+    #
+    # Policy: IPv4 loopback (127.0.0.1:8080) is required. IPv6 loopback
+    # (::1:8080) is allowed in addition. Any wildcard listener — IPv4
+    # (0.0.0.0:8080, *:8080) or IPv6 ([::]:8080, :::8080) — fails the play.
+    - name: Confirm Jenkins is bound to 127.0.0.1:8080 only, never a wildcard
+      command:
+        argv:
+          - ss
+          - -H
+          - -ltn
+          - sport
+          - "="
+          - ":8080"
+      register: jenkins_bind_check
+      changed_when: false
+      failed_when: >
+        (jenkins_bind_check.stdout | trim == '') or
+        ('127.0.0.1:8080' not in jenkins_bind_check.stdout) or
+        ('0.0.0.0:8080' in jenkins_bind_check.stdout) or
+        ('*:8080' in jenkins_bind_check.stdout) or
+        ('[::]:8080' in jenkins_bind_check.stdout) or
+        (':::8080' in jenkins_bind_check.stdout)
+
+    - name: Confirm Nginx service is active
+      command: systemctl is-active nginx
+      register: nginx_active
+      changed_when: false
+      failed_when: nginx_active.stdout != "active"
+
+    - name: Confirm Nginx configuration is valid
+      command: nginx -t
+      register: nginx_test
+      changed_when: false
+      failed_when: nginx_test.rc != 0
+
+    - name: Confirm Jenkins responds through Nginx on port 80
+      uri:
+        url:         "http://localhost/"
+        status_code: [200, 403]
+      register: jenkins_http_check
+      retries: 12
+      delay:   10
+      until:   jenkins_http_check.status in [200, 403]
+
+    - name: Print provisioning summary
+      debug:
+        msg:
+          - "========================================="
+          - "  Jenkins host provisioning complete"
+          - "========================================="
+          - "  Environment : {{ environment_name }}"
+          - "  Jenkins URL : http://{{ ansible_host }}/"
+          - "  Bind check  : 127.0.0.1:8080 only — confirmed"
+          - "  HTTP check  : {{ jenkins_http_check.status }} through Nginx"
+          - ""
+          - "  Next steps (manual — see README.md):"
+          - "    1. sudo cat /var/lib/jenkins/secrets/initialAdminPassword"
+          - "    2. Open http://{{ ansible_host }}/ and complete the setup wizard"
+          - "    3. Install the required plugins"
+          - "    4. Create the instructor user and role"
+          - "========================================="
+
+  handlers:
+    - name: daemon-reload
+      systemd:
+        daemon_reload: true
+
+    - name: restart jenkins
+      service:
+        name:  jenkins
+        state: restarted
+
+    - name: validate nginx config
+      command: nginx -t
+      listen: "reload nginx"
+
+    - name: reload nginx
+      service:
+        name:  nginx
+        state: reloaded
+      listen: "reload nginx"
