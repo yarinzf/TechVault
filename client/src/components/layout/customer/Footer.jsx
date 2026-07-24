@@ -1,38 +1,49 @@
 import { Link } from 'react-router-dom';
-import { Twitter, Instagram, Youtube, Linkedin } from 'lucide-react';
 import { useTranslation } from '../../../context/LanguageContext';
 import s from './Footer.module.css';
 
+// Real routes only — verified against App.jsx. Sapir's reference groups
+// "כרטיסי מסך" under the gaming-monitors demo page and shows a "קונסולות"
+// (Consoles) category that isn't a real catalog slug on its own, but the
+// seeded "gaming" category's own description ("Consoles, handhelds, and
+// gaming peripherals") makes it a truthful match, so it's used here instead
+// of inventing a dedicated consoles route.
 const FOOTER_COLS = [
   {
     titleKey: 'footer.categories_title',
     links: [
-      { labelKey: 'footer.cat_gaming_monitors', to: '/products?category=monitors'   },
-      { labelKey: 'footer.cat_graphics_cards',  to: '/products?category=components'  },
-      { labelKey: 'footer.cat_keyboards_mice',  to: '/products?category=keyboards'   },
-      { labelKey: 'footer.cat_headphones',      to: '/products?category=headphones'  },
-      { labelKey: 'footer.cat_laptops',         to: '/products?category=laptops'     },
-      { labelKey: 'footer.cat_storage',         to: '/products?category=storage'     },
+      { labelKey: 'footer.cat_gaming_monitors', to: '/category/monitors'   },
+      { labelKey: 'footer.cat_graphics_cards',  to: '/category/components' },
+      { labelKey: 'footer.cat_keyboards_mice',  to: '/category/keyboards'  },
+      { labelKey: 'footer.cat_headphones',      to: '/category/headphones' },
+      { labelKey: 'footer.cat_consoles',        to: '/category/gaming'    },
+      { labelKey: 'footer.cat_laptops',         to: '/category/laptops'   },
     ],
   },
   {
     titleKey: 'footer.service_title',
     links: [
-      { labelKey: 'footer.contact_us',         to: '#' },
-      { labelKey: 'footer.returns_policy',     to: '#' },
-      { labelKey: 'footer.warranties_repairs', to: '#' },
-      { labelKey: 'footer.faq',                to: '#' },
-      { labelKey: 'footer.service_locations',  to: '#' },
+      // /terms §10 ("יצירת קשר") lists a real contact email.
+      { labelKey: 'footer.contact_us',         to: '/terms' },
+      // /terms §6 is the actual returns policy.
+      { labelKey: 'footer.returns_policy',     to: '/terms' },
+      // /terms §8 (liability) is the closest existing policy text — there
+      // is no dedicated warranty/repairs page.
+      { labelKey: 'footer.warranties_repairs', to: '/terms' },
+      // No FAQ page exists anywhere in the app — rendered as non-clickable
+      // text rather than a dead link or an invented route.
+      { labelKey: 'footer.faq',                to: null },
     ],
   },
   {
     titleKey: 'footer.account_title',
     links: [
-      { labelKey: 'footer.login',      to: '/login'    },
-      { labelKey: 'footer.register',   to: '/register' },
-      { labelKey: 'footer.my_orders',  to: '/orders'   },
-      { labelKey: 'footer.wishlist',   to: '/wishlist' },
-      { labelKey: 'footer.club',       to: '#'         },
+      { labelKey: 'footer.login',            to: '/login'    },
+      { labelKey: 'footer.register',         to: '/register' },
+      { labelKey: 'footer.my_orders',        to: '/orders'   },
+      { labelKey: 'footer.wishlist',         to: '/wishlist' },
+      { labelKey: 'footer.club',             to: '/#club-section' },
+      { labelKey: 'footer.account_settings', to: '/profile'  },
     ],
   },
 ];
@@ -66,9 +77,18 @@ export default function Footer() {
             <div key={col.titleKey} className={s.footerCol}>
               <div className={s.footerColTitle}>{t(col.titleKey)}</div>
               {col.links.map(link => (
-                <Link key={link.labelKey} to={link.to} className={s.footerLink}>
-                  {t(link.labelKey)}
-                </Link>
+                link.to ? (
+                  <Link key={link.labelKey} to={link.to} className={s.footerLink}>
+                    {t(link.labelKey)}
+                  </Link>
+                ) : (
+                  // No real destination exists for this item (e.g. no FAQ
+                  // page) — shown as plain, non-interactive text rather
+                  // than a dead link or an invented route.
+                  <span key={link.labelKey} className={`${s.footerLink} ${s.footerLinkStatic}`}>
+                    {t(link.labelKey)}
+                  </span>
+                )
               ))}
             </div>
           ))}
@@ -76,18 +96,6 @@ export default function Footer() {
 
         <div className={s.footerBottom}>
           <div className={s.footerCopy}>{t('footer.copyright').replace('{year}', year)}</div>
-          <div className={s.footerSocials}>
-            {[
-              { Icon: Twitter,   href: '#', label: 'Twitter'   },
-              { Icon: Instagram, href: '#', label: 'Instagram'  },
-              { Icon: Youtube,   href: '#', label: 'YouTube'    },
-              { Icon: Linkedin,  href: '#', label: 'LinkedIn'   },
-            ].map(({ Icon, href, label }) => (
-              <a key={label} href={href} className={s.socialBtn} aria-label={label}>
-                <Icon size={16} />
-              </a>
-            ))}
-          </div>
         </div>
       </div>
     </footer>

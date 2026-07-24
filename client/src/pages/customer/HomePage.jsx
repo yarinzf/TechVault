@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import {
   Monitor, ShoppingCart,
-  Truck, RotateCcw, ShieldCheck, Headphones,
+  Truck, RefreshCcw, ShieldCheck,
   Zap, ArrowLeft, Star, UserPlus,
   ChevronLeft,
   Percent, Gift, Headset, Check,
@@ -78,9 +78,9 @@ const HERO_STATS = [
 /* ── Static data ──────────────────────────────────────────────────────────── */
 const POLICY_ITEMS = [
   { Icon: Truck,       title: 'משלוח חינם',      desc: 'על כל הזמנה מעל ₪299\nעד 48 שעות לכל הארץ'  },
-  { Icon: RotateCcw,   title: 'החזרה ב-30 ימים',  desc: 'לא מרוצים? מחזירים\nללא שאלות, החזר מלא'  },
+  { Icon: RefreshCcw,  title: 'החזרה ב-30 ימים',  desc: 'לא מרוצים? מחזירים\nללא שאלות, החזר מלא'  },
   { Icon: ShieldCheck, title: 'אחריות יצרן',       desc: 'אחריות מלאה על כל המוצרים\nשירות מהיצרן'    },
-  { Icon: Headphones,  title: 'תמיכה 24/7',        desc: "צוות מומחים זמין תמיד\nצ'אט, טלפון ואימייל" },
+  { Icon: Headset,     title: 'תמיכה 24/7',        desc: "צוות מומחים זמין תמיד\nצ'אט, טלפון ואימייל" },
 ];
 
 const CLUB_STATS = [

@@ -548,7 +548,7 @@
   letter-spacing: -0.01em;
 }
 
-.sectionTitleEm { color: var(--sv-blue); }
+.sectionTitleEm { color: #F9FAFB; }
 
 .sectionBadge {
   display: inline-flex;
@@ -1099,11 +1099,11 @@
   text-align: center;
   font-size: 28px;
   font-weight: 700;
-  color: #F9FAFB;
+  color: var(--sv-blue);
   margin-bottom: 48px;
   letter-spacing: -0.01em;
 }
-.policyHeadlineAccent { color: var(--sv-blue-l); }
+.policyHeadlineAccent { color: var(--sv-blue); }
 
 .policyTitle {
   font-size: 15px;
