@@ -1,235 +1,319 @@
 # TechVault — DevOps Final Assignment
 
-## Architecture
+This document has two halves that must never be confused with each other:
 
-```
-GitHub Repository
-        │
-        ▼
-  Jenkins Pipeline
-        │
-        ├── npm test  (unit + integration tests)
-        │
-        ├── Terraform ──► AWS EC2 (Ubuntu 22.04, t3.small)
-        │                    └── Security Group: 22, 3000, 5000
-        │
-        └── Ansible ────► EC2 instance
-                               ├── Docker Engine + Compose plugin
-                               ├── git clone TechVault repo
-                               ├── .env.docker (secrets injected from Jenkins creds)
-                               └── docker compose up -d --build
-                                        ├── mongodb:27017 (persistent volume)
-                                        ├── backend:5000  (Express API)
-                                        └── frontend:3000 (React/Nginx)
-```
+1. **Production** — already live, already deployed, not managed by this
+   assignment's pipeline, and never to be touched by it.
+2. **DevOps assignment environment** — a brand-new, disposable, fully
+   isolated EC2 instance + its own Terraform state + its own Ansible
+   inventory + its own Jenkins pipeline, created solely to demonstrate the
+   Terraform → Ansible → Jenkins → validation workflow for grading.
 
-**Public access:**
-- Frontend storefront : `http://<EC2-IP>:3000`
-- REST API            : `http://<EC2-IP>:5000/api/v1`
-- Swagger docs        : `http://<EC2-IP>:5000/api-docs`
-- Health check        : `http://<EC2-IP>:5000/api/v1/health`
+If you only remember one rule from this document: **nothing under
+`devops/terraform-assignment/`, `devops/ansible-assignment/`, or
+`devops/jenkins/Jenkinsfile.assignment` is ever allowed to reference the
+production instance ID, the production IPs, or `devops/terraform/` /
+`devops/ansible/inventory.ini` directly** — and the assignment Jenkins
+pipeline actively asserts this at runtime and fails the build if it's ever
+violated (see `Jenkinsfile.assignment`, stage 11).
 
 ---
 
-## File Structure
+## 1. Production architecture (already live, unmanaged by this pipeline)
+
+```mermaid
+flowchart LR
+    U[Browser] -->|HTTPS 443| N[Host Nginx<br/>Let's Encrypt TLS]
+    N -->|proxy_pass :3000<br/>+ /socket.io upgrade| FE[frontend container<br/>React build + Nginx]
+    FE -->|location /api, /socket.io| BE[backend container<br/>Express :5000]
+    BE --> DB[(mongodb container<br/>:27017)]
+    BE -.->|mongodump, nightly| S3[(S3 bucket)]
+```
+
+- Domain: `https://techvault.co.il` / `https://www.techvault.co.il`
+- Deploy path in production today: `.github/workflows/deploy.yml`
+  (`workflow_dispatch`, SSH + `git reset --hard` + `docker compose up -d
+  --build`, with a pre-deploy MongoDB backup and a post-deploy health check)
+- Terraform (`devops/terraform/`) and Ansible (`devops/ansible/`) describe
+  how the production EC2 instance and its application stack were originally
+  provisioned, but are **not** the live redeploy path today — see the
+  Terraform/Ansible audit notes below for the exact gap.
+- MongoDB backups run via `devops/scripts/backup-mongo.sh` (integrity
+  checked, retained 30, optionally synced to S3) and can be restored via
+  `devops/scripts/restore-mongo.sh` (double-confirmed, auto pre-restore
+  backup).
+- `devops/scripts/health-check.sh` runs a 14-point check (containers, health
+  endpoint, frontend, disk, memory, backup freshness/integrity).
+
+**This pipeline (Jenkinsfile.assignment) never runs any of the above against
+production.**
+
+---
+
+## 2. DevOps assignment architecture (new, isolated, disposable)
+
+```mermaid
+flowchart LR
+    GH[GitHub Repository] --> J[Jenkins Pipeline<br/>Jenkinsfile.assignment]
+    J -->|npm test / build| T1[Backend tests + Frontend build]
+    J -->|terraform init/validate/plan| TF[devops/terraform-assignment/]
+    TF -->|manual approval gate| TFA[terraform apply]
+    TFA --> EC2[New EC2 instance<br/>techvault-devops-assignment-server]
+    J -->|generate inventory + syntax-check| ANS[devops/ansible-assignment/]
+    ANS -->|deploy.yml| EC2
+    EC2 --> NG[Nginx — HTTP-only, always<br/>HTTPS is a separate manual step]
+    NG --> FEA[frontend container]
+    FEA --> BEA[backend container]
+    BEA --> DBA[(mongodb container)]
+    J -->|curl health + frontend| VAL[Validate Assignment Website]
+```
+
+- Environment name: `devops-assignment` (validated by Terraform variable
+  rules, Ansible's inventory-group assertion, and the Jenkins pipeline)
+- Own Terraform state: `devops/terraform-assignment/terraform.tfstate`
+  (local, gitignored, never shared with `devops/terraform/terraform.tfstate`)
+- Own Ansible inventory group: `techvault_assignment` (never `techvault`)
+- Own deployment directory on the server: `/opt/techvault-assignment`
+  (never `/opt/techvault`)
+- Own SSH key pair: created fresh for this environment — must not be
+  `techvault-key` (enforced by a Terraform variable validation)
+- Own Jenkins credential IDs — all prefixed `..._ASSIGNMENT_...` or
+  distinctly named, never reusing the production credential IDs
+
+### HTTPS architecture decision (assignment environment)
+
+**The assignment deploys HTTP-only, always. HTTPS/Certbot automation was
+deliberately removed** after a review found that a manually-set "enable
+HTTPS" flag, disconnected from whether a certificate actually existed yet,
+could cause the Nginx template to reference a nonexistent certificate path —
+which on a fresh instance can prevent Nginx from starting at all, breaking
+HTTP too. See [`devops/ansible-assignment/README.md`](../ansible-assignment/README.md#https-architecture-decision)
+for the full reasoning and the exact manual steps to add HTTPS later,
+by hand, after a successful HTTP-only pipeline run.
+
+---
+
+## 3. File structure
 
 ```
 devops/
-├── terraform/
-│   ├── provider.tf              AWS provider, required version constraints
-│   ├── variables.tf             All configurable inputs
-│   ├── main.tf                  Security Group + EC2 instance
-│   ├── outputs.tf               IPs, URLs, SSH command
-│   └── terraform.tfvars.example Copy → terraform.tfvars, fill in secrets
-├── ansible/
-│   ├── inventory.example.ini    Copy → inventory.ini for manual runs
-│   └── deploy.yml               Full deployment playbook
+├── terraform/                   PRODUCTION Terraform (existing, untouched)
+├── terraform-assignment/        ASSIGNMENT Terraform — separate state, separate everything
+│   ├── provider.tf
+│   ├── variables.tf              environment_name, key_pair_name, allowed_ssh_cidr, Jenkins ingress vars
+│   ├── main.tf                   Security group + EC2, with lifecycle preconditions
+│   ├── outputs.tf                assignment_instance_id/public_ip/private_ip/frontend_url/jenkins_url
+│   ├── terraform.tfvars.example
+│   └── README.md
+├── ansible/                      PRODUCTION Ansible (existing, untouched)
+├── ansible-assignment/           ASSIGNMENT Ansible — separate inventory group, separate deploy dir
+│   ├── deploy.yml
+│   ├── inventory.example.ini
+│   ├── group_vars/techvault_assignment.yml
+│   ├── templates/env.docker.assignment.j2
+│   ├── templates/nginx-assignment.conf.j2
+│   └── README.md
 ├── jenkins/
-│   └── Jenkinsfile              9-stage CI/CD pipeline
+│   ├── Jenkinsfile               PRODUCTION pipeline (existing, untouched)
+│   ├── Jenkinsfile.assignment    ASSIGNMENT pipeline — 15 stages + safety guards
+│   └── README.md                 Jenkins host plan, plugins, instructor permission model
 └── docs/
-    └── DEVOPS_ASSIGNMENT.md     This file
+    └── DEVOPS_ASSIGNMENT.md      This file
 ```
 
 ---
 
-## Jenkins Pipeline — Stage by Stage
+## 4. Assignment Jenkins pipeline — stage by stage
 
 | # | Stage | What it does |
 |---|-------|-------------|
 | 1 | **Checkout** | Pull latest code from GitHub |
-| 2 | **Validate Project** | Verify all required files exist; run `docker compose config` |
-| 3 | **Run Tests** | `npm ci && npm test` — 29 unit/integration tests |
-| 4 | **Terraform Init & Plan** | `terraform init` + `terraform plan` — shows changes, no apply yet |
-| 5 | **Terraform Apply** | **Manual gate** — human must click "Apply" after reviewing the plan |
-| 6 | **Read Terraform Output** | Extract public IP from `terraform output -raw public_ip` |
-| 7 | **Generate Inventory** | Write `ansible/inventory.ini` with the EC2 IP from step 6 |
-| 8 | **Ansible Deploy** | Run `deploy.yml` — installs Docker, clones repo, starts stack, seeds DB |
-| 9 | **Validate Health** | `curl` the health endpoint and frontend; fails build if either returns non-200 |
+| 2 | **Validate Project** | Static safety guard (paths/env-name never resemble production) + required-file check + fails fast if `ASSIGNMENT_KEY_PAIR_NAME`/`ASSIGNMENT_SSH_CIDR` job parameters are blank or unsafe |
+| 3 | **Run Backend Tests** | `npm ci && npm test` |
+| 4 | **Build Frontend** | `npm ci && npm run build` in `client/` |
+| 5 | **Validate Docker Compose** | `docker compose config --quiet` |
+| 6 | **Terraform Init** | `terraform init` in `devops/terraform-assignment/` |
+| 7 | **Terraform Validate** | `terraform validate` |
+| 8 | **Terraform Plan** | `terraform plan -var="environment_name=..." -var="key_pair_name=..." -var="allowed_ssh_cidr=..." -var="aws_region=..." -var="instance_type=..."` — the four non-secret values come from Jenkins job parameters, since `terraform.tfvars` is gitignored and never present on a fresh workspace (see §5) |
+| 9 | **Manual Approval** | **Human must click Apply** after reviewing the plan |
+| 10 | **Terraform Apply** | Creates the assignment EC2 + security group |
+| 11 | **Read Assignment Outputs** | Extracts IDs/IPs — **fails the build** if any resolved value equals a production identifier |
+| 12 | **Generate Assignment Inventory** | Writes `ansible-assignment/inventory.ini` from step 11 |
+| 13 | **Ansible Syntax Check** | `ansible-playbook --syntax-check` |
+| 14 | **Ansible Deploy** | Runs `deploy.yml` with injected secrets |
+| 15 | **Validate Assignment Website** | curl health + frontend, fails build on non-200 |
 
 ---
 
-## Terraform Role
-
-Terraform creates and manages two AWS resources:
-
-**`aws_security_group` (techvault-sg)**
-- Port 22  → SSH, restricted to `allowed_ssh_cidr`
-- Port 3000 → Frontend (open to world)
-- Port 5000 → Backend API (open to world, useful for demo/grading)
-- All outbound traffic allowed
-
-**`aws_instance` (techvault-server)**
-- AMI: Latest Ubuntu 22.04 LTS (auto-fetched via `data.aws_ami`)
-- Type: `t3.small` (2 vCPU / 2 GB RAM) — minimum for 3 containers
-- Storage: 20 GB gp3 EBS
-- SSH key: must be pre-created in AWS and name set in `terraform.tfvars`
-
-State is stored locally by default. For Jenkins, add an S3 backend (see `provider.tf` comments).
-
----
-
-## Ansible Role
-
-`deploy.yml` runs against the EC2 instance via SSH and:
-
-1. Installs Docker Engine + Compose plugin via official Docker apt repo
-2. Clones/pulls the TechVault repo to `/opt/techvault`
-3. Creates `.env.docker` from `.env.docker.example` (only if not already present)
-4. Injects secrets via `lineinfile` (no plaintext secrets in any file)
-5. Updates `ALLOWED_ORIGINS` and `FRONTEND_URL` to the server's public IP
-6. Runs `docker compose up -d --build`
-7. Waits for the `/api/v1/health` endpoint to return 200
-8. Seeds all product categories (keyboards, monitors, mice, desktops, headphones)
-9. Prints a deployment summary with all URLs
-
----
-
-## Required Credentials — Configure in Jenkins
+## 5. Required credentials — configure in Jenkins
 
 Go to: **Manage Jenkins → Credentials → System → Global credentials → Add Credential**
 
 | Credential ID | Kind | Value |
 |--------------|------|-------|
-| `AWS_CREDENTIALS_ID` | Amazon Web Services | AWS Access Key ID + Secret Access Key |
-| `SSH_KEY_CREDENTIALS_ID` | SSH Username with private key | username: `ubuntu`, private key: paste `.pem` contents |
-| `TECHVAULT_JWT_ACCESS_SECRET` | Secret text | Random string, min 32 chars |
-| `TECHVAULT_JWT_REFRESH_SECRET` | Secret text | Random string, min 32 chars |
-| `TECHVAULT_COOKIE_SECRET` | Secret text | Random string, min 32 chars |
+| `AWS_ASSIGNMENT_CREDENTIALS_ID` | Amazon Web Services | Access key + secret for a **dedicated, assignment-scoped IAM user** — not `AdministratorAccess`, not the production deployment credential. See [`devops/jenkins/README.md`](../jenkins/README.md#aws-iam--assignment-scoped-credentials-not-administratoraccess) for the permission outline |
+| `SSH_ASSIGNMENT_KEY_CREDENTIALS_ID` | SSH Username with private key | username: `ubuntu`, private key: the **new** assignment `.pem`. Must be the private half of whatever key pair name you pass as `ASSIGNMENT_KEY_PAIR_NAME` (see §5.1 below) |
+| `TECHVAULT_ASSIGNMENT_JWT_ACCESS_SECRET` | Secret text | Random string, min 32 chars |
+| `TECHVAULT_ASSIGNMENT_JWT_REFRESH_SECRET` | Secret text | Random string, min 32 chars |
+| `TECHVAULT_ASSIGNMENT_COOKIE_SECRET` | Secret text | Random string, min 32 chars |
+
+### 5.1 Key-pair consistency (a common failure mode)
+
+`ASSIGNMENT_KEY_PAIR_NAME` (job parameter, passed to Terraform) and
+`SSH_ASSIGNMENT_KEY_CREDENTIALS_ID` (Jenkins credential, used by Ansible)
+name **the same conceptual key pair from two different sides**:
+
+- `ASSIGNMENT_KEY_PAIR_NAME` is the **name** AWS knows the key pair by —
+  Terraform passes it to `aws_instance.key_name` so EC2 installs its public
+  half onto the new instance.
+- `SSH_ASSIGNMENT_KEY_CREDENTIALS_ID` is the **private key file** Jenkins
+  injects for Ansible to actually SSH in with.
+
+They must be the matching pair for the same AWS key pair. If they aren't —
+e.g. the parameter names one key pair but the Jenkins credential holds a
+different key's private half — Terraform Apply (stage 10) will still
+succeed (it only needs the *name* to exist in AWS), and the pipeline will
+only fail later, at Ansible Deploy (stage 14), with an SSH authentication
+error. This is a real, easy-to-hit mismatch, not a hypothetical: keep both
+pointed at the *same* dedicated assignment key pair, and never reuse the
+production key pair (`techvault-key`) for either — no PEM file content is
+ever committed to this repository, in either case.
 
 Generate secure secrets:
 ```bash
 node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ```
 
+Optional, only if exercised: `TECHVAULT_ASSIGNMENT_GOOGLE_CLIENT_ID` (Secret
+text), `TECHVAULT_REPO_CREDENTIALS_ID` (Username with password, only if the
+repository is private).
+
+### Required job parameters (not secrets — "Build with Parameters")
+
+`devops/terraform-assignment/variables.tf` intentionally has no default for
+`key_pair_name` or `allowed_ssh_cidr`. A fresh Jenkins workspace has no
+`terraform.tfvars` (gitignored), so these must be supplied as job
+parameters, not baked into any file:
+
+| Parameter | Default | Required? |
+|---|---|---|
+| `ASSIGNMENT_KEY_PAIR_NAME` | *(none)* | Yes — build fails fast (stage 2) if blank or `techvault-key` |
+| `ASSIGNMENT_SSH_CIDR` | *(none)* | Yes — build fails fast (stage 2) if blank, `0.0.0.0/0`, missing a `/prefix`, prefix outside 0-32, or an IPv4 octet outside 0-255 |
+| `ASSIGNMENT_AWS_REGION` | `eu-central-1` | No |
+| `ASSIGNMENT_INSTANCE_TYPE` | `t3.small` | No |
+
+These four values flow only into `terraform plan -var=...` (stage 8); the
+saved plan file is what `terraform apply` (stage 10) actually applies, so
+the same values never need to be repeated or re-typed at apply time.
+
 ---
 
-## How to Run Manually (without Jenkins)
+## 6. Instructor Jenkins user
 
-### 1. Prerequisites
+See [`devops/jenkins/README.md`](../jenkins/README.md) for the full plugin
+list and host topology recommendation. Summary:
+
+1. Install **Role-Based Authorization Strategy**.
+2. Create a dedicated account for the instructor.
+3. Grant only `Overall/Read`, `Job/Read`, `Job/Build` (and `Job/Workspace`
+   if needed) on the assignment pipeline job.
+4. Do not grant `Overall/Administer`, credentials access, or node/plugin
+   administration.
+5. Verify by logging in as that account before sending credentials to the
+   instructor.
+
+---
+
+## 7. Safe workflows
+
+### Create
 
 ```bash
-# Install Terraform >= 1.6
-# Install Ansible >= 2.14
-# Install Node.js >= 20
-# Have AWS CLI configured: aws configure
-# Have an EC2 key pair downloaded to ~/.ssh/
-```
-
-### 2. Terraform
-
-```bash
-cd devops/terraform
-cp terraform.tfvars.example terraform.tfvars
-# Edit terraform.tfvars — fill in key_pair_name, allowed_ssh_cidr
+cd devops/terraform-assignment
+cp terraform.tfvars.example terraform.tfvars   # fill in key_pair_name, allowed_ssh_cidr
 terraform init
-terraform plan
+terraform validate
+terraform plan       # confirm it only shows resources to CREATE
 terraform apply
-# Note the public_ip output
 ```
+Or trigger `Jenkinsfile.assignment` end to end (recommended — proves the
+whole pipeline, not just Terraform).
 
-### 3. Ansible
+### Validate
 
 ```bash
-cd devops/ansible
-cp inventory.example.ini inventory.ini
-# Edit inventory.ini — replace REPLACE_WITH_SERVER_PUBLIC_IP with Terraform output
-ansible-playbook -i inventory.ini deploy.yml \
-  -e jwt_access_secret=YOUR_SECRET_1 \
-  -e jwt_refresh_secret=YOUR_SECRET_2 \
-  -e cookie_secret=YOUR_SECRET_3
+SERVER_IP=$(cd devops/terraform-assignment && terraform output -raw assignment_public_ip)
+curl http://$SERVER_IP/api/v1/health
+# Open browser: http://$SERVER_IP/
 ```
 
-### 4. Verify
+### Destroy (assignment only — cleanup after grading)
 
 ```bash
-SERVER_IP=$(cd devops/terraform && terraform output -raw public_ip)
-curl http://$SERVER_IP:5000/api/v1/health
-# Open browser: http://$SERVER_IP:3000
-```
-
----
-
-## How Jenkins Runs It
-
-1. Create a **Pipeline** job in Jenkins
-2. Set **Definition** → Pipeline script from SCM
-3. Set **SCM** → Git → `https://github.com/yarinzf/TechVault.git`
-4. Set **Script Path** → `devops/jenkins/Jenkinsfile`
-5. Add all 5 credentials listed in the table above
-6. Ensure the Jenkins agent has `terraform`, `ansible`, `node >= 20` installed
-7. Click **Build Now**
-8. At stage 5 (Terraform Apply) — review the plan and click **Apply**
-
----
-
-## Terraform Destroy (cleanup after grading)
-
-```bash
-cd devops/terraform
+cd devops/terraform-assignment
 terraform destroy
 ```
 
-Confirm with `yes`. This terminates the EC2 instance and deletes the security group.
-MongoDB data on the instance is lost; the Docker volume is not backed up.
+This can only ever affect resources tracked in
+`devops/terraform-assignment/terraform.tfstate` — the assignment instance
+and its security group. **Never run `terraform destroy` from
+`devops/terraform/` — that state manages the real production server.** If
+you are ever unsure which directory you are in, run `pwd` and confirm it
+ends in `terraform-assignment` before typing `yes`.
 
 ---
 
-## Final Validation URLs
+## 8. Screenshots checklist for submission
 
-After the pipeline completes, verify all of these:
-
-| URL | Expected |
-|-----|---------|
-| `http://<IP>:3000` | React storefront loads |
-| `http://<IP>:5000/api/v1/health` | `{ "data": { "status": "ok", "db": "connected" } }` |
-| `http://<IP>:5000/api-docs` | Swagger UI loads |
-| `http://<IP>:5000/api/v1/products?limit=5` | Returns keyboard/monitor/etc. products |
-
----
-
-## Screenshots Checklist for Submission
-
-- [ ] Jenkins pipeline — all 9 stages green
-- [ ] Jenkins stage 4 — Terraform plan output visible in logs
-- [ ] Jenkins stage 5 — "Apply" input gate (before clicking)
-- [ ] Jenkins stage 9 — health check output showing "TechVault is live!"
-- [ ] AWS Console → EC2 → running instance (show public IP)
-- [ ] AWS Console → Security Groups → techvault-sg (show inbound rules)
-- [ ] Browser → `http://<IP>:3000` — storefront homepage
-- [ ] Browser → `http://<IP>:3000/category/keyboards` — products visible
-- [ ] Browser → `http://<IP>:5000/api/v1/health` — JSON response
-- [ ] Browser → `http://<IP>:5000/api-docs` — Swagger UI
-- [ ] Terminal → `terraform output` — showing public_ip and URLs
-- [ ] Terminal → `terraform destroy` — successful teardown (optional, after grading)
+- [ ] Jenkins pipeline — all 15 stages green (`Jenkinsfile.assignment`)
+- [ ] Jenkins "Terraform Plan" stage output visible in logs
+- [ ] Jenkins "Manual Approval" gate (before clicking Apply)
+- [ ] Jenkins "Validate Assignment Website" stage output
+- [ ] AWS Console → EC2 → the assignment instance (public IP visible)
+- [ ] AWS Console → Security Groups → the assignment SG (inbound rules)
+- [ ] Browser → assignment frontend homepage
+- [ ] Browser → assignment `/api/v1/health` — JSON response
+- [ ] Jenkins → instructor user's permission matrix (proving no admin rights)
+- [ ] Terminal → `terraform output` (assignment directory) showing IDs/IPs
+- [ ] Terminal → `terraform destroy` (assignment directory only, after grading)
 
 ---
 
-## Troubleshooting
+## 9. Estimated AWS cost
+
+A rough range for the assignment environment while it exists (one
+`t3.small`, one 20 GB gp3 volume, in `eu-central-1`, running continuously):
+approximately **$15–25/month** if left running for a full month, or a few
+cents to low dollars for a short-lived grading window measured in hours —
+this is a ballpark for budgeting purposes, not an invoice; check the AWS
+Pricing Calculator for a current, region-accurate figure before committing
+to a longer-running instance.
+
+---
+
+## 10. Secrets and gitignore
+
+| What | Where it lives | Tracked in git? |
+|---|---|---|
+| Assignment AWS credentials, SSH key, JWT/cookie secrets | Jenkins → Manage Credentials | No — never committed |
+| `devops/terraform-assignment/terraform.tfvars` | Local disk only | No — gitignored |
+| `devops/terraform-assignment/terraform.tfstate*` | Local disk only | No — gitignored |
+| `devops/ansible-assignment/inventory.ini` | Local disk / Jenkins workspace (deleted in `post { always }`) | No — gitignored |
+| Assignment `.pem` key | Your `~/.ssh/` | No — `*.pem` is gitignored globally |
+| Assignment `.env.docker` (rendered on the server) | `/opt/techvault-assignment/.env.docker` on the EC2 instance | No — never leaves the server |
+
+Production's equivalent files (`devops/terraform/terraform.tfvars`,
+`terraform.tfstate*`, `devops/ansible/inventory.ini`) follow the same
+gitignore rules and are unaffected by any of the above.
+
+---
+
+## 11. Troubleshooting
 
 | Problem | Likely cause | Fix |
 |---------|-------------|-----|
-| `terraform apply` fails: `InvalidKeyPair.NotFound` | Key pair doesn't exist in AWS | Create key pair in AWS console first |
-| Ansible SSH timeout | EC2 still initializing | Wait 60s after Terraform apply, re-run Ansible |
-| Backend container exits | `.env.docker` secrets too short (<32 chars) | Check COOKIE_SECRET, JWT_* in Jenkins credentials |
-| Frontend shows blank page | VITE_API_URL not proxied | Nginx config is correct — check `docker compose logs frontend` |
-| `seed` fails in Ansible | Categories collection empty | Run `docker compose exec -T backend npm run seed` first |
+| `terraform apply` fails: `InvalidKeyPair.NotFound` | Assignment key pair doesn't exist in AWS yet | Create it in the AWS console first — do not reuse `techvault-key` |
+| Jenkins stage 11 fails with "REFUSING TO CONTINUE" | Terraform outputs resolved to a production identifier | Stop immediately — this means something is misconfigured; do not attempt to bypass the check |
+| Ansible SSH timeout | EC2 still initializing | Wait ~60s after apply, re-run |
+| Backend container exits | `.env.docker` secrets too short (<32 chars) | Check the three secret credentials in Jenkins |
+| Frontend shows blank page | Nginx site not enabled / config invalid | `sudo nginx -t`, check `docker compose logs frontend` |

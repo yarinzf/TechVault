@@ -1,0 +1,267 @@
+---
+# TechVault — Ansible deployment playbook for the DevOps ASSIGNMENT environment
+#
+# Targets: the Ubuntu 22.04 EC2 instance created by devops/terraform-assignment/
+# Must NEVER target devops/ansible/inventory.ini or the real production host —
+# see the safety assertion below and devops/ansible-assignment/README.md.
+#
+# Usage (manual):
+#   ansible-playbook -i inventory.ini deploy.yml \
+#     -e jwt_access_secret=SECRET1 \
+#     -e jwt_refresh_secret=SECRET2 \
+#     -e cookie_secret=SECRET3
+#
+# Usage (Jenkins):
+#   Called automatically by devops/jenkins/Jenkinsfile.assignment — secrets
+#   come from Jenkins credentials, never from a committed file.
+
+- name: Deploy TechVault — DevOps assignment environment
+  hosts: techvault_assignment
+  become: true
+
+  vars:
+    # HTTP-only, always — see devops/ansible-assignment/README.md
+    # "HTTPS architecture decision" for why this playbook deliberately never
+    # renders an HTTPS Nginx config or runs Certbot. app_domain only changes
+    # the hostname used below; it does not change the scheme.
+    public_host:  "{{ app_domain if (app_domain | default('') | length > 0) else ansible_host }}"
+    frontend_url: "http://{{ public_host }}"
+    allowed_origins: "{{ frontend_url }}"
+
+  tasks:
+
+    # ── Safety gate ────────────────────────────────────────────────────────────
+    - name: Refuse to run against anything but the assignment inventory group
+      assert:
+        that:
+          - "'techvault_assignment' in group_names"
+        fail_msg: >-
+          This playbook must only run against hosts in the [techvault_assignment]
+          inventory group. Refusing to continue — check inventory.ini.
+        success_msg: "Target confirmed: techvault_assignment group"
+
+    # ── System packages ───────────────────────────────────────────────────────
+    - name: Update apt cache
+      apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Install prerequisite packages
+      apt:
+        name:
+          - ca-certificates
+          - curl
+          - gnupg
+          - git
+          - nginx
+        state: present
+
+    # ── Docker Engine + Compose plugin ────────────────────────────────────────
+    - name: Add Docker GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker apt repository
+      apt_repository:
+        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+        state: present
+
+    - name: Install Docker Engine and Compose plugin
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-compose-plugin
+        state: present
+        update_cache: true
+
+    - name: Enable and start Docker service
+      service:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: Add ubuntu user to docker group
+      user:
+        name: ubuntu
+        groups: docker
+        append: true
+
+    - name: Reset connection so the new docker group membership takes effect
+      meta: reset_connection
+
+    # ── Repository ────────────────────────────────────────────────────────────
+    # force: false is intentional — unlike the production playbook's
+    # force: true, this will FAIL LOUDLY if the assignment checkout ever has
+    # local modifications, instead of silently discarding them. On a
+    # dedicated, non-hand-edited assignment box that tradeoff costs nothing;
+    # it exists so a stray manual debugging session on the box gets noticed
+    # rather than quietly wiped on the next deploy.
+    - name: Clone or pull TechVault repository
+      git:
+        repo:    "{{ repo_url }}"
+        dest:    "{{ app_dir }}"
+        version: "{{ repo_branch }}"
+        force:   false
+        update:  true
+
+    - name: Set app directory ownership
+      file:
+        path:    "{{ app_dir }}"
+        owner:   ubuntu
+        group:   ubuntu
+        recurse: true
+
+    # ── Environment file — assignment-only path, fully templated ─────────────
+    # Never touches production's /opt/techvault/.env.docker — this is a
+    # different file, in a different directory, rendered from a template
+    # rather than patched line-by-line.
+    - name: Render assignment .env.docker from template
+      template:
+        src:  env.docker.assignment.j2
+        dest: "{{ app_dir }}/.env.docker"
+        owner: ubuntu
+        group: ubuntu
+        mode: "0600"
+      no_log: true
+
+    # ── Nginx reverse proxy ───────────────────────────────────────────────────
+    - name: Create webroot for a future manual Certbot HTTP-01 challenge
+      file:
+        path:  /var/www/certbot
+        state: directory
+        owner: www-data
+        group: www-data
+        mode:  "0755"
+
+    - name: Template assignment Nginx site config
+      template:
+        src:  nginx-assignment.conf.j2
+        dest: /etc/nginx/sites-available/techvault-assignment
+      notify: reload nginx
+
+    - name: Enable assignment Nginx site
+      file:
+        src:   /etc/nginx/sites-available/techvault-assignment
+        dest:  /etc/nginx/sites-enabled/techvault-assignment
+        state: link
+      notify: reload nginx
+
+    - name: Disable the default Nginx site
+      file:
+        path:  /etc/nginx/sites-enabled/default
+        state: absent
+      notify: reload nginx
+
+    - name: Enable and start Nginx service
+      service:
+        name: nginx
+        state: started
+        enabled: true
+
+    - name: Flush handlers so Nginx is validated and serving before we continue
+      meta: flush_handlers
+
+    # ── HTTPS is NOT automated here — intentionally ───────────────────────────
+    # No Certbot installation or execution happens in this playbook. See
+    # devops/ansible-assignment/README.md "HTTPS architecture decision":
+    # adding TLS is a separate, manual, human-run step performed only after
+    # this HTTP-only deployment has already succeeded — never a precondition
+    # for it, and never something this automation attempts on your behalf.
+
+    # ── Docker Compose stack ──────────────────────────────────────────────────
+    - name: Build and start services
+      command: docker compose up -d --build
+      args:
+        chdir: "{{ app_dir }}"
+      become_user: ubuntu
+
+    # ── Wait for backend to pass health check ─────────────────────────────────
+    - name: Wait for backend health endpoint (direct, container port)
+      uri:
+        url:         "http://localhost:{{ backend_port }}/api/v1/health"
+        status_code: 200
+      register: health
+      retries:  12
+      delay:    10
+      until:    health.status == 200
+
+    # ── Product seeding — opt-in only, off by default ─────────────────────────
+    - name: Seed demo catalog data (only when run_seed_scripts is explicitly true)
+      command: "docker compose exec -T backend npm run {{ item }}"
+      args:
+        chdir: "{{ app_dir }}"
+      become_user: ubuntu
+      loop:
+        - seed
+        - seed:keyboards
+        - seed:monitors
+        - seed:mice
+        - seed:desktops
+        - seed:headphones
+      when: run_seed_scripts | default(false) | bool
+      ignore_errors: true
+
+    # ── Final validation ──────────────────────────────────────────────────────
+    - name: Confirm all three containers are running
+      command: docker compose ps -q
+      args:
+        chdir: "{{ app_dir }}"
+      become_user: ubuntu
+      register: compose_ps
+      changed_when: false
+      failed_when: compose_ps.stdout_lines | length != 3
+
+    - name: Final backend health check (direct)
+      uri:
+        url:         "http://localhost:{{ backend_port }}/api/v1/health"
+        status_code: 200
+      register: final_health
+
+    - name: Backend health check through Nginx
+      uri:
+        url:         "{{ frontend_url }}/api/v1/health"
+        status_code: 200
+      ignore_errors: true
+      register: nginx_health
+
+    - name: Frontend reachability through Nginx
+      uri:
+        url:         "{{ frontend_url }}/"
+        status_code: 200
+      register: nginx_frontend
+
+    - name: Optional Socket.IO endpoint check (soft — informational only)
+      uri:
+        url:            "{{ frontend_url }}/socket.io/?EIO=4&transport=polling"
+        status_code:    [200, 400]
+      ignore_errors: true
+      register: socketio_check
+
+    - name: Print deployment summary
+      debug:
+        msg:
+          - "========================================="
+          - "  TechVault ASSIGNMENT deployment complete"
+          - "========================================="
+          - "  Environment : {{ environment_name }}"
+          - "  Frontend    : {{ frontend_url }}"
+          - "  Health      : {{ frontend_url }}/api/v1/health"
+          - "  DB          : {{ final_health.json.data.mongodb.status }}"
+          - "  Uptime      : {{ final_health.json.data.uptime | int }}s"
+          - "  Nginx proxy : {{ 'OK' if nginx_health.status == 200 else 'check manually' }}"
+          - "  Socket.IO   : {{ 'reachable' if socketio_check.status is defined else 'check manually' }}"
+          - "========================================="
+
+  handlers:
+    - name: validate nginx config
+      command: nginx -t
+      listen: "reload nginx"
+
+    - name: reload nginx
+      service:
+        name:  nginx
+        state: reloaded
+      listen: "reload nginx"

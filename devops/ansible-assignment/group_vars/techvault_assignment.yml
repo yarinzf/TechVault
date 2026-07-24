@@ -1,0 +1,26 @@
+---
+# Non-secret defaults for the DevOps ASSIGNMENT environment.
+# Override any of these with -e on the ansible-playbook command line, or edit
+# this file directly for a persistent local override. Secrets (JWT/cookie)
+# are never stored here — see deploy.yml's `no_log` tasks and README.md.
+
+environment_name: devops-assignment
+
+app_dir: /opt/techvault-assignment
+repo_url: "https://github.com/yarinzf/TechVault.git"
+repo_branch: main
+
+# Leave app_domain empty for the first run, over the bare EC2 public IP.
+# Set it once you have a real domain pointed at the assignment instance —
+# this only changes the Nginx server_name and the URLs in the deployment
+# summary. It does NOT turn on HTTPS by itself: this playbook is HTTP-only,
+# always, by design. See README.md "HTTPS architecture decision" for why,
+# and for the separate, manual steps to add HTTPS afterward.
+app_domain: ""
+
+frontend_port: 3000
+backend_port: 5000
+
+# Never true by default — reseeding the full catalog on every deploy is
+# unnecessary churn and, on a shared demo dataset, actively destructive.
+run_seed_scripts: false

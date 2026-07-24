@@ -40,7 +40,16 @@ devops/terraform/tfplan
 devops/terraform/*.tfvars
 !devops/terraform/*.tfvars.example
 
-# Terraform state files (extra safety)
+# Terraform — DevOps assignment environment (separate from production above)
+devops/terraform-assignment/.terraform/
+devops/terraform-assignment/.terraform.lock.hcl
+devops/terraform-assignment/terraform.tfstate
+devops/terraform-assignment/terraform.tfstate.backup
+devops/terraform-assignment/tfplan
+devops/terraform-assignment/*.tfvars
+!devops/terraform-assignment/*.tfvars.example
+
+# Terraform state files (extra safety, covers both directories above)
 *.tfstate
 *.tfstate.*
 .terraform/
@@ -48,6 +57,13 @@ devops/terraform/*.tfvars
 # Ansible — never commit real inventory or vault passwords
 devops/ansible/inventory.ini
 devops/ansible/.vault_password
+
+# Ansible — DevOps assignment environment
+devops/ansible-assignment/inventory.ini
+devops/ansible-assignment/.vault_password
+
+# SSH private keys — never commit, production or assignment
+*.pem
 
 # Backups — never commit database dumps
 backups/

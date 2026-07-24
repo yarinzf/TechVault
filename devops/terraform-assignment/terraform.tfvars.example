@@ -1,0 +1,22 @@
+# Copy this file to terraform.tfvars and fill in real values.
+# terraform.tfvars is gitignored — never commit real values.
+#
+# This is the ASSIGNMENT environment. Nothing here should ever match
+# production (see devops/terraform/terraform.tfvars, which you do not need
+# and must not copy from).
+
+environment_name     = "devops-assignment"
+app_name              = "techvault"
+aws_region            = "eu-central-1"
+instance_type         = "t3.small"
+key_pair_name         = "techvault-assignment-key"   # a NEW key pair — must NOT be "techvault-key"
+allowed_ssh_cidr      = "203.0.113.10/32"             # replace with YOUR real IP/32 — never 0.0.0.0/0
+volume_size_gb        = 20
+app_domain            = ""                            # leave empty for HTTP-only first run
+
+# Jenkins co-located mode (optional — default topology keeps Jenkins on its
+# own separate host, see devops/jenkins/README.md). Only set these if you
+# deliberately chose Option B.
+# enable_jenkins_port  = true
+# jenkins_port         = 8080
+# allowed_jenkins_cidr = "203.0.113.10/32"

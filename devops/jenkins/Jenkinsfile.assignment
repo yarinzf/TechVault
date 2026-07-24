@@ -1,0 +1,471 @@
+// TechVault — DevOps ASSIGNMENT Pipeline
+//
+// This pipeline is deliberately separate from devops/jenkins/Jenkinsfile
+// (production). It only ever reads/writes devops/terraform-assignment/ and
+// devops/ansible-assignment/, and asserts that at every step: no directory,
+// IP, or instance ID resembles production.
+//
+// Pipeline job configuration:
+//   Definition  : Pipeline script from SCM
+//   SCM         : Git  →  https://github.com/yarinzf/TechVault.git
+//   Script Path : devops/jenkins/Jenkinsfile.assignment
+//
+// Required Jenkins credentials (Manage Jenkins → Credentials → Global):
+//
+//   ID                                    Kind                            Notes
+//   ────────────────────────────────────  ──────────────────────────────  ─────────────────────────────
+//   AWS_ASSIGNMENT_CREDENTIALS_ID         Amazon Web Services             Access key + secret key (assignment-scoped)
+//   SSH_ASSIGNMENT_KEY_CREDENTIALS_ID     SSH Username with private key   username=ubuntu, key=assignment .pem file
+//   TECHVAULT_ASSIGNMENT_JWT_ACCESS_SECRET Secret text                   min 32 chars
+//   TECHVAULT_ASSIGNMENT_JWT_REFRESH_SECRET Secret text                  min 32 chars
+//   TECHVAULT_ASSIGNMENT_COOKIE_SECRET    Secret text                    min 32 chars
+//   TECHVAULT_ASSIGNMENT_GOOGLE_CLIENT_ID Secret text (optional)         only if Google OAuth is exercised
+//   TECHVAULT_REPO_CREDENTIALS_ID         Username with password (opt.)  only if the repository is private
+//
+// Required job parameters (Build with Parameters — NOT secrets, set per run):
+//
+//   Name                          Default        Notes
+//   ────────────────────────────  ─────────────  ─────────────────────────────────────────────
+//   ASSIGNMENT_KEY_PAIR_NAME      (none)          REQUIRED. Must not be blank or "techvault-key".
+//   ASSIGNMENT_SSH_CIDR           (none)          REQUIRED. Must not be blank/"0.0.0.0/0"; prefix 0-32, octets 0-255.
+//   ASSIGNMENT_AWS_REGION         eu-central-1    Safe to leave as default.
+//   ASSIGNMENT_INSTANCE_TYPE      t3.small        Safe to leave as default.
+//
+// devops/terraform-assignment/variables.tf requires key_pair_name and
+// allowed_ssh_cidr with NO default (by design — see that file). A brand new
+// Jenkins workspace has no committed terraform.tfvars (it's gitignored), so
+// these two values MUST come from job parameters or the Terraform Plan
+// stage has nothing to pass and will fail. The "Validate Project" stage
+// below fails the build early, with a clear message, if either is missing
+// or unsafe — instead of letting `terraform plan` fail later with a
+// confusing "no value for required variable" prompt/error.
+//
+// Required tools on the Jenkins agent:
+//   - git, docker (with the compose plugin)
+//   - node >= 20, npm >= 10
+//   - terraform >= 1.6
+//   - ansible-playbook >= 2.14
+//   - curl
+
+pipeline {
+    agent any
+
+    parameters {
+        string(name: 'ASSIGNMENT_KEY_PAIR_NAME', defaultValue: '', description: 'REQUIRED. Existing AWS EC2 key pair created specifically for this assignment. Must NOT be "techvault-key" (the production key pair).')
+        string(name: 'ASSIGNMENT_SSH_CIDR',      defaultValue: '', description: 'REQUIRED. CIDR allowed to reach port 22 on the assignment instance, e.g. 203.0.113.10/32. Must NOT be blank or 0.0.0.0/0.')
+        string(name: 'ASSIGNMENT_AWS_REGION',    defaultValue: 'eu-central-1', description: 'AWS region for the assignment environment.')
+        string(name: 'ASSIGNMENT_INSTANCE_TYPE', defaultValue: 't3.small',     description: 'EC2 instance type for the assignment environment.')
+    }
+
+    environment {
+        // ── Assignment identity — never overridable by job parameters ───────────
+        ENVIRONMENT_NAME           = 'devops-assignment'
+        GITHUB_REPO_URL            = 'https://github.com/yarinzf/TechVault.git'
+        TF_DIR                     = 'devops/terraform-assignment'
+        ANSIBLE_DIR                = 'devops/ansible-assignment'
+
+        // ── Production identifiers — used ONLY to assert they are never touched ──
+        PRODUCTION_TF_DIR          = 'devops/terraform'
+        PRODUCTION_ANSIBLE_DIR     = 'devops/ansible'
+        PRODUCTION_INSTANCE_ID     = 'i-0d68157135a96965d'
+        PRODUCTION_PUBLIC_IP       = '3.121.64.122'
+        PRODUCTION_PRIVATE_IP      = '172.31.41.231'
+
+        // ── Credential IDs — must match entries in Jenkins → Manage Credentials ──
+        AWS_CREDENTIALS_ID         = 'AWS_ASSIGNMENT_CREDENTIALS_ID'
+        SSH_KEY_CREDENTIALS_ID     = 'SSH_ASSIGNMENT_KEY_CREDENTIALS_ID'
+        JWT_ACCESS_SECRET_ID       = 'TECHVAULT_ASSIGNMENT_JWT_ACCESS_SECRET'
+        JWT_REFRESH_SECRET_ID      = 'TECHVAULT_ASSIGNMENT_JWT_REFRESH_SECRET'
+        COOKIE_SECRET_ID           = 'TECHVAULT_ASSIGNMENT_COOKIE_SECRET'
+    }
+
+    options {
+        timestamps()
+        timeout(time: 40, unit: 'MINUTES')
+        buildDiscarder(logRotator(numToKeepStr: '10'))
+        ansiColor('xterm')
+    }
+
+    stages {
+
+        // ── 1. Checkout ───────────────────────────────────────────────────────
+        stage('Checkout') {
+            steps {
+                checkout scm
+                sh 'echo "Branch: ${GIT_BRANCH}  Commit: ${GIT_COMMIT}"'
+            }
+        }
+
+        // ── 2. Validate Project ───────────────────────────────────────────────
+        stage('Validate Project') {
+            steps {
+                sh '''
+                    echo "── Safety guard: static path / name checks ──"
+                    [ "${TF_DIR}" = "devops/terraform-assignment" ] || { echo "REFUSING: TF_DIR is not the assignment directory"; exit 1; }
+                    [ "${TF_DIR}" != "${PRODUCTION_TF_DIR}" ]       || { echo "REFUSING: TF_DIR equals the production Terraform directory"; exit 1; }
+                    [ "${ANSIBLE_DIR}" = "devops/ansible-assignment" ] || { echo "REFUSING: ANSIBLE_DIR is not the assignment directory"; exit 1; }
+                    [ "${ANSIBLE_DIR}" != "${PRODUCTION_ANSIBLE_DIR}" ] || { echo "REFUSING: ANSIBLE_DIR equals the production Ansible directory"; exit 1; }
+                    case "${ENVIRONMENT_NAME}" in
+                        *[Pp][Rr][Oo][Dd]*) echo "REFUSING: ENVIRONMENT_NAME resembles production"; exit 1 ;;
+                    esac
+                    echo "  OK  environment_name=${ENVIRONMENT_NAME}"
+                    echo "  OK  tf_dir=${TF_DIR}  ansible_dir=${ANSIBLE_DIR}"
+
+                    echo "── Safety guard: required assignment Terraform inputs ──"
+                    if [ -z "${ASSIGNMENT_KEY_PAIR_NAME}" ]; then
+                        echo "REFUSING: ASSIGNMENT_KEY_PAIR_NAME is blank. Set it under 'Build with Parameters' — devops/terraform-assignment/variables.tf has no default for key_pair_name by design."
+                        exit 1
+                    fi
+                    if [ "${ASSIGNMENT_KEY_PAIR_NAME}" = "techvault-key" ]; then
+                        echo "REFUSING: ASSIGNMENT_KEY_PAIR_NAME equals 'techvault-key' — that is the production key pair."
+                        exit 1
+                    fi
+                    # Charset allowlist — this value is later spliced into a
+                    # double-quoted shell argument in the Terraform Plan stage
+                    # (Groovy string interpolation, not shell-escaped). Restricting
+                    # it to a safe charset here closes that injection surface,
+                    # rather than relying on every downstream usage to quote it
+                    # perfectly.
+                    case "${ASSIGNMENT_KEY_PAIR_NAME}" in
+                        *[!A-Za-z0-9_.-]*)
+                            echo "REFUSING: ASSIGNMENT_KEY_PAIR_NAME contains characters outside [A-Za-z0-9_.-]: '${ASSIGNMENT_KEY_PAIR_NAME}'"
+                            exit 1
+                            ;;
+                    esac
+                    if [ -z "${ASSIGNMENT_SSH_CIDR}" ]; then
+                        echo "REFUSING: ASSIGNMENT_SSH_CIDR is blank. Set it under 'Build with Parameters' — devops/terraform-assignment/variables.tf has no default for allowed_ssh_cidr by design."
+                        exit 1
+                    fi
+                    if [ "${ASSIGNMENT_SSH_CIDR}" = "0.0.0.0/0" ]; then
+                        echo "REFUSING: ASSIGNMENT_SSH_CIDR must not be 0.0.0.0/0 — use YOUR_IP/32 instead."
+                        exit 1
+                    fi
+
+                    # Real CIDR validation, not just a regex shape check: split
+                    # into IP/prefix, then check the prefix is 0-32 and every
+                    # IPv4 octet is a plain integer in 0-255 and there are
+                    # exactly 4 of them.
+                    case "${ASSIGNMENT_SSH_CIDR}" in
+                        */*) : ;;
+                        *) echo "REFUSING: ASSIGNMENT_SSH_CIDR must be in CIDR form A.B.C.D/NN: '${ASSIGNMENT_SSH_CIDR}'"; exit 1 ;;
+                    esac
+                    CIDR_IP="${ASSIGNMENT_SSH_CIDR%%/*}"
+                    CIDR_PREFIX="${ASSIGNMENT_SSH_CIDR##*/}"
+
+                    case "${CIDR_PREFIX}" in
+                        ''|*[!0-9]*)
+                            echo "REFUSING: ASSIGNMENT_SSH_CIDR prefix is not a plain integer: '${CIDR_PREFIX}'"
+                            exit 1
+                            ;;
+                    esac
+                    if [ "${CIDR_PREFIX}" -lt 0 ] || [ "${CIDR_PREFIX}" -gt 32 ]; then
+                        echo "REFUSING: ASSIGNMENT_SSH_CIDR prefix out of range 0-32: '${CIDR_PREFIX}'"
+                        exit 1
+                    fi
+
+                    OCTET_COUNT=0
+                    OLD_IFS="${IFS}"
+                    IFS='.'
+                    for OCTET in ${CIDR_IP}; do
+                        OCTET_COUNT=$((OCTET_COUNT + 1))
+                        case "${OCTET}" in
+                            ''|*[!0-9]*)
+                                echo "REFUSING: ASSIGNMENT_SSH_CIDR has a non-numeric IPv4 octet: '${OCTET}' in '${CIDR_IP}'"
+                                IFS="${OLD_IFS}"
+                                exit 1
+                                ;;
+                        esac
+                        if [ "${OCTET}" -lt 0 ] || [ "${OCTET}" -gt 255 ]; then
+                            echo "REFUSING: ASSIGNMENT_SSH_CIDR has an out-of-range IPv4 octet (0-255): '${OCTET}' in '${CIDR_IP}'"
+                            IFS="${OLD_IFS}"
+                            exit 1
+                        fi
+                    done
+                    IFS="${OLD_IFS}"
+                    if [ "${OCTET_COUNT}" -ne 4 ]; then
+                        echo "REFUSING: ASSIGNMENT_SSH_CIDR IPv4 address does not have exactly 4 octets: '${CIDR_IP}'"
+                        exit 1
+                    fi
+                    if [ -z "${ASSIGNMENT_AWS_REGION}" ]; then
+                        echo "REFUSING: ASSIGNMENT_AWS_REGION is blank — leave it at its default (eu-central-1) or set an explicit region."
+                        exit 1
+                    fi
+                    case "${ASSIGNMENT_AWS_REGION}" in
+                        *[!a-z0-9-]*)
+                            echo "REFUSING: ASSIGNMENT_AWS_REGION contains characters outside [a-z0-9-]: '${ASSIGNMENT_AWS_REGION}'"
+                            exit 1
+                            ;;
+                    esac
+                    if [ -z "${ASSIGNMENT_INSTANCE_TYPE}" ]; then
+                        echo "REFUSING: ASSIGNMENT_INSTANCE_TYPE is blank — leave it at its default (t3.small) or set an explicit type."
+                        exit 1
+                    fi
+                    case "${ASSIGNMENT_INSTANCE_TYPE}" in
+                        *[!A-Za-z0-9.]*)
+                            echo "REFUSING: ASSIGNMENT_INSTANCE_TYPE contains characters outside [A-Za-z0-9.]: '${ASSIGNMENT_INSTANCE_TYPE}'"
+                            exit 1
+                            ;;
+                    esac
+                    echo "  OK  assignment_key_pair_name=${ASSIGNMENT_KEY_PAIR_NAME}"
+                    echo "  OK  assignment_ssh_cidr=${ASSIGNMENT_SSH_CIDR}"
+                    echo "  OK  assignment_aws_region=${ASSIGNMENT_AWS_REGION}"
+                    echo "  OK  assignment_instance_type=${ASSIGNMENT_INSTANCE_TYPE}"
+
+                    echo "── Checking required assignment files ──"
+                    MISSING=0
+                    for f in \
+                        Dockerfile \
+                        docker-compose.yml \
+                        .env.docker.example \
+                        client/Dockerfile \
+                        client/nginx.conf \
+                        devops/terraform-assignment/main.tf \
+                        devops/terraform-assignment/variables.tf \
+                        devops/ansible-assignment/deploy.yml \
+                        devops/ansible-assignment/inventory.example.ini; do
+                        if [ -f "$f" ]; then
+                            echo "  OK  $f"
+                        else
+                            echo "  MISSING  $f"
+                            MISSING=1
+                        fi
+                    done
+                    [ "$MISSING" -eq 0 ] || exit 1
+                    echo "All validations passed."
+                '''
+            }
+        }
+
+        // ── 3. Run Backend Tests ──────────────────────────────────────────────
+        stage('Run Backend Tests') {
+            steps {
+                sh 'npm ci'
+                sh 'npm test'
+            }
+        }
+
+        // ── 4. Build Frontend ─────────────────────────────────────────────────
+        stage('Build Frontend') {
+            steps {
+                dir('client') {
+                    sh 'npm ci'
+                    sh 'npm run build'
+                }
+            }
+        }
+
+        // ── 5. Validate Docker Compose ────────────────────────────────────────
+        stage('Validate Docker Compose') {
+            steps {
+                sh 'docker compose config --quiet'
+            }
+        }
+
+        // ── 6. Terraform Init ─────────────────────────────────────────────────
+        stage('Terraform Init') {
+            steps {
+                withCredentials([[
+                    $class:            'AmazonWebServicesCredentialsBinding',
+                    credentialsId:     env.AWS_CREDENTIALS_ID,
+                    accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                    secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                ]]) {
+                    dir(env.TF_DIR) {
+                        sh 'terraform init -input=false'
+                    }
+                }
+            }
+        }
+
+        // ── 7. Terraform Validate ─────────────────────────────────────────────
+        stage('Terraform Validate') {
+            steps {
+                dir(env.TF_DIR) {
+                    sh 'terraform validate'
+                }
+            }
+        }
+
+        // ── 8. Terraform Plan ─────────────────────────────────────────────────
+        stage('Terraform Plan') {
+            steps {
+                withCredentials([[
+                    $class:            'AmazonWebServicesCredentialsBinding',
+                    credentialsId:     env.AWS_CREDENTIALS_ID,
+                    accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                    secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                ]]) {
+                    dir(env.TF_DIR) {
+                        sh """
+                            terraform plan -input=false -out=tfplan \
+                                -var="environment_name=${env.ENVIRONMENT_NAME}" \
+                                -var="key_pair_name=${params.ASSIGNMENT_KEY_PAIR_NAME}" \
+                                -var="allowed_ssh_cidr=${params.ASSIGNMENT_SSH_CIDR}" \
+                                -var="aws_region=${params.ASSIGNMENT_AWS_REGION}" \
+                                -var="instance_type=${params.ASSIGNMENT_INSTANCE_TYPE}"
+                        """
+                    }
+                }
+            }
+        }
+
+        // ── 9. Manual Approval ────────────────────────────────────────────────
+        stage('Manual Approval') {
+            input {
+                message 'Review the plan above. It must ONLY create new resources tagged for the assignment environment, and must never reference the production instance ID or IPs printed in this Jenkinsfile. Apply?'
+                ok      'Apply — plan reviewed, no production resource is affected'
+            }
+            steps {
+                echo 'Approved by a human reviewer — proceeding to apply.'
+            }
+        }
+
+        // ── 10. Terraform Apply ───────────────────────────────────────────────
+        stage('Terraform Apply') {
+            steps {
+                withCredentials([[
+                    $class:            'AmazonWebServicesCredentialsBinding',
+                    credentialsId:     env.AWS_CREDENTIALS_ID,
+                    accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                    secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                ]]) {
+                    dir(env.TF_DIR) {
+                        // No -var flags here on purpose: applying a saved plan file
+                        // does not accept them (Terraform errors on -var + a plan
+                        // file argument) — the values are already baked into tfplan
+                        // from the Terraform Plan stage above.
+                        sh 'terraform apply -input=false tfplan'
+                    }
+                }
+            }
+        }
+
+        // ── 11. Read Assignment Outputs ───────────────────────────────────────
+        stage('Read Assignment Outputs') {
+            steps {
+                withCredentials([[
+                    $class:            'AmazonWebServicesCredentialsBinding',
+                    credentialsId:     env.AWS_CREDENTIALS_ID,
+                    accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                    secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                ]]) {
+                    dir(env.TF_DIR) {
+                        script {
+                            env.SERVER_ID      = sh(script: 'terraform output -raw assignment_instance_id', returnStdout: true).trim()
+                            env.SERVER_IP      = sh(script: 'terraform output -raw assignment_public_ip',   returnStdout: true).trim()
+                            env.SERVER_PRIVATE = sh(script: 'terraform output -raw assignment_private_ip',  returnStdout: true).trim()
+                            env.FRONTEND_URL   = sh(script: 'terraform output -raw frontend_url',           returnStdout: true).trim()
+                            env.HEALTH_URL     = sh(script: 'terraform output -raw backend_health_url',     returnStdout: true).trim()
+
+                            if (env.SERVER_ID == env.PRODUCTION_INSTANCE_ID) {
+                                error("REFUSING TO CONTINUE: resolved instance ID equals the production instance ID (${env.PRODUCTION_INSTANCE_ID}).")
+                            }
+                            if (env.SERVER_IP == env.PRODUCTION_PUBLIC_IP) {
+                                error("REFUSING TO CONTINUE: resolved public IP equals the current production public IP (${env.PRODUCTION_PUBLIC_IP}).")
+                            }
+                            if (env.SERVER_PRIVATE == env.PRODUCTION_PRIVATE_IP) {
+                                error("REFUSING TO CONTINUE: resolved private IP equals the production private IP (${env.PRODUCTION_PRIVATE_IP}).")
+                            }
+
+                            echo "Assignment instance : ${env.SERVER_ID}"
+                            echo "Assignment public IP : ${env.SERVER_IP}"
+                            echo "Frontend URL         : ${env.FRONTEND_URL}"
+                        }
+                    }
+                }
+            }
+        }
+
+        // ── 12. Generate Assignment Inventory ─────────────────────────────────
+        stage('Generate Assignment Inventory') {
+            steps {
+                sh """
+                    cat > ${env.ANSIBLE_DIR}/inventory.ini << 'EOF'
+[techvault_assignment]
+${env.SERVER_IP} ansible_user=ubuntu
+
+[techvault_assignment:vars]
+ansible_python_interpreter=/usr/bin/python3
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+EOF
+                    echo "Assignment inventory written for ${env.SERVER_IP}"
+                """
+            }
+        }
+
+        // ── 13. Ansible Syntax Check ───────────────────────────────────────────
+        stage('Ansible Syntax Check') {
+            steps {
+                sh "ansible-playbook -i ${env.ANSIBLE_DIR}/inventory.ini ${env.ANSIBLE_DIR}/deploy.yml --syntax-check"
+            }
+        }
+
+        // ── 14. Ansible Deploy ─────────────────────────────────────────────────
+        stage('Ansible Deploy') {
+            steps {
+                withCredentials([
+                    sshUserPrivateKey(
+                        credentialsId:   env.SSH_KEY_CREDENTIALS_ID,
+                        keyFileVariable: 'SSH_KEY_FILE'
+                    ),
+                    string(credentialsId: env.JWT_ACCESS_SECRET_ID,  variable: 'JWT_ACCESS_SECRET'),
+                    string(credentialsId: env.JWT_REFRESH_SECRET_ID, variable: 'JWT_REFRESH_SECRET'),
+                    string(credentialsId: env.COOKIE_SECRET_ID,       variable: 'COOKIE_SECRET'),
+                ]) {
+                    sh """
+                        ansible-playbook \
+                            -i ${env.ANSIBLE_DIR}/inventory.ini \
+                            --private-key=\$SSH_KEY_FILE \
+                            ${env.ANSIBLE_DIR}/deploy.yml \
+                            -e "jwt_access_secret=\$JWT_ACCESS_SECRET" \
+                            -e "jwt_refresh_secret=\$JWT_REFRESH_SECRET" \
+                            -e "cookie_secret=\$COOKIE_SECRET"
+                    """
+                }
+            }
+        }
+
+        // ── 15. Validate Assignment Website ───────────────────────────────────
+        stage('Validate Assignment Website') {
+            steps {
+                sh """
+                    echo "── Assignment backend health check ──"
+                    curl -sf "${env.HEALTH_URL}" | grep -q '"status"'
+                    echo "  Backend: OK"
+
+                    echo "── Assignment frontend reachability ──"
+                    STATUS=\$(curl -so /dev/null -w '%{http_code}' "${env.FRONTEND_URL}")
+                    [ "\$STATUS" = "200" ] || { echo "Frontend returned HTTP \$STATUS"; exit 1; }
+                    echo "  Frontend: OK (HTTP \$STATUS)"
+
+                    echo ""
+                    echo "======================================="
+                    echo "  TechVault ASSIGNMENT environment is live!"
+                    echo "  Frontend : ${env.FRONTEND_URL}"
+                    echo "  Health   : ${env.HEALTH_URL}"
+                    echo "======================================="
+                """
+            }
+        }
+    }
+
+    post {
+        always {
+            // Remove generated inventory so the assignment IP doesn't linger in the workspace
+            sh "rm -f ${env.ANSIBLE_DIR}/inventory.ini || true"
+        }
+        success {
+            echo "Pipeline SUCCESS — assignment environment '${env.ENVIRONMENT_NAME}' deployed and healthy."
+        }
+        failure {
+            echo "Pipeline FAILED — review the stage logs above. No production system was touched by this pipeline."
+        }
+    }
+}
+
+// ── What this pipeline deliberately never does ────────────────────────────────
+// - No stage reads or writes devops/terraform/ or devops/ansible/inventory.ini.
+// - No stage runs `terraform destroy` — cleanup is a separate, manual, human step.
+// - No stage invokes devops/scripts/health-check.sh or any production script.
+// - No stage connects to 3.121.64.122 or 172.31.41.231 — and stage 11 actively
+//   fails the build if Terraform's own outputs ever resolve to those values.
