@@ -21,7 +21,7 @@ data "aws_ami" "ubuntu" {
 # front of the app, so 80/443 is the only public path into the stack.
 resource "aws_security_group" "assignment" {
   name        = "${var.app_name}-${var.environment_name}-sg"
-  description = "TechVault DevOps assignment (${var.environment_name}) — isolated from production"
+  description = "TechVault DevOps assignment (${var.environment_name}) - isolated from production"
 
   ingress {
     description = "SSH"
