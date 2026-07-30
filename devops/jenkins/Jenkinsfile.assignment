@@ -257,7 +257,11 @@ pipeline {
         // ── 5. Validate Docker Compose ────────────────────────────────────────
         stage('Validate Docker Compose') {
             steps {
-                sh 'docker compose config --quiet'
+                sh '''
+                cp .env.docker.example .env.docker
+                docker compose config --quiet
+                rm -f .env.docker
+            '''
             }
         }
 
