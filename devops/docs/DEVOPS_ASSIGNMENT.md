@@ -559,11 +559,12 @@ start of the next stage (Docker Compose validation, Terraform Init).
 Stage 8 (`terraform plan`) on Build #8 returned:
 **`No changes. Your infrastructure matches the configuration.`**
 
-This is a **positive** result, not a null one: it means the live AWS
-infrastructure Terraform already tracks (from a previous `apply`) matches
-the declared configuration exactly, with zero drift. That is exactly the
-behavior expected of Infrastructure-as-Code — reproducible, idempotent
-infrastructure, not "Terraform did nothing."
+This is a **positive** result, not a null one: it means the AWS resources
+currently tracked by this Terraform state already match the declared
+configuration, with no changes required at the time of the plan. This
+demonstrates consistent, idempotent desired-state management for the
+existing Assignment environment. A no-change plan by itself is not evidence
+of a complete from-scratch recreation.
 
 ![Terraform plan — no changes](assignment-screenshots-safe/06-terraform-plan-no-changes.png)
 
@@ -745,41 +746,65 @@ opaque box; the original screenshot is not embedded in this document.
 ## Troubleshooting and Implementation Journey
 
 As the build-history graph below shows, reaching Build #8 was not a
-straight line — seven earlier attempts failed at different stages, each
-diagnosed and fixed in turn:
+straight line — earlier runs surfaced several distinct, real issues before
+the pipeline succeeded end to end. The items below are grouped by kind
+rather than mapped one-to-one onto specific build numbers; more than one
+issue could affect a given run, and not every failed run necessarily
+corresponds to a unique root cause.
 
-1. **Docker Compose validation had no `.env.docker`.** Fixed by having the
-   "Validate Docker Compose" stage copy `.env.docker.example` →
-   `.env.docker` before validating, then removing it.
-2. **AWS rejected a Security Group description containing a Unicode em
-   dash.** Fixed by using plain ASCII punctuation throughout.
-3. **Jenkins could not SSH to the assignment EC2.** Only the operator's
-   home IP was permitted, but Ansible connects *from* the Jenkins host.
-   Fixed by adding the Jenkins host's IP as a second, dedicated SSH ingress
-   rule (see [Network access (SSH)](#production-vs-assignment-isolation)).
-4. **Backend container kept restarting because `SMTP_PORT` was empty.**
-   Fixed by setting `SMTP_PORT=587` in the assignment env template.
-5. **Result: Build #8 completed successfully end-to-end** after the above
-   four fixes.
-6. **Java runtime updated to OpenJDK 21** on the Jenkins host, matching
-   current Jenkins LTS's minimum requirement.
-7. **Jenkins apt signing key rotated** to the current LTS key, with
-   `force: true` added so re-provisioning always refreshes it.
-8. **Jenkins loopback bind-check false positive** — the check now accepts
-   both `127.0.0.1:8080` and its IPv4-mapped-IPv6 form
-   (`[::ffff:127.0.0.1]:8080`) as valid loopback bindings, while still
-   rejecting every wildcard form.
-9. **ASCII-only Security Group descriptions** applied to the Jenkins host
-   Terraform module too (same class of bug as #2).
-10. **Preventive fix:** the same em-dash issue was found and corrected in a
-    dormant, disabled-by-default co-located-Jenkins ingress rule, even
-    though that code path has never been exercised.
+### Pipeline issues encountered before Build #8
+
+1. **Docker Compose validation had no `.env.docker`.** `docker compose
+   config --quiet` requires the env file to exist even just to validate
+   syntax. Fixed by having the "Validate Docker Compose" stage copy
+   `.env.docker.example` → `.env.docker` before validating, then removing
+   it.
+2. **Manual Approval timeout.** An earlier run timed out while waiting at
+   the human approval gate. This was an execution/run-management issue —
+   nobody clicked Apply in time — not an infrastructure or code defect.
+3. **AWS rejected a Security Group description containing a Unicode em
+   dash.** Fixed by using plain ASCII punctuation in AWS-facing Security
+   Group descriptions.
+4. **Jenkins/Ansible could not SSH to the Assignment EC2.** Only the
+   operator's home CIDR had been allowed, but Ansible connects *from* the
+   Jenkins host. Fixed by adding the Jenkins host's own restricted `/32` as
+   an independent SSH source (see
+   [Network access (SSH)](#production-vs-assignment-isolation)).
+5. **Backend container was unhealthy/restarting because `SMTP_PORT` was
+   empty.** Fixed by setting `SMTP_PORT=587` in the Assignment environment
+   template.
+
+After resolving the pipeline-blocking issues above, Build #8 completed the
+full end-to-end pipeline successfully.
+
+### Additional compatibility and hardening fixes
+
+These are separate, later hardening changes on the Jenkins host side —
+compatibility updates and defensive fixes, not fixes for a specific failed
+Assignment build:
+
+- **Java runtime updated to OpenJDK 21** on the Jenkins host, matching
+  current Jenkins LTS's minimum requirement.
+- **Jenkins apt signing key rotated** to the current 2026 LTS key, with
+  `force: true` added so re-provisioning always refreshes it.
+- **Jenkins loopback bind-check false positive resolved** — the check now
+  accepts both `127.0.0.1:8080` and its IPv4-mapped-IPv6 form
+  (`[::ffff:127.0.0.1]:8080`) as valid loopback bindings, while still
+  rejecting every wildcard form.
+- **Jenkins-host AWS Security Group descriptions converted to ASCII**
+  (same class of fix as the em-dash issue above, applied to the
+  `terraform-jenkins` module).
+- **Preventive ASCII fix in the dormant co-located-Jenkins ingress rule** —
+  the same em-dash pattern was found and corrected in a disabled-by-default
+  ingress rule, even though that code path has never been exercised.
 
 ![Pipeline stage history](assignment-screenshots/05-jenkins-pipeline-stages.png)
 
-**Figure — Build-by-build stage graph.** Builds #1–#7 (red ✗ at various
-stages) versus Build #8 (green ✓ across all 15 stages) — the iterative
-process that led to the final successful run.
+**Figure — Build-by-build stage graph.** Builds #1–#7 show failures at
+various stages (red ✗); Build #8 shows all 15 stages green (✓). The graph
+does not attribute each earlier failure to a specific item listed above —
+it illustrates the overall iterative process that led to the final
+successful run.
 
 ---
 
