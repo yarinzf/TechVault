@@ -241,9 +241,11 @@ devops/
 └── docs/
     ├── DEVOPS_ASSIGNMENT.md               This file
     ├── assignment-screenshots/            32 approved, unmodified original screenshots
-    ├── assignment-screenshots-safe/       4 presentation copies with the operator's personal CIDR redacted
-    └── submission/                        Final PDF protocol document
+    └── assignment-screenshots-safe/       4 presentation copies with the operator's personal CIDR redacted
 ```
+
+The PDF protocol document is submitted separately to the lecturer/course
+system and does not live in this GitHub repository.
 
 ![Repository structure](assignment-screenshots/13-github-devops-assignment-structure.png)
 
@@ -255,12 +257,22 @@ separation described above is visible directly in the file layout.
 
 ## Terraform
 
-Terraform is responsible for the physical AWS infrastructure: one EC2
-instance + one security group per environment (assignment, Jenkins host).
-Each module is an independent Root Module with its own state file — there
-is no `terraform_remote_state` reference between any of the three states
-(production, assignment, Jenkins host), and no way for one module's `apply`
-or `destroy` to touch another's resources.
+Terraform provisions the core AWS resources for the isolated environments:
+an EC2 instance and Security Group for the Assignment environment, and an
+EC2 instance and Security Group for the Jenkins host. The Jenkins-host
+module can also allocate an optional Elastic IP; this option is enabled in
+the current deployed Jenkins environment (see
+[Jenkins Host](#jenkins-host)).
+
+Each module is an independent Root Module with its own state file. There is
+no `terraform_remote_state` reference between the Production, Assignment,
+and Jenkins-host states. Under the configured modules and documented
+workflow, an apply or destroy executed from one module manages only the
+resources tracked by that module's own state — this is enforced by
+separate module directories, separate state files, the absence of any
+production instance ID as an input, the validation/precondition blocks
+described below, and the Jenkins runtime guards described in
+[Security Guards](#security-guards).
 
 Input validation rejects production-like values before `terraform plan` is
 even attempted:
@@ -687,8 +699,14 @@ Summary of every layer:
   drift toward production-like values.
 - **Ansible:** the first task in every play asserts the target host belongs
   to the correct inventory group before doing anything else.
-- **Network:** application ports (3000/5000) are never exposed publicly —
-  only Nginx on 80/443. SSH is restricted to exactly two `/32` sources (see
+- **Network:** Docker Compose maps the application ports (3000/5000) on the
+  EC2 host, but the Security Group has no ingress rule for either — they are
+  not reachable from the internet, only through the host's own Nginx on
+  port 80. Port 443 is open in the Security Group, but the automated
+  assignment deployment itself is HTTP-only, always (see
+  [HTTPS decision](#https-decision)) — 443 is reserved
+  for a possible manual, later HTTPS step, not used by the pipeline. SSH is
+  restricted to exactly two `/32` sources (see
   [Network access (SSH)](#production-vs-assignment-isolation)).
 
 ![Jenkinsfile safety guard](assignment-screenshots/24-github-jenkins-ssh-safety-guard.png)

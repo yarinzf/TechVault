@@ -24,13 +24,13 @@ output "ssh_command" {
 }
 
 output "frontend_url" {
-  description = "TechVault storefront URL (HTTPS if app_domain is set, otherwise HTTP over the bare IP)"
-  value       = var.app_domain != "" ? "https://${var.app_domain}" : "http://${aws_instance.assignment.public_ip}"
+  description = "TechVault storefront URL through the assignment host Nginx reverse proxy"
+  value       = var.app_domain != "" ? "http://${var.app_domain}" : "http://${aws_instance.assignment.public_ip}"
 }
 
 output "backend_health_url" {
-  description = "Backend health check endpoint, reached through the host Nginx reverse proxy"
-  value       = var.app_domain != "" ? "https://${var.app_domain}/api/v1/health" : "http://${aws_instance.assignment.public_ip}/api/v1/health"
+  description = "Backend health check endpoint through the assignment host Nginx reverse proxy"
+  value       = var.app_domain != "" ? "http://${var.app_domain}/api/v1/health" : "http://${aws_instance.assignment.public_ip}/api/v1/health"
 }
 
 output "jenkins_url" {
