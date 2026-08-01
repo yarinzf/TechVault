@@ -1,4 +1,4 @@
-# ── AMI — latest Ubuntu 22.04 LTS (Canonical official account) ───────────────
+# ── AMI - latest Ubuntu 22.04 LTS (Canonical official account) ───────────────
 data "aws_ami" "ubuntu" {
   most_recent = true
   owners      = ["099720109477"] # Canonical
@@ -16,12 +16,12 @@ data "aws_ami" "ubuntu" {
 
 # ── Security Group ────────────────────────────────────────────────────────────
 # SSH (restricted) + HTTP/HTTPS only. Jenkins's own port 8080 is deliberately
-# NOT opened here — devops/ansible-jenkins/ binds Jenkins to 127.0.0.1:8080
+# NOT opened here - devops/ansible-jenkins/ binds Jenkins to 127.0.0.1:8080
 # and puts host Nginx in front of it on 80/443, so 8080 is never reachable
 # from the internet, by construction, regardless of what's running on the box.
 resource "aws_security_group" "jenkins" {
   name        = "${var.app_name}-${var.environment_name}-sg"
-  description = "TechVault Jenkins host (${var.environment_name}) — isolated from production and from the assignment application server"
+  description = "TechVault Jenkins host (${var.environment_name}) - isolated from production and from the assignment application server"
 
   ingress {
     description = "SSH"
@@ -32,7 +32,7 @@ resource "aws_security_group" "jenkins" {
   }
 
   ingress {
-    description = "HTTP (Nginx → Jenkins reverse proxy)"
+    description = "HTTP (Nginx to Jenkins reverse proxy)"
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
@@ -40,7 +40,7 @@ resource "aws_security_group" "jenkins" {
   }
 
   ingress {
-    description = "HTTPS (Nginx → Jenkins reverse proxy, once a cert exists)"
+    description = "HTTPS (Nginx to Jenkins reverse proxy, once a cert exists)"
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
@@ -91,7 +91,7 @@ resource "aws_instance" "jenkins" {
   }
 }
 
-# ── Elastic IP (optional — see variables.tf for the tradeoff) ────────────────
+# ── Elastic IP (optional - see variables.tf for the tradeoff) ────────────────
 # Off by default. See devops/terraform-jenkins/README.md "Elastic IP decision"
 # for the full reasoning: without one, the public IP changes on stop/start.
 resource "aws_eip" "jenkins" {

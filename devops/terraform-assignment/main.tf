@@ -53,7 +53,7 @@ resource "aws_security_group" "assignment" {
   dynamic "ingress" {
     for_each = var.enable_jenkins_port ? [1] : []
     content {
-      description = "Jenkins (co-located mode only — see devops/jenkins/README.md)"
+      description = "Jenkins (co-located mode only - see devops/jenkins/README.md)"
       from_port   = var.jenkins_port
       to_port     = var.jenkins_port
       protocol    = "tcp"

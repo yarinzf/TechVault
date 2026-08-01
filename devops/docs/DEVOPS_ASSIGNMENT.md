@@ -509,9 +509,11 @@ Docker services on the assignment server, all healthy: `mongodb`, `backend`,
 
 ## 10. Known issues and fixes
 
-Issues found and fixed during implementation of the assignment pipeline
-(`devops/terraform-assignment/`, `devops/ansible-assignment/`,
-`Jenkinsfile.assignment`) on the way to Build #8:
+Issues found and fixed during implementation, covering both the assignment
+application pipeline (`devops/terraform-assignment/`,
+`devops/ansible-assignment/`, `Jenkinsfile.assignment` — on the way to
+Build #8) and the Jenkins host that runs it
+(`devops/terraform-jenkins/`, `devops/ansible-jenkins/`):
 
 1. **Docker Compose validation had no `.env.docker`.** `docker compose
    config --quiet` requires the env file to exist even just to validate
@@ -536,12 +538,42 @@ Issues found and fixed during implementation of the assignment pipeline
 5. **Result: Build #8 completed successfully end-to-end** after the above
    four fixes — see "Final successful result" above.
 
-Two additional fixes exist as **uncommitted, not-yet-finalized** changes in
-`devops/terraform-jenkins/main.tf` and `devops/ansible-jenkins/provision.yml`
-(a matching ASCII-description fix, a Java version bump, an apt key rotation,
-and an IPv6-mapped-address fix in the Jenkins bind-socket check). These are
-under separate review and are **not** included in this list as confirmed,
-deployed fixes — this document will be updated once that review concludes.
+Additional fixes finalized on the Jenkins host side
+(`devops/terraform-jenkins/main.tf`, `devops/ansible-jenkins/provision.yml`):
+
+6. **Java runtime updated to OpenJDK 21.** Current Jenkins LTS requires
+   Java 21 or later. `devops/ansible-jenkins/provision.yml` now installs
+   `openjdk-21-jre-headless` (a JRE, not a full JDK — sufficient since this
+   host only runs Jenkins and never compiles Java) in place of the earlier
+   `openjdk-17-jdk-headless`.
+7. **Jenkins apt signing key rotated.** Jenkins periodically rotates its
+   apt signing key; the playbook now downloads the current Jenkins LTS key
+   (`https://pkg.jenkins.io/debian-stable/jenkins.io-2026.key`) instead of
+   the earlier `jenkins.io-2023.key`, with `force: true` added to the
+   download task — `force: true` makes each provisioning run explicitly
+   refresh the local keyring from the configured Jenkins key URL.
+8. **Jenkins loopback bind-check false positive.** The provisioning
+   validation that confirms Jenkins is bound to loopback-only rejected a
+   legitimate binding on some dual-stack kernels, where `ss -ltn` reports
+   the same loopback-only socket in IPv4-mapped-IPv6 notation
+   (`[::ffff:127.0.0.1]:8080`) rather than plain IPv4
+   (`127.0.0.1:8080`). The check now accepts either form as valid
+   loopback-only binding while still rejecting every wildcard form
+   (`0.0.0.0:8080`, `*:8080`, `[::]:8080`, `:::8080`) exactly as before —
+   see `devops/ansible-jenkins/README.md` "Jenkins binding mechanism."
+9. **ASCII-only AWS Security Group descriptions, Jenkins host module.**
+   The same Unicode em dash/arrow issue as fix #2 above, this time in
+   `devops/terraform-jenkins/main.tf`'s security group and ingress rule
+   `description` fields — fixed to plain ASCII for the same reason: AWS
+   rejects non-ASCII punctuation in these fields at the API level.
+10. **Preventive fix: dormant co-located-Jenkins ingress description.**
+    While auditing fix #9, the same Unicode em dash was also found in
+    `devops/terraform-assignment/main.tf`'s optional, disabled-by-default
+    co-located Jenkins ingress rule (`enable_jenkins_port`, default
+    `false` — Option B, not the topology this assignment actually uses).
+    That code path has never been exercised and therefore never triggered
+    the AWS rejection, but it was corrected to ASCII preventively so it
+    won't fail the moment anyone enables Option B in the future.
 
 ---
 

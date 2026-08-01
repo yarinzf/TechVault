@@ -51,16 +51,17 @@
         state: present
 
     # ── Java (Jenkins-supported version) ──────────────────────────────────────
-    # Java 17 is supported by the Jenkins package line this playbook currently
-    # targets, and is available directly from Ubuntu 22.04's own repositories
-    # (no extra PPA needed). Jenkins' Java support requirements can and do
-    # change between LTS lines — this is not a permanent guarantee. Verify the
-    # current Jenkins Java support policy before a future real provisioning
-    # run if substantial time has passed since this playbook was last used or
+    # Current Jenkins LTS requires Java 21 or later. This installs
+    # openjdk-21-jre-headless — a JRE, not a full JDK — since this host only
+    # ever needs to run Jenkins itself; nothing in this pipeline compiles
+    # Java. Jenkins' Java support requirements can and do change between LTS
+    # lines — this is not a permanent guarantee. Verify the current Jenkins
+    # Java support policy before a future real provisioning run if
+    # substantial time has passed since this playbook was last used or
     # reviewed.
-    - name: Install OpenJDK 17 (headless)
+    - name: Install OpenJDK 21 (headless)
       apt:
-        name: openjdk-17-jdk-headless
+        name: openjdk-21-jre-headless
         state: present
 
     # ── Jenkins (official apt repository, keyring-based — no apt_key) ────────
@@ -75,9 +76,10 @@
 
     - name: Download Jenkins apt GPG key
       get_url:
-        url:  https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
+        url:  https://pkg.jenkins.io/debian-stable/jenkins.io-2026.key
         dest: /usr/share/keyrings/jenkins-keyring.asc
         mode: "0644"
+        force: true
 
     - name: Add Jenkins apt repository
       apt_repository:
@@ -448,7 +450,10 @@
       changed_when: false
       failed_when: >
         (jenkins_bind_check.stdout | trim == '') or
-        ('127.0.0.1:8080' not in jenkins_bind_check.stdout) or
+        (
+          ('127.0.0.1:8080' not in jenkins_bind_check.stdout) and
+          ('[::ffff:127.0.0.1]:8080' not in jenkins_bind_check.stdout)
+        ) or
         ('0.0.0.0:8080' in jenkins_bind_check.stdout) or
         ('*:8080' in jenkins_bind_check.stdout) or
         ('[::]:8080' in jenkins_bind_check.stdout) or

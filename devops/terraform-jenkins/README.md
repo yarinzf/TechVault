@@ -61,6 +61,20 @@ way a disposable app server doesn't: `/var/lib/jenkins` job history and build
 logs, Docker image layers pulled/built by every pipeline run, and
 Terraform/npm caches all grow on the same root volume across many runs.
 
+## Security Group description characters — ASCII only
+
+`aws_security_group.jenkins`'s `description` field and its HTTP/HTTPS
+ingress rule `description` fields use plain ASCII punctuation only (hyphens,
+not em dashes; the word "to," not an arrow). AWS's Security Group and
+ingress-rule `description` fields reject non-ASCII punctuation outright at
+the API level — this was discovered during implementation, first on the
+assignment application module's security group (see
+`devops/terraform-assignment/README.md`), and preventively fixed here to
+match, since this module's own ingress descriptions originally used the
+same Unicode em dash/arrow characters. Any future edit to these
+`description` strings must keep to ASCII to avoid a `terraform apply`
+failure.
+
 ## Jenkins port exposure
 
 - Port 8080 (Jenkins's own default) is **not** opened in the security group

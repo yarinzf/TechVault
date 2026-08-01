@@ -20,12 +20,13 @@ server) — different directory, different inventory group name
 
 ## What it does, in order
 
-1. Installs base packages (git, curl, unzip, jq, Nginx, etc.) and OpenJDK 17
-   (Jenkins LTS's minimum required Java version since the 2.426 line — see
-   "Java version" below).
+1. Installs base packages (git, curl, unzip, jq, Nginx, etc.) and OpenJDK 21
+   (current Jenkins LTS's minimum required Java version — see "Java version"
+   below).
 2. Installs Jenkins from the official `pkg.jenkins.io` apt repository, using
    the current keyring-based `signed-by` method (not the deprecated
-   `apt_key` module/classic trusted keyring).
+   `apt_key` module/classic trusted keyring) and the current Jenkins LTS apt
+   signing key — see "Jenkins apt signing key" below.
 3. Restricts Jenkins to `127.0.0.1:8080` via **two independent mechanisms**
    — see "Jenkins binding mechanism" below — on top of the security group
    never opening port 8080 at all.
@@ -50,15 +51,30 @@ server) — different directory, different inventory group name
 
 ## Java version
 
-Java 17 is supported by the Jenkins package line this playbook currently
-targets; `openjdk-17-jdk-headless` installs directly from Ubuntu 22.04's own
-repositories (no extra PPA). **This is not a permanent guarantee** — Jenkins'
-Java support requirements can and do change between LTS lines. The
-validation section's `java -version` check only confirms Java is present and
-runnable, not that the version is the one Jenkins currently expects — verify
-the current Jenkins Java support policy before a future real provisioning
-run if substantial time has passed since this playbook was last used or
-reviewed.
+Current Jenkins LTS requires Java 21 or later. This playbook installs
+`openjdk-21-jre-headless` — a **JRE, not a full JDK** — directly from Ubuntu
+22.04's own repositories (no extra PPA). A JRE is sufficient because this
+host only ever needs to *run* Jenkins; nothing in the assignment pipeline
+compiles Java. **This is not a permanent guarantee** — Jenkins' Java support
+requirements can and do change between LTS lines. The validation section's
+`java -version` check only confirms Java is present and runnable, not that
+the version or edition (JRE vs JDK) is the one Jenkins currently expects —
+verify the current Jenkins Java support policy before a future real
+provisioning run if substantial time has passed since this playbook was
+last used or reviewed.
+
+## Jenkins apt signing key
+
+Jenkins periodically rotates its apt signing key. This playbook currently
+downloads the key from the current Jenkins LTS key URL:
+`https://pkg.jenkins.io/debian-stable/jenkins.io-2026.key`. The `get_url`
+task uses `force: true` — this ensures the Jenkins signing-key file is
+downloaded on every provisioning run, so a provisioning run explicitly
+refreshes the local keyring from the currently configured official Jenkins
+key URL. Verify this URL against Jenkins' current official install
+instructions
+(https://www.jenkins.io/doc/book/installing/linux/#debianubuntu) before a
+future real provisioning run if substantial time has passed.
 
 ## Jenkins binding mechanism
 
@@ -94,10 +110,16 @@ together, regardless of notification order.
   for troubleshooting, not asserted against
 - the **live listening socket** (`ss -ltn` on port 8080, via `argv` rather
   than a single command string, to avoid ambiguous shell-like tokenization)
-  — fails unless `127.0.0.1:8080` is present, and fails if any wildcard
-  listener is present (`0.0.0.0:8080`, `*:8080`, `[::]:8080`, or `:::8080`);
-  IPv6 loopback (`::1:8080`) is allowed *in addition* to the required IPv4
-  loopback listener, but never required or accepted as a substitute for it
+  — fails unless a loopback-only listener is present, and fails if any
+  wildcard listener is present (`0.0.0.0:8080`, `*:8080`, `[::]:8080`, or
+  `:::8080`). Two forms count as a valid loopback-only listener:
+  `127.0.0.1:8080` (plain IPv4) and `[::ffff:127.0.0.1]:8080` (the
+  IPv4-mapped-IPv6 notation `ss` reports on some dual-stack kernels for the
+  same, actually-loopback-only socket) — both are accepted because they
+  describe the identical binding, never because either is treated as a
+  substitute for restricting to loopback. IPv6 loopback (`::1:8080`) is
+  allowed *in addition* to either required form, but never required or
+  accepted as a substitute for it
 
 The socket check is authoritative — it's the one that proves the binding is
 actually correct on a given host, regardless of what the configuration
@@ -195,8 +217,10 @@ each with `changed_when: false` (they're checks, not changes), and each one
   related explicit `PATH=` set in the systemd override).
 - `systemctl is-active jenkins` / `systemctl is-active nginx` — confirms
   both services are actually running, not just installed.
-- `ss -tln` on port 8080 — confirms Jenkins is bound to `127.0.0.1:8080`
-  specifically, and fails if `0.0.0.0:8080` or `*:8080` appears instead.
+- `ss -tln` on port 8080 — confirms Jenkins is bound loopback-only, accepting
+  either `127.0.0.1:8080` or `[::ffff:127.0.0.1]:8080`, and fails if
+  `0.0.0.0:8080`, `*:8080`, `[::]:8080`, or `:::8080` appears instead — see
+  "Jenkins binding mechanism" above for why both loopback forms are valid.
 - `nginx -t` — confirms the rendered config is valid (in addition to the
   handler-chained check that already runs before every reload).
 - An HTTP request to `http://localhost/` (through Nginx) — retried for up to
