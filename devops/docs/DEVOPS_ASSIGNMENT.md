@@ -1,5 +1,23 @@
 # TechVault — DevOps Final Assignment
 
+## Status: complete — Build #8 SUCCESS
+
+The pipeline described in this document is implemented, deployed, and
+proven end-to-end. The last successful run was **Build #8** on the
+`TechVault-DevOps-Assignment` Jenkins job — all pipeline stages passed. Full
+metrics are in "Final successful result" below; live endpoints are in
+"Live assignment endpoints" right below this note.
+
+## Live assignment endpoints
+
+| Resource | URL |
+|---|---|
+| Jenkins | http://3.68.18.214/ |
+| Assignment frontend | http://63.180.236.144 |
+| Assignment backend health | http://63.180.236.144/api/v1/health |
+
+---
+
 This document has three parts that must never be confused with each other:
 
 1. **Production** — already live, already deployed, not managed by this
@@ -84,6 +102,53 @@ flowchart LR
 - Own Jenkins credential IDs — all prefixed `..._ASSIGNMENT_...` or
   distinctly named, never reusing the production credential IDs
 
+### Network access (SSH)
+
+The assignment security group allows SSH (port 22) from **two** sources,
+not one:
+
+- The operator's own current public IP, passed as the `ASSIGNMENT_SSH_CIDR`
+  Jenkins job parameter (`allowed_ssh_cidr` in Terraform). This controls
+  **direct SSH access for the operator's own machine** — check it before
+  every run, since home/office IPs change:
+  ```bash
+  curl -4 https://checkip.amazonaws.com
+  ```
+  then enter `<that-ip>/32` as `ASSIGNMENT_SSH_CIDR`.
+- `3.68.18.214/32` — the Jenkins host itself, hardcoded in
+  `devops/terraform-assignment/main.tf`, independent of the parameter
+  above. This exists because `devops/ansible-assignment/deploy.yml` SSHes
+  in *from* the Jenkins host during the "Ansible Deploy" stage.
+
+Because these are two independent rules, a **stale `ASSIGNMENT_SSH_CIDR`
+does not break the pipeline** — Jenkins/Ansible deployment still succeeds,
+since the Jenkins host's own SSH access is unaffected by the parameter. A
+stale value only costs the *operator* their own direct SSH access to the
+instance, since the security group no longer includes their current IP.
+Check and update `ASSIGNMENT_SSH_CIDR` before each run regardless, so
+direct operator access (for manual debugging, log inspection, etc.) stays
+available.
+
+`0.0.0.0/0` is rejected by `Jenkinsfile.assignment`'s "Validate Project"
+stage (a hard build failure) before Terraform ever runs — but is **not**
+independently blocked by Terraform's own variable validation, which only
+checks CIDR syntax. Manual (non-Jenkins) `terraform apply` runs are not
+protected by that guard.
+
+### Environment semantics — NODE_ENV and demo data
+
+- `NODE_ENV=production` means the backend is running in production runtime
+  mode. It does not mean this EC2 instance is the real TechVault production
+  environment. The assignment environment remains fully isolated from
+  `techvault.co.il` — entirely separate EC2 hosts, separate state, separate
+  databases, separate credentials.
+- The assignment MongoDB container starts **completely empty** — it is not
+  a copy of, and has no connection to, the production product catalog. Demo
+  product data is available only via an explicit, opt-in seed step
+  (`run_seed_scripts: true`, off by default) — see
+  `devops/ansible-assignment/README.md`. An assignment frontend with no
+  products listed is expected, not a bug.
+
 ### HTTPS architecture decision (assignment application environment)
 
 **The assignment application deploys HTTP-only, always. HTTPS/Certbot
@@ -150,6 +215,9 @@ the extra headroom; this favors reliability over the cheapest option.
 swapfile) — see `devops/terraform-jenkins/README.md` and
 `devops/ansible-jenkins/README.md` for the full reasoning.
 
+**Actual deployment:** the live `techvault-jenkins-assignment-server` runs
+on `t3.small` (the cost-conscious option), paired with the swapfile.
+
 ### Public IP stability (Jenkins host)
 
 No Elastic IP by default — the instance's public IP changes on stop/start
@@ -158,6 +226,10 @@ the assignment; if you plan to stop it between work sessions, set
 `enable_elastic_ip = true` in `devops/terraform-jenkins/terraform.tfvars`
 *before* the first stop. See that module's README "Elastic IP decision" for
 the full tradeoff — no Elastic IP is created unless you opt in.
+
+**Actual deployment:** `enable_elastic_ip = true` — an Elastic IP
+(`techvault-jenkins-assignment-eip`) is allocated and associated, so
+`3.68.18.214` is stable across stop/start.
 
 ### HTTPS architecture decision (Jenkins host)
 
@@ -307,6 +379,21 @@ These four values flow only into `terraform plan -var=...` (stage 8); the
 saved plan file is what `terraform apply` (stage 10) actually applies, so
 the same values never need to be repeated or re-typed at apply time.
 
+**Before clicking "Build with Parameters," check your current public IPv4:**
+
+```bash
+curl -4 https://checkip.amazonaws.com
+```
+
+Use `<that-ip>/32` as `ASSIGNMENT_SSH_CIDR`. Home/office IPs commonly change
+between sessions. A stale value does **not** break the pipeline itself —
+the Jenkins host's own IP (`3.68.18.214/32`) is always separately permitted
+on port 22 regardless of this parameter, and Ansible connects from that
+host, so "Ansible Deploy" still succeeds. What a stale value costs is the
+*operator's* own direct SSH access to the instance — check and update it
+before each run so direct access stays available. See
+`devops/terraform-assignment/README.md` "SSH access."
+
 ---
 
 ## 7. Instructor Jenkins user
@@ -322,6 +409,13 @@ list, host topology, and complete 15-step setup sequence. Summary:
    administration.
 5. Verify by logging in as that account before sending credentials to the
    instructor.
+
+**Evidence on file:** `12-jenkins-lecturer-user-permissions.png` shows the
+`DevOps Instructor` account logged in, on the "Build with Parameters"
+screen, with no Configure / Delete Pipeline / Manage Jenkins options visible
+anywhere in the UI — accepted as sufficient evidence for login, build
+access, and absence of admin surface. No separate role-matrix screenshot is
+required.
 
 ---
 
@@ -388,27 +482,133 @@ ends in `terraform-assignment` or `terraform-jenkins` (never bare
 
 ---
 
-## 9. Screenshots checklist for submission
+## 9. Final successful result — Build #8
 
-- [ ] Jenkins pipeline — all 15 stages green (`Jenkinsfile.assignment`)
-- [ ] Jenkins "Terraform Plan" stage output visible in logs
-- [ ] Jenkins "Manual Approval" gate (before clicking Apply)
-- [ ] Jenkins "Validate Assignment Website" stage output
-- [ ] AWS Console → EC2 → the assignment instance (public IP visible)
-- [ ] AWS Console → EC2 → the Jenkins host instance (public IP visible)
-- [ ] AWS Console → Security Groups → the assignment SG (inbound rules)
-- [ ] AWS Console → Security Groups → the Jenkins SG (inbound rules — confirm no 8080 rule)
-- [ ] Browser → assignment frontend homepage
-- [ ] Browser → assignment `/api/v1/health` — JSON response
-- [ ] Browser → Jenkins login page over its own public URL
-- [ ] Jenkins → instructor user's permission matrix (proving no admin rights)
-- [ ] Terminal → `terraform output` (assignment directory) showing IDs/IPs
-- [ ] Terminal → `terraform output` (Jenkins directory) showing IDs/IPs
-- [ ] Terminal → `terraform destroy` (assignment directory only, after grading)
+Last successful run of `TechVault-DevOps-Assignment`, all 15 stages green:
+
+| Check | Result |
+|---|---|
+| Backend tests | **72 passed, 72 total** |
+| Test suites | **6 passed, 6 total** |
+| Frontend production build (Vite) | **Succeeded** |
+| `terraform validate` | Passed |
+| Terraform final plan | **No changes** |
+| Terraform final apply | **0 added, 0 changed, 0 destroyed** |
+| Ansible PLAY RECAP | **failed=0, unreachable=0** |
+| Backend health endpoint | **healthy** |
+| MongoDB | **connected** |
+| Nginx reverse proxy | **OK** |
+| Socket.IO | **reachable** |
+| Frontend (through Nginx) | **HTTP 200** |
+| Pipeline result | **Finished: SUCCESS** |
+
+Docker services on the assignment server, all healthy: `mongodb`, `backend`,
+`frontend`.
 
 ---
 
-## 10. Cost and cleanup
+## 10. Known issues and fixes
+
+Issues found and fixed during implementation of the assignment pipeline
+(`devops/terraform-assignment/`, `devops/ansible-assignment/`,
+`Jenkinsfile.assignment`) on the way to Build #8:
+
+1. **Docker Compose validation had no `.env.docker`.** `docker compose
+   config --quiet` requires the env file to exist even just to validate
+   syntax. Fixed by having the "Validate Docker Compose" stage copy
+   `.env.docker.example` → `.env.docker` immediately before validating, then
+   removing it — no real secrets are ever involved in this stage.
+2. **AWS rejected a Security Group description containing a Unicode em
+   dash.** `aws_security_group.assignment`'s `description` in
+   `devops/terraform-assignment/main.tf` originally used `—`; AWS's API
+   rejected the non-ASCII character. Fixed by using a plain ASCII hyphen.
+3. **Jenkins could not SSH to the assignment EC2 instance.** Only the
+   operator's home IP (`allowed_ssh_cidr`) was permitted on port 22, but
+   Ansible deploys *from* the Jenkins host, not from the operator's machine.
+   Fixed by hardcoding the Jenkins host's IP (`3.68.18.214/32`) as a second,
+   always-present SSH ingress rule in `devops/terraform-assignment/main.tf`
+   — see "Network access (SSH)" above.
+4. **Backend container kept restarting because `SMTP_PORT` was empty.**
+   `devops/ansible-assignment/templates/env.docker.assignment.j2` originally
+   left `SMTP_PORT` blank; the backend requires a numeric port even with
+   SMTP otherwise unconfigured. Fixed by setting `SMTP_PORT=587` in the
+   template.
+5. **Result: Build #8 completed successfully end-to-end** after the above
+   four fixes — see "Final successful result" above.
+
+Two additional fixes exist as **uncommitted, not-yet-finalized** changes in
+`devops/terraform-jenkins/main.tf` and `devops/ansible-jenkins/provision.yml`
+(a matching ASCII-description fix, a Java version bump, an apt key rotation,
+and an IPv6-mapped-address fix in the Jenkins bind-socket check). These are
+under separate review and are **not** included in this list as confirmed,
+deployed fixes — this document will be updated once that review concludes.
+
+---
+
+## 11. Screenshot evidence
+
+32 screenshots under `devops/docs/assignment-screenshots/` (read-only —
+never renamed or modified), grouped by what each proves. All were captured
+against the live environment described in this document.
+
+**Jenkins pipeline execution**
+| File | Evidences |
+|---|---|
+| `01-jenkins-build-success.png` | Build #8 green, permalinks confirming it as last successful/stable/completed build |
+| `02-jenkins-console-success.png` | End of Jenkins console output showing final public validation, Pipeline SUCCESS and Finished: SUCCESS |
+| `05-jenkins-pipeline-stages.png` | Jenkins pipeline/stage overview for successful Build #8 |
+| `06-terraform-plan-no-changes.png` | Final `terraform plan` — no changes |
+| `07-terraform-apply-outputs.png` | `terraform apply` outputs (instance ID/IPs) |
+| `08-ansible-deployment-success.png` | Ansible run completed successfully |
+| `11-jenkins-build-parameters.png` | "Build with Parameters" form, incl. `ASSIGNMENT_SSH_CIDR` in use |
+| `25-jenkins-backend-tests-success.png` | Backend test stage — 72/72 passing |
+| `26-jenkins-frontend-build-output.png` | Frontend Vite build stage output |
+| `27-jenkins-frontend-build-success.png` | Frontend build stage — success |
+| `28-jenkins-manual-approval.png` | Manual approval gate before Terraform Apply |
+| `29-jenkins-ansible-tasks.png` | Ansible task-by-task execution |
+| `30-jenkins-ansible-deployment-tasks.png` | Ansible deployment tasks detail |
+
+**Live application**
+| File | Evidences |
+|---|---|
+| `03-assignment-website.png` | Assignment frontend homepage, reachable |
+| `04-backend-health.png` | `/api/v1/health` JSON response |
+| `32-docker-compose-containers-running.png` | 3 containers (mongodb, backend, frontend) running and healthy |
+
+**AWS infrastructure**
+| File | Evidences |
+|---|---|
+| `09-aws-ec2-assignment-instance.png` | Assignment EC2 instance — running, `t3.small`, IPs match this document |
+| `10-aws-security-group-inbound-rules.png` | Assignment SG — 4 inbound rules (2× SSH, HTTP, HTTPS), matching "Network access (SSH)" above |
+| `31-aws-jenkins-instance.png` | Jenkins EC2 instance — running, `t3.small`, Elastic IP attached |
+
+**Jenkins access and permissions**
+| File | Evidences |
+|---|---|
+| `12-jenkins-lecturer-user-permissions.png` | Instructor account logged in, Build-with-Parameters accessible, no admin UI surface exposed |
+
+**Source/GitHub — implementation evidence**
+| File | Evidences |
+|---|---|
+| `13-github-devops-assignment-structure.png` | Repository structure for the assignment directories |
+| `14-github-jenkinsfile-assignment.png` | `Jenkinsfile.assignment` source |
+| `15-github-terraform-security-group.png` | Security group resource block in `main.tf` |
+| `16-github-ansible-deploy-playbook.png` | `deploy.yml` source |
+| `17-github-ansible-app-deployment.png` | Docker Compose / app-deployment tasks in `deploy.yml` |
+| `18-github-ansible-final-validation.png` | Final validation tasks in `deploy.yml` |
+| `19-github-docker-compose-backend.png` | Backend service definition in `docker-compose.yml` |
+| `20-github-docker-compose-frontend.png` | Frontend service definition in `docker-compose.yml` |
+| `21-github-terraform-outputs.png` | `outputs.tf` source |
+| `22-github-terraform-variables.png` | `variables.tf` source, incl. validation blocks |
+| `23-github-terraform-cidr-validation.png` | CIDR validation logic |
+| `24-github-jenkins-ssh-safety-guard.png` | Jenkinsfile's production-safety assertions |
+
+This table supersedes any prior generic checklist — it reflects the actual
+32 files on disk rather than an assumed set.
+
+---
+
+## 12. Cost and cleanup
 
 Cost depends on instance type and running hours — this section explains the
 factors, not an exact bill; check the AWS Pricing Calculator for a current,
@@ -455,7 +655,7 @@ region-accurate figure before committing to a longer-running instance.
 
 ---
 
-## 11. Secrets and gitignore
+## 13. Secrets and gitignore
 
 | What | Where it lives | Tracked in git? |
 |---|---|---|
@@ -476,13 +676,14 @@ gitignore rules and are unaffected by any of the above.
 
 ---
 
-## 12. Troubleshooting
+## 14. Troubleshooting
 
 | Problem | Likely cause | Fix |
 |---------|-------------|-----|
 | `terraform apply` fails: `InvalidKeyPair.NotFound` | Key pair doesn't exist in AWS yet (assignment or Jenkins host) | Create it in the AWS console first — do not reuse `techvault-key` |
 | Jenkins stage 11 fails with "REFUSING TO CONTINUE" | Terraform outputs resolved to a production identifier | Stop immediately — this means something is misconfigured; do not attempt to bypass the check |
-| Ansible SSH timeout | EC2 still initializing | Wait ~60s after apply, re-run |
+| Ansible SSH timeout, EC2 freshly created | EC2 still initializing | Wait ~60s after apply, re-run |
+| Operator cannot SSH directly to assignment EC2 | `ASSIGNMENT_SSH_CIDR` contains an old home/public IP | Check the current public IPv4 (`curl -4 https://checkip.amazonaws.com`) and update `ASSIGNMENT_SSH_CIDR` on the next pipeline run |
 | Backend container exits | `.env.docker` secrets too short (<32 chars) | Check the three secret credentials in Jenkins |
 | Frontend shows blank page | Nginx site not enabled / config invalid | `sudo nginx -t`, check `docker compose logs frontend` |
 | Jenkins unreachable at `http://<ip>/` | Nginx not running, or Jenkins still starting (can take ~30-60s after boot) | `sudo systemctl status nginx jenkins`, `sudo nginx -t`, retry |

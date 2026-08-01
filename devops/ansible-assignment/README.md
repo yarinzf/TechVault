@@ -33,7 +33,15 @@ directory, different inventory group name (`techvault_assignment` vs
 5. Does **not** touch TLS/Certbot in any way — see "HTTPS architecture
    decision" below.
 6. Builds and starts the Docker Compose stack, waits for the backend health
-   endpoint.
+   endpoint. Note: the repository's `docker-compose.yml` (shared with
+   production, not templated per-environment) bind-mounts
+   `/opt/techvault/backups` and `/opt/techvault/logs` on the **backend**
+   service unconditionally — on the assignment host these paths are
+   unrelated to `/opt/techvault-assignment` and to production (a completely
+   separate EC2 host); Docker auto-creates them as empty, unused
+   directories. This is a cosmetic cleanup item, not a production-isolation
+   issue — the assignment host has no access to production's actual
+   `/opt/techvault` data regardless.
 7. Optionally reseeds demo catalog data — only if `run_seed_scripts: true` is
    explicitly set; **default is false**.
 8. Validates: 3 containers running, backend health (direct + through Nginx),
@@ -98,6 +106,23 @@ Notes:
   more automated webroot-based flow has a place to serve challenge files
   without needing `--nginx`'s in-place edits at all — a natural next step if
   this is revisited.
+
+## Environment semantics — what `NODE_ENV=production` does and doesn't mean
+
+`templates/env.docker.assignment.j2` sets `NODE_ENV=production`. `NODE_ENV=production`
+means the backend is running in production runtime mode. It does not mean
+this EC2 instance is the real TechVault production environment. The
+assignment environment remains fully isolated from `techvault.co.il` — its
+own EC2 host, its own MongoDB container, its own `.env.docker`.
+
+## Assignment database starts empty
+
+The assignment MongoDB container is a fresh, empty database — it is not a
+copy of, or connected to, the production catalog in any way. It stays empty
+unless demo product data is explicitly seeded: `run_seed_scripts: true`
+(off by default — see step 7 in "What it does, in order" above). A freshly
+deployed assignment frontend showing no products is expected behavior, not
+a bug.
 
 ## Secrets
 

@@ -36,6 +36,44 @@ at production — see the comment block at the top of `variables.tf`.
 | `outputs.tf` | Instance ID, IPs, SSH command, frontend/health/Jenkins URLs |
 | `terraform.tfvars.example` | Copy → `terraform.tfvars` (gitignored) and fill in |
 
+## SSH access
+
+`aws_security_group.assignment`'s SSH ingress rule (`main.tf`) allows **two**
+CIDRs, not one:
+
+1. `var.allowed_ssh_cidr` — the operator's own current public IP, passed in
+   as the `ASSIGNMENT_SSH_CIDR` Jenkins job parameter (or `terraform.tfvars`
+   for manual runs). This changes whenever your home/office IP changes —
+   check it before every run:
+   ```bash
+   curl -4 https://checkip.amazonaws.com
+   ```
+   and use `<that-ip>/32` as the value.
+2. `3.68.18.214/32`, hardcoded directly in `main.tf` — the Jenkins host's
+   own IP. This is **not** controlled by `allowed_ssh_cidr` and is always
+   present, because `devops/ansible-assignment/deploy.yml` runs as an SSH
+   client *from* the Jenkins host during the "Ansible Deploy" stage; without
+   it, every pipeline run would fail at that stage regardless of what
+   `ASSIGNMENT_SSH_CIDR` is set to (this was Known Issue #3 during initial
+   implementation — see `devops/docs/DEVOPS_ASSIGNMENT.md` "Known issues and
+   fixes").
+
+Because these two rules are independent, a stale `allowed_ssh_cidr` /
+`ASSIGNMENT_SSH_CIDR` does **not** break the pipeline itself — the Jenkins
+host's own rule is unaffected, and Ansible connects from that host, so
+"Ansible Deploy" still succeeds. A stale value only costs the *operator*
+their own direct SSH access to the instance from their own machine; check
+and update it before each run so direct access stays available.
+
+`0.0.0.0/0` is rejected before it ever reaches Terraform: when run via
+Jenkins, `Jenkinsfile.assignment`'s "Validate Project" stage (stage 2) fails
+the build outright if `ASSIGNMENT_SSH_CIDR` equals `0.0.0.0/0`. This
+module's own `variables.tf` validation only checks that `allowed_ssh_cidr`
+is a *syntactically valid* CIDR (`can(cidrhost(...))`) — it does not itself
+reject `0.0.0.0/0` — so a manual `terraform apply` (bypassing Jenkins) is
+not protected by that guard; the variable's description warns against it
+in that case, but nothing enforces it at the Terraform layer.
+
 ## Safe command sequence (not run automatically — for your reference)
 
 ```bash

@@ -1,18 +1,20 @@
 # Jenkins — host plan and access model
 
-This document describes how to stand up Jenkins for the DevOps assignment.
-**Nothing here has been installed or created yet** — `devops/terraform-jenkins/`
-and `devops/ansible-jenkins/` are prepared, validated code, not a running
-host. Creating the actual EC2 instance and running the playbook are
-deliberate, separate, later steps — see "Complete setup sequence" below.
+This document describes how Jenkins was stood up for the DevOps assignment.
+**Status: live and complete.** The dedicated Jenkins EC2 host described below
+exists, is reachable at `http://3.68.18.214/`, and has run the assignment
+pipeline (`Jenkinsfile.assignment`) to a full green result — **Build #8 —
+SUCCESS**, all stages passed. The "Complete setup sequence" section below is
+kept as a historical/reference record of how the host was built, not a
+pending to-do list.
 
 ## Three files, three purposes
 
 | File | Targets | Status |
 |---|---|---|
 | `Jenkinsfile` | Production (`devops/terraform/`, `devops/ansible/`) | Pipeline-as-code exists; no evidence it has ever run |
-| `Jenkinsfile.assignment` | The isolated assignment environment (`devops/terraform-assignment/`, `devops/ansible-assignment/`) | Committed; no evidence it has ever run — needs a Jenkins host to run on |
-| *(this Jenkins host itself)* | `devops/terraform-jenkins/` + `devops/ansible-jenkins/` | Code prepared and locally validated; no AWS resource created yet |
+| `Jenkinsfile.assignment` | The isolated assignment environment (`devops/terraform-assignment/`, `devops/ansible-assignment/`) | **Live and proven** — last successful run: Build #8, all 15 stages green |
+| *(this Jenkins host itself)* | `devops/terraform-jenkins/` + `devops/ansible-jenkins/` | **Live** — `techvault-jenkins-assignment-server` (t3.small, Elastic IP `3.68.18.214`), provisioned and running |
 
 ## Jenkins host architecture — Option A, now implemented as code
 
@@ -55,7 +57,7 @@ instance (see "Cost and cleanup" in `devops/docs/DEVOPS_ASSIGNMENT.md`),
 which is worth it for not coupling Jenkins's lifecycle to the thing it's
 grading.
 
-## Complete setup sequence (none of this has been run yet)
+## Complete setup sequence (historical record — already completed for the live host)
 
 1. Create a dedicated Jenkins AWS key pair in the EC2 console (must not be
    `techvault-key` or the assignment app's key pair).
@@ -139,6 +141,31 @@ Because a Jenkins string parameter's `defaultValue` can't enforce
 "mandatory," the pipeline treats a blank/unsafe value as a hard failure
 during "Validate Project" (stage 2) rather than letting `terraform plan`
 fail later with a less clear "no value for required variable" error.
+`ASSIGNMENT_SSH_CIDR = 0.0.0.0/0` is one of the values that stage rejects
+outright — it is not a soft warning, the build stops.
+
+### Before every "Build with Parameters" run: check your current public IP
+
+`ASSIGNMENT_SSH_CIDR` must be *your* current public IPv4 address, and home/
+office IPs commonly change between sessions. Check it immediately before
+triggering a build:
+
+```bash
+curl -4 https://checkip.amazonaws.com
+```
+
+Enter the result as `<that-ip>/32` in `ASSIGNMENT_SSH_CIDR`. A stale CIDR
+from a previous run does not fail cleanly at the "Validate Project" stage
+(the value is still a syntactically valid CIDR), and it does **not** break
+the pipeline's own deployment step: `3.68.18.214/32` (the Jenkins host) is
+always separately permitted on port 22, regardless of this parameter, and
+Ansible connects *from* that host — so "Ansible Deploy" still succeeds even
+with a stale `ASSIGNMENT_SSH_CIDR`. What a stale value actually costs you is
+your own direct SSH access to the assignment instance from your own
+machine, since the security group no longer includes your current IP —
+check and update it before each run so direct operator access stays
+available. See `devops/terraform-assignment/README.md` "SSH access" for the
+full detail.
 
 ## Instructor user and permission model
 
@@ -158,6 +185,14 @@ fail later with a less clear "no value for required variable" error.
 5. Verify by logging in as that account and confirming "Manage Jenkins" is
    not reachable, and no job other than the assignment pipeline is visible
    or runnable.
+
+**Evidence on file:** `devops/docs/assignment-screenshots/12-jenkins-lecturer-user-permissions.png`
+shows the `DevOps Instructor` account logged in, on the "Build with
+Parameters" screen, with no Configure / Delete Pipeline / Manage Jenkins
+options exposed anywhere in the UI chrome — this is treated as sufficient
+evidence for steps 3-5 above (login works, build access works, admin
+surface is absent). No separate role-matrix screenshot is required for
+submission.
 
 ## AWS IAM — assignment-scoped credentials, not AdministratorAccess
 
@@ -224,6 +259,10 @@ full detail.
   Elastic IP (`enable_elastic_ip = true` in `devops/terraform-jenkins/`) —
   see that module's README "Elastic IP decision" before deciding whether to
   ever stop this host.
+- **Current live host:** `techvault-jenkins-assignment-server`, instance
+  type `t3.small`, with an Elastic IP (`techvault-jenkins-assignment-eip`)
+  already allocated and associated — so `http://3.68.18.214/` is stable
+  across stop/start for this deployment, not just across plain reboots.
 - HTTPS: a deliberate, separate, manual step performed later, once a real
   domain points at the Jenkins host — see
   `devops/ansible-jenkins/README.md` "HTTPS architecture decision" for the

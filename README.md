@@ -51,8 +51,21 @@ cd client && npm run build   # frontend production build
 ## Production vs. DevOps assignment
 
 Production (`techvault.co.il`) is already live and is deployed independently
-of the Terraform/Ansible/Jenkins pipeline described below — see
-`devops/docs/DEVOPS_ASSIGNMENT.md` for the full picture, including why two
-additional, fully isolated environments exist purely for the assignment
-(a disposable application server and a persistent Jenkins host) and are
-never allowed to touch the production server.
+of the Terraform/Ansible/Jenkins pipeline described below.
+
+The DevOps assignment pipeline is **complete and live**, running on two
+fully isolated EC2 hosts that are never allowed to touch the production
+server: a disposable assignment application server, and a persistent
+Jenkins host that stays up for the life of the assignment/grading period —
+see `devops/docs/DEVOPS_ASSIGNMENT.md` for the full picture.
+
+| Assignment resource | URL |
+|---|---|
+| Jenkins | http://3.68.18.214/ |
+| Assignment frontend | http://63.180.236.144 |
+| Assignment backend health | http://63.180.236.144/api/v1/health |
+
+Last successful pipeline run: **Build #8 — SUCCESS** (all stages green,
+72/72 backend tests, Terraform apply 0 added / 0 changed / 0 destroyed,
+Ansible `failed=0 unreachable=0`). Full results in
+`devops/docs/DEVOPS_ASSIGNMENT.md` → "Final successful result".

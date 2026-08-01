@@ -48,6 +48,11 @@ choice, not the cheapest possible one.
 `devops/ansible-jenkins/provision.yml` can create — see that playbook's
 README for the tradeoff.
 
+**Actual deployment:** the current, live `techvault-jenkins-assignment-server`
+runs on `t3.small`, not the `t3.medium` default recommended above — a
+deliberate cost-conscious choice for this assignment, paired with the
+swapfile.
+
 ## Storage sizing decision
 
 Default `volume_size_gb` is **40 GB** (vs. 20 GB for the assignment
@@ -96,6 +101,11 @@ it between sessions, set `enable_elastic_ip = true` in your `tfvars` first,
 *before* the first stop, so the address is already stable when you need it.
 Release the Elastic IP (via `terraform destroy` or manually disassociating
 it) during final cleanup regardless of which path you took.
+
+**Actual deployment:** the current, live Jenkins host has
+`enable_elastic_ip = true` — an Elastic IP (`techvault-jenkins-assignment-eip`)
+is allocated and associated, so `3.68.18.214` is stable across stop/start
+for this deployment.
 
 **Changing `enable_elastic_ip` later:** flipping it from `false` to `true`
 and re-applying allocates and associates a new `aws_eip` resource (the
