@@ -6,6 +6,13 @@ Socket.IO live features, and a full Docker Compose deployment.
 
 **Live:** [https://techvault.co.il](https://techvault.co.il)
 
+## DevOps Final Assignment
+
+Full Terraform / Ansible / Jenkins / AWS implementation, pipeline evidence,
+architecture, security model and Build #8 results:
+
+[View the complete DevOps assignment documentation](devops/docs/DEVOPS_ASSIGNMENT.md)
+
 ## Documentation map
 
 | Document | Covers |
