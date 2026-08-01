@@ -435,9 +435,11 @@ Jenkins itself (its job history, credentials, and configuration).
 - Own Ansible inventory group: `jenkins_assignment`
 - Own SSH key pair — a third, dedicated key pair, distinct from both
   `techvault-key` and the assignment application's key pair
-- Port 8080 is never opened in the security group; Jenkins is bound to
-  `127.0.0.1:8080` via a systemd drop-in override, reachable only through
-  the host's own Nginx on 80/443
+- Port 8080 is never opened in the Security Group; Jenkins is bound to
+  `127.0.0.1:8080` via a systemd drop-in override and is publicly reached
+  through the host's Nginx reverse proxy on port 80. Port 443 is reserved
+  in the Security Group for an optional later manual HTTPS configuration;
+  the automated Jenkins provisioning itself is HTTP-only.
 - Java: OpenJDK 21 (JRE), matching current Jenkins LTS's minimum requirement
 
 **Current deployment:** `techvault-jenkins-assignment-server`, `t3.small`,
@@ -901,7 +903,7 @@ unaffected by any of the above.
 | Backend container exits | `.env.docker` secrets too short (<32 chars) | Check the three secret credentials in Jenkins |
 | Frontend shows blank page | Nginx site not enabled / config invalid | `sudo nginx -t`, check `docker compose logs frontend` |
 | Jenkins unreachable at `http://<ip>/` | Nginx not running, or Jenkins still starting | `sudo systemctl status nginx jenkins`, retry |
-| `curl http://localhost:8080` fails from your workstation | Expected — Jenkins is bound to `127.0.0.1:8080` on the host itself | Use the Nginx-proxied URL on port 80/443 instead |
+| `curl http://localhost:8080` fails from your workstation | Expected — Jenkins is bound to `127.0.0.1:8080` on the host itself | Use the Nginx-proxied URL on port 80 instead (443 is only live if HTTPS was configured manually) |
 
 ---
 
