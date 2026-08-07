@@ -85,7 +85,15 @@ const MAX_CAMPAIGNS = 40;
 const MIN_ARRIVALS  = 24;
 const MAX_ARRIVALS  = 30;
 const SMALL_BRAND_MAX_PRODUCTS = 8;
-const MAX_NEW_BRANDS = 4;
+
+// A single brand having a small real catalog (common for boutique gaming-
+// peripheral brands) must never be allowed to dominate New Arrivals just
+// because "stage its whole catalog" is cheap to satisfy. These three knobs
+// are the hard ceiling on that effect, independent of how many small-brand
+// candidates the real catalog happens to contain.
+const NEW_BRAND_TARGET_COUNT          = 3;   // prefer 2–3 New Brands, never more
+const NEW_BRAND_TOTAL_PRODUCT_BUDGET  = 10;  // combined product cap across ALL chosen brands
+const NEW_ARRIVALS_MAX_CATEGORY_SHARE = 0.25; // no category exceeds ~25% of the New Arrivals total
 
 const DAY_MS = 86400000;
 
@@ -211,16 +219,27 @@ async function excludeAlreadyCampaigned(Campaign, products) {
   return products.filter((p) => !claimed.has(String(p._id)));
 }
 
-// Round-robin across categories so picks don't collapse onto whichever
-// category happens to have the most inventory.
-function diversePick(products, count) {
-  const byCategory = new Map();
+// category name -> array of products, deterministic key order (insertion
+// order of first-seen category — callers that need a stable iteration
+// order sort the keys themselves, e.g. alphabetically).
+function groupByCategory(products) {
+  const map = new Map();
   for (const p of products) {
     const key = p.category?.name || 'Uncategorized';
-    if (!byCategory.has(key)) byCategory.set(key, []);
-    byCategory.get(key).push(p);
+    if (!map.has(key)) map.set(key, []);
+    map.get(key).push(p);
   }
-  const buckets = [...byCategory.values()];
+  return map;
+}
+
+// Round-robin across categories so picks don't collapse onto whichever
+// category happens to have the most inventory. Category iteration order is
+// alphabetical (by category name) so the result is deterministic regardless
+// of Mongo's incidental return order.
+function diversePick(products, count) {
+  const byCategory = groupByCategory(products);
+  const orderedKeys = [...byCategory.keys()].sort();
+  const buckets = orderedKeys.map((k) => byCategory.get(k));
   const picked = [];
   let round = 0;
   while (picked.length < count && buckets.some((b) => round < b.length)) {
@@ -233,15 +252,156 @@ function diversePick(products, count) {
   return picked;
 }
 
+// Every real brand with a small-enough published catalog to plausibly stage
+// in full — NOT capped here. The cap on how many of these actually get used
+// (count AND total product budget AND category-diversity preference) is
+// applied by selectNewBrands below, where it can be judged against the
+// overall New Arrivals category plan instead of blindly taking the globally
+// smallest N brands (which is exactly what let 4 mouse brands dominate).
 async function findNewBrandCandidates(Product) {
   const results = await Product.aggregate([
     { $match: { isPublished: true, isDeleted: false } },
     { $group: { _id: '$brand', count: { $sum: 1 }, ids: { $push: '$_id' } } },
     { $match: { _id: { $ne: null }, count: { $gt: 0, $lte: SMALL_BRAND_MAX_PRODUCTS } } },
-    { $sort: { count: 1 } },
-    { $limit: MAX_NEW_BRANDS },
+    { $sort: { count: 1, _id: 1 } }, // smallest first; alphabetical tiebreak for determinism
   ]);
   return results.map((r) => ({ brand: r._id, productIds: r.ids.map(String), count: r.count }));
+}
+
+// Category-aware, budget-capped, diversity-preferring New Brand selection.
+// productById must map every candidate's product _id (string) to a product
+// with a populated `category`. `categoryCap` is the max products any single
+// category may receive across the WHOLE New Arrivals plan (brands +
+// general); this function refuses a candidate that would push any of its
+// own categories over that cap, and stops once either the brand-count
+// target or the total-product budget is reached.
+//
+// Two-pass: first prefer candidates touching a category not already used by
+// an already-chosen brand (spreads brand picks across categories instead of
+// letting the first-found niche category eat the whole New Brands budget),
+// then fill any remaining brand slots from whatever's left.
+function selectNewBrands(candidates, productById, categoryCap) {
+  const chosen = [];
+  const usedCategories = new Set();
+  const categoryUsage = new Map(); // category -> products already committed by chosen brands
+  let budgetUsed = 0;
+
+  const categoriesOf = (cand) => {
+    const cats = new Map(); // category -> count within this candidate
+    for (const id of cand.productIds) {
+      const cat = productById.get(id)?.category?.name || 'Uncategorized';
+      cats.set(cat, (cats.get(cat) || 0) + 1);
+    }
+    return cats;
+  };
+
+  const fits = (cand) => {
+    if (budgetUsed + cand.count > NEW_BRAND_TOTAL_PRODUCT_BUDGET) return false;
+    const cats = categoriesOf(cand);
+    for (const [cat, n] of cats) {
+      const already = categoryUsage.get(cat) || 0;
+      if (already + n > categoryCap) return false;
+    }
+    return true;
+  };
+
+  const commit = (cand) => {
+    const cats = categoriesOf(cand);
+    chosen.push({ ...cand, categories: [...cats.keys()] }); // categories attached for reporting only
+    budgetUsed += cand.count;
+    for (const [cat, n] of cats) {
+      categoryUsage.set(cat, (categoryUsage.get(cat) || 0) + n);
+      usedCategories.add(cat);
+    }
+  };
+
+  for (const preferDiverse of [true, false]) {
+    for (const cand of candidates) {
+      if (chosen.length >= NEW_BRAND_TARGET_COUNT) break;
+      if (chosen.some((c) => c.brand === cand.brand)) continue;
+      if (!fits(cand)) continue;
+      const cats = categoriesOf(cand);
+      const isDiverse = ![...cats.keys()].some((c) => usedCategories.has(c));
+      if (preferDiverse && !isDiverse) continue;
+      commit(cand);
+    }
+    if (chosen.length >= NEW_BRAND_TARGET_COUNT) break;
+  }
+
+  return chosen;
+}
+
+// ─── New Arrivals selection — category-quota round-robin, NOT
+// "brands-first-then-fill" (that's exactly what let 4 small mouse brands
+// consume 24/30 slots). Order of operations:
+//   1. Group eligible products by category, cap any one category at
+//      NEW_ARRIVALS_MAX_CATEGORY_SHARE of the total.
+//   2. Resolve New Brand candidates through the SAME category cap (so a
+//      brand is only used if it doesn't blow its own category's budget).
+//   3. Round-robin the remaining slots across every other category,
+//      respecting the same cap and each category's real availability.
+//   4. Only if quota+availability jointly leave slots unfilled does a
+//      relaxed, cap-free pass top up the remainder — never before. ────────
+function buildNewArrivalsSelection(arrivalsEligible, newBrandCandidates) {
+  const total = Math.min(MAX_ARRIVALS, Math.max(MIN_ARRIVALS, arrivalsEligible.length), arrivalsEligible.length);
+
+  const productById = new Map(arrivalsEligible.map((p) => [String(p._id), p]));
+  const byCategory = groupByCategory(arrivalsEligible);
+  const categoryNames = [...byCategory.keys()].sort();
+  const categoryCap = Math.max(2, Math.round(total * NEW_ARRIVALS_MAX_CATEGORY_SHARE));
+
+  const chosenBrands = selectNewBrands(newBrandCandidates, productById, categoryCap);
+  const brandProductIds = new Set(chosenBrands.flatMap((b) => b.productIds));
+  const brandProducts = arrivalsEligible.filter((p) => brandProductIds.has(String(p._id)));
+
+  const categoryUsage = new Map();
+  for (const p of brandProducts) {
+    const cat = p.category?.name || 'Uncategorized';
+    categoryUsage.set(cat, (categoryUsage.get(cat) || 0) + 1);
+  }
+
+  const remainingSlots = Math.max(0, total - brandProducts.length);
+  const pickedIds = new Set(brandProducts.map((p) => String(p._id)));
+  const generalByCategory = new Map(
+    categoryNames.map((name) => [name, byCategory.get(name).filter((p) => !pickedIds.has(String(p._id)))])
+  );
+
+  const generalPicks = [];
+  let round = 0;
+  while (generalPicks.length < remainingSlots) {
+    let addedThisRound = false;
+    for (const name of categoryNames) {
+      if (generalPicks.length >= remainingSlots) break;
+      const avail = generalByCategory.get(name);
+      const used = categoryUsage.get(name) || 0;
+      if (used >= categoryCap) continue;
+      if (round >= avail.length) continue;
+      generalPicks.push(avail[round]);
+      categoryUsage.set(name, used + 1);
+      addedThisRound = true;
+    }
+    round++;
+    if (!addedThisRound) break; // nothing left within quota anywhere
+  }
+
+  // Relaxed top-up — only reached if per-category caps + availability
+  // jointly couldn't reach `total`; ignores the cap but still round-robins.
+  if (generalPicks.length < remainingSlots) {
+    const pickedNow = new Set([...pickedIds, ...generalPicks.map((p) => String(p._id))]);
+    const leftover = arrivalsEligible.filter((p) => !pickedNow.has(String(p._id)));
+    generalPicks.push(...diversePick(leftover, remainingSlots - generalPicks.length));
+  }
+
+  const selected = [...brandProducts, ...generalPicks];
+
+  const availability = categoryNames.map((name) => ({ category: name, available: byCategory.get(name).length }));
+  const selectedByCategory = groupByCategory(selected);
+  const coverage = [...selectedByCategory.keys()].sort().map((name) => ({
+    category: name,
+    count: selectedByCategory.get(name).length,
+  }));
+
+  return { selected, chosenBrands, availability, coverage, categoryCap, target: total };
 }
 
 // ─── Deals coverage plan ──────────────────────────────────────────────────────
@@ -265,13 +425,24 @@ function buildDealsCoveragePlan(dealsPool, now) {
   }
   const generalCount = Math.max(0, totalTarget - reserved);
 
-  // Diverse pick across the WHOLE pool up front so every special slot also
-  // gets category variety, then peel slices off in a fixed, documented order.
-  const ordered = diversePick(dealsPool, Math.min(totalTarget, dealsPool.length));
+  // Mega Deal product is chosen FIRST and separately — not just whatever
+  // diversePick happens to hand back first. A believable "big promotional
+  // hero" should look deliberately chosen: prefer the highest base price
+  // among products with a real image (a bigger, more dramatic-looking
+  // discount), deterministic tiebreak by _id so dry-run and apply agree.
+  const megaCandidates = dealsPool.filter((p) => p.images && p.images.length > 0);
+  const megaPool = megaCandidates.length > 0 ? megaCandidates : dealsPool;
+  const megaProduct = [...megaPool].sort(
+    (a, b) => (b.price - a.price) || String(a._id).localeCompare(String(b._id))
+  )[0];
+
+  // Diverse pick across everything EXCEPT the already-chosen Mega Deal
+  // product, then peel slices off in a fixed, documented order.
+  const remainingPool = dealsPool.filter((p) => String(p._id) !== String(megaProduct._id));
+  const ordered = diversePick(remainingPool, Math.min(totalTarget - 1, remainingPool.length));
   let cursor = 0;
   const take = (n) => ordered.slice(cursor, cursor += n);
 
-  const megaProduct       = take(1)[0];
   const weeklyProduct     = take(1)[0];
   const over40Products    = take(OVER40_VALUES.length);
   const twentyForty       = take(TWENTY_TO_FORTY_MIN);
@@ -380,17 +551,28 @@ function buildDealsCoveragePlan(dealsPool, now) {
   const categoryCoverage = [...new Map(
     campaignPlan.filter((c) => c.key !== 'mega').map((c) => [c.category, (categoryCoverageCount(campaignPlan, c.category))])
   ).entries()].map(([category, count]) => ({ category, count }));
+  const categoryAvailability = (() => {
+    const byCategory = groupByCategory(dealsPool);
+    return [...byCategory.keys()].sort().map((name) => ({ category: name, available: byCategory.get(name).length }));
+  })();
 
   const zeroCoverage = coverage.filter((c) => c.count === 0);
   if (zeroCoverage.length) {
     throw new Error(`ABORT — Deals filter(s) with zero coverage: ${zeroCoverage.map((c) => c.labelEn).join(', ')}`);
+  }
+  // Hard minimums, not just a warning: under20 > 0, 20to40 >= 3, over40 >= 3
+  // (matches the currently-proven-good production distribution exactly).
+  const requiredMin = { under20: 1, '20to40': 3, over40: 3 };
+  const belowRequired = coverage.filter((c) => c.count < requiredMin[c.key]);
+  if (belowRequired.length) {
+    throw new Error(`ABORT — Deals filter(s) below required minimum: ${belowRequired.map((c) => `${c.labelEn} (${c.count}, need >= ${requiredMin[c.key]})`).join(', ')}`);
   }
   const under5 = coverage.filter((c) => c.count > 0 && c.count < 3);
   if (under5.length) {
     warnings.push(`Filter(s) below the preferred 3–5 minimum: ${under5.map((c) => `${c.labelEn} (${c.count})`).join(', ')}`);
   }
 
-  return { campaignPlan, coverage, categoryCoverage, warnings };
+  return { campaignPlan, coverage, categoryCoverage, categoryAvailability, warnings };
 }
 
 function categoryCoverageCount(campaignPlan, category) {
@@ -411,7 +593,12 @@ function buildArrivalsPlan(products, now) {
 }
 
 // ─── Dry-run / plan printing ─────────────────────────────────────────────────
-function printPlan({ dbName, host, productCountBefore, dealsEligibleCount, arrivalsEligibleCount, campaignPlan, coverage, categoryCoverage, warnings, arrivalsPlan, newBrandPlan, alreadyApplied }) {
+function printPlan({
+  dbName, host, productCountBefore, dealsEligibleCount, arrivalsEligibleCount,
+  campaignPlan, coverage, categoryCoverage, categoryAvailability, warnings,
+  arrivalsPlan, arrivalsAvailability, arrivalsCoverage, arrivalsCategoryCap, chosenBrands,
+  alreadyApplied,
+}) {
   console.log('='.repeat(78));
   console.log('PRODUCTION STOREFRONT CURATION — PLAN');
   console.log('='.repeat(78));
@@ -427,7 +614,6 @@ function printPlan({ dbName, host, productCountBefore, dealsEligibleCount, arriv
   const weekly = campaignPlan.find((c) => c.key === 'weekly');
   console.log(`Mega Deal (מבצע ענק): COVERED — "${mega.productName}" — ₪${mega.basePrice} -${mega.discountPercent}% -> ₪${mega.discountedPrice}  [campaign: "${mega.name}"]`);
   console.log(`Weekly Deal (מבצע השבוע): COVERED — "${weekly.productName}" — ₪${weekly.basePrice} -${weekly.discountPercent}% -> ₪${weekly.discountedPrice}  [campaign: "${weekly.name}", placement: homepage_weekly_deal]`);
-
   console.log('\nDiscount filters (exact DealsPage.jsx buckets, Hero product excluded — matches the real grid):');
   coverage.forEach((c) => console.log(`  ${c.labelHe} / ${c.labelEn}: ${c.count} product(s)`));
 
@@ -437,8 +623,17 @@ function printPlan({ dbName, host, productCountBefore, dealsEligibleCount, arriv
     aboveCap.forEach((c) => console.log(`  ${c.productName}: ${c.discountPercent}%  [${c.key}]`));
   }
 
-  console.log('\nCategory coverage:');
+  console.log('\n--- DEALS CATEGORY AVAILABILITY (real eligible products per category) ---');
+  categoryAvailability.forEach((c) => console.log(`  ${c.category}: ${c.available} eligible`));
+
+  console.log('\n--- DEALS CATEGORY COVERAGE (selected Campaigns per category) ---');
   categoryCoverage.forEach((c) => console.log(`  ${c.category}: ${c.count}`));
+
+  console.log('\n--- NEW ARRIVALS CATEGORY AVAILABILITY (real eligible products per category) ---');
+  arrivalsAvailability.forEach((c) => console.log(`  ${c.category}: ${c.available} eligible`));
+
+  console.log(`\n--- NEW ARRIVALS CATEGORY COVERAGE (selected, cap ${arrivalsCategoryCap}/category) ---`);
+  arrivalsCoverage.forEach((c) => console.log(`  ${c.category}: ${c.count}`));
 
   if (warnings.length) {
     console.log('\nWarnings:');
@@ -455,7 +650,7 @@ function printPlan({ dbName, host, productCountBefore, dealsEligibleCount, arriv
     );
   });
 
-  console.log(`\n--- Proposed New Arrivals (${arrivalsPlan.length}) ---`);
+  console.log(`\n--- Full New Arrivals List (${arrivalsPlan.length}) ---`);
   arrivalsPlan.forEach((a, i) => {
     console.log(
       `${String(i + 1).padStart(2, ' ')}. ${a.productName}  [${a.category}/${a.brand}]  ` +
@@ -464,8 +659,10 @@ function printPlan({ dbName, host, productCountBefore, dealsEligibleCount, arriv
     );
   });
 
-  console.log(`\n--- New Brands (${newBrandPlan.length}) ---`);
-  newBrandPlan.forEach((b) => console.log(`  ${b.brand}: ${b.count} product(s), all staged into the New Arrivals window`));
+  console.log(`\n--- NEW BRANDS (${chosenBrands.length}) ---`);
+  chosenBrands.forEach((b) => {
+    console.log(`  ${b.brand}: ${b.categories.join(', ')} — ${b.count} product(s) consumed, all staged into the New Arrivals window`);
+  });
 
   console.log('\n--- Totals ---');
   console.log(`Campaigns to create: ${campaignPlan.length}`);
@@ -483,22 +680,24 @@ async function buildFullPlan() {
   const dealsPool = await excludeAlreadyCampaigned(Campaign, dealsEligible);
 
   const now = new Date();
-  const { campaignPlan, coverage, categoryCoverage, warnings } = buildDealsCoveragePlan(dealsPool, now);
+  const { campaignPlan, coverage, categoryCoverage, categoryAvailability, warnings } = buildDealsCoveragePlan(dealsPool, now);
 
   const campaignProductIds = new Set(campaignPlan.map((c) => c.productId));
 
-  // New Brands: entire small-brand product sets, chosen first so they're
-  // guaranteed included; general diverse picks fill the remaining budget.
   const newBrandCandidates = await findNewBrandCandidates(Product);
-  const brandProductIdSet = new Set(newBrandCandidates.flatMap((b) => b.productIds));
-  const brandStagedProducts = arrivalsEligible.filter((p) => brandProductIdSet.has(String(p._id)));
-
-  const remainingBudget = Math.max(0, Math.min(MAX_ARRIVALS, Math.max(MIN_ARRIVALS, arrivalsEligible.length)) - brandStagedProducts.length);
-  const generalPool = arrivalsEligible.filter((p) => !brandProductIdSet.has(String(p._id)));
-  const generalPicks = diversePick(generalPool, Math.min(remainingBudget, generalPool.length));
-
-  const arrivalsProducts = [...brandStagedProducts, ...generalPicks];
+  const {
+    selected: arrivalsProducts,
+    chosenBrands,
+    availability: arrivalsAvailability,
+    coverage: arrivalsCoverage,
+    categoryCap: arrivalsCategoryCap,
+  } = buildNewArrivalsSelection(arrivalsEligible, newBrandCandidates);
   const arrivalsPlan = buildArrivalsPlan(arrivalsProducts, now);
+
+  const overRepresented = arrivalsCoverage.filter((c) => c.count > arrivalsCategoryCap);
+  if (overRepresented.length) {
+    throw new Error(`ABORT — New Arrivals category cap (${arrivalsCategoryCap}) exceeded: ${overRepresented.map((c) => `${c.category} (${c.count})`).join(', ')}`);
+  }
 
   const alreadyApplied = (await Campaign.countDocuments({ name: { $regex: `^${CURATION_MARKER}` } })) > 0;
 
@@ -510,9 +709,13 @@ async function buildFullPlan() {
     campaignPlan,
     coverage,
     categoryCoverage,
+    categoryAvailability,
     warnings,
     arrivalsPlan,
-    newBrandPlan: newBrandCandidates,
+    arrivalsAvailability,
+    arrivalsCoverage,
+    arrivalsCategoryCap,
+    chosenBrands,
     alreadyApplied,
   };
 }
@@ -666,6 +869,10 @@ module.exports = {
   applyPlan,
   verifyInvariants,
   buildDealsCoveragePlan,
+  buildNewArrivalsSelection,
+  selectNewBrands,
+  groupByCategory,
+  diversePick,
   buildArrivalDayPlan,
   spreadWithinRange,
   pickEndDate,
@@ -676,4 +883,9 @@ module.exports = {
   MEGA_DEAL_DISCOUNT,
   WEEKLY_DEAL_DISCOUNT,
   OVER40_VALUES,
+  NEW_BRAND_TARGET_COUNT,
+  NEW_BRAND_TOTAL_PRODUCT_BUDGET,
+  NEW_ARRIVALS_MAX_CATEGORY_SHARE,
+  MIN_ARRIVALS,
+  MAX_ARRIVALS,
 };
