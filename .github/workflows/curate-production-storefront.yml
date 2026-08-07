@@ -1,0 +1,125 @@
+name: Curate Production Storefront
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: 'Type CURATE_PRODUCTION to continue'
+        required: true
+
+concurrency:
+  group: production-curate-storefront
+  cancel-in-progress: false
+
+env:
+  SSH_KEY_PATH: /home/runner/.ssh/deploy_key
+
+jobs:
+  curate:
+    name: Curate Deals + New Arrivals on EC2
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Validate confirmation input
+        run: |
+          if [ "${{ inputs.confirmation }}" != "CURATE_PRODUCTION" ]; then
+            echo "::error::confirmation input must be exactly CURATE_PRODUCTION (got: '${{ inputs.confirmation }}')"
+            exit 1
+          fi
+          echo "Confirmation accepted."
+
+      # ── Same SSH setup pattern as deploy.yml — no new credentials introduced ──
+      - name: Configure SSH
+        env:
+          _HOST: ${{ secrets.EC2_HOST }}
+          _USER: ${{ secrets.EC2_USER }}
+          _KEY:  ${{ secrets.EC2_SSH_KEY }}
+        run: |
+          MISSING=0
+          if [ -n "$_HOST" ]; then echo "EC2_HOST: present";    else echo "::error::EC2_HOST: MISSING";    MISSING=1; fi
+          if [ -n "$_USER" ]; then echo "EC2_USER: present";    else echo "::error::EC2_USER: MISSING";    MISSING=1; fi
+          if [ -n "$_KEY" ];  then echo "EC2_SSH_KEY: present"; else echo "::error::EC2_SSH_KEY: MISSING"; MISSING=1; fi
+          if [ "$MISSING" -eq 1 ]; then echo "::error::One or more required secrets are missing"; exit 1; fi
+
+          mkdir -p "$(dirname "$SSH_KEY_PATH")"
+          printf '%s\n' "$_KEY" > "$SSH_KEY_PATH"
+          chmod 600 "$SSH_KEY_PATH"
+          ssh-keyscan -H "$_HOST" >> "$(dirname "$SSH_KEY_PATH")/known_hosts" 2>/dev/null || echo "::warning::ssh-keyscan failed (non-fatal)"
+          echo "SSH configured successfully"
+
+      - name: Sync repository to latest main (script must exist on the server)
+        run: |
+          ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
+            cd /opt/techvault &&
+            git fetch origin &&
+            git reset --hard origin/main &&
+            chmod +x devops/scripts/*.sh
+          '
+
+      # ── Mandatory pre-curation backup — same script deploy.yml already
+      #    uses. Curation NEVER proceeds if this fails. ──────────────────────
+      - name: Pre-curation MongoDB backup
+        run: |
+          ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} \
+            'sudo /opt/techvault/devops/scripts/backup-mongo.sh'
+
+      - name: Verify backup exists and is non-empty
+        run: |
+          ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
+            LATEST=$(ls -t /opt/techvault/backups/mongodb/techvault_*.gz 2>/dev/null | head -1)
+            if [ -z "$LATEST" ]; then
+              echo "::error::No backup archive found after backup step"
+              exit 1
+            fi
+            SIZE=$(stat -c%s "$LATEST")
+            echo "Latest backup: $LATEST ($SIZE bytes)"
+            if [ "$SIZE" -le 0 ]; then
+              echo "::error::Backup file is empty"
+              exit 1
+            fi
+          '
+
+      # ── Dry run first — logs the full plan before anything is written. ────
+      - name: Curation dry-run (prints plan, touches nothing)
+        run: |
+          ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
+            cd /opt/techvault &&
+            docker compose exec -T \
+              -e PRODUCTION_CURATION_CONFIRM=TECHVAULT_PRODUCTION \
+              backend node server/scripts/curateProductionStorefront.js --dry-run
+          '
+
+      # ── Apply — only reached if the dry-run above exited 0. ────────────────
+      - name: Curation apply (writes Campaigns + createdAt updates)
+        run: |
+          ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
+            cd /opt/techvault &&
+            docker compose exec -T \
+              -e PRODUCTION_CURATION_CONFIRM=TECHVAULT_PRODUCTION \
+              backend node server/scripts/curateProductionStorefront.js --apply
+          '
+
+      # ── Smoke-check the endpoints the new data actually feeds. ─────────────
+      - name: Verify storefront endpoints reflect the curated data
+        run: |
+          ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
+            echo "=== Health ===" &&
+            curl -sf --max-time 10 http://localhost:5000/api/v1/health | head -c 500 && echo &&
+            echo "=== Active campaigns ===" &&
+            curl -sf --max-time 10 http://localhost:5000/api/v1/campaigns/active | head -c 500 && echo &&
+            echo "=== New arrivals ===" &&
+            curl -sf --max-time 10 "http://localhost:5000/api/v1/products?new=true&limit=5" | head -c 500 && echo &&
+            echo "=== New brands ===" &&
+            curl -sf --max-time 10 http://localhost:5000/api/v1/products/new-brands | head -c 500 && echo
+          '
+
+      - name: Cleanup SSH key
+        if: always()
+        run: rm -f "$SSH_KEY_PATH"
