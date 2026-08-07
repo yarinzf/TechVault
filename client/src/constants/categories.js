@@ -1,10 +1,11 @@
 import {
   Monitor, Laptop, Server, Cpu, Keyboard, MousePointer2, Headphones,
-  HardDrive, Gamepad2, Package2, Smartphone, Tablet, Speaker, Wifi, Home,
+  HardDrive, Gamepad2, Package2, Smartphone, Tablet, Speaker, Wifi,
   Box, MonitorSmartphone, CircuitBoard, MemoryStick, BatteryCharging, Wind,
   Fan, Music2, Video, Network, Database, HardDriveDownload, Usb, Save,
   Mouse, Mic, Camera, Share2, Radio, Cable, Armchair, Table2, Disc,
   Joystick, Glasses, RadioTower, Gamepad, Tv, Printer, Zap, Scan, Droplet,
+  Watch, Aperture, Lightbulb, Plug, Bell, Radar, Lock, Bot,
 } from 'lucide-react';
 
 // Icon per real backend category slug (server/config/categoryTaxonomy.js is
@@ -26,6 +27,12 @@ export const CATEGORY_META = {
   tablets:       Tablet,
   tvs:           Tv,
   printers:      Printer,
+
+  // Added per Sapir's approved reference — icons match the reference's own
+  // lucide identifiers exactly (watch / camera / lightbulb).
+  smartwatches:          Watch,
+  'cameras-photography': Camera,
+  'smart-home':          Lightbulb,
 
   // Legacy pre-migration slugs — same icon as their canonical replacement
   // (categoryTaxonomy.js LEGACY_CATEGORY_PLAN: headphones -> headsets,
@@ -94,9 +101,24 @@ export const CATEGORY_META = {
   scanners:    Scan,
   'ink-toner': Droplet,
 
+  // Cameras & Photography
+  'action-cameras':          Camera,
+  'dash-cameras':            Video,
+  'security-cameras':        Camera,
+  'digital-cameras':         Camera,
+  'photography-accessories': Aperture,
+
+  // Smart Home
+  'smart-lighting':              Lightbulb,
+  'smart-plugs':                 Plug,
+  'smart-home-security-cameras': Video,
+  'smart-doorbells':             Bell,
+  sensors:                       Radar,
+  'smart-locks':                 Lock,
+  'robot-vacuums':               Bot,
+
   // Legacy/deactivated (kept only so old references never crash)
-  accessories:  Package2,
-  'smart-home': Home,
+  accessories: Package2,
 };
 
 // Fallback icon for a real category slug that isn't in CATEGORY_META above
@@ -109,6 +131,8 @@ export const DEFAULT_CATEGORY_ICON = Package2;
 export const MAIN_CATEGORY_ORDER = [
   'computers', 'monitors', 'pc-components', 'storage', 'peripherals',
   'networking', 'gaming', 'consoles', 'smartphones', 'tablets', 'tvs', 'printers',
+  // Required insertion order per Sapir's approved reference — must stay last.
+  'smartwatches', 'cameras-photography', 'smart-home',
 ];
 
 // Builds a real main→children tree from the flat category list the API

@@ -327,7 +327,7 @@ export const translations = {
     /* ── Home page ────────────────────────────────────────────────────── */
     'home.hero_pill':          'מבצעים ומחירים מיוחדים בכל יום',
     'home.hero_title':         'כל הטכנולוגיה במקום אחד',
-    'home.hero_sub':           'מחשבים ניידים, סמארטפונים, גיימינג, אודיו ועוד — 100+ מוצרים ב-14 קטגוריות.',
+    'home.hero_sub':           'מחשבים ניידים, סמארטפונים, גיימינג, אודיו ועוד — 100+ מוצרים ב-15 קטגוריות.',
     'home.catalog_cta':        'לקטלוג המוצרים ←',
     'home.sales_cta':          'מבצעים',
     'home.view_all':           'הצג הכל ←',
@@ -2033,7 +2033,7 @@ export const translations = {
     /* ── Home page ────────────────────────────────────────────────────── */
     'home.hero_pill':          'Special deals and prices every day',
     'home.hero_title':         'All technology in one place',
-    'home.hero_sub':           'Laptops, smartphones, gaming, audio and more — 100+ products in 14 categories.',
+    'home.hero_sub':           'Laptops, smartphones, gaming, audio and more — 100+ products in 15 categories.',
     'home.catalog_cta':        'Browse catalog →',
     'home.sales_cta':          'Sales',
     'home.view_all':           'View all →',

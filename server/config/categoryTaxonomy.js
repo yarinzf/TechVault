@@ -114,6 +114,43 @@ const CANONICAL_TREE = [
       { slug: 'ink-toner', name: 'Ink & Toner' },
     ],
   },
+
+  // ── Added per Sapir's approved reference (design-reference/techvault-home.html
+  // CMM_CATALOG) — no longer future/optional, now part of the active catalog.
+  // Must stay LAST, in this exact order (Smartwatches, Cameras & Photography,
+  // Smart Home) — required insertion order.
+  { slug: 'smartwatches', name: 'Smartwatches', children: [] },
+  {
+    slug: 'cameras-photography', name: 'Cameras & Photography',
+    children: [
+      { slug: 'action-cameras',          name: 'Action Cameras' },
+      { slug: 'dash-cameras',            name: 'Dash Cameras' },
+      { slug: 'security-cameras',        name: 'Security Cameras' },
+      { slug: 'digital-cameras',         name: 'Digital Cameras' },
+      { slug: 'photography-accessories', name: 'Photography Accessories' },
+    ],
+  },
+  {
+    // Reuses the slug already reserved for it in LEGACY_CATEGORY_PLAN below
+    // (previously deactivated as future/optional — that entry has been
+    // removed now that this is canonical).
+    slug: 'smart-home', name: 'Smart Home',
+    children: [
+      { slug: 'smart-lighting', name: 'Smart Lighting' },
+      { slug: 'smart-plugs',    name: 'Smart Plugs' },
+      // Sapir's reference lists "מצלמות אבטחה" (Security Cameras) under BOTH
+      // Cameras & Photography and Smart Home — same Hebrew wording, distinct
+      // real-world meaning. Category.name has a unique index, so this can't
+      // reuse "Security Cameras" verbatim; disambiguated in English only.
+      // The Hebrew label (categoryLabels.js) stays Sapir's exact wording for
+      // both, since that's genuinely what the reference shows.
+      { slug: 'smart-home-security-cameras', name: 'Home Security Cameras' },
+      { slug: 'smart-doorbells', name: 'Smart Doorbells' },
+      { slug: 'sensors',         name: 'Sensors' },
+      { slug: 'smart-locks',     name: 'Smart Locks' },
+      { slug: 'robot-vacuums',   name: 'Robot Vacuums' },
+    ],
+  },
 ];
 
 // ── Legacy → canonical mapping for the old flat categories ─────────────────────
@@ -143,7 +180,6 @@ const LEGACY_CATEGORY_PLAN = {
   networking:  { action: 'unchanged' },
   storage:     { action: 'unchanged' },
   accessories: { action: 'deactivate', reason: 'No canonical home in the requested taxonomy and zero products reference it — reviewed and intentionally left out rather than guessed into "Peripherals".' },
-  'smart-home':{ action: 'deactivate', reason: 'Explicitly listed as a future/optional category in the task brief, not part of this canonical structure. Zero products reference it.' },
 };
 
 // Old slug → current canonical slug. Used by the backend to resolve requests

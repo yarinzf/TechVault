@@ -121,18 +121,22 @@ export default function CategoriesModal({ open, onClose }) {
             {mains.map((main) => {
               const Icon = iconFor(main.slug);
               const isActive = main._id === activeMain?._id;
+              const isLeaf = main.children.length === 0;
               return (
                 <button
                   key={main._id}
                   type="button"
                   className={`${s.cmmMainItem} ${isActive ? s.cmmMainItemActive : ''}`}
                   onMouseEnter={() => setActiveId(main._id)}
-                  onClick={() => setActiveId(main._id)}
+                  onClick={() => (isLeaf ? goTo(main.slug) : setActiveId(main._id))}
                   aria-current={isActive ? 'true' : undefined}
                 >
                   <Icon size={17} strokeWidth={1.8} aria-hidden="true" />
                   <span>{getCategoryLabel(main, language)}</span>
-                  <DirArrow size={14} className={s.cmmMainItemArrow} aria-hidden="true" />
+                  {/* Leaf category = this row IS the destination (click navigates
+                      directly) — no chevron, since there's no secondary panel to
+                      imply. Parent categories keep the panel-reveal chevron. */}
+                  {!isLeaf && <DirArrow size={14} className={s.cmmMainItemArrow} aria-hidden="true" />}
                 </button>
               );
             })}

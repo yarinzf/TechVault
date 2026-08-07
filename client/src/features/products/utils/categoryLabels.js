@@ -16,6 +16,12 @@ const CATEGORY_LABELS = {
   tvs:             { he: 'טלוויזיות',          en: 'TVs' },
   printers:        { he: 'מדפסות',             en: 'Printers' },
 
+  // Added per Sapir's approved reference — must stay last in main-category
+  // order (see MAIN_CATEGORY_ORDER in constants/categories.js).
+  smartwatches:          { he: 'שעונים חכמים',    en: 'Smartwatches' },
+  'cameras-photography': { he: 'מצלמות וצילום',   en: 'Cameras & Photography' },
+  'smart-home':          { he: 'בית חכם',         en: 'Smart Home' },
+
   // Legacy pre-migration slugs (server/config/categoryTaxonomy.js
   // LEGACY_CATEGORY_PLAN's two 'rename' entries: headphones -> headsets,
   // components -> pc-components). A Category document is only ever renamed
@@ -88,10 +94,29 @@ const CATEGORY_LABELS = {
   scanners:    { he: 'סורקים',      en: 'Scanners' },
   'ink-toner': { he: 'דיו וטונר',   en: 'Ink & Toner' },
 
+  // Cameras & Photography
+  'action-cameras':          { he: 'מצלמות אקסטרים',  en: 'Action Cameras' },
+  'dash-cameras':            { he: 'מצלמות דרך',      en: 'Dash Cameras' },
+  'security-cameras':        { he: 'מצלמות אבטחה',    en: 'Security Cameras' },
+  'digital-cameras':         { he: 'מצלמות דיגיטליות', en: 'Digital Cameras' },
+  'photography-accessories': { he: 'אביזרי צילום',    en: 'Photography Accessories' },
+
+  // Smart Home
+  'smart-lighting':               { he: 'תאורה חכמה',           en: 'Smart Lighting' },
+  'smart-plugs':                  { he: 'שקעים חכמים',          en: 'Smart Plugs' },
+  // Sapir's reference uses the SAME Hebrew wording ("מצלמות אבטחה") as
+  // Cameras & Photography's security-cameras — kept verbatim per the
+  // reference; only the underlying Category.name differs (unique-index
+  // requirement), never the displayed Hebrew/English label.
+  'smart-home-security-cameras':  { he: 'מצלמות אבטחה',          en: 'Security Cameras' },
+  'smart-doorbells':              { he: 'פעמוני דלת חכמים',      en: 'Smart Doorbells' },
+  sensors:                        { he: 'חיישנים',               en: 'Sensors' },
+  'smart-locks':                  { he: 'מנעולים חכמים',         en: 'Smart Locks' },
+  'robot-vacuums':                { he: 'שואבי אבק רובוטיים',    en: 'Robot Vacuums' },
+
   // Legacy/deactivated — kept so any stale reference still renders something
   // sensible instead of a raw slug.
   accessories:  { he: 'אביזרים', en: 'Accessories' },
-  'smart-home': { he: 'בית חכם', en: 'Smart Home' },
 };
 
 /**
