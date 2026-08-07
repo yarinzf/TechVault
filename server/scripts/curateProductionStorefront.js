@@ -654,11 +654,32 @@ function checkNewestDiversity(arrivalsPlanNewestFirst) {
   return results;
 }
 
+// buildArrivalDayPlan's own bucket arrays CYCLE (e.g. [2,3,4,5,6,2,3,4,5,6,...]
+// for the 2-6d bucket) rather than climbing monotonically, so construction-
+// array order was never chronological — this is the actual root cause of the
+// reported "items 1-4: 0d, ..., item 8: 2d, ..., item 13: 2d again" pattern.
+// Real ordering can only come from sorting on newCreatedAt (see
+// sortArrivalsNewestFirst below), never from array position.
+//
+// Multiple products can land in the SAME day bucket (e.g. four "today"
+// products). Equal Date timestamps leave Mongo's `createdAt: -1` tie-break
+// unspecified, so the dry-run preview could disagree with what the real API
+// returns. Each same-day product gets a small deterministic sub-day offset
+// (5 minutes) instead — the FIRST product to reach a given day bucket while
+// walking `products` (already category-interleaved) gets the latest
+// time-of-day within that day, later same-day products get progressively
+// earlier times. This never changes ageDays (the intended bucket) — only
+// the minutes within that calendar day, giving a real, deterministic
+// createdAt DESC order with no ties and no randomness.
+const DAY_SUB_OFFSET_MS = 5 * 60 * 1000;
 function buildArrivalsPlan(products, now) {
   const dayPlan = buildArrivalDayPlan(products.length);
+  const seenInDay = new Map();
   return products.map((p, i) => {
     const days = dayPlan[i];
-    const newCreatedAt = new Date(now.getTime() - days * DAY_MS);
+    const withinDayIndex = seenInDay.get(days) || 0;
+    seenInDay.set(days, withinDayIndex + 1);
+    const newCreatedAt = new Date(now.getTime() - days * DAY_MS - withinDayIndex * DAY_SUB_OFFSET_MS);
     return {
       productId: String(p._id), productName: p.name, brand: p.brand || null,
       category: p.category?.name || null, oldCreatedAt: p.createdAt,
@@ -667,11 +688,22 @@ function buildArrivalsPlan(products, now) {
   });
 }
 
+// The REAL storefront/API order — GET /products?new=true sorts createdAt: -1
+// (verified in product.service.js's sortMap.newest, and it's the exact sort
+// NewArrivalsPage.jsx passes for its "arrived this week" newest slice). Ties
+// broken by productId so the order is fully deterministic even in the
+// theoretical case of two equal timestamps.
+function sortArrivalsNewestFirst(arrivalsPlan) {
+  return [...arrivalsPlan].sort(
+    (a, b) => b.newCreatedAt.getTime() - a.newCreatedAt.getTime() || a.productId.localeCompare(b.productId)
+  );
+}
+
 // ─── Dry-run / plan printing ─────────────────────────────────────────────────
 function printPlan({
   dbName, host, productCountBefore, dealsEligibleCount, arrivalsEligibleCount,
   campaignPlan, coverage, categoryCoverage, categoryAvailability, warnings,
-  arrivalsPlan, arrivalsAvailability, arrivalsCoverage, arrivalsCategoryCap, newestDiversity, chosenBrands,
+  arrivalsPlan, arrivalsNewestFirst, arrivalsAvailability, arrivalsCoverage, arrivalsCategoryCap, newestDiversity, chosenBrands,
   alreadyApplied,
 }) {
   console.log('='.repeat(78));
@@ -731,11 +763,11 @@ function printPlan({
     );
   });
 
-  console.log(`\n--- Full New Arrivals List (${arrivalsPlan.length}) ---`);
-  arrivalsPlan.forEach((a, i) => {
+  console.log(`\n--- Full New Arrivals List (${arrivalsNewestFirst.length}) — real storefront order (createdAt DESC, matches GET /products?new=true&sort=newest) ---`);
+  arrivalsNewestFirst.forEach((a, i) => {
     console.log(
       `${String(i + 1).padStart(2, ' ')}. ${a.productName}  [${a.category}/${a.brand}]  ` +
-      `${new Date(a.oldCreatedAt).toISOString().slice(0, 10)} -> ${a.newCreatedAt.toISOString().slice(0, 10)}  ` +
+      `${new Date(a.oldCreatedAt).toISOString().slice(0, 10)} -> ${a.newCreatedAt.toISOString()}  ` +
       `(age after change: ${a.ageDays}d)`
     );
   });
@@ -787,7 +819,10 @@ async function buildFullPlan() {
   const brandProductIds = new Set(chosenBrands.flatMap((b) => b.productIds));
   const interleaved = buildCategoryInterleavedOrder(arrivalsProducts, brandProductIds);
   const arrivalsPlan = buildArrivalsPlan(interleaved, now);
-  const newestDiversity = checkNewestDiversity(arrivalsPlan);
+  // Diversity must be judged against the order users/API will ACTUALLY see
+  // (createdAt DESC), not the construction array — see sortArrivalsNewestFirst.
+  const arrivalsNewestFirst = sortArrivalsNewestFirst(arrivalsPlan);
+  const newestDiversity = checkNewestDiversity(arrivalsNewestFirst);
 
   const alreadyApplied = (await Campaign.countDocuments({ name: { $regex: `^${CURATION_MARKER}` } })) > 0;
 
@@ -802,6 +837,7 @@ async function buildFullPlan() {
     categoryAvailability,
     warnings,
     arrivalsPlan,
+    arrivalsNewestFirst,
     arrivalsAvailability,
     arrivalsCoverage,
     arrivalsCategoryCap,
@@ -964,6 +1000,7 @@ module.exports = {
   buildCategoryInterleavedOrder,
   checkNewestDiversity,
   buildArrivalsPlan,
+  sortArrivalsNewestFirst,
   selectNewBrands,
   groupByCategory,
   diversePick,
