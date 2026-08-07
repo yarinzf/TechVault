@@ -6,6 +6,14 @@ on:
       confirmation:
         description: 'Type CURATE_PRODUCTION to continue'
         required: true
+      mode:
+        description: 'Choose dry-run first. Use apply only after reviewing the production plan.'
+        required: true
+        type: choice
+        options:
+          - dry-run
+          - apply
+        default: dry-run
 
 concurrency:
   group: production-curate-storefront
@@ -21,13 +29,17 @@ jobs:
     environment: production
 
     steps:
-      - name: Validate confirmation input
+      - name: Validate inputs
         run: |
           if [ "${{ inputs.confirmation }}" != "CURATE_PRODUCTION" ]; then
             echo "::error::confirmation input must be exactly CURATE_PRODUCTION (got: '${{ inputs.confirmation }}')"
             exit 1
           fi
-          echo "Confirmation accepted."
+          if [ "${{ inputs.mode }}" != "dry-run" ] && [ "${{ inputs.mode }}" != "apply" ]; then
+            echo "::error::mode must be 'dry-run' or 'apply' (got: '${{ inputs.mode }}')"
+            exit 1
+          fi
+          echo "Confirmation accepted. Mode: ${{ inputs.mode }}"
 
       # ── Same SSH setup pattern as deploy.yml — no new credentials introduced ──
       - name: Configure SSH
@@ -58,15 +70,28 @@ jobs:
             chmod +x devops/scripts/*.sh
           '
 
-      # ── Mandatory pre-curation backup — same script deploy.yml already
-      #    uses. Curation NEVER proceeds if this fails. ──────────────────────
-      - name: Pre-curation MongoDB backup
+      # ── Dry-run mode: preview only, no backup needed since nothing writes. ──
+      - name: "[dry-run] Curation dry-run (prints full plan, touches nothing)"
+        if: ${{ inputs.mode == 'dry-run' }}
+        run: |
+          ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
+            cd /opt/techvault &&
+            docker compose exec -T \
+              -e PRODUCTION_CURATION_CONFIRM=TECHVAULT_PRODUCTION \
+              backend node server/scripts/curateProductionStorefront.js --dry-run
+          '
+
+      # ── Apply mode: backup is mandatory and MUST happen before any write. ──
+      - name: "[apply] Pre-curation MongoDB backup"
+        if: ${{ inputs.mode == 'apply' }}
         run: |
           ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
             ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} \
             'sudo /opt/techvault/devops/scripts/backup-mongo.sh'
 
-      - name: Verify backup exists and is non-empty
+      - name: "[apply] Verify backup exists and is non-empty"
+        if: ${{ inputs.mode == 'apply' }}
         run: |
           ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
             ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
@@ -83,8 +108,11 @@ jobs:
             fi
           '
 
-      # ── Dry run first — logs the full plan before anything is written. ────
-      - name: Curation dry-run (prints plan, touches nothing)
+      # ── Apply mode re-runs the dry-run once more right before writing, so
+      #    the logged plan is guaranteed fresh against the just-backed-up
+      #    state (not a stale plan from a much earlier dry-run dispatch). ────
+      - name: "[apply] Curation dry-run (final plan review before write)"
+        if: ${{ inputs.mode == 'apply' }}
         run: |
           ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
             ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
@@ -94,8 +122,8 @@ jobs:
               backend node server/scripts/curateProductionStorefront.js --dry-run
           '
 
-      # ── Apply — only reached if the dry-run above exited 0. ────────────────
-      - name: Curation apply (writes Campaigns + createdAt updates)
+      - name: "[apply] Curation apply (writes Campaigns + createdAt updates)"
+        if: ${{ inputs.mode == 'apply' }}
         run: |
           ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
             ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
@@ -106,7 +134,8 @@ jobs:
           '
 
       # ── Smoke-check the endpoints the new data actually feeds. ─────────────
-      - name: Verify storefront endpoints reflect the curated data
+      - name: "[apply] Verify storefront endpoints reflect the curated data"
+        if: ${{ inputs.mode == 'apply' }}
         run: |
           ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
             ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
