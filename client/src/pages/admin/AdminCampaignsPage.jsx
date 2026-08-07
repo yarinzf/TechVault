@@ -125,6 +125,7 @@ const normalizeCampaign = (c) => ({
     startDate:      c.startDate,
     endDate:        c.endDate,
     placement:      c.placement ?? PLACEMENT_NONE,
+    isClearance:    c.isClearance ?? false,
     isActive:       c.isActive,
     status:         deriveCampaignStatus(c),
     revenue:        '₪0',
@@ -475,6 +476,7 @@ function CreateEditModal({ campaign, onSave, closeModal }) {
         startDate:       toDateTimeLocal(campaign?.startDate),
         endDate:         toDateTimeLocal(campaign?.endDate),
         placement:       campaign?.placement ?? PLACEMENT_NONE,
+        isClearance:     campaign?.isClearance ?? false,
     });
     const [selectedProducts, setSelectedProducts] = useState(campaign?.products ?? []);
     const [searchResults, setSearchResults] = useState([]);
@@ -557,6 +559,7 @@ function CreateEditModal({ campaign, onSave, closeModal }) {
                 endDate:         fromDateTimeLocalToIso(form.endDate),
                 products:        selectedProducts.map((p) => p._id),
                 placement:       form.placement,
+                isClearance:     form.isClearance,
             });
         } catch (err) {
             setError(mapBackendError(err, t));
@@ -620,6 +623,22 @@ function CreateEditModal({ campaign, onSave, closeModal }) {
                         </div>
                         {notice && <p className="text-xs text-[#fbbf24] mt-2">{notice}</p>}
                         {isWeeklyDeal && <p className="text-xs text-muted-foreground mt-2">{t('admin.campaigns.weekly_deal_one_product_hint')}</p>}
+                    </div>
+
+                    {/* Clearance toggle */}
+                    <div>
+                        <label className="flex items-center gap-2 px-3 py-2.5 rounded-lg border border-border cursor-pointer hover:bg-secondary/50 transition-colors">
+                            <input
+                                type="checkbox"
+                                checked={form.isClearance}
+                                onChange={(e) => setForm((f) => ({ ...f, isClearance: e.target.checked }))}
+                                className="w-4 h-4"
+                            />
+                            <span className="text-sm text-foreground">{t('admin.campaigns.clearance_label')}</span>
+                        </label>
+                        {form.isClearance && (
+                            <p className="text-xs text-muted-foreground mt-2">{t('admin.campaigns.clearance_stock_hint')}</p>
+                        )}
                     </div>
 
                     {/* Product picker */}

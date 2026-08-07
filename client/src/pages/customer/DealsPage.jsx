@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   Flame, Zap, CalendarDays, ShoppingCart, TrendingDown, Star, Hourglass,
   Award, ArrowLeft, Plus, Loader, Crown, ShieldCheck, UserPlus,
-  Gift, Truck, Undo2, CreditCard, AlertTriangle, Check,
+  Gift, Truck, Undo2, CreditCard, AlertTriangle, Check, Tag,
 } from 'lucide-react';
 import { campaignService } from '../../features/campaigns/api/campaign.service';
 import { useCart } from '../../hooks/useCart';
@@ -17,8 +17,9 @@ import { PageSpinner } from '../../components/ui/Spinner/Spinner';
 import { useTranslation } from '../../context/LanguageContext';
 import s from './DealsPage.module.css';
 
-const HOT_LIMIT     = 8;
-const LIMITED_LIMIT = 8;
+const HOT_LIMIT       = 8;
+const LIMITED_LIMIT   = 8;
+const CLEARANCE_LIMIT = 8;
 
 // Same proven algorithm as HomePage's weekly-deal countdown: derives purely
 // from the real endDate, ticks every second, never resets on refresh, never
@@ -375,8 +376,14 @@ export default function DealsPage() {
     )[0];
   }, [heroCampaign]);
 
+  // Clearance is its own dedicated section (see clearanceDeals below) — a
+  // product whose winning campaign is a clearance campaign is excluded from
+  // Hottest Deals so the same card never appears in two sections at once.
+  // Mega Deal selection (heroCampaign/heroProduct) is untouched by this —
+  // if a clearance campaign happens to carry the single highest discount,
+  // it can still legitimately win the Hero slot exactly as before.
   const eligibleForHot = useMemo(
-    () => dealProducts.filter((p) => p.id !== heroProduct?.id),
+    () => dealProducts.filter((p) => p.id !== heroProduct?.id && !p.isClearance),
     [dealProducts, heroProduct]
   );
 
@@ -399,9 +406,23 @@ export default function DealsPage() {
   }, [eligibleForHot, filter]);
 
   const limitedDeals = useMemo(() => (
-    [...dealProducts]
+    dealProducts
+      .filter((p) => !p.isClearance)
       .sort((a, b) => new Date(a.campaignEndDate) - new Date(b.campaignEndDate))
       .slice(0, LIMITED_LIMIT)
+  ), [dealProducts]);
+
+  // Clearance section — ONLY products whose winning campaign is a real,
+  // active/date-valid clearance campaign (isClearance already resolved
+  // server-side in getActiveCampaigns; dealProducts already keeps, per
+  // product, whichever active campaign currently has the highest discount —
+  // see the dedup comment above). Sorted by discount, same precedent as
+  // hotDeals, since clearance has no separate priority/ordering field.
+  const clearanceDeals = useMemo(() => (
+    dealProducts
+      .filter((p) => p.isClearance)
+      .sort((a, b) => b.discountPercent - a.discountPercent)
+      .slice(0, CLEARANCE_LIMIT)
   ), [dealProducts]);
 
   const handleWeeklyExpire = useCallback(() => setWeeklyDeal(null), []);
@@ -501,6 +522,23 @@ export default function DealsPage() {
         )}
 
         <ClubBanner />
+
+        {clearanceDeals.length > 0 && (
+          <div className={s.section}>
+            <div className={`${s.sectionTitle} ${s.sectionTitleClearance}`}><Tag size={20} /> {t('deals.section_clearance')}</div>
+            <div className={s.grid}>
+              {clearanceDeals.map((p) => (
+                <DealProductCard
+                  key={p.id}
+                  product={p}
+                  isClearance
+                  clearanceStartingStock={p.clearanceStartingStock}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
         <TrustBadges />
       </div>
 

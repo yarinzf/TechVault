@@ -19,6 +19,10 @@
   box-shadow: 0 16px 48px rgba(37, 99, 235, 0.1);
 }
 
+/* ── Clearance variant — Sapir's .pc-clearance (amber-tinted border) ────── */
+.cardClearance { border-color: rgba(245, 158, 11, 0.22); }
+.cardClearance:hover { border-color: rgba(245, 158, 11, 0.45); }
+
 .imageWrap {
   height: 130px;
   background: #0A0A0F;
@@ -70,6 +74,22 @@
   letter-spacing: .04em;
   background: var(--sv-red);
   color: #fff;
+}
+
+/* Sapir's .b-clearance — same red family, slightly larger/bolder with a
+   glow, so it reads as a distinct "clearance" signal, not just another
+   percentage-off badge. */
+.badgeClearance {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .02em;
+  background: var(--sv-red);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 2px 10px -2px rgba(239, 68, 68, 0.5);
 }
 
 .heartBtn {
@@ -165,6 +185,28 @@
 }
 
 .stockLow { color: var(--sv-gold); }
+.stockLow svg { stroke: var(--sv-gold); }
+.stockCritical { color: #f87171; }
+.stockCritical svg { stroke: #f87171; }
+
+/* ── Clearance stock progress track (Sapir's .pc-stock-track/.pc-stock-fill) */
+.stockTrack {
+  width: 100%;
+  height: 5px;
+  border-radius: 20px;
+  background: rgba(10, 14, 26, 0.6);
+  overflow: hidden;
+  margin-bottom: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.stockFill {
+  height: 100%;
+  border-radius: 20px;
+  background: linear-gradient(90deg, #D97706, var(--sv-gold));
+}
+
+.stockFillCritical { background: linear-gradient(90deg, #ef4444, #f87171); }
 
 /* ── Countdown (only on Limited-Time cards) ──────────────────────────────── */
 .countdownLabel {

@@ -202,6 +202,7 @@
 }
 .sectionTitleHot svg { stroke: var(--sv-blue-l); }
 .sectionTitleUrgent svg { stroke: var(--sv-red); }
+.sectionTitleClearance svg { stroke: var(--sv-gold); }
 
 .grid {
   display: grid;

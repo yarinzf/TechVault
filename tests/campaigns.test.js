@@ -66,7 +66,8 @@ function standardPayload(overrides = {}) {
     startDate:       (overrides.startDate ?? inDays(-1)).toISOString(),
     endDate:         (overrides.endDate ?? inDays(6)).toISOString(),
     products:        overrides.products ?? [],
-    ...(overrides.placement !== undefined ? { placement: overrides.placement } : {}),
+    ...(overrides.placement   !== undefined ? { placement:   overrides.placement }   : {}),
+    ...(overrides.isClearance !== undefined ? { isClearance: overrides.isClearance } : {}),
   };
 }
 
@@ -691,5 +692,187 @@ describe('GET /api/v1/campaigns/active (public)', () => {
     expect(campaign).not.toHaveProperty('__v');
     expect(campaign).not.toHaveProperty('updatedAt');
     expect(campaign).not.toHaveProperty('createdAt');
+  });
+});
+
+// ── Clearance campaigns ──────────────────────────────────────────────────────
+
+describe('Clearance campaigns', () => {
+  test('a normal campaign is NOT clearance by default', async () => {
+    const token   = await adminToken();
+    const product = await seedProduct();
+    const res = await request(app).post(ADMIN_BASE).set('Authorization', `Bearer ${token}`)
+      .send(standardPayload({ products: [product._id.toString()] }));
+    expect(res.status).toBe(201);
+    expect(res.body.data.campaign.isClearance).toBe(false);
+
+    const active = await request(app).get(`${PUBLIC_BASE}/active`);
+    expect(active.body.data.campaigns[0].isClearance).toBe(false);
+    expect(active.body.data.campaigns[0].products[0].isClearance).toBe(false);
+  });
+
+  test('isClearance:true persists through creation and a plain GET', async () => {
+    const token   = await adminToken();
+    const product = await seedProduct({ stock: 20 });
+    const created = await request(app).post(ADMIN_BASE).set('Authorization', `Bearer ${token}`)
+      .send(standardPayload({ name: 'Clearance Campaign', products: [product._id.toString()], isClearance: true }));
+    expect(created.status).toBe(201);
+    expect(created.body.data.campaign.isClearance).toBe(true);
+
+    const list = await request(app).get(ADMIN_BASE).set('Authorization', `Bearer ${token}`);
+    const found = list.body.data.campaigns.find((c) => c.name === 'Clearance Campaign');
+    expect(found.isClearance).toBe(true);
+  });
+
+  test('a clearance campaign not yet started is excluded from the active list', async () => {
+    const token   = await adminToken();
+    const product = await seedProduct({ stock: 20 });
+    await request(app).post(ADMIN_BASE).set('Authorization', `Bearer ${token}`)
+      .send(standardPayload({ startDate: inDays(3), endDate: inDays(10), products: [product._id.toString()], isClearance: true }));
+
+    const res = await request(app).get(`${PUBLIC_BASE}/active`);
+    expect(res.body.data.campaigns).toEqual([]);
+  });
+
+  test('an expired clearance campaign is excluded from the active list', async () => {
+    const token   = await adminToken();
+    const product = await seedProduct({ stock: 20 });
+    await request(app).post(ADMIN_BASE).set('Authorization', `Bearer ${token}`)
+      .send(standardPayload({ startDate: inDays(-10), endDate: inDays(-1), products: [product._id.toString()], isClearance: true }));
+
+    const res = await request(app).get(`${PUBLIC_BASE}/active`);
+    expect(res.body.data.campaigns).toEqual([]);
+  });
+
+  test('an active clearance campaign appears with a real, persisted starting-stock snapshot taken from Product.stock', async () => {
+    const token   = await adminToken();
+    const product = await seedProduct({ name: 'Clearance Mouse', stock: 17 });
+    await request(app).post(ADMIN_BASE).set('Authorization', `Bearer ${token}`)
+      .send(standardPayload({ products: [product._id.toString()], isClearance: true }));
+
+    const res = await request(app).get(`${PUBLIC_BASE}/active`);
+    expect(res.body.data.campaigns).toHaveLength(1);
+    const [p] = res.body.data.campaigns[0].products;
+    expect(p.isClearance).toBe(true);
+    expect(p.stock).toBe(17); // real current Product.stock
+    expect(p.clearanceStartingStock).toBe(17); // snapshotted at creation
+  });
+
+  test('a client-submitted clearanceStockSnapshots value is ignored — the server always computes it from real stock', async () => {
+    const token   = await adminToken();
+    const product = await seedProduct({ stock: 5 });
+    const res = await request(app).post(ADMIN_BASE).set('Authorization', `Bearer ${token}`)
+      .send({
+        ...standardPayload({ products: [product._id.toString()], isClearance: true }),
+        clearanceStockSnapshots: [{ product: product._id.toString(), startingStock: 9999 }],
+      });
+    expect(res.status).toBe(201);
+
+    const active = await request(app).get(`${PUBLIC_BASE}/active`);
+    expect(active.body.data.campaigns[0].products[0].clearanceStartingStock).toBe(5);
+  });
+
+  test('starting stock snapshot does NOT change as real stock later sells down', async () => {
+    const token   = await adminToken();
+    const product = await seedProduct({ stock: 30 });
+    const created = await request(app).post(ADMIN_BASE).set('Authorization', `Bearer ${token}`)
+      .send(standardPayload({ products: [product._id.toString()], isClearance: true }));
+    const id = created.body.data.campaign._id;
+
+    // Simulate stock selling down — nothing about the campaign changes.
+    await mongoose.model('Product').findByIdAndUpdate(product._id, { stock: 4 });
+    // An unrelated PATCH on the campaign (e.g. renaming it) must not re-snapshot.
+    await request(app).patch(`${ADMIN_BASE}/${id}`).set('Authorization', `Bearer ${token}`)
+      .send({ name: 'Renamed While On Clearance' });
+
+    const res = await request(app).get(`${PUBLIC_BASE}/active`);
+    const [p] = res.body.data.campaigns[0].products;
+    expect(p.stock).toBe(4); // real current stock — reflects the sell-down
+    expect(p.clearanceStartingStock).toBe(30); // frozen at its original snapshot
+  });
+
+  test('flipping an existing standard campaign to clearance via PATCH snapshots stock at that moment', async () => {
+    const token   = await adminToken();
+    const product = await seedProduct({ stock: 12 });
+    const created = await request(app).post(ADMIN_BASE).set('Authorization', `Bearer ${token}`)
+      .send(standardPayload({ products: [product._id.toString()] }));
+    const id = created.body.data.campaign._id;
+    expect(created.body.data.campaign.isClearance).toBe(false);
+
+    // Stock changes BEFORE clearance is ever turned on — the eventual
+    // snapshot must reflect stock at flip-time, not at original creation.
+    await mongoose.model('Product').findByIdAndUpdate(product._id, { stock: 8 });
+
+    const patched = await request(app).patch(`${ADMIN_BASE}/${id}`).set('Authorization', `Bearer ${token}`)
+      .send({ isClearance: true });
+    expect(patched.status).toBe(200);
+    expect(patched.body.data.campaign.isClearance).toBe(true);
+
+    const res = await request(app).get(`${PUBLIC_BASE}/active`);
+    const [p] = res.body.data.campaigns[0].products;
+    expect(p.clearanceStartingStock).toBe(8);
+  });
+
+  test('a new product added to an existing clearance campaign gets its own fresh snapshot without disturbing the original product\'s snapshot', async () => {
+    const token = await adminToken();
+    const p1    = await seedProduct({ name: 'Original Clearance Product', stock: 40 });
+    const created = await request(app).post(ADMIN_BASE).set('Authorization', `Bearer ${token}`)
+      .send(standardPayload({ products: [p1._id.toString()], isClearance: true }));
+    const id = created.body.data.campaign._id;
+
+    // p1 sells down after its snapshot was taken.
+    await mongoose.model('Product').findByIdAndUpdate(p1._id, { stock: 6 });
+
+    const p2 = await seedProduct({ name: 'Newly Added Clearance Product', stock: 25 });
+    const patched = await request(app).patch(`${ADMIN_BASE}/${id}`).set('Authorization', `Bearer ${token}`)
+      .send({ products: [p1._id.toString(), p2._id.toString()] });
+    expect(patched.status).toBe(200);
+
+    const res = await request(app).get(`${PUBLIC_BASE}/active`);
+    const products = res.body.data.campaigns[0].products;
+    const found1 = products.find((p) => p.id === p1._id.toString());
+    const found2 = products.find((p) => p.id === p2._id.toString());
+    expect(found1.clearanceStartingStock).toBe(40); // untouched, not re-read as 6
+    expect(found1.stock).toBe(6);
+    expect(found2.clearanceStartingStock).toBe(25); // freshly snapshotted
+    expect(found2.stock).toBe(25);
+  });
+
+  test('an out-of-stock clearance product still appears with real stock 0, for normal out-of-stock UI handling', async () => {
+    const token   = await adminToken();
+    const product = await seedProduct({ stock: 0 });
+    await request(app).post(ADMIN_BASE).set('Authorization', `Bearer ${token}`)
+      .send(standardPayload({ products: [product._id.toString()], isClearance: true }));
+
+    const res = await request(app).get(`${PUBLIC_BASE}/active`);
+    expect(res.body.data.campaigns).toHaveLength(1);
+    const [p] = res.body.data.campaigns[0].products;
+    expect(p.stock).toBe(0);
+    expect(p.isClearance).toBe(true);
+  });
+
+  test('a non-clearance product is unaffected — clearanceStartingStock is null and isClearance is false', async () => {
+    const token   = await adminToken();
+    const product = await seedProduct({ stock: 50 });
+    await request(app).post(ADMIN_BASE).set('Authorization', `Bearer ${token}`)
+      .send(standardPayload({ products: [product._id.toString()] }));
+
+    const res = await request(app).get(`${PUBLIC_BASE}/active`);
+    const [p] = res.body.data.campaigns[0].products;
+    expect(p.isClearance).toBe(false);
+    expect(p.clearanceStartingStock).toBeNull();
+  });
+
+  test('clearance campaign pricing (discountedPrice) still uses the same real calculation as a normal campaign', async () => {
+    const token   = await adminToken();
+    const product = await seedProduct({ price: 200, stock: 10 });
+    await request(app).post(ADMIN_BASE).set('Authorization', `Bearer ${token}`)
+      .send(standardPayload({ discountPercent: 45, products: [product._id.toString()], isClearance: true }));
+
+    const res = await request(app).get(`${PUBLIC_BASE}/active`);
+    const [p] = res.body.data.campaigns[0].products;
+    expect(p.price).toBe(200);
+    expect(p.discountPercent).toBe(45);
+    expect(p.discountedPrice).toBe(110); // 200 * (1 - 45/100)
   });
 });

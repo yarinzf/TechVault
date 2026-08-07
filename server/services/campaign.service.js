@@ -17,7 +17,8 @@ const listCampaigns = async () => {
   // the Admin UI to read. This does not write anything back to MongoDB.
   return campaigns.map((campaign) => ({
     ...campaign,
-    placement: campaign.placement ?? 'none',
+    placement:   campaign.placement ?? 'none',
+    isClearance: campaign.isClearance ?? false,
   }));
 };
 
@@ -87,17 +88,54 @@ const assertWeeklyDealEligible = async (finalState, excludeId) => {
   }
 };
 
+// Clearance stock snapshots — one entry per product, since a clearance
+// Campaign can target multiple products that each started their clearance
+// run at a different stock level. Deterministic and additive-only:
+//   - a product that already has a snapshot keeps its EXACT existing value
+//     (never re-read from Product.stock, so it can never silently drift as
+//     stock sells — that's the whole point of a "starting stock" snapshot);
+//   - a product with no existing snapshot gets one built from its real,
+//     current Product.stock at this exact moment (covers both a brand-new
+//     clearance campaign and a product newly added to one);
+//   - a product no longer in the campaign's final `products` list is
+//     dropped (no orphan snapshots left behind).
+// Returns [] when the campaign's final state isn't clearance — snapshots
+// are meaningless outside clearance and never persisted for a normal
+// campaign.
+async function buildClearanceSnapshots(existingSnapshots, isClearance, productIds) {
+  if (!isClearance || productIds.length === 0) return [];
+
+  const existingByProduct = new Map(
+    (existingSnapshots || []).map((snap) => [String(snap.product), snap.startingStock])
+  );
+
+  const missingIds = productIds.filter((pid) => !existingByProduct.has(String(pid)));
+  let stockByProduct = new Map();
+  if (missingIds.length > 0) {
+    const docs = await Product.find({ _id: { $in: missingIds } }).select('stock').lean();
+    stockByProduct = new Map(docs.map((p) => [String(p._id), p.stock]));
+  }
+
+  return productIds.map((pid) => {
+    const key = String(pid);
+    const startingStock = existingByProduct.has(key) ? existingByProduct.get(key) : (stockByProduct.get(key) ?? 0);
+    return { product: pid, startingStock };
+  });
+}
+
 const createCampaign = async (dto) => {
+  const finalProducts = dto.products ?? [];
   await assertWeeklyDealEligible(
     {
       placement: dto.placement ?? 'none',
-      products:  dto.products ?? [],
+      products:  finalProducts,
       startDate: new Date(dto.startDate),
       endDate:   new Date(dto.endDate),
     },
     null
   );
-  return Campaign.create(dto);
+  const clearanceStockSnapshots = await buildClearanceSnapshots([], dto.isClearance ?? false, finalProducts);
+  return Campaign.create({ ...dto, clearanceStockSnapshots });
 };
 
 const updateCampaign = async (id, dto) => {
@@ -115,19 +153,30 @@ const updateCampaign = async (id, dto) => {
   // fallback is kept anyway as an explicit, zero-cost guarantee that the
   // final merged state can never be undefined, regardless of how `existing`
   // was obtained.
-  const finalPlacement = dto.placement !== undefined ? dto.placement : (existing.placement ?? 'none');
-  const finalProducts  = dto.products  !== undefined ? dto.products  : existing.products.map(String);
-  const finalStartDate = dto.startDate !== undefined ? new Date(dto.startDate) : existing.startDate;
-  const finalEndDate   = dto.endDate   !== undefined ? new Date(dto.endDate)   : existing.endDate;
+  const finalPlacement   = dto.placement    !== undefined ? dto.placement    : (existing.placement ?? 'none');
+  const finalProducts    = dto.products     !== undefined ? dto.products     : existing.products.map(String);
+  const finalStartDate   = dto.startDate    !== undefined ? new Date(dto.startDate) : existing.startDate;
+  const finalEndDate     = dto.endDate      !== undefined ? new Date(dto.endDate)   : existing.endDate;
+  const finalIsClearance = dto.isClearance  !== undefined ? dto.isClearance  : (existing.isClearance ?? false);
 
   await assertWeeklyDealEligible(
     { placement: finalPlacement, products: finalProducts, startDate: finalStartDate, endDate: finalEndDate },
     existing._id
   );
 
+  // Rebuilt from the FINAL merged state every time (not just when isClearance
+  // or products are present in this particular PATCH body) — see
+  // buildClearanceSnapshots for why this never overwrites an existing
+  // product's already-frozen starting stock.
+  const clearanceStockSnapshots = await buildClearanceSnapshots(
+    existing.clearanceStockSnapshots,
+    finalIsClearance,
+    finalProducts
+  );
+
   const campaign = await Campaign.findByIdAndUpdate(
     id,
-    { $set: dto },
+    { $set: { ...dto, clearanceStockSnapshots } },
     { new: true, runValidators: true }
   ).populate('products', 'name sku price');
   return campaign;
@@ -255,30 +304,46 @@ const getActiveCampaigns = async () => {
   const productById = new Map(products.map((p) => [String(p._id), p]));
 
   return campaigns
-    .map((c) => ({
-      id:              String(c._id),
-      name:            c.name,
-      discountPercent: c.discountPercent,
-      startDate:       new Date(c.startDate).toISOString(),
-      endDate:         new Date(c.endDate).toISOString(),
-      placement:       c.placement ?? 'none',
-      products: c.products
-        .map((pid) => productById.get(String(pid)))
-        .filter(Boolean)
-        .map((p) => ({
-          id:              String(p._id),
-          name:            p.name,
-          slug:            p.slug,
-          brand:           p.brand ?? null,
-          category:        p.category ? { name: p.category.name, slug: p.category.slug } : null,
-          image:           p.images?.[0] ?? null,
-          price:           p.price,
-          discountedPrice: calculateDiscountedPrice(p.price, c.discountPercent),
-          discountPercent: c.discountPercent,
-          stock:           p.stock,
-          ratings:         p.ratings ?? { average: 0, count: 0 },
-        })),
-    }))
+    .map((c) => {
+      const isClearance = c.isClearance ?? false;
+      // Per-product starting-stock lookup — see Campaign.js's
+      // clearanceStockSnapshots for why this is per-product, not a single
+      // campaign-level number.
+      const startingStockByProduct = new Map(
+        (c.clearanceStockSnapshots || []).map((snap) => [String(snap.product), snap.startingStock])
+      );
+
+      return {
+        id:              String(c._id),
+        name:            c.name,
+        discountPercent: c.discountPercent,
+        startDate:       new Date(c.startDate).toISOString(),
+        endDate:         new Date(c.endDate).toISOString(),
+        placement:       c.placement ?? 'none',
+        isClearance,
+        products: c.products
+          .map((pid) => productById.get(String(pid)))
+          .filter(Boolean)
+          .map((p) => ({
+            id:              String(p._id),
+            name:            p.name,
+            slug:            p.slug,
+            brand:           p.brand ?? null,
+            category:        p.category ? { name: p.category.name, slug: p.category.slug } : null,
+            image:           p.images?.[0] ?? null,
+            price:           p.price,
+            discountedPrice: calculateDiscountedPrice(p.price, c.discountPercent),
+            discountPercent: c.discountPercent,
+            stock:           p.stock,
+            ratings:         p.ratings ?? { average: 0, count: 0 },
+            isClearance,
+            // Truthful only — real Product.stock is already on `stock`
+            // above; this is ONLY the frozen starting point for the
+            // progress bar, and only present when a real snapshot exists.
+            clearanceStartingStock: isClearance ? (startingStockByProduct.get(String(p._id)) ?? null) : null,
+          })),
+      };
+    })
     .filter((c) => c.products.length > 0);
 };
 

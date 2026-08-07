@@ -19,6 +19,31 @@ const campaignSchema = new mongoose.Schema(
       enum: ['none', 'homepage_weekly_deal'],
       default: 'none',
     },
+
+    // Clearance is a distinct business concept from low stock — a product can
+    // have low stock without being on clearance, and a clearance campaign can
+    // target a product that currently has plenty of stock. This flag is the
+    // ONLY source of truth for "is this a clearance deal"; the storefront
+    // must never infer it from Product.stock.
+    isClearance: { type: Boolean, default: false },
+
+    // Per-product starting-stock snapshot for the clearance stock-progress
+    // bar (percent = current Product.stock / startingStock). A single
+    // scalar field would be wrong here because `products` is an array —
+    // different products in the same clearance campaign started with
+    // different stock levels. Written ONLY by campaign.service.js
+    // (buildClearanceSnapshots), never accepted directly from a client
+    // request (stripped by the Joi validator) — see campaign.validator.js.
+    // An entry, once created for a given product, is never overwritten as
+    // stock sells; it's the frozen "starting point" for that product's
+    // clearance run.
+    clearanceStockSnapshots: [
+      {
+        _id: false,
+        product:       { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
+        startingStock: { type: Number, min: 0, required: true },
+      },
+    ],
   },
   { timestamps: true }
 );

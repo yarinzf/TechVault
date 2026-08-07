@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Heart, Plus, Loader, ImageOff, Hourglass, AlertTriangle, CheckCircle, ExternalLink } from 'lucide-react';
+import { Heart, Plus, Loader, ImageOff, Hourglass, AlertTriangle, AlertOctagon, CheckCircle, ExternalLink } from 'lucide-react';
 import { useCart } from '../../../hooks/useCart';
 import { useWishlist } from '../../../hooks/useWishlist';
 import { useToast } from '../../../hooks/useToast';
@@ -8,6 +8,12 @@ import { useLanguage } from '../../../context/LanguageContext';
 import s from './DealProductCard.module.css';
 
 const LOW_STOCK_THRESHOLD = 10;
+const CLEARANCE_CRITICAL_STOCK = 2;
+// Cosmetic floor only — a real stock of e.g. 1/50 still renders a sliver of
+// fill instead of an invisible 0px bar. Never used to invent/alter the
+// truthful percentage shown anywhere else (the text always shows the real
+// Product.stock value).
+const CLEARANCE_BAR_MIN_PCT = 6;
 
 // Countdown ticks purely off the real campaign endDate — same proven
 // approach as HomePage's weekly-deal countdown (derive-only, never a
@@ -38,7 +44,10 @@ function useCountdown(endDate) {
 // Real ecommerce interactions only — cart/wishlist/routing are the shared
 // hooks used everywhere else; this component owns presentation only
 // (Sapir's enlarged deal-card layout with an optional inline countdown).
-export default function DealProductCard({ product, endDate, showCountdown = false }) {
+export default function DealProductCard({
+  product, endDate, showCountdown = false,
+  isClearance = false, clearanceStartingStock = null,
+}) {
   const { addItem } = useCart();
   const { isInWishlist, toggle } = useWishlist();
   const { toast } = useToast();
@@ -54,6 +63,15 @@ export default function DealProductCard({ product, endDate, showCountdown = fals
   const hasImage = !imgError && !!product.image;
   const outOfStock = !(product.stock > 0);
   const lowStock = !outOfStock && product.stock <= LOW_STOCK_THRESHOLD;
+
+  // Clearance stock urgency — text always shows the real Product.stock value
+  // whenever known; the progress bar only renders when a real, persisted
+  // starting-stock snapshot exists (never an invented percentage).
+  const clearanceCritical = isClearance && !outOfStock && product.stock <= CLEARANCE_CRITICAL_STOCK;
+  const hasClearanceSnapshot = isClearance && clearanceStartingStock != null && clearanceStartingStock > 0;
+  const clearancePct = hasClearanceSnapshot
+    ? Math.max(CLEARANCE_BAR_MIN_PCT, Math.min(100, Math.round((product.stock / clearanceStartingStock) * 100)))
+    : null;
 
   const savings = Math.max(0, Math.round((product.price - product.discountedPrice) * 100) / 100);
 
@@ -88,7 +106,7 @@ export default function DealProductCard({ product, endDate, showCountdown = fals
   const m  = showCountdown && secs != null ? String(Math.floor((secs % 3600) / 60)).padStart(2, '0') : null;
 
   return (
-    <article className={s.card} onClick={goToProduct}>
+    <article className={`${s.card}${isClearance ? ' ' + s.cardClearance : ''}`} onClick={goToProduct}>
       <div className={s.imageWrap}>
         {hasImage ? (
           <img
@@ -105,7 +123,9 @@ export default function DealProductCard({ product, endDate, showCountdown = fals
         )}
 
         <div className={s.badges}>
-          <span className={s.badgeSale}>−{product.discountPercent}%</span>
+          <span className={isClearance ? s.badgeClearance : s.badgeSale}>
+            −{product.discountPercent}%{isClearance ? ` ${t('deals.clearance_badge_suffix')}` : ''}
+          </span>
         </div>
 
         <button
@@ -134,12 +154,29 @@ export default function DealProductCard({ product, endDate, showCountdown = fals
         )}
 
         {!outOfStock && (
-          <div className={`${s.stock}${lowStock ? ' ' + s.stockLow : ''}`}>
-            {lowStock ? <AlertTriangle size={12} /> : <CheckCircle size={12} />}
-            {lowStock
-              ? `${t('product.low_stock_prefix')} ${product.stock} ${t('product.low_stock_suffix')}`
-              : t('product.in_stock')}
-          </div>
+          isClearance ? (
+            <>
+              <div className={`${s.stock} ${s.stockLow}${clearanceCritical ? ' ' + s.stockCritical : ''}`}>
+                {clearanceCritical ? <AlertOctagon size={12} /> : <AlertTriangle size={12} />}
+                {t('deals.clearance_stock_prefix')} {product.stock} {t('deals.clearance_stock_suffix')}
+              </div>
+              {hasClearanceSnapshot && (
+                <div className={s.stockTrack}>
+                  <div
+                    className={`${s.stockFill}${clearanceCritical ? ' ' + s.stockFillCritical : ''}`}
+                    style={{ width: `${clearancePct}%` }}
+                  />
+                </div>
+              )}
+            </>
+          ) : (
+            <div className={`${s.stock}${lowStock ? ' ' + s.stockLow : ''}`}>
+              {lowStock ? <AlertTriangle size={12} /> : <CheckCircle size={12} />}
+              {lowStock
+                ? `${t('product.low_stock_prefix')} ${product.stock} ${t('product.low_stock_suffix')}`
+                : t('product.in_stock')}
+            </div>
+          )
         )}
 
         {showCountdown && secs != null && (
