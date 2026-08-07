@@ -70,6 +70,54 @@ jobs:
             chmod +x devops/scripts/*.sh
           '
 
+      # ── Inject the curation script into the ALREADY-RUNNING backend
+      #    container. `git reset --hard` only updates files on the EC2 HOST
+      #    (/opt/techvault) — it does NOT touch a container's filesystem,
+      #    which was baked at the last `docker compose up -d --build`. This
+      #    script did not exist in the repo at that build time, so it is
+      #    missing from the running image's /app/server/scripts/. Every
+      #    module the script itself requires (../models/Product,
+      #    ../models/Campaign, ../config/db, and its npm dependencies) DOES
+      #    already exist in the running image — the Dockerfile's
+      #    `COPY server/ ./server/` brought in the whole server/ tree, and
+      #    the application is actively running from it — so copying in just
+      #    this one new file is sufficient. Deliberately NOT a rebuild/
+      #    restart: no `docker compose up -d --build`, no other service is
+      #    touched, the running application is untouched. ──────────────────
+      - name: Inject curation script into running backend container
+        run: |
+          ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
+            set -e
+            cd /opt/techvault
+
+            test -f server/scripts/curateProductionStorefront.js || {
+              echo "::error::Script not found on host after sync: /opt/techvault/server/scripts/curateProductionStorefront.js"
+              exit 1
+            }
+
+            BACKEND_CONTAINER=$(docker compose ps -q backend)
+            if [ -z "$BACKEND_CONTAINER" ]; then
+              echo "::error::backend container is not running (docker compose ps -q backend returned empty)"
+              exit 1
+            fi
+            echo "Backend container: $BACKEND_CONTAINER"
+
+            docker cp \
+              server/scripts/curateProductionStorefront.js \
+              "${BACKEND_CONTAINER}:/app/server/scripts/curateProductionStorefront.js"
+
+            docker compose exec -T backend test -f /app/server/scripts/curateProductionStorefront.js || {
+              echo "::error::Script missing inside container after docker cp"
+              exit 1
+            }
+            docker compose exec -T backend node --check /app/server/scripts/curateProductionStorefront.js || {
+              echo "::error::Copied script failed node --check inside the container"
+              exit 1
+            }
+            echo "Script injected and verified inside the running backend container."
+          '
+
       # ── Dry-run mode: preview only, no backup needed since nothing writes. ──
       - name: "[dry-run] Curation dry-run (prints full plan, touches nothing)"
         if: ${{ inputs.mode == 'dry-run' }}
