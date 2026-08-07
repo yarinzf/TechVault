@@ -579,6 +579,81 @@ function categoryCoverageCount(campaignPlan, category) {
   return campaignPlan.filter((c) => c.key !== 'mega' && c.category === category).length;
 }
 
+// ─── Category-interleaved date order ─────────────────────────────────────────
+// buildArrivalsPlan assigns the newest day-offsets to whatever sits FIRST in
+// the array it's given (buildArrivalDayPlan is front-loaded: today, today,
+// today, today, yesterday, ...). buildNewArrivalsSelection's own output
+// order is brand-products-then-general — correct for SELECTION/budget
+// purposes, but if applied directly to date assignment it clusters an
+// entire New Brand at "today"/"yesterday", exactly the reported bug. This
+// reorders the SAME selected set (no product added/removed/changed) into a
+// deterministic category round-robin — Desktops, Headsets, Keyboards, Mice,
+// Monitors, repeat, alphabetical for determinism — so the newest dates land
+// on a spread of categories instead of one. Within a category, a New
+// Brand's own products are evenly spaced among that category's other
+// products (not clustered at either end) using the same deterministic
+// spacing idea, so e.g. a 5-product New Brand inside an 8-product Mice
+// bucket doesn't itself become 5 consecutive "newest" entries.
+function spreadWithinBucket(bucket, flaggedIds) {
+  const flagged = bucket.filter((p) => flaggedIds.has(String(p._id)));
+  const rest = bucket.filter((p) => !flaggedIds.has(String(p._id)));
+  if (flagged.length === 0) return rest;
+  const result = [...rest];
+  const step = (result.length + 1) / (flagged.length + 1);
+  flagged.forEach((item, i) => {
+    const insertAt = Math.min(result.length, Math.round(step * (i + 1)));
+    result.splice(insertAt, 0, item);
+  });
+  return result;
+}
+
+function buildCategoryInterleavedOrder(selected, brandProductIds) {
+  const byCategory = groupByCategory(selected);
+  const categoryNames = [...byCategory.keys()].sort();
+  const buckets = new Map(categoryNames.map((name) => [name, spreadWithinBucket(byCategory.get(name), brandProductIds)]));
+
+  const ordered = [];
+  let round = 0;
+  while (ordered.length < selected.length) {
+    let addedThisRound = false;
+    for (const name of categoryNames) {
+      const bucket = buckets.get(name);
+      if (round < bucket.length) { ordered.push(bucket[round]); addedThisRound = true; }
+    }
+    round++;
+    if (!addedThisRound) break;
+  }
+  return ordered;
+}
+
+// Hard, code-verified presentation requirement: the newest-first slice of
+// New Arrivals must itself be category-diverse, not just the dataset as a
+// whole — otherwise "arrived this week" can still look like a single-
+// category shipment even when the full 30-product set is balanced. Targets
+// are capped by how many categories actually exist, so a genuinely
+// single-category catalog never gets an impossible assertion.
+function checkNewestDiversity(arrivalsPlanNewestFirst) {
+  const numCategories = new Set(arrivalsPlanNewestFirst.map((a) => a.category)).size;
+  const checks = [
+    { label: 'Top 3',  slice: 3,  minDistinct: Math.min(3, numCategories) },
+    { label: 'Top 5',  slice: 5,  minDistinct: Math.min(4, numCategories) },
+    { label: 'Top 10', slice: 10, minDistinct: Math.min(numCategories, 10) },
+  ];
+  const results = checks.map(({ label, slice, minDistinct }) => {
+    const top = arrivalsPlanNewestFirst.slice(0, slice);
+    const categories = [...new Set(top.map((a) => a.category))];
+    return { label, slice, categories, distinct: categories.length, minDistinct, pass: categories.length >= minDistinct };
+  });
+  const failed = results.filter((r) => !r.pass);
+  if (failed.length) {
+    throw new Error(
+      'ABORT — New Arrivals newest-diversity check failed: ' +
+      failed.map((r) => `${r.label} has only ${r.distinct}/${r.minDistinct} required distinct categories (${r.categories.join(', ')})`).join('; ')
+    );
+  }
+  return results;
+}
+
 function buildArrivalsPlan(products, now) {
   const dayPlan = buildArrivalDayPlan(products.length);
   return products.map((p, i) => {
@@ -596,7 +671,7 @@ function buildArrivalsPlan(products, now) {
 function printPlan({
   dbName, host, productCountBefore, dealsEligibleCount, arrivalsEligibleCount,
   campaignPlan, coverage, categoryCoverage, categoryAvailability, warnings,
-  arrivalsPlan, arrivalsAvailability, arrivalsCoverage, arrivalsCategoryCap, chosenBrands,
+  arrivalsPlan, arrivalsAvailability, arrivalsCoverage, arrivalsCategoryCap, newestDiversity, chosenBrands,
   alreadyApplied,
 }) {
   console.log('='.repeat(78));
@@ -634,6 +709,12 @@ function printPlan({
 
   console.log(`\n--- NEW ARRIVALS CATEGORY COVERAGE (selected, cap ${arrivalsCategoryCap}/category) ---`);
   arrivalsCoverage.forEach((c) => console.log(`  ${c.category}: ${c.count}`));
+
+  console.log('\n--- NEW ARRIVALS NEWEST-DIVERSITY CHECK ---');
+  newestDiversity.forEach((r) => {
+    console.log(`${r.label} categories: ${r.categories.join(', ')}`);
+    console.log(`Distinct categories: ${r.distinct}/${r.minDistinct} required — ${r.pass ? 'PASS' : 'FAIL'}`);
+  });
 
   if (warnings.length) {
     console.log('\nWarnings:');
@@ -692,12 +773,21 @@ async function buildFullPlan() {
     coverage: arrivalsCoverage,
     categoryCap: arrivalsCategoryCap,
   } = buildNewArrivalsSelection(arrivalsEligible, newBrandCandidates);
-  const arrivalsPlan = buildArrivalsPlan(arrivalsProducts, now);
 
   const overRepresented = arrivalsCoverage.filter((c) => c.count > arrivalsCategoryCap);
   if (overRepresented.length) {
     throw new Error(`ABORT — New Arrivals category cap (${arrivalsCategoryCap}) exceeded: ${overRepresented.map((c) => `${c.category} (${c.count})`).join(', ')}`);
   }
+
+  // Reorder the SAME selected set (nothing added/removed) into a category
+  // round-robin BEFORE assigning dates, so the newest day-offsets — which
+  // buildArrivalDayPlan front-loads onto whatever is first — land on a
+  // spread of categories instead of clustering an entire New Brand at
+  // "today". Selection/budget logic above is completely unaffected.
+  const brandProductIds = new Set(chosenBrands.flatMap((b) => b.productIds));
+  const interleaved = buildCategoryInterleavedOrder(arrivalsProducts, brandProductIds);
+  const arrivalsPlan = buildArrivalsPlan(interleaved, now);
+  const newestDiversity = checkNewestDiversity(arrivalsPlan);
 
   const alreadyApplied = (await Campaign.countDocuments({ name: { $regex: `^${CURATION_MARKER}` } })) > 0;
 
@@ -715,6 +805,7 @@ async function buildFullPlan() {
     arrivalsAvailability,
     arrivalsCoverage,
     arrivalsCategoryCap,
+    newestDiversity,
     chosenBrands,
     alreadyApplied,
   };
@@ -870,6 +961,9 @@ module.exports = {
   verifyInvariants,
   buildDealsCoveragePlan,
   buildNewArrivalsSelection,
+  buildCategoryInterleavedOrder,
+  checkNewestDiversity,
+  buildArrivalsPlan,
   selectNewBrands,
   groupByCategory,
   diversePick,
