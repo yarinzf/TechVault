@@ -5,13 +5,51 @@ const Order            = require('../models/Order');
 const Cart             = require('../models/Cart');
 const { AppError }     = require('../middleware/errorHandler');
 const paymentService   = require('../services/payment.service');
-const couponService    = require('../services/coupon.service');
+const couponService     = require('../services/coupon.service');
+const membershipService = require('../services/membership.service');
 const audit            = require('../services/audit.service');
 const emitter          = require('../events/emitter');
 const EVENTS           = require('../events/events');
 const { sendSuccess }  = require('../utils/response');
 const env              = require('../config/env');
 const logger           = require('../config/logger');
+
+// ── Shared: advance a just-paid order past pending_payment, and activate any
+// membership purchase it contains. Used by both /payments/confirm (client
+// path) and the Stripe webhook (server-to-server path) so the two never
+// diverge on what "payment succeeded" actually does to the order/user.
+const _finalizeOrderStatus = (order, changedBy) => {
+  if (order.status !== 'pending_payment' && order.status !== 'pending') return;
+
+  const prevOrderStatus = order.status;
+  const isMembership = membershipService.orderContainsMembership(order);
+
+  // Digital/service-only orders have nothing to fulfil — they go straight to
+  // a terminal, non-actionable state instead of entering the warehouse
+  // confirmed→processing→shipped pipeline.
+  order.status = isMembership ? 'delivered' : 'confirmed';
+  order.statusHistory.push({
+    fromStatus: prevOrderStatus,
+    toStatus:   order.status,
+    changedBy,
+    note:       isMembership
+      ? 'Auto-completed — digital membership, no fulfillment required'
+      : 'Auto-confirmed on payment success',
+  });
+
+  // Release the duplicate-purchase lock now that this order is leaving the
+  // payable pending state — see membershipPendingLock on the Order model.
+  // Harmless no-op for physical orders (the field was never set).
+  order.membershipPendingLock = null;
+};
+
+// Called after order.save() has durably persisted paymentStatus:'paid'.
+// Not fatal to the request if it throws — but membership purchases go through
+// synchronously here (awaited) so the response can be trusted as authoritative.
+const _activateMembershipIfNeeded = async (order) => {
+  if (!membershipService.orderContainsMembership(order)) return;
+  await membershipService.activateMembershipForOrder({ userId: order.user, orderId: order._id });
+};
 
 // ── POST /api/v1/payments/create-intent ───────────────────────────────────────
 // Creates a Stripe PaymentIntent (or mock equivalent) for the given order.
@@ -73,8 +111,13 @@ const confirmPayment = async (req, res, next) => {
     if (order.user.toString() !== req.user._id.toString()) {
       throw new AppError('Forbidden', StatusCodes.FORBIDDEN, 'FORBIDDEN');
     }
-    // Idempotency: already paid — return early without error.
+    // Idempotency: already paid — return early without error. Still ensure
+    // membership activation actually completed: if a prior request's process
+    // crashed between order.save() and activation, this replay repairs that
+    // stuck state instead of leaving it permanently paid-but-not-a-member.
+    // activateMembershipForOrder is itself idempotent, so this is always safe.
     if (order.paymentStatus === 'paid') {
+      await _activateMembershipIfNeeded(order);
       return sendSuccess(res, { order }, 'Payment already confirmed');
     }
 
@@ -113,19 +156,16 @@ const confirmPayment = async (req, res, next) => {
       note:          `Confirmed via ${paymentService.PROVIDER === 'stripe' ? 'Stripe sandbox' : 'mock provider'}`,
     });
 
-    // Auto-advance order status when payment is confirmed
-    if (order.status === 'pending_payment' || order.status === 'pending') {
-      const prevOrderStatus = order.status;
-      order.status = 'confirmed';
-      order.statusHistory.push({
-        fromStatus: prevOrderStatus,
-        toStatus:   'confirmed',
-        changedBy:  req.user._id,
-        note:       'Auto-confirmed on payment success',
-      });
-    }
+    // Auto-advance order status when payment is confirmed (membership orders
+    // go straight to 'delivered' — see _finalizeOrderStatus).
+    _finalizeOrderStatus(order, req.user._id);
 
     await order.save();
+
+    // Activate membership only after the paid+finalized order state above is
+    // durably persisted. Awaited: the response below reflects the true
+    // post-activation state, not a fire-and-forget best-effort attempt.
+    await _activateMembershipIfNeeded(order);
 
     // Increment coupon usage — runs only when transitioning TO 'paid'.
     // The early-return guard above (paymentStatus === 'paid') ensures this
@@ -135,11 +175,15 @@ const confirmPayment = async (req, res, next) => {
         .catch((err) => logger.warn('coupon_increment_failed', { message: err.message, orderId: order._id }));
     }
 
-    // Clear the backend cart now that payment is confirmed.
+    // Clear the backend cart now that payment is confirmed. A membership
+    // purchase never touches the cart, so there is nothing to clear — and
+    // clearing it anyway would wipe an unrelated in-progress product cart.
     // Cart clearing was removed from order creation so a declined card does not
     // wipe the customer's cart before they get a chance to retry.
-    await Cart.findOneAndUpdate({ user: order.user }, { items: [] });
-    logger.info('cart_cleared_after_payment', { userId: order.user, orderId: order._id });
+    if (!membershipService.orderContainsMembership(order)) {
+      await Cart.findOneAndUpdate({ user: order.user }, { items: [] });
+      logger.info('cart_cleared_after_payment', { userId: order.user, orderId: order._id });
+    }
 
     audit.log({
       action:   'payment.status_changed',
@@ -193,7 +237,13 @@ const handleWebhook = async (req, res, next) => {
 
       if (orderId) {
         const order = await Order.findById(orderId);
-        if (order && order.paymentStatus !== 'paid') {
+        if (order && order.paymentStatus === 'paid') {
+          // Replay: this order was already marked paid (e.g. by /payments/confirm
+          // beating the webhook, or a prior webhook delivery). Still ensure
+          // membership activation actually completed — repairs a crash between
+          // a prior order.save() and its activation call. Idempotent/safe.
+          await _activateMembershipIfNeeded(order);
+        } else if (order) {
           const prevPayStatus = order.paymentStatus;
           order.paymentStatus = 'paid';
           order.paymentHistory.push({
@@ -205,24 +255,19 @@ const handleWebhook = async (req, res, next) => {
             amount:        order.total,
             note:          'Stripe webhook: payment_intent.succeeded',
           });
-          if (order.status === 'pending_payment' || order.status === 'pending') {
-            const prevOrderStatus = order.status;
-            order.status = 'confirmed';
-            order.statusHistory.push({
-              fromStatus: prevOrderStatus,
-              toStatus:   'confirmed',
-              changedBy:  order.user,
-              note:       'Auto-confirmed via Stripe webhook',
-            });
-          }
+          _finalizeOrderStatus(order, order.user);
           await order.save();
+
+          await _activateMembershipIfNeeded(order);
 
           if (order.couponCode) {
             couponService.incrementCouponUsage(order.couponCode, order.user)
               .catch((err) => logger.warn('coupon_increment_failed', { message: err.message, orderId: order._id, source: 'webhook' }));
           }
 
-          await Cart.findOneAndUpdate({ user: order.user }, { items: [] });
+          if (!membershipService.orderContainsMembership(order)) {
+            await Cart.findOneAndUpdate({ user: order.user }, { items: [] });
+          }
 
           audit.log({
             action:   'payment.paid',

@@ -404,14 +404,6 @@ export default function LoginPage() {
           <Link to="/register" className={s.link}>{t('auth.create_account')}</Link>
         </div>
 
-        {/* Dev-only credentials hint */}
-        <div className={s.devHint}>
-          {t('auth.dev_demo')}: <strong>alice@example.com</strong> / <strong>User123!</strong><br />
-          {t('auth.dev_admin')}: <strong>admin@techvault.dev</strong> / <strong>Admin123!</strong><br />
-          {t('auth.dev_warehouse')}: <strong>warehouse@techvault.dev</strong> / <strong>Admin123!</strong><br />
-          {t('auth.dev_super_admin')}: <strong>superadmin@techvault.dev</strong> / <strong>Admin123!</strong>
-        </div>
-
       </div>
       </div>{/* cardWrap */}
     </div>

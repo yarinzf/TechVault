@@ -24,4 +24,16 @@ const router = Router();
  */
 router.get('/weekly-deal', publicCampaignCtrl.getWeeklyDeal);
 
+/**
+ * @swagger
+ * /campaigns/active:
+ *   get:
+ *     summary: Get every currently active, storefront-eligible campaign (Deals page)
+ *     tags: [Campaigns]
+ *     responses:
+ *       200:
+ *         description: Active campaigns with their available, priced products
+ */
+router.get('/active', publicCampaignCtrl.getActiveCampaigns);
+
 module.exports = router;

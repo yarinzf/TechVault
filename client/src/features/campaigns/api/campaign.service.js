@@ -8,4 +8,12 @@ export const campaignService = {
     const { data } = await api.get('/campaigns/weekly-deal');
     return data?.deal ?? null;
   },
+
+  // Public, unauthenticated — every currently active, storefront-eligible
+  // campaign with its available products already priced. Powers the Deals
+  // page in a single request (no per-card fetch).
+  async getActiveCampaigns() {
+    const { data } = await api.get('/campaigns/active');
+    return data?.campaigns ?? [];
+  },
 };

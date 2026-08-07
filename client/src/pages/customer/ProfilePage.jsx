@@ -1,8 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Crown, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useToast } from '../../hooks/useToast';
+import { useMembership } from '../../hooks/useMembership';
 import { authService } from '../../features/auth/api/auth.service';
+import { membershipService } from '../../features/membership/api/membership.service';
+import { formatJoinedDate, formatNotificationPreference } from '../../features/membership/utils/membershipDisplay';
 import Button from '../../components/ui/Button/Button';
 import { useTranslation, useLanguage } from '../../context/LanguageContext';
 import s from './ProfilePage.module.css';
@@ -287,6 +291,83 @@ function SecurityTab({ user, toast }) {
   );
 }
 
+function ClubTab({ toast }) {
+  const navigate = useNavigate();
+  const { language, t } = useLanguage();
+  const { isMember, points, joinedAt, notificationPreference } = useMembership();
+  const [saving, setSaving] = useState(false);
+
+  const handlePrefChange = async (e) => {
+    const value = e.target.value;
+    setSaving(true);
+    try {
+      await membershipService.updateNotificationPreference(value);
+      toast.success(t('profile.updated'));
+    } catch (err) {
+      toast.error(err.message || t('profile.update_failed'));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (!isMember) {
+    return (
+      <div style={{ textAlign: 'center', padding: 'var(--space-6) 0' }}>
+        <div style={{
+          width: 56, height: 56, borderRadius: 16, margin: '0 auto var(--space-4)',
+          background: 'var(--primary-light)', border: '1px solid var(--primary-border)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)',
+        }}>
+          <Crown size={26} />
+        </div>
+        <h3 style={{ fontSize: 'var(--text-base)', fontWeight: 600, color: 'var(--text-primary)', marginBottom: 8 }}>
+          עדיין לא חברים במועדון TechVault
+        </h3>
+        <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-muted)', marginBottom: 20, maxWidth: 380, marginInline: 'auto' }}>
+          הצטרפו עכשיו — ₪50 בלבד לכל החיים. סטטוס חברות ונקודות מוצגים בחשבון שלך, והטבות נוספות בדרך.
+        </p>
+        <Button onClick={() => navigate('/club')}>הצטרפות למועדון</Button>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <div style={{ marginBottom: 'var(--space-6)' }}>
+        <div className={s.infoRow}>
+          <span className={s.infoKey}>סטטוס</span>
+          <span className={s.roleBadge} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            <ShieldCheck size={13} /> חברות פעילה
+          </span>
+        </div>
+        <div className={s.infoRow}>
+          <span className={s.infoKey}>הצטרפות</span>
+          <span className={s.infoVal}>{formatJoinedDate(joinedAt, language) ?? '—'}</span>
+        </div>
+        <div className={s.infoRow}>
+          <span className={s.infoKey}>נקודות שנצברו</span>
+          <span className={s.infoVal}>{points.toLocaleString()}</span>
+        </div>
+      </div>
+
+      <div className={s.formGroup} style={{ maxWidth: 320 }}>
+        <label className={s.label}>עדכוני מועדון</label>
+        <select
+          className="input"
+          value={notificationPreference}
+          onChange={handlePrefChange}
+          disabled={saving}
+        >
+          <option value="none">{formatNotificationPreference('none', language)}</option>
+          <option value="email">{formatNotificationPreference('email', language)}</option>
+          <option value="sms">{formatNotificationPreference('sms', language)}</option>
+          <option value="both">{formatNotificationPreference('both', language)}</option>
+        </select>
+      </div>
+    </>
+  );
+}
+
 export default function ProfilePage() {
   const { user, logout, refreshProfile } = useAuth();
   const { toast }   = useToast();
@@ -296,6 +377,7 @@ export default function ProfilePage() {
 
   const TABS = [
     { id: 'info',     label: t('profile.tab.info') },
+    { id: 'club',     label: t('profile.tab.club') },
     { id: 'password', label: t('profile.tab.password') },
     { id: 'security', label: t('profile.tab.security') },
   ];
@@ -335,6 +417,7 @@ export default function ProfilePage() {
         <div className={s.panel}>
           <h2 className={s.panelTitle}>{TABS.find(tabItem => tabItem.id === tab)?.label}</h2>
           {tab === 'info'     && <InfoTab     user={user} refreshProfile={refreshProfile} toast={toast} />}
+          {tab === 'club'     && <ClubTab     toast={toast} />}
           {tab === 'password' && <PasswordTab toast={toast} />}
           {tab === 'security' && <SecurityTab user={user} toast={toast} />}
         </div>

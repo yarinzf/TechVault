@@ -13,4 +13,13 @@ const getWeeklyDeal = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
-module.exports = { getWeeklyDeal };
+// Powers the storefront Deals page — every currently active, storefront-
+// eligible campaign with its available products already priced.
+const getActiveCampaigns = async (req, res, next) => {
+  try {
+    const campaigns = await campaignService.getActiveCampaigns();
+    sendSuccess(res, { campaigns }, 'Active campaigns retrieved');
+  } catch (err) { next(err); }
+};
+
+module.exports = { getWeeklyDeal, getActiveCampaigns };

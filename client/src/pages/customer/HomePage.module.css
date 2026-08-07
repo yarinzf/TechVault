@@ -1082,6 +1082,103 @@
 }
 .clubBtnSec:hover { border-color: var(--sv-violet); color: var(--sv-violet); }
 
+/* ── Active member state (left visual: real benefits + real points) ──────── */
+.clubMemberDash {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 300px;
+}
+
+.clubMemberDashHead { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.clubMemberDashEyebrow { font-size: 11px; color: var(--sv-muted); margin-bottom: 3px; }
+.clubMemberDashTitle { font-size: 14px; font-weight: 700; color: #F9FAFB; }
+.clubMemberDashCount {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 10px; font-weight: 700; color: var(--sv-success);
+  background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.22);
+  border-radius: 100px; padding: 4px 10px; white-space: nowrap;
+}
+
+.clubMemberBenefitList { display: flex; flex-direction: column; gap: 8px; }
+.clubMemberBenefitRow {
+  display: flex; align-items: center; gap: 10px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+.clubMemberBenefitIcon {
+  width: 28px; height: 28px; flex-shrink: 0; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(16,185,129,0.12); color: var(--sv-success);
+}
+.clubMemberBenefitBody { flex: 1; min-width: 0; }
+.clubMemberBenefitTitle { font-size: 13px; font-weight: 600; color: var(--sv-text); }
+.clubMemberBenefitSub { font-size: 11px; color: var(--sv-muted); margin-top: 1px; }
+.clubMemberBenefitDot { width: 7px; height: 7px; border-radius: 50%; background: var(--sv-success); flex-shrink: 0; }
+
+.clubMemberPointsCard {
+  display: flex; align-items: center; gap: 12px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(0,255,204,0.2);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+.clubMemberPointsIcon {
+  width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(0,255,204,0.12); color: var(--sv-mint);
+}
+.clubMemberPointsLbl { font-size: 11px; color: var(--sv-muted); }
+.clubMemberPointsVal { font-size: 20px; font-weight: 800; color: var(--sv-mint); line-height: 1.3; }
+
+/* ── Active member state (right content panel) ────────────────────────────── */
+.clubBadgeActive {
+  background: rgba(16,185,129,0.1);
+  border-color: rgba(16,185,129,0.28);
+  color: var(--sv-success);
+}
+
+.clubMemberWelcome { font-size: 14px; font-weight: 600; color: var(--sv-muted); margin-bottom: 6px; }
+
+.clubStatusPill {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(16,185,129,0.1);
+  border: 1px solid rgba(16,185,129,0.25);
+  border-radius: 100px;
+  padding: 4px 12px;
+  font-size: 12px; font-weight: 600; color: var(--sv-success);
+  width: fit-content;
+  margin-bottom: 18px;
+}
+
+.clubBtnMember { background: var(--sv-blue); }
+.clubBtnMember:hover { background: var(--sv-blue-l); }
+
+.clubSummaryCard {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--sv-border);
+  border-radius: 14px;
+  padding: 16px 18px;
+  margin-top: 18px;
+}
+
+.clubSummaryHead {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px; font-weight: 700; color: var(--sv-text);
+  margin-bottom: 12px;
+}
+
+.clubSummaryGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.clubSummaryCell { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.clubSummaryLabel { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--sv-muted); }
+.clubSummaryVal { font-size: 14px; font-weight: 700; color: var(--sv-text); }
+.clubSummaryValActive { color: var(--sv-success); }
+
 /* ── Policy bar (Sapir: centered vertical columns with large icons) ───────── */
 .policyBar {
   background: var(--sv-bg);
@@ -1347,6 +1444,7 @@
   .policyInner { padding: 0 20px; }
   .clubTitle   { font-size: 26px; }
   .clubWrapInner { padding: 56px var(--sv-pad); }
+  .clubSummaryGrid { grid-template-columns: 1fr; gap: 10px; }
   .reviewsGrid { grid-template-columns: 1fr; }
   .footerGrid  { grid-template-columns: 1fr; gap: 24px; }
   .footerBottom { flex-direction: column; text-align: center; }

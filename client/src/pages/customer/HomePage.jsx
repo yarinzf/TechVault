@@ -8,6 +8,7 @@ import {
   Percent, Gift, Headset, Check,
   Info, Clock, LayoutGrid, Tag, Armchair, Shield,
   Flame, ImageOff, Plus, Loader,
+  CheckCircle, Bell, Calendar, Crown,
 } from 'lucide-react';
 import { productService } from '../../features/products/api/product.service';
 import { campaignService } from '../../features/campaigns/api/campaign.service';
@@ -15,6 +16,9 @@ import { useRecentlyViewed } from '../../hooks/useRecentlyViewed';
 import { useTranslation, useLanguage } from '../../context/LanguageContext';
 import { useCart } from '../../hooks/useCart';
 import { useToast } from '../../hooks/useToast';
+import { useAuth } from '../../hooks/useAuth';
+import { useMembership } from '../../hooks/useMembership';
+import { formatJoinedDate, formatNotificationPreference } from '../../features/membership/utils/membershipDisplay';
 import { getSpecLabel } from '../../features/products/utils/specLabels';
 import ProductCard from '../../features/products/components/ProductCard';
 import Footer from '../../components/layout/customer/Footer';
@@ -29,8 +33,8 @@ const HERO_SLIDES = [
     titleLine1: 'קוד לא', titleLine2: 'צריך שקט',
     descLine1: 'שירות תיקונים ואחריות מורחבת מקצועי ומהיר.',
     descLine2: 'הצטרפו למועדון הגיימרים והפכו כל רכישה לחוויה משתלמת.',
-    ctaPrimary:   { Icon: ShieldCheck, label: 'הצטרף למועדון', to: '/register' },
-    ctaSecondary: { Icon: Info,        label: 'פרטים נוספים',  to: '/register' },
+    ctaPrimary:   { Icon: ShieldCheck, label: 'הצטרף למועדון', to: '/club' },
+    ctaSecondary: { Icon: Info,        label: 'פרטים נוספים',  to: '/club' },
     panel: 'club',
   },
   {
@@ -83,11 +87,14 @@ const POLICY_ITEMS = [
   { Icon: Headset,     title: 'תמיכה 24/7',        desc: "צוות מומחים זמין תמיד\nצ'אט, טלפון ואימייל" },
 ];
 
-const CLUB_STATS = [
-  { num: '50K',  accent: '+',  lbl: 'חברים פעילים' },
-  { num: '₪150', accent: '',   lbl: 'חיסכון ממוצע' },
-  { num: '4.9',  accent: '★',  lbl: 'שביעות רצון'  },
-  { num: '24',   accent: '/7', lbl: 'תמיכה VIP'    },
+/* Non-member sales pitch — real, currently-enforced facts only. No numeric
+   or feature promises for systems that aren't implemented yet (points
+   earning, free shipping, early access, VIP support are all deferred). */
+const CLUB_JOIN_FACTS = [
+  { Icon: Crown,   title: 'חברות לכל החיים',      desc: 'תשלום חד-פעמי של ₪50, ללא חיוב חוזר' },
+  { Icon: Star,    title: 'סטטוס חברות בחשבון',   desc: 'תג חברות פעיל ותאריך הצטרפות מוצגים בחשבון שלך' },
+  { Icon: Percent, title: 'מעקב נקודות מועדון',   desc: 'יתרת הנקודות שלך נשמרת ומוצגת בחשבון' },
+  { Icon: Clock,   title: 'הטבות נוספות בדרך',    desc: 'משלוח, מבצעים ותמיכה מורחבת יתווספו למועדון בהמשך' },
 ];
 
 /* ── Weekly deal: response validation ────────────────────────────────────── */
@@ -414,75 +421,107 @@ function RecentlyViewedSection() {
 /* ── GamerClubSection (matches Sapir's .club-section) ────────────────────── */
 function GamerClubSection() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { isMember, points, joinedAt, notificationPreference } = useMembership();
+  const { language } = useLanguage();
+
+  if (isMember) {
+    return (
+      <section className={s.section}>
+        <div className={s.clubBanner}>
+          {/* Visual panel — real, currently-implemented account data only
+              (status/points). No benefit checklist — no Club benefit systems
+              are enforced yet, so none are advertised as "active". */}
+          <div className={s.clubVisual}>
+            <div className={s.clubVisualBg} aria-hidden="true" />
+            <div className={s.clubMemberDash}>
+              <div className={s.clubMemberDashHead}>
+                <div>
+                  <div className={s.clubMemberDashEyebrow}>סקירת החברות שלך</div>
+                  <div className={s.clubMemberDashTitle}>מועדון TechVault</div>
+                </div>
+              </div>
+
+              <div className={s.clubMemberPointsCard}>
+                <div className={s.clubMemberPointsIcon}><Gift size={17} /></div>
+                <div>
+                  <div className={s.clubMemberPointsLbl}>נקודות שנצברו</div>
+                  <div className={s.clubMemberPointsVal}>{points.toLocaleString()}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Content panel — active membership summary */}
+          <div className={s.clubContent}>
+            <div className={`${s.clubBadge} ${s.clubBadgeActive}`}>
+              <ShieldCheck size={13} /> מועדון TechVault
+            </div>
+            {user?.name && <div className={s.clubMemberWelcome}>ברוכים הבאים, {user.name} 👋</div>}
+            <h2 className={s.clubTitle}>
+              אתם כבר <span className={s.clubTitleAccent}>חברי</span><br />מועדון TechVault
+            </h2>
+            <p className={s.clubDesc}>החברות שלכם פעילה — הסטטוס והנקודות שלכם מוצגים בחשבון.</p>
+            <span className={s.clubStatusPill}><CheckCircle size={13} /> חברות פעילה</span>
+
+            <div className={s.clubCta}>
+              <button className={s.clubBtnSec} onClick={() => navigate('/profile')}>
+                <Bell size={16} /> עדכון העדפות התראות
+              </button>
+              <button className={`${s.clubBtnPrimary} ${s.clubBtnMember}`} onClick={() => navigate('/club')}>
+                <Crown size={16} /> לצפייה בחשבון שלי
+              </button>
+            </div>
+
+            <div className={s.clubSummaryCard}>
+              <div className={s.clubSummaryHead}><ShieldCheck size={15} /> סיכום חשבון מועדון</div>
+              <div className={s.clubSummaryGrid}>
+                <div className={s.clubSummaryCell}>
+                  <span className={s.clubSummaryLabel}><CheckCircle size={12} /> סטטוס</span>
+                  <span className={`${s.clubSummaryVal} ${s.clubSummaryValActive}`}>פעיל</span>
+                </div>
+                <div className={s.clubSummaryCell}>
+                  <span className={s.clubSummaryLabel}><Calendar size={12} /> הצטרפות</span>
+                  <span className={s.clubSummaryVal}>{formatJoinedDate(joinedAt, language) ?? '—'}</span>
+                </div>
+                <div className={s.clubSummaryCell}>
+                  <span className={s.clubSummaryLabel}><Bell size={12} /> עדכוני מועדון</span>
+                  <span className={s.clubSummaryVal}>{formatNotificationPreference(notificationPreference, language)}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className={s.section}>
       <div className={s.clubBanner}>
-        {/* Visual panel */}
+        {/* Visual panel — real, currently-implemented facts only. No numeric
+            benefit promises (points-earning rate, free shipping, early
+            access, VIP support are all deferred — see CLUB_JOIN_FACTS). */}
         <div className={s.clubVisual}>
           <div className={s.clubVisualBg} aria-hidden="true" />
-          <div className={s.clubDashboard}>
-            {/* Yearly savings ring */}
-            <div className={s.clubDashRingCard}>
-              <div className={s.clubRingWrap}>
-                <svg className={s.clubRingSvg} viewBox="0 0 72 72">
-                  <defs>
-                    <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" stopColor="#2563EB" />
-                      <stop offset="100%" stopColor="#00FFCC" />
-                    </linearGradient>
-                  </defs>
-                  <circle className={s.clubRingTrack} cx="36" cy="36" r="30" />
-                  <circle className={s.clubRingFill} cx="36" cy="36" r="30" />
-                </svg>
-                <div className={s.clubRingCenter}>
-                  <div className={s.clubRingPct}>75%</div>
-                  <div className={s.clubRingLbl}>SAVED</div>
-                </div>
-              </div>
+          <div className={s.clubMemberDash}>
+            <div className={s.clubMemberDashHead}>
               <div>
-                <div className={s.clubDashRingTitle}>חיסכון שנתי משוער</div>
-                <div className={s.clubDashRingVal}>₪1,840</div>
-                <div className={s.clubDashRingSub}>ממוצע חבר מועדון פעיל</div>
+                <div className={s.clubMemberDashEyebrow}>מה מקבלים בהצטרפות</div>
+                <div className={s.clubMemberDashTitle}>מועדון TechVault</div>
               </div>
             </div>
 
-            {/* 4 mini stats */}
-            <div className={s.clubDashRow}>
-              <div className={`${s.clubDashMini} ${s.cdmBlue}`}>
-                <div className={s.clubDashMiniIcon}><Percent size={15} strokeWidth={1.6} /></div>
-                <div className={s.clubDashMiniVal}>10%</div>
-                <div className={s.clubDashMiniLbl}>ניקוד חזרה</div>
-              </div>
-              <div className={`${s.clubDashMini} ${s.cdmGreen}`}>
-                <div className={s.clubDashMiniIcon}><Truck size={15} strokeWidth={1.6} /></div>
-                <div className={s.clubDashMiniVal}>חינם</div>
-                <div className={s.clubDashMiniLbl}>משלוח תמיד</div>
-              </div>
-              <div className={`${s.clubDashMini} ${s.cdmViolet}`}>
-                <div className={s.clubDashMiniIcon}><Zap size={15} strokeWidth={1.6} /></div>
-                <div className={s.clubDashMiniVal}>24h</div>
-                <div className={s.clubDashMiniLbl}>גישה מוקדמת</div>
-              </div>
-              <div className={`${s.clubDashMini} ${s.cdmGold}`}>
-                <div className={s.clubDashMiniIcon}><Gift size={15} strokeWidth={1.6} /></div>
-                <div className={s.clubDashMiniVal}>×2</div>
-                <div className={s.clubDashMiniLbl}>נקודות ב-Sale</div>
-              </div>
-            </div>
-
-            {/* Cashback progress */}
-            <div className={s.clubDashProgress}>
-              <div className={s.clubDashProgHead}>
-                <div className={s.clubDashProgTitle}>התקדמות לפרס הבא</div>
-                <div className={s.clubDashProgBadge}>PLATINUM</div>
-              </div>
-              <div className={s.clubDashProgTrack}>
-                <div className={s.clubDashProgFill} />
-              </div>
-              <div className={s.clubDashProgFoot}>
-                <span>740 נקודות</span>
-                <span>נותרו 260 לפרס</span>
-              </div>
+            <div className={s.clubMemberBenefitList}>
+              {CLUB_JOIN_FACTS.map(({ Icon, title, desc }) => (
+                <div key={title} className={s.clubMemberBenefitRow}>
+                  <div className={s.clubMemberBenefitIcon}><Icon size={14} /></div>
+                  <div className={s.clubMemberBenefitBody}>
+                    <div className={s.clubMemberBenefitTitle}>{title}</div>
+                    <div className={s.clubMemberBenefitSub}>{desc}</div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -496,40 +535,40 @@ function GamerClubSection() {
             הצטרפו ל<span className={s.clubTitleAccent}>מועדון</span><br />הגיימרים שלנו
           </h2>
           <p className={s.clubDesc}>
-            הנחות בלעדיות, גישה מוקדמת למוצרים חדשים, ניקוד על כל קנייה — רק ₪50 לכל החיים.
+            חברות לכל החיים בתשלום חד-פעמי של ₪50 — סטטוס חברות ונקודות מוצגים בחשבון שלך.
           </p>
           <div className={s.clubPerks}>
             <div className={s.clubPerk}>
+              <div className={s.clubPerkIcon}><Crown size={16} /></div>
+              <div className={s.clubPerkText}>
+                <div className={s.clubPerkTitle}>חברות לכל החיים</div>
+                <div className={s.clubPerkDesc}>תשלום חד-פעמי של ₪50, ללא חיוב חוזר</div>
+              </div>
+            </div>
+            <div className={s.clubPerk}>
+              <div className={s.clubPerkIcon}><Star size={16} /></div>
+              <div className={s.clubPerkText}>
+                <div className={s.clubPerkTitle}>סטטוס חברות בחשבון</div>
+                <div className={s.clubPerkDesc}>תג חברות פעיל ותאריך הצטרפות מוצגים בחשבון שלך</div>
+              </div>
+            </div>
+            <div className={s.clubPerk}>
               <div className={s.clubPerkIcon}><Percent size={16} /></div>
               <div className={s.clubPerkText}>
-                <div className={s.clubPerkTitle}>עד 10% ניקוד חזרה</div>
-                <div className={s.clubPerkDesc}>על כל קנייה — הנקודות שלך, לנצח</div>
+                <div className={s.clubPerkTitle}>מעקב נקודות מועדון</div>
+                <div className={s.clubPerkDesc}>יתרת הנקודות שלך נשמרת ומוצגת בחשבון</div>
               </div>
             </div>
             <div className={s.clubPerk}>
-              <div className={s.clubPerkIcon}><Truck size={16} /></div>
+              <div className={s.clubPerkIcon}><Clock size={16} /></div>
               <div className={s.clubPerkText}>
-                <div className={s.clubPerkTitle}>משלוח חינם ללא מינימום</div>
-                <div className={s.clubPerkDesc}>תמיד, על כל הזמנה, לכל הארץ</div>
-              </div>
-            </div>
-            <div className={s.clubPerk}>
-              <div className={s.clubPerkIcon}><Zap size={16} /></div>
-              <div className={s.clubPerkText}>
-                <div className={s.clubPerkTitle}>גישה מוקדמת לסיילים</div>
-                <div className={s.clubPerkDesc}>24 שעות לפני כולם למוצרים חדשים</div>
-              </div>
-            </div>
-            <div className={s.clubPerk}>
-              <div className={s.clubPerkIcon}><Headset size={16} /></div>
-              <div className={s.clubPerkText}>
-                <div className={s.clubPerkTitle}>תמיכה VIP 24/7</div>
-                <div className={s.clubPerkDesc}>קו ישיר לנציגים מועדפים בכל שעה</div>
+                <div className={s.clubPerkTitle}>הטבות נוספות בדרך</div>
+                <div className={s.clubPerkDesc}>משלוח, מבצעים ותמיכה מורחבת יתווספו למועדון בהמשך</div>
               </div>
             </div>
           </div>
           <div className={s.clubCta}>
-            <button className={s.clubBtnPrimary} onClick={() => navigate('/register')}>
+            <button className={s.clubBtnPrimary} onClick={() => navigate('/club/join')}>
               <UserPlus size={16} /> הצטרף עכשיו — ₪50 בלבד
             </button>
           </div>
@@ -670,14 +709,6 @@ export default function HomePage() {
 
   const slide = HERO_SLIDES[heroIdx];
 
-  // Only show an original/strikethrough price when a genuine active
-  // campaign discount exists (discountedPrice). Otherwise clear
-  // compareAtPrice so ProductCard's static-compareAtPrice fallback can't
-  // display a discount that isn't actually backed by a real campaign.
-  const bestSellersForDisplay = bestSellers.map(p => (
-    p.discountedPrice != null ? p : { ...p, compareAtPrice: null }
-  ));
-
   return (
     <div className={s.page}>
 
@@ -747,13 +778,13 @@ export default function HomePage() {
                 <div className={s.heroClubIcon}><ShieldCheck size={32} strokeWidth={1.4} /></div>
                 <div className={s.heroClubTitle}>מועדון TechVault</div>
                 <div className={s.heroClubPerks}>
-                  <div className={s.heroClubPerk}><Check size={13} /> אחריות מורחבת 3 שנים</div>
-                  <div className={s.heroClubPerk}><Check size={13} /> תמיכה מועדפת 24/7</div>
-                  <div className={s.heroClubPerk}><Check size={13} /> עד 10% נקודות חזרה</div>
-                  <div className={s.heroClubPerk}><Check size={13} /> משלוח חינם תמיד</div>
+                  <div className={s.heroClubPerk}><Check size={13} /> חברות לכל החיים בתשלום חד-פעמי</div>
+                  <div className={s.heroClubPerk}><Check size={13} /> סטטוס וחשבון מועדון אישי</div>
+                  <div className={s.heroClubPerk}><Check size={13} /> מעקב נקודות בחשבון שלך</div>
+                  <div className={s.heroClubPerk}><Check size={13} /> הטבות נוספות בדרך</div>
                 </div>
                 <div className={s.heroClubPrice}>רק <span>₪50</span> לכל החיים</div>
-                <button className={s.heroClubBtn} onClick={() => navigate('/register')}>
+                <button className={s.heroClubBtn} onClick={() => navigate('/club/join')}>
                   <UserPlus size={15} /> הצטרף עכשיו
                 </button>
               </div>
@@ -814,7 +845,7 @@ export default function HomePage() {
           <ProductSection
             titleBase={t('bestsellers.title_line1')}
             titleEm={t('bestsellers.title_line2')}
-            products={bestSellersForDisplay}
+            products={bestSellers}
             loading={loadingBestSellers}
             error={errBestSellers}
             viewAllHref="/products?sort=popularity"

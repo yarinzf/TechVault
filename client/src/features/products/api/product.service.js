@@ -44,6 +44,25 @@ export const productService = {
     }
   },
 
+  // New Arrivals — thin wrapper over list({ new: true, ... }); same
+  // catalog-enriched product shape (campaign pricing included), no
+  // separate data source. Throws on failure like list() — callers show
+  // a real error/retry state rather than an empty page.
+  async listNew(params = {}) {
+    return this.list({ ...params, new: 'true' });
+  },
+
+  // New Arrivals — brands whose entire real catalog presence is recent.
+  // Returns [] on failure — non-critical, page degrades gracefully.
+  async getNewBrands() {
+    try {
+      const { data } = await api.get('/products/new-brands');
+      return data?.brands ?? data ?? [];
+    } catch {
+      return [];
+    }
+  },
+
   async updateStock(id, type, amount) {
     const { data } = await api.patch(`/products/${id}/stock`, { type, amount });
     return data?.product ?? data;

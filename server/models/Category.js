@@ -38,4 +38,8 @@ categorySchema.pre('save', function (next) {
   next();
 });
 
+// Descendant lookups (main category → its children) run on every
+// category-filtered product query — see product.service.js.
+categorySchema.index({ parentCategory: 1 });
+
 module.exports = mongoose.model('Category', categorySchema);

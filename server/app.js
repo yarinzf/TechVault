@@ -26,6 +26,7 @@ const productRoutes      = require('./routes/product.routes');
 const campaignRoutes     = require('./routes/campaign.routes');
 const cartRoutes         = require('./routes/cart.routes');
 const orderRoutes        = require('./routes/order.routes');
+const membershipRoutes   = require('./routes/membership.routes');
 const adminRoutes        = require('./routes/admin.routes');
 const { productReviewRouter, reviewManagementRouter } = require('./routes/review.routes');
 const wishlistRoutes     = require('./routes/wishlist.routes');
@@ -102,6 +103,7 @@ app.use(`${API}/products/:productId/reviews`,   requireFeature('reviews'), produ
 app.use(`${API}/reviews`,                       requireFeature('reviews'), reviewManagementRouter);
 app.use(`${API}/cart`,                          cartRoutes);
 app.use(`${API}/orders`,                        orderRoutes);
+app.use(`${API}/membership`,                    membershipRoutes);
 app.use(`${API}/wishlist`,                      requireFeature('wishlist'), wishlistRoutes);
 app.use(`${API}/coupons`,                       requireFeature('coupons'), couponRoutes);
 app.use(`${API}/notifications`,                 requireFeature('notifications'), notificationRoutes);

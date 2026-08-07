@@ -15,6 +15,7 @@ const audit             = require('./audit.service');
 const InventoryMovement = require('../models/InventoryMovement');
 const emitter = require('../events/emitter');
 const EVENTS  = require('../events/events');
+const { getActiveDiscountMap } = require('./campaign.service');
 
 // ─── Status transition rules ──────────────────────────────────────────────────
 const ALLOWED_TRANSITIONS = {
@@ -60,6 +61,14 @@ const _buildAndSaveOrder = async (userId, { shippingAddress, notes, couponCode }
   const orderItems  = [];
   let   subtotal    = 0;
 
+  // Never trust the cart's stored priceAtAdd as the charged price — it's
+  // refreshed on every GET /cart, but a customer can still reach checkout
+  // without hitting that route again after a campaign changed. Recompute
+  // every line from the real, just-verified product price plus a single
+  // fresh discount-map lookup (one query for the whole order, not per item)
+  // so the campaign system remains the sole, live source of truth for price.
+  const discountMap = await getActiveDiscountMap();
+
   for (const item of cart.items) {
     // Atomic check-and-decrement: update only succeeds if stock is sufficient.
     const updatedProduct = await Product.findOneAndUpdate(
@@ -80,7 +89,11 @@ const _buildAndSaveOrder = async (userId, { shippingAddress, notes, couponCode }
       throw new AppError(`Insufficient stock for "${probe.name}" (available: ${probe.stock})`, StatusCodes.BAD_REQUEST, 'INSUFFICIENT_STOCK');
     }
 
-    const lineTotal = item.priceAtAdd * item.quantity;
+    const discountPct = discountMap.get(updatedProduct._id.toString());
+    const unitPrice    = discountPct != null
+      ? Math.round(updatedProduct.price * (1 - discountPct / 100) * 100) / 100
+      : updatedProduct.price;
+    const lineTotal = unitPrice * item.quantity;
     subtotal += lineTotal;
 
     orderItems.push({
@@ -88,7 +101,7 @@ const _buildAndSaveOrder = async (userId, { shippingAddress, notes, couponCode }
       name:       updatedProduct.name,
       sku:        updatedProduct.sku,
       image:      updatedProduct.images?.[0] ?? item.imageAtAdd,
-      unitPrice:  item.priceAtAdd,
+      unitPrice,
       quantity:   item.quantity,
       totalPrice: lineTotal,
     });
@@ -162,7 +175,8 @@ const createOrder = async (userId, dto) => {
       itemCount:     order.items.length,
     });
     // Non-fatal: create InventoryMovement records for each item sold
-    order.items.forEach(item => {
+    // (product is required on InventoryMovement — digital/service items skip this)
+    order.items.filter(item => item.itemType === 'product').forEach(item => {
       InventoryMovement.create({
         product:       item.product,
         type:          'stock_out',
@@ -254,8 +268,11 @@ const cancelOrder = async (orderId, actor) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
-    // Restore stock and undo salesCount atomically per line item
+    // Restore stock and undo salesCount atomically per line item.
+    // Digital/service items (e.g. membership) never touched stock at
+    // purchase time and have no `product` ref — skip them explicitly.
     for (const item of order.items) {
+      if (item.itemType !== 'product') continue;
       await Product.findByIdAndUpdate(
         item.product,
         { $inc: { stock: item.quantity, salesCount: -item.quantity } },
@@ -270,6 +287,9 @@ const cancelOrder = async (orderId, actor) => {
       note:       'ביטול על ידי לקוח',
     });
     order.status = 'cancelled';
+    // Release the membership duplicate-purchase lock (no-op for physical
+    // orders — the field is never set for them).
+    order.membershipPendingLock = null;
     await order.save({ session });
     await session.commitTransaction();
   } catch (err) {
@@ -280,7 +300,8 @@ const cancelOrder = async (orderId, actor) => {
   }
 
   // Non-fatal: create InventoryMovement records for restored stock
-  order.items.forEach(item => {
+  // (product is required on InventoryMovement — digital/service items skip this)
+  order.items.filter(item => item.itemType === 'product').forEach(item => {
     InventoryMovement.create({
       product:       item.product,
       type:          'returned',
@@ -428,4 +449,10 @@ const listAllOrders = async (query) => {
   return { orders, meta: paginateMeta(total, page, limit) };
 };
 
-module.exports = { createOrder, listMyOrders, getOrder, cancelOrder, updateStatus, listAllOrders, getOrderTimeline };
+module.exports = {
+  createOrder, listMyOrders, getOrder, cancelOrder, updateStatus, listAllOrders, getOrderTimeline,
+  // Exported for reuse by membership.service.js — the membership checkout
+  // flow creates an Order directly (bypassing Cart) but needs the same
+  // collision-safe order number generator as the product checkout path.
+  generateOrderNumber,
+};

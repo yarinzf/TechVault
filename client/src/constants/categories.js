@@ -1,75 +1,137 @@
 import {
-  Monitor, Laptop, Cpu, Keyboard, Mouse, Headphones,
-  HardDrive, Gamepad2, Package2, Smartphone, Tablet,
-  Speaker, Wifi, Home, CircuitBoard, MemoryStick,
-  BatteryCharging, Wind, MousePointer2, Mic,
-  Printer, Network, Zap, Server,
+  Monitor, Laptop, Server, Cpu, Keyboard, MousePointer2, Headphones,
+  HardDrive, Gamepad2, Package2, Smartphone, Tablet, Speaker, Wifi, Home,
+  Box, MonitorSmartphone, CircuitBoard, MemoryStick, BatteryCharging, Wind,
+  Fan, Music2, Video, Network, Database, HardDriveDownload, Usb, Save,
+  Mouse, Mic, Camera, Share2, Radio, Cable, Armchair, Table2, Disc,
+  Joystick, Glasses, RadioTower, Gamepad, Tv, Printer, Zap, Scan, Droplet,
 } from 'lucide-react';
 
-export const CATEGORY_META = [
-  { slug: 'monitors',    labelKey: 'cat.monitors',    heLabel: 'מסכים',           Icon: Monitor        },
-  { slug: 'laptops',     labelKey: 'cat.laptops',     heLabel: 'מחשבים ניידים',  Icon: Laptop         },
-  { slug: 'desktops',    labelKey: 'cat.desktops',    heLabel: 'מחשבים שולחניים', Icon: Server        },
-  { slug: 'components',  labelKey: 'cat.components',  heLabel: 'רכיבים',          Icon: Cpu           },
-  { slug: 'keyboards',   labelKey: 'cat.keyboards',   heLabel: 'מקלדות',        Icon: Keyboard       },
-  { slug: 'mice',        labelKey: 'cat.mice',        heLabel: 'עכברים',        Icon: Mouse          },
-  { slug: 'headphones',  labelKey: 'cat.headphones',  heLabel: 'אוזניות',       Icon: Headphones     },
-  { slug: 'storage',     labelKey: 'cat.storage',     heLabel: 'אחסון',         Icon: HardDrive      },
-  { slug: 'gaming',      labelKey: 'cat.gaming',      heLabel: 'גיימינג',       Icon: Gamepad2       },
-  { slug: 'accessories', labelKey: 'cat.accessories', heLabel: 'אביזרים',       Icon: Package2       },
-  { slug: 'smartphones', labelKey: 'cat.smartphones', heLabel: 'סמארטפונים',    Icon: Smartphone     },
-  { slug: 'tablets',     labelKey: 'cat.tablets',     heLabel: 'טאבלטים',       Icon: Tablet         },
-  { slug: 'speakers',    labelKey: 'cat.speakers',    heLabel: 'רמקולים',       Icon: Speaker        },
-  { slug: 'networking',  labelKey: 'cat.networking',  heLabel: 'נטוורקינג',     Icon: Wifi           },
-  { slug: 'smart-home',  labelKey: 'cat.smart_home',  heLabel: 'בית חכם',       Icon: Home           },
+// Icon per real backend category slug (server/config/categoryTaxonomy.js is
+// the canonical structure; this is purely presentational). Display NAMES
+// come from getCategoryLabel() (features/products/utils/categoryLabels.js).
+// A real category the API returns that isn't listed here still renders,
+// using DEFAULT_CATEGORY_ICON — new categories are never hidden.
+export const CATEGORY_META = {
+  // Main categories
+  computers:     Laptop,
+  monitors:      Monitor,
+  'pc-components': Cpu,
+  storage:       HardDrive,
+  peripherals:   Keyboard,
+  networking:    Wifi,
+  gaming:        Gamepad2,
+  consoles:      Gamepad,
+  smartphones:   Smartphone,
+  tablets:       Tablet,
+  tvs:           Tv,
+  printers:      Printer,
+
+  // Computers
+  laptops:      Laptop,
+  desktops:     Server,
+  'mini-pc':    Box,
+  'all-in-one': MonitorSmartphone,
+
+  // PC Components
+  cpus:             Cpu,
+  gpus:             Zap,
+  motherboards:     CircuitBoard,
+  ram:              MemoryStick,
+  psus:             BatteryCharging,
+  cases:            Box,
+  cooling:          Wind,
+  fans:             Fan,
+  'sound-cards':    Music2,
+  'capture-cards':  Video,
+  'network-cards':  Network,
+
+  // Storage
+  ssd:                HardDrive,
+  hdd:                Database,
+  'external-drives':  HardDriveDownload,
+  'usb-flash-drives': Usb,
+  'memory-cards':     Save,
+
+  // Peripherals
+  keyboards:    Keyboard,
+  mice:         MousePointer2,
+  'mouse-pads': Mouse,
+  headsets:     Headphones,
+  speakers:     Speaker,
+  microphones:  Mic,
+  webcams:      Camera,
+
+  // Networking
+  routers:            Wifi,
+  mesh:               Share2,
+  switches:            Network,
+  'access-points':     Radio,
+  'network-adapters':  Cable,
+
+  // Gaming
+  'gaming-chairs':  Armchair,
+  'gaming-desks':   Table2,
+  controllers:      Gamepad2,
+  'racing-wheels':  Disc,
+  'flight-sticks':  Joystick,
+  vr:               Glasses,
+  'streaming-gear': RadioTower,
+
+  // Consoles
+  playstation:          Gamepad,
+  xbox:                 Gamepad2,
+  nintendo:             Gamepad,
+  'handheld-consoles':  Joystick,
+
+  // Printers
+  scanners:    Scan,
+  'ink-toner': Droplet,
+
+  // Legacy/deactivated (kept only so old references never crash)
+  accessories:  Package2,
+  'smart-home': Home,
+};
+
+// Fallback icon for a real category slug that isn't in CATEGORY_META above
+// (e.g. a brand-new category added directly in the database).
+export const DEFAULT_CATEGORY_ICON = Package2;
+
+// Presentational display order for main categories in the "All Categories"
+// modal — purely cosmetic; any real main category not listed here (e.g. a
+// future addition) still appears, sorted after these by name.
+export const MAIN_CATEGORY_ORDER = [
+  'computers', 'monitors', 'pc-components', 'storage', 'peripherals',
+  'networking', 'gaming', 'consoles', 'smartphones', 'tablets', 'tvs', 'printers',
 ];
 
-// Sections shown in the categories modal (matches Sapir's grouping).
-// `labelKey`/`titleKey` drive the i18n system; `heLabel`/`title` are kept as
-// the authoritative Hebrew source the translation values were copied from.
-export const MODAL_SECTIONS = [
-  {
-    title: 'מחשבים ורכיבים', titleKey: 'modal.section_computers',
-    items: [
-      { slug: 'monitors',   labelKey: 'cat.monitors',              heLabel: 'מסכים',             Icon: Monitor,         count: null },
-      { slug: 'desktops',   labelKey: 'cat.desktops',              heLabel: 'מחשבים שולחניים',   Icon: Server,          count: null },
-      { slug: 'laptops',    labelKey: 'cat.laptops',               heLabel: 'מחשבים ניידים',     Icon: Laptop,          count: null },
-      { slug: 'components', labelKey: 'cat.components',            heLabel: 'רכיבים',             Icon: Cpu,             count: null },
-      { slug: 'storage',    labelKey: 'modal.item_storage_ssd',    heLabel: 'אחסון ו-SSD',        Icon: HardDrive,       count: null },
-      { slug: 'components', labelKey: 'modal.item_motherboards',   heLabel: 'לוחות אם',      Icon: CircuitBoard,    count: null, subSlug: 'motherboards' },
-      { slug: 'components', labelKey: 'modal.item_ram',            heLabel: 'זיכרון RAM',    Icon: MemoryStick,     count: null, subSlug: 'ram' },
-      { slug: 'components', labelKey: 'modal.item_psu',            heLabel: 'ספקי כוח',      Icon: BatteryCharging, count: null, subSlug: 'psu' },
-      { slug: 'components', labelKey: 'modal.item_cooling',        heLabel: 'קירור ופנים',   Icon: Wind,            count: null, subSlug: 'cooling' },
-    ],
-  },
-  {
-    title: 'ציוד היקפי', titleKey: 'modal.section_peripherals',
-    items: [
-      { slug: 'keyboards',  labelKey: 'cat.keyboards',              heLabel: 'מקלדות',         Icon: Keyboard,        count: null },
-      { slug: 'mice',       labelKey: 'cat.mice',                   heLabel: 'עכברים',         Icon: MousePointer2,   count: null },
-      { slug: 'headphones', labelKey: 'cat.headphones',             heLabel: 'אוזניות',        Icon: Headphones,      count: null },
-      { slug: 'accessories',labelKey: 'modal.item_microphones',     heLabel: 'מיקרופונים',     Icon: Mic,             count: null },
-      { slug: 'accessories',labelKey: 'modal.item_mousepads',       heLabel: 'משטחי עכבר',     Icon: Mouse,           count: null },
-      { slug: 'accessories',labelKey: 'cat.accessories',            heLabel: 'אביזרים',        Icon: Package2,        count: null },
-    ],
-  },
-  {
-    title: 'גיימינג וקונסולות', titleKey: 'modal.section_gaming',
-    items: [
-      { slug: 'gaming',     labelKey: 'cat.gaming',                 heLabel: 'גיימינג',        Icon: Gamepad2,        count: null },
-      { slug: 'gaming',     labelKey: 'modal.item_gaming_accessories', heLabel: 'אביזרי גיימינג', Icon: Zap,          count: null },
-    ],
-  },
-  {
-    title: 'רשת ותשתיות', titleKey: 'modal.section_network',
-    items: [
-      { slug: 'networking', labelKey: 'modal.item_routers',        heLabel: 'ראוטרים',        Icon: Wifi,            count: null },
-      { slug: 'networking', labelKey: 'modal.item_switches_lan',   heLabel: 'מתגים ו-LAN',    Icon: Network,         count: null },
-      { slug: 'accessories',labelKey: 'modal.item_printing',       heLabel: 'הדפסה',          Icon: Printer,         count: null },
-      { slug: 'accessories',labelKey: 'modal.item_gifts',          heLabel: 'מתנות וחבילות',  Icon: Package2,        count: null },
-    ],
-  },
-];
+// Builds a real main→children tree from the flat category list the API
+// returns (GET /products/categories → [{_id, name, slug, parentCategory}]).
+// This is the ONLY place that turns the flat list into a tree — the modal
+// and the admin category selector both use it, so there is one definition
+// of "hierarchy" in the frontend, matching the one true hierarchy the
+// backend already encodes via Category.parentCategory.
+export function buildCategoryTree(flatCategories) {
+  if (!Array.isArray(flatCategories) || flatCategories.length === 0) return [];
 
-// Primary categories shown in the sticky nav bar (overflow-x: auto handles extras)
-export const NAV_CATEGORIES = CATEGORY_META.slice(0, 10);
+  const byId = new Map(flatCategories.map((c) => [String(c._id), { ...c, children: [] }]));
+  const mains = [];
+
+  for (const cat of flatCategories) {
+    if (!cat.parentCategory) continue;
+    const parent = byId.get(String(cat.parentCategory));
+    if (parent) parent.children.push(byId.get(String(cat._id)));
+  }
+  for (const cat of flatCategories) {
+    if (!cat.parentCategory) mains.push(byId.get(String(cat._id)));
+  }
+
+  const orderIndex = (slug) => {
+    const i = MAIN_CATEGORY_ORDER.indexOf(slug);
+    return i === -1 ? MAIN_CATEGORY_ORDER.length : i;
+  };
+  mains.sort((a, b) => orderIndex(a.slug) - orderIndex(b.slug) || a.name.localeCompare(b.name));
+  mains.forEach((m) => m.children.sort((a, b) => a.name.localeCompare(b.name)));
+
+  return mains;
+}

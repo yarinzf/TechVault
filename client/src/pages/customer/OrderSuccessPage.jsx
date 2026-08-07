@@ -1,10 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { Crown, ShieldCheck, Bell } from 'lucide-react';
 import { orderService } from '../../features/orders/api/order.service';
 import { PageSpinner } from '../../components/ui/Spinner/Spinner';
 import Button from '../../components/ui/Button/Button';
 import { useTranslation } from '../../context/LanguageContext';
+import { useAuth } from '../../hooks/useAuth';
 import s from './OrderSuccessPage.module.css';
+
+const isMembershipOrder = (order) =>
+  (order?.items ?? []).some(item => item.itemType === 'membership');
 
 function addBusinessDays(date, n) {
   const d = new Date(date);
@@ -57,6 +62,8 @@ export default function OrderSuccessPage() {
   const { orderId } = useParams();
   const navigate    = useNavigate();
   const t = useTranslation();
+  const { refreshProfile } = useAuth();
+  const didRefresh = useRef(false);
 
   const [order,   setOrder]   = useState(null);
   const [loading, setLoading] = useState(true);
@@ -71,6 +78,18 @@ export default function OrderSuccessPage() {
       .catch(() => setError(true))
       .finally(() => setLoading(false));
   }, [orderId]);
+
+  // The checkout flow already calls refreshProfile() right after payment
+  // confirmation, so membership.status is normally already 'active' by the
+  // time this page renders. This is a safety net for any path that lands
+  // here without having done that (e.g. a direct link) — runs at most once.
+  useEffect(() => {
+    if (didRefresh.current) return;
+    if (order && isMembershipOrder(order)) {
+      didRefresh.current = true;
+      refreshProfile().catch(() => {});
+    }
+  }, [order, refreshProfile]);
 
   if (loading) return <PageSpinner />;
 
@@ -93,16 +112,26 @@ export default function OrderSuccessPage() {
   const paymentLabel  = parsePayment(order.notes, t);
   const deliveryRange = buildDeliveryRange(order.createdAt);
   const statusLabel   = t(`order.status.${order.status}`) || order.status;
+  const isMembership  = isMembershipOrder(order);
 
   return (
     <div className="page">
       <div className={s.container}>
 
         <div className={s.iconWrap}>
-          <CheckIcon />
+          {isMembership ? <Crown size={72} className={s.checkCircle} style={{ color: 'var(--sv-violet, #9E6EF1)' }} /> : <CheckIcon />}
         </div>
 
-        <h1 className={s.heading}>{t('order.success_heading')}</h1>
+        {isMembership ? (
+          <>
+            <h1 className={s.heading}>ברוכים הבאים למועדון TechVault</h1>
+            <p className={s.orderNum} style={{ marginBottom: 4 }}>
+              חברות המועדון שלך פעילה וכל ההטבות זמינות כבר עכשיו
+            </p>
+          </>
+        ) : (
+          <h1 className={s.heading}>{t('order.success_heading')}</h1>
+        )}
         <p className={s.orderNum}>
           {t('order.number_prefix')}&nbsp;<strong>#{order.orderNumber}</strong>
         </p>
@@ -136,9 +165,9 @@ export default function OrderSuccessPage() {
           </div>
         </div>
 
-        {/* Info grid */}
+        {/* Info grid — membership orders have no shipping/delivery to show */}
         <div className={s.infoGrid}>
-          {addr && (
+          {!isMembership && addr && (
             <div className={s.infoCard}>
               <div className={s.infoLabel}>{t('order.shipping_address')}</div>
               <div className={s.infoValue}>
@@ -152,27 +181,50 @@ export default function OrderSuccessPage() {
             <div className={s.infoLabel}>{t('order.payment_method')}</div>
             <div className={s.infoValue}>{paymentLabel}</div>
           </div>
-          <div className={s.infoCard}>
-            <div className={s.infoLabel}>{t('order.delivery_date')}</div>
-            <div className={s.infoValue}>{deliveryRange}</div>
-          </div>
+          {isMembership ? (
+            <div className={s.infoCard}>
+              <div className={s.infoLabel}>סטטוס חברות</div>
+              <div className={s.infoValue} style={{ color: 'var(--success)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                <ShieldCheck size={14} /> פעילה
+              </div>
+            </div>
+          ) : (
+            <div className={s.infoCard}>
+              <div className={s.infoLabel}>{t('order.delivery_date')}</div>
+              <div className={s.infoValue}>{deliveryRange}</div>
+            </div>
+          )}
           <div className={s.infoCard}>
             <div className={s.infoLabel}>{t('order.status_label')}</div>
-            <div className={`${s.infoValue} ${s.statusPending}`}>
-              {statusLabel}
+            <div className={`${s.infoValue} ${isMembership ? '' : s.statusPending}`}>
+              {isMembership ? 'הושלם' : statusLabel}
             </div>
           </div>
         </div>
 
         {/* Actions */}
-        <div className={s.actions}>
-          <Button full size="lg" onClick={() => navigate('/products')}>
-            {t('order.continue_shopping')}
-          </Button>
-          <Button full size="lg" variant="secondary" onClick={() => navigate('/orders')}>
-            {t('order.all_orders')}
-          </Button>
-        </div>
+        {isMembership ? (
+          <div className={s.actions}>
+            <Button full size="lg" onClick={() => navigate('/club')}>
+              <Crown size={16} style={{ marginInlineEnd: 6 }} /> למועדון שלי
+            </Button>
+            <Button full size="lg" variant="secondary" onClick={() => navigate('/profile')}>
+              <Bell size={14} style={{ marginInlineEnd: 6 }} /> העדפות התראות
+            </Button>
+            <Button full size="lg" variant="secondary" onClick={() => navigate('/products')}>
+              {t('order.continue_shopping')}
+            </Button>
+          </div>
+        ) : (
+          <div className={s.actions}>
+            <Button full size="lg" onClick={() => navigate('/products')}>
+              {t('order.continue_shopping')}
+            </Button>
+            <Button full size="lg" variant="secondary" onClick={() => navigate('/orders')}>
+              {t('order.all_orders')}
+            </Button>
+          </div>
+        )}
 
       </div>
     </div>

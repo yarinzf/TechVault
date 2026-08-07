@@ -228,6 +228,60 @@ const getActiveWeeklyDeal = async () => {
   };
 };
 
+// ─── Public Deals page — every currently storefront-eligible campaign ──────
+//
+// One campaigns query + one batched product query (never one query per
+// product) so the Deals page never does N+1 requests. Only exposes fields a
+// customer should see — no admin metadata (createdAt/updatedAt/__v etc). A
+// campaign whose products are all deleted/unpublished/out of the public set
+// is dropped entirely rather than surfaced with an empty product list.
+const getActiveCampaigns = async () => {
+  const now = new Date();
+  const campaigns = await Campaign.find({
+    isActive:  true,
+    startDate: { $lte: now },
+    endDate:   { $gte: now },
+  }).sort({ startDate: -1 }).lean();
+
+  if (campaigns.length === 0) return [];
+
+  const productIds = [...new Set(campaigns.flatMap((c) => c.products.map(String)))];
+  const products = await Product.find({
+    _id:         { $in: productIds },
+    isPublished: true,
+    isDeleted:   false,
+  }).populate('category', 'name slug').lean();
+
+  const productById = new Map(products.map((p) => [String(p._id), p]));
+
+  return campaigns
+    .map((c) => ({
+      id:              String(c._id),
+      name:            c.name,
+      discountPercent: c.discountPercent,
+      startDate:       new Date(c.startDate).toISOString(),
+      endDate:         new Date(c.endDate).toISOString(),
+      placement:       c.placement ?? 'none',
+      products: c.products
+        .map((pid) => productById.get(String(pid)))
+        .filter(Boolean)
+        .map((p) => ({
+          id:              String(p._id),
+          name:            p.name,
+          slug:            p.slug,
+          brand:           p.brand ?? null,
+          category:        p.category ? { name: p.category.name, slug: p.category.slug } : null,
+          image:           p.images?.[0] ?? null,
+          price:           p.price,
+          discountedPrice: calculateDiscountedPrice(p.price, c.discountPercent),
+          discountPercent: c.discountPercent,
+          stock:           p.stock,
+          ratings:         p.ratings ?? { average: 0, count: 0 },
+        })),
+    }))
+    .filter((c) => c.products.length > 0);
+};
+
 module.exports = {
   listCampaigns,
   createCampaign,
@@ -235,5 +289,6 @@ module.exports = {
   deleteCampaign,
   getActiveDiscountMap,
   getActiveWeeklyDeal,
+  getActiveCampaigns,
   calculateDiscountedPrice,
 };

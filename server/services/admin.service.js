@@ -249,7 +249,7 @@ const updateUser = async (targetId, dto, requestingUserId, actor = null, req = n
   }
 
   // Fetch target before update to evaluate last-superadmin guard
-  const target = await User.findById(targetId).select('role isActive');
+  const target = await User.findById(targetId).select('role isActive membership');
   if (!target) throw new AppError('User not found', StatusCodes.NOT_FOUND, 'USER_NOT_FOUND');
 
   // Guard: prevent removing or disabling the last active superadmin
@@ -274,17 +274,43 @@ const updateUser = async (targetId, dto, requestingUserId, actor = null, req = n
     }
   }
 
+  // Membership fields are stored as dot-paths so a partial update (e.g. just
+  // `status`) never clobbers the rest of the subdocument via a bare $set.
+  const { membership: membershipDto, ...rest } = dto;
+  const setFields = { ...rest };
+
+  if (membershipDto) {
+    if (membershipDto.status !== undefined) {
+      setFields['membership.status'] = membershipDto.status;
+      if (membershipDto.status === 'active' && !target.membership?.joinedAt) {
+        setFields['membership.joinedAt'] = new Date();
+      } else if (membershipDto.status === 'none') {
+        setFields['membership.joinedAt'] = null;
+      }
+    }
+    if (membershipDto.notificationPreference !== undefined) {
+      setFields['membership.notificationPreference'] = membershipDto.notificationPreference;
+    }
+    if (membershipDto.points !== undefined) {
+      setFields['membership.points'] = membershipDto.points;
+    }
+    if (membershipDto.lifetimePoints !== undefined) {
+      setFields['membership.lifetimePoints'] = membershipDto.lifetimePoints;
+    }
+  }
+
   const updated = await User.findByIdAndUpdate(
     targetId,
-    { $set: dto },
+    { $set: setFields },
     { new: true, runValidators: true }
-  ).select('name email role isActive');
+  ).select('name email role isActive membership');
 
   // Non-fatal audit log
   if (actor) {
-    const action = dto.role !== undefined ? 'user.role_changed'
-      : dto.isActive === false             ? 'user.deactivated'
-      : dto.isActive === true              ? 'user.activated'
+    const action = membershipDto                ? 'user.membership_updated'
+      : dto.role !== undefined                   ? 'user.role_changed'
+      : dto.isActive === false                    ? 'user.deactivated'
+      : dto.isActive === true                     ? 'user.activated'
       : 'user.role_changed';
 
     audit.log({
@@ -292,8 +318,8 @@ const updateUser = async (targetId, dto, requestingUserId, actor = null, req = n
       entity:   'User',
       entityId: targetId,
       actor,
-      before:   { role: target.role, isActive: target.isActive },
-      after:    { role: updated.role, isActive: updated.isActive },
+      before:   { role: target.role, isActive: target.isActive, membership: target.membership },
+      after:    { role: updated.role, isActive: updated.isActive, membership: updated.membership },
       req,
     });
   }

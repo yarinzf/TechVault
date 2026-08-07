@@ -1,9 +1,14 @@
 /* ── Floating root ── */
+/* Also opened from a button inside the sticky storefront header
+   (z-index:9999) — the shared --z-toast (400) would let the header paint
+   over this panel if it ever grows tall enough to reach that high on short
+   viewports. Scoped override here only; --z-toast itself (shared with
+   Toast.module.css) is left untouched. */
 .root {
   position: fixed;
   bottom: var(--space-5);
   inset-inline-start: var(--space-5);
-  z-index: var(--z-toast);
+  z-index: 10001;
   display: flex;
   flex-direction: column;
   align-items: flex-start;

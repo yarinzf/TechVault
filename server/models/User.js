@@ -19,6 +19,42 @@ const addressSchema = new mongoose.Schema(
   { _id: false }
 );
 
+// TechVault Club membership — persisted independently of `role`/authorization.
+// Points earning, redemption, and tiers are later phases; this is the
+// foundational shape only. See Club Membership architecture phase 1.
+const membershipSchema = new mongoose.Schema(
+  {
+    status: {
+      type: String,
+      enum: {
+        values: ['none', 'active'],
+        message: 'Membership status must be one of: none, active',
+      },
+      default: 'none',
+    },
+    joinedAt: { type: Date, default: null },
+    points: { type: Number, default: 0, min: 0 },
+    lifetimePoints: { type: Number, default: 0, min: 0 },
+    notificationPreference: {
+      type: String,
+      enum: {
+        values: ['none', 'email', 'sms', 'both'],
+        message: 'Notification preference must be one of: none, email, sms, both',
+      },
+      default: 'none',
+    },
+  },
+  { _id: false }
+);
+
+const DEFAULT_MEMBERSHIP = Object.freeze({
+  status: 'none',
+  joinedAt: null,
+  points: 0,
+  lifetimePoints: 0,
+  notificationPreference: 'none',
+});
+
 const userSchema = new mongoose.Schema(
   {
     name: {
@@ -81,6 +117,9 @@ const userSchema = new mongoose.Schema(
     emailSecurityAlerts: { type: Boolean, default: true },
     emailMarketing:      { type: Boolean, default: false },
     emailAdminAlerts:    { type: Boolean, default: true },
+
+    // TechVault Club membership — NOT an authorization role. See membershipSchema above.
+    membership: { type: membershipSchema, default: () => ({}) },
   },
   {
     timestamps: true,
@@ -99,6 +138,11 @@ const userSchema = new mongoose.Schema(
         if (ret.email && ret.email.endsWith('@sms.techvault.internal')) {
           delete ret.email;
         }
+        // Belt-and-suspenders: pre-existing documents created before the
+        // membership field existed rely on Mongoose's hydration defaults,
+        // which don't apply to .lean() reads. Normalize here so the API
+        // never returns a user without a well-formed membership object.
+        ret.membership = { ...DEFAULT_MEMBERSHIP, ...ret.membership };
         delete ret.__v;
         return ret;
       },

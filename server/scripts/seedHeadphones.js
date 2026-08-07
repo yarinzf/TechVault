@@ -107,9 +107,11 @@ function findDuplicateSkus(products) {
 async function main() {
   await connectDB();
 
-  const cat = await Category.findOne({ slug: 'headphones' }).select('_id').lean();
+  // 'headphones' was renamed to 'headsets' under Peripherals — see
+  // server/scripts/migrateCatalogCategories.js.
+  const cat = await Category.findOne({ slug: 'headsets' }).select('_id').lean();
   if (!cat) {
-    fail('Headphones category not found. Run `npm run seed` first to create categories.');
+    fail('Headsets category not found. Run `npm run seed` then `node server/scripts/migrateCatalogCategories.js` first.');
     process.exit(1);
   }
 

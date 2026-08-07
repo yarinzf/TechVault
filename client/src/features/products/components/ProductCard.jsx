@@ -8,7 +8,7 @@ import { useLanguage } from '../../../context/LanguageContext';
 import { getLocalizedProductName } from '../utils/localizedProduct';
 import s from './ProductCard.module.css';
 
-export default function ProductCard({ product, rank, fit = 'cover' }) {
+export default function ProductCard({ product, rank, fit = 'cover', arrivalLabel }) {
   const { addItem }              = useCart();
   const { isInWishlist, toggle } = useWishlist();
   const { toast }                = useToast();
@@ -26,16 +26,15 @@ export default function ProductCard({ product, rank, fit = 'cover' }) {
     toggle(product._id);
   };
 
-  const hasCampaignDiscount = product.discountedPrice != null && product.discountedPrice < product.price;
-  const hasStaticDiscount   = !hasCampaignDiscount && product.compareAtPrice != null && product.compareAtPrice > product.price;
-  const hasDiscount         = hasCampaignDiscount || hasStaticDiscount;
-  const displayPrice        = hasCampaignDiscount ? product.discountedPrice : product.price;
-  const strikethroughPrice  = hasCampaignDiscount ? product.price : product.compareAtPrice;
-  const discountPct         = hasCampaignDiscount
-    ? product.discountPercent
-    : hasStaticDiscount
-    ? Math.round((1 - product.price / product.compareAtPrice) * 100)
-    : null;
+  // "On sale" means ONLY a currently active Campaign discounts this product
+  // (discountedPrice/discountPercent, injected server-side — see
+  // server/services/product.service.js). compareAtPrice is a legacy/
+  // reference-price field and must never independently produce a
+  // strikethrough price or a discount badge.
+  const hasDiscount         = product.discountedPrice != null && product.discountedPrice < product.price;
+  const displayPrice        = hasDiscount ? product.discountedPrice : product.price;
+  const strikethroughPrice  = hasDiscount ? product.price : null;
+  const discountPct         = hasDiscount ? product.discountPercent : null;
 
   const handleAddToCart = async (e) => {
     e.stopPropagation();
@@ -139,6 +138,13 @@ export default function ProductCard({ product, rank, fit = 'cover' }) {
         <div className={s.badges}>
           {hasDiscount && discountPct && (
             <span className={`${s.badge} ${s.badgeSale}`}>−{discountPct}%</span>
+          )}
+          {/* Arrival label (New Arrivals page) — solid blue, distinct from the
+              unrelated admin-curated `tags.includes('new')` badge below. An
+              optional presentation prop; every other caller omits it and
+              gets identical behavior to before. */}
+          {arrivalLabel && (
+            <span className={`${s.badge} ${s.badgeArrival}`}>{arrivalLabel}</span>
           )}
           {product.tags?.includes('new') && (
             <span className={`${s.badge} ${s.badgeNew}`}>{t('product.badge_new')}</span>

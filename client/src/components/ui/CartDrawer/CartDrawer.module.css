@@ -1,10 +1,16 @@
 /* ── Backdrop ────────────────────────────────────────────────────────────────── */
+/* The shared --z-overlay (200) sits far below the sticky storefront header
+   (z-index:9999) — the backdrop/drawer would render BEHIND the header rather
+   than covering it. Overridden here, scoped to this module only (the shared
+   --z-overlay/--z-drawer variables are left untouched for other consumers),
+   using the same overlay<panel numbering the header's own portaled overlays
+   use, so the cart drawer reliably stacks above the entire storefront header. */
 .backdrop {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0);
   backdrop-filter: blur(0px);
-  z-index: var(--z-overlay);
+  z-index: 10001;
   pointer-events: none;
   transition:
     background 280ms ease,
@@ -28,7 +34,7 @@
   border-left: 1px solid var(--sv-border);
   border-radius: 16px 0 0 16px;
   box-shadow: -12px 0 40px rgba(0, 0, 0, 0.45);
-  z-index: var(--z-drawer);
+  z-index: 10002;
   display: flex;
   flex-direction: column;
   transform: translateX(100%);

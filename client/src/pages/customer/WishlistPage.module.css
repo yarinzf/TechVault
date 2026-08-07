@@ -1,19 +1,333 @@
-.heading {
-  font-size: var(--text-2xl);
-  font-weight: var(--font-bold);
-  color: var(--text-primary);
-  letter-spacing: -0.02em;
-  margin-bottom: var(--space-2);
+/* ── Page shell ───────────────────────────────────────────────────────────── */
+/* Full-bleed, like ProductDetailsPage/CartPage — the dark storefront
+   background (--sv-bg, not the app-wide lighter --bg-base) must span the
+   entire viewport width; only the CONTENT inside is max-width/centered.
+   font-family here cascades into the breadcrumb and the reused ProductCard
+   grid below, neither of which override it themselves. */
+.page {
+  background: var(--sv-bg);
+  font-family: var(--sv-font);
 }
 
-.count {
-  font-size: var(--text-sm);
-  color: var(--text-muted);
-  margin-bottom: var(--space-6);
+/* ── Breadcrumb strip — full-width grey bar, matches Sapir's reference ──── */
+.breadcrumbStrip {
+  background: var(--sv-surface);
+  border-bottom: 1px solid var(--sv-border);
+  padding: 10px 0;
 }
 
+.breadcrumbInner {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 64px;
+}
+
+@media (max-width: 640px) {
+  .breadcrumbInner { padding: 0 16px; }
+}
+
+/* The shared Breadcrumb component uses generic app-wide tokens (--text-muted
+   etc.) by default — override here via real DOM semantics (tag / aria
+   attribute, not its internal hashed classnames) so it matches Sapir's
+   storefront palette exactly on this page, without touching the shared
+   component itself. */
+.breadcrumbNav {
+  color: var(--sv-muted);
+  font-family: var(--sv-font);
+  font-size: 13px;
+}
+
+.breadcrumbNav :global(a) { color: var(--sv-muted); }
+.breadcrumbNav :global(a:hover) { color: var(--sv-blue-l); }
+.breadcrumbNav :global([aria-current="page"]) { color: var(--sv-text); font-weight: 500; }
+
+/* ── Centered content ─────────────────────────────────────────────────────── */
+.pageInner {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 24px 48px 80px;
+}
+
+@media (max-width: 640px) {
+  .pageInner { padding: 16px 16px 48px; }
+}
+
+/* ── Header ───────────────────────────────────────────────────────────────── */
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.headerLeft {}
+
+.title {
+  font-size: 26px;
+  font-weight: 800;
+  font-family: var(--sv-font);
+  color: var(--sv-text);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.titleIcon { font-size: 24px; }
+
+.subtitle {
+  font-size: 14px;
+  color: var(--sv-muted);
+}
+
+.countBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(37, 99, 235, 0.08);
+  border: 1px solid rgba(37, 99, 235, 0.2);
+  color: var(--sv-blue-l);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+  margin-inline-start: 8px;
+}
+
+.clearAllBtn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--sv-surface);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  border-radius: 8px;
+  color: var(--sv-red);
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: var(--sv-font);
+  cursor: pointer;
+  transition: all .18s;
+}
+
+.clearAllBtn:hover {
+  background: var(--sv-red);
+  color: #fff;
+}
+
+/* ── Controls: filters + sort ────────────────────────────────────────────── */
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.filters {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.filterBtn {
+  background: var(--sv-surface);
+  border: 1px solid var(--sv-border);
+  border-radius: 8px;
+  color: var(--sv-muted);
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: var(--sv-font);
+  cursor: pointer;
+  transition: all .18s;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.filterBtn:hover,
+.filterBtnActive {
+  border-color: var(--sv-blue-l);
+  color: var(--sv-blue-l);
+  background: rgba(37, 99, 235, 0.05);
+}
+
+.sortWrap { position: relative; }
+
+.sort {
+  background: var(--sv-surface);
+  border: 1px solid var(--sv-border);
+  border-radius: 8px;
+  color: var(--sv-text);
+  padding: 8px 30px 8px 14px;
+  font-size: 13px;
+  font-family: var(--sv-font);
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.sortWrap::after {
+  content: '▾';
+  position: absolute;
+  inset-inline-start: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 10px;
+  color: var(--sv-muted);
+  pointer-events: none;
+}
+
+/* ── Product grid ─────────────────────────────────────────────────────────── */
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: var(--space-5);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+}
+
+@media (max-width: 1100px) {
+  .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (max-width: 740px) {
+  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 440px) {
+  .grid { grid-template-columns: 1fr; }
+}
+
+/* ── Recommendations ("מוצרים שאולי תאהבו") ──────────────────────────────── */
+.recs {
+  margin-top: 48px;
+  padding-top: 40px;
+  border-top: 1px solid var(--sv-border);
+}
+
+.recsTitle {
+  font-size: 20px;
+  font-weight: 700;
+  font-family: var(--sv-font);
+  color: var(--sv-text);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.recsTitle svg { stroke: var(--sv-blue-l); }
+
+.recsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+@media (max-width: 900px) {
+  .recsGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 440px) {
+  .recsGrid { grid-template-columns: 1fr; }
+}
+
+/* ── Empty / filtered-empty / error states ───────────────────────────────── */
+.emptyState,
+.errorState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 80px 24px;
+  min-height: 360px;
+}
+
+.emptyIcon {
+  width: 80px;
+  height: 80px;
+  border-radius: 22px;
+  background: rgba(37, 99, 235, 0.07);
+  border: 1px solid rgba(37, 99, 235, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  color: var(--sv-blue-l);
+}
+
+.emptyState h3 {
+  font-size: 22px;
+  font-weight: 700;
+  font-family: var(--sv-font);
+  color: var(--sv-text);
+  margin-bottom: 8px;
+}
+
+.emptyState p {
+  font-size: 14px;
+  color: var(--sv-muted);
+  margin-bottom: 28px;
+  max-width: 340px;
+}
+
+.errorState {
+  color: var(--sv-red);
+  gap: 12px;
+}
+
+.errorState p {
+  color: var(--sv-muted);
+  font-size: 14px;
+  max-width: 340px;
+}
+
+.filteredEmpty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 64px 24px;
+  gap: 14px;
+  color: var(--sv-muted);
+  font-size: 14px;
+}
+
+.filteredEmptyBtn {
+  background: var(--sv-blue-d);
+  border: 1px solid var(--sv-blue-b);
+  border-radius: 8px;
+  color: var(--sv-blue);
+  padding: 9px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--sv-font);
+  cursor: pointer;
+  transition: all .18s;
+}
+
+.filteredEmptyBtn:hover {
+  background: var(--sv-blue);
+  color: #fff;
+}
+
+/* ── Clear-all confirmation modal body ───────────────────────────────────── */
+.confirmBody {
+  color: var(--text-secondary, var(--sv-muted));
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: var(--space-6, 20px);
+}
+
+.confirmActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
 }

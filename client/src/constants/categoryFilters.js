@@ -4,9 +4,9 @@ export const CATEGORY_BRANDS = {
   monitors:         ['LG', 'Samsung', 'ASUS', 'Dell', 'AOC', 'Gigabyte', 'MSI', 'BenQ', 'ViewSonic'],
   keyboards:        ['Logitech', 'Razer', 'Corsair', 'SteelSeries', 'HyperX', 'Keychron', 'ASUS', 'MSI'],
   mice:             ['Logitech', 'Razer', 'SteelSeries', 'Corsair', 'Zowie', 'HyperX', 'Endgame Gear', 'Glorious'],
-  headphones:       ['HyperX', 'SteelSeries', 'Razer', 'Logitech', 'Corsair', 'Astro', 'Sony', 'Sennheiser'],
+  headsets:         ['HyperX', 'SteelSeries', 'Razer', 'Logitech', 'Corsair', 'Astro', 'Sony', 'Sennheiser'],
   laptops:          ['ASUS', 'Lenovo', 'HP', 'Dell', 'MSI', 'Acer', 'Apple', 'Microsoft'],
-  components:       ['NVIDIA', 'AMD', 'Intel', 'Corsair', 'ASUS', 'MSI', 'Gigabyte', 'G.Skill', 'be quiet!'],
+  'pc-components':  ['NVIDIA', 'AMD', 'Intel', 'Corsair', 'ASUS', 'MSI', 'Gigabyte', 'G.Skill', 'be quiet!'],
   storage:          ['Samsung', 'WD', 'Seagate', 'Crucial', 'Kingston', 'Sabrent', 'Lexar', 'SK Hynix'],
   'gaming-chairs':  ['DXRacer', 'Secretlab', 'NOBLECHAIRS', 'AndaSeat', 'Corsair', 'Herman Miller'],
   accessories:      ['Logitech', 'Razer', 'Corsair', 'SteelSeries', 'HyperX', 'Elgato', 'Anker'],
@@ -32,7 +32,7 @@ export const CATEGORY_SPEC_PARAMS = {
     'specMouseType', 'specSensor', 'specHandOrientation', 'specPollingRate', 'specGripStyle',
     'specConnection', 'specRgb', 'specUsage',
   ],
-  headphones: [
+  headsets: [
     'specHeadphoneType', 'specConnection', 'specUsage',
     'specMicrophone', 'specNoiseCancellation', 'specSurroundSound',
   ],
@@ -44,7 +44,7 @@ export const CATEGORY_SPEC_PARAMS = {
     'specProcessor', 'specRam', 'specStorageSize', 'specGpu', 'specOs',
     'specScreenSize', 'specRefreshRate', 'specUsage',
   ],
-  components: [
+  'pc-components': [
     'specComponentType', 'specSocket', 'specFormFactor', 'specWattage',
   ],
   storage: [
@@ -351,7 +351,7 @@ export const CATEGORY_FILTER_GROUPS = {
     },
   ],
 
-  headphones: [
+  headsets: [
     {
       key: 'hpType', label: 'סוג',
       items: [{ type: 'select', param: 'specHeadphoneType', allLabel: 'הכל',
@@ -501,7 +501,7 @@ export const CATEGORY_FILTER_GROUPS = {
     },
   ],
 
-  components: [
+  'pc-components': [
     {
       key: 'cpType', label: 'סוג רכיב',
       items: [{ type: 'select', param: 'specComponentType', allLabel: 'הכל',

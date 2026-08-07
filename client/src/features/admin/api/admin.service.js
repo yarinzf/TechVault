@@ -1,15 +1,6 @@
 import { api, qs, getToken } from '../../../services/api';
 
 // ── Mock fallback data ────────────────────────────────────────────────────────
-const MOCK_USERS = [
-  { _id: 'u1', name: 'Super Admin',       email: 'superadmin@techvault.dev', role: 'superadmin', isActive: true,  createdAt: new Date(Date.now() - 90 * 86400000).toISOString() },
-  { _id: 'u2', name: 'Admin User',        email: 'admin@techvault.dev',      role: 'admin',      isActive: true,  createdAt: new Date(Date.now() - 60 * 86400000).toISOString() },
-  { _id: 'u3', name: 'Warehouse Manager', email: 'warehouse@techvault.dev',  role: 'warehouse',  isActive: true,  createdAt: new Date(Date.now() - 45 * 86400000).toISOString() },
-  { _id: 'u4', name: 'Alice Johnson',     email: 'alice@example.com',        role: 'user',       isActive: true,  createdAt: new Date(Date.now() - 30 * 86400000).toISOString() },
-  { _id: 'u5', name: 'Bob Smith',         email: 'bob@example.com',          role: 'user',       isActive: true,  createdAt: new Date(Date.now() - 15 * 86400000).toISOString() },
-  { _id: 'u6', name: 'Carol Williams',    email: 'carol@example.com',        role: 'user',       isActive: false, createdAt: new Date(Date.now() -  5 * 86400000).toISOString() },
-];
-
 const MOCK_DASHBOARD = {
   orders:  { total: 247, pending: 18, inProgress: 34 },
   revenue: { total: 184320.50, paidOrders: 194 },
@@ -98,13 +89,12 @@ export const adminService = {
     return { orders: data?.orders ?? data ?? [], meta };
   },
 
+  // No mock fallback — the Users list is privileged-account data (roles,
+  // emails); on a genuine failure the caller's own error state should show,
+  // not a silently-substituted fake admin/warehouse/superadmin identity.
   async listUsers(params = {}) {
-    try {
-      const { data, meta } = await api.get(`/admin/users${qs(params)}`);
-      return { users: data?.users ?? data ?? [], meta };
-    } catch {
-      return { users: MOCK_USERS, meta: null };
-    }
+    const { data, meta } = await api.get(`/admin/users${qs(params)}`);
+    return { users: data?.users ?? data ?? [], meta };
   },
 
   async updateUser(id, dto) {

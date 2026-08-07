@@ -14,9 +14,25 @@ const statusHistorySchema = new mongoose.Schema(
   { _id: false } // entries are not individually addressable — no need for _id
 );
 
+const ORDER_ITEM_TYPES = ['product', 'membership'];
+
 const orderItemSchema = new mongoose.Schema(
   {
-    product:    { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
+    // 'product' (default) = physical inventory item; 'membership' = digital/
+    // service line (TechVault Club) — never touches stock/warehouse logic.
+    // Business logic must branch on this explicit field, never on `name`.
+    itemType: {
+      type: String,
+      enum: { values: ORDER_ITEM_TYPES, message: 'Invalid order item type' },
+      default: 'product',
+    },
+    // Required for physical items; absent for digital/service items (there is
+    // no Product document to reference).
+    product: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Product',
+      required: function () { return this.itemType !== 'membership'; },
+    },
     // ── Snapshot — values locked at checkout, independent of live product ──
     name:       { type: String, required: true },
     sku:        { type: String, required: true },
@@ -24,6 +40,24 @@ const orderItemSchema = new mongoose.Schema(
     unitPrice:  { type: Number, required: true, min: 0 },
     quantity:   { type: Number, required: true, min: 1 },
     totalPrice: { type: Number, required: true, min: 0 },
+    // Free-form, item-type-specific immutable purchase info (e.g. { membershipType: 'lifetime' }).
+    // Always server-set (never taken from client input) — no business/security
+    // decision reads this field; itemType alone drives all membership logic.
+    // Still constrained for membership lines so a malformed/arbitrary shape
+    // can never be persisted as purchase history.
+    metadata: {
+      type: mongoose.Schema.Types.Mixed,
+      default: undefined,
+      validate: {
+        validator: function (val) {
+          if (this.itemType !== 'membership') return true; // unconstrained for other item types
+          if (val == null || typeof val !== 'object' || Array.isArray(val)) return false;
+          const keys = Object.keys(val);
+          return keys.length === 1 && keys[0] === 'membershipType' && val.membershipType === 'lifetime';
+        },
+        message: 'Invalid membership metadata — expected exactly { membershipType: "lifetime" }',
+      },
+    },
   },
   { _id: false }
 );
@@ -53,11 +87,14 @@ const orderSchema = new mongoose.Schema(
 
     items: { type: [orderItemSchema], required: true },
 
+    // Not required at the model level — a membership-only order has nothing to
+    // ship. The physical product checkout path enforces these via Joi
+    // (createOrderSchema) before an order is ever built.
     shippingAddress: {
-      street:  { type: String, required: true, trim: true },
-      city:    { type: String, required: true, trim: true },
+      street:  { type: String, trim: true },
+      city:    { type: String, trim: true },
       zip:     { type: String, trim: true },
-      country: { type: String, required: true, trim: true },
+      country: { type: String, trim: true },
     },
 
     subtotal:       { type: Number, required: true, min: 0 },
@@ -86,6 +123,17 @@ const orderSchema = new mongoose.Schema(
     expiresAt:      { type: Date,   default: null },   // payment deadline for pending_payment orders
     refundedAmount: { type: Number, default: 0, min: 0 }, // cumulative amount refunded so far
 
+    // Concurrency guard for membership purchases ONLY — see membership.service.js.
+    // Set to 'pending' while (and only while) this order is a live, payable
+    // membership purchase; reset to null the moment it leaves that state
+    // (paid, cancelled, or expired). A partial unique index on
+    // {user, membershipPendingLock} guarantees at most one 'pending' document
+    // per user at the database level, closing the race where two concurrent
+    // checkout requests could otherwise both create a payable ₪50 order.
+    // Always null for physical product orders — never set outside the
+    // membership checkout path.
+    membershipPendingLock: { type: String, default: null },
+
     paymentHistory: { type: [paymentHistorySchema], default: [] },
 
     notes: { type: String, trim: true },
@@ -99,6 +147,27 @@ const orderSchema = new mongoose.Schema(
     toObject: { virtuals: true },
   }
 );
+
+// ── Conditional shipping-address invariant ─────────────────────────────────────
+// shippingAddress fields are optional at the field level (a membership-only
+// order has nothing to ship), but any order containing a physical `product`
+// item MUST have a valid address. This runs on every save()/create() —
+// including internal service calls that bypass the public Joi route — so the
+// invariant can never be silently skipped. Pre-existing historical documents
+// are unaffected: this only runs on writes, never on reads of old data.
+orderSchema.pre('validate', function (next) {
+  const hasPhysicalItem = (this.items || []).some(item => item.itemType !== 'membership');
+  if (hasPhysicalItem) {
+    const addr = this.shippingAddress || {};
+    if (!addr.street || !addr.city || !addr.country) {
+      this.invalidate(
+        'shippingAddress',
+        'shippingAddress (street, city, country) is required for orders containing physical items'
+      );
+    }
+  }
+  next();
+});
 
 // ── Computed read-only virtual — never stored ─────────────────────────────────
 // 'active'    → payment window open (pending_payment, unpaid, expiresAt in future)
@@ -124,5 +193,16 @@ orderSchema.index({ paymentStatus: 1 });
 orderSchema.index({ status: 1, expiresAt: 1 }); // for expiry cancellation job
 orderSchema.index({ createdAt: -1 }); // unfiltered admin list
 
+// Partial unique index — see membershipPendingLock comment above. Only
+// documents where the field equals 'pending' participate in uniqueness, so
+// every pre-existing order (field absent/null by default) is unaffected —
+// no migration needed, and the index can be built safely on a populated
+// production collection.
+orderSchema.index(
+  { user: 1, membershipPendingLock: 1 },
+  { unique: true, partialFilterExpression: { membershipPendingLock: 'pending' } }
+);
+
 module.exports = mongoose.model('Order', orderSchema);
-module.exports.ORDER_STATUSES = ORDER_STATUSES;
+module.exports.ORDER_STATUSES   = ORDER_STATUSES;
+module.exports.ORDER_ITEM_TYPES = ORDER_ITEM_TYPES;

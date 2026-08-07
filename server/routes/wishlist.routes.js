@@ -25,6 +25,16 @@ router.use(authenticate);
 router.get('/', ctrl.getWishlist);
 
 /** @swagger
+ * /wishlist:
+ *   delete:
+ *     summary: Clear own wishlist (remove all products)
+ *     tags: [Wishlist]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.delete('/', ctrl.clearWishlist);
+
+/** @swagger
  * /wishlist/{productId}:
  *   post:
  *     summary: Add product to wishlist (idempotent)

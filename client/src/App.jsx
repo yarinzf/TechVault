@@ -20,6 +20,10 @@ const CartPage           = lazy(() => import('./pages/customer/CartPage'));
 const CheckoutPage       = lazy(() => import('./pages/customer/CheckoutPage'));
 const OrdersPage         = lazy(() => import('./pages/customer/OrdersPage'));
 const OrderSuccessPage   = lazy(() => import('./pages/customer/OrderSuccessPage'));
+const ClubPage               = lazy(() => import('./pages/customer/ClubPage'));
+const DealsPage               = lazy(() => import('./pages/customer/DealsPage'));
+const NewArrivalsPage          = lazy(() => import('./pages/customer/NewArrivalsPage'));
+const MembershipCheckoutPage = lazy(() => import('./pages/customer/MembershipCheckoutPage'));
 const ProfilePage        = lazy(() => import('./pages/customer/ProfilePage'));
 const WishlistPage       = lazy(() => import('./pages/customer/WishlistPage'));
 const ComparePage        = lazy(() => import('./pages/customer/ComparePage'));
@@ -79,10 +83,20 @@ const RequireWarehouse = ({ children }) => {
   return children;
 };
 
+// Redirects an old category URL to its canonical slug, preserving any query
+// string (filters, sort, etc.) — see server/config/categoryTaxonomy.js.
+const CategoryRedirect = ({ to }) => {
+  const location = useLocation();
+  return <Navigate to={`/category/${to}${location.search}`} replace />;
+};
+
 const GuestOnly = ({ children }) => {
   const { user, loading } = useAuth();
+  const location = useLocation();
   if (loading) return null;
-  return !user ? children : <Navigate to="/" replace />;
+  // Honors the `from` location RequireAuth attaches when it bounces a guest
+  // here (e.g. guest → /club/join → /login → back to /club/join after login).
+  return !user ? children : <Navigate to={location.state?.from ?? '/'} replace />;
 };
 
 const PageLoader = () => (
@@ -113,6 +127,12 @@ export default function App() {
           <Route element={<CustomerLayout />}>
             <Route index element={<HomePage />} />
             <Route path="/products" element={<CatalogPage />} />
+            {/* Legacy category slugs — renamed during the catalog hierarchy
+                migration (see server/config/categoryTaxonomy.js). Static
+                paths outrank the :categorySlug route below regardless of
+                declaration order, so these always win for these two slugs. */}
+            <Route path="/category/components" element={<CategoryRedirect to="pc-components" />} />
+            <Route path="/category/headphones" element={<CategoryRedirect to="headsets" />} />
             <Route path="/category/:categorySlug" element={<CatalogPage />} />
             <Route path="/products/:slug" element={<ProductDetailsPage />} />
             <Route path="/cart" element={<CartPage />} />
@@ -122,6 +142,10 @@ export default function App() {
             <Route path="/profile" element={<RequireAuth><ProfilePage /></RequireAuth>} />
             <Route path="/wishlist" element={<RequireAuth><WishlistPage /></RequireAuth>} />
             <Route path="/compare" element={<ComparePage />} />
+            <Route path="/deals" element={<DealsPage />} />
+            <Route path="/new" element={<NewArrivalsPage />} />
+            <Route path="/club" element={<ClubPage />} />
+            <Route path="/club/join" element={<RequireAuth><MembershipCheckoutPage /></RequireAuth>} />
           </Route>
 
           {/* ── Warehouse ── canonical workspace is /admin/inventory ── */}

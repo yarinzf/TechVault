@@ -8,6 +8,8 @@ import {
   CATEGORY_SPEC_PARAMS,
   CATEGORY_FILTER_GROUPS,
 } from '../../constants/categoryFilters';
+import { getCategoryLabel } from '../../features/products/utils/categoryLabels';
+import { useLanguage } from '../../context/LanguageContext';
 import s from './CatalogPage.module.css';
 
 const SORT_OPTIONS = [
@@ -162,6 +164,7 @@ export default function CatalogPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { categorySlug: routeCategorySlug } = useParams();
   const navigate = useNavigate();
+  const { language } = useLanguage();
 
   const [products,      setProducts]      = useState([]);
   const [categories,    setCategories]    = useState([]);
@@ -324,7 +327,7 @@ export default function CatalogPage() {
       .filter(Boolean).length + activeCategorySpecCount;
 
   const categoryName     = category
-    ? (categories.find(c => c.slug === category)?.name ?? category)
+    ? getCategoryLabel(categories.find(c => c.slug === category), language) || category
     : null;
   const categoryBrands   = CATEGORY_BRANDS[categorySlug] || [];
   const specFilterGroups = CATEGORY_FILTER_GROUPS[categorySlug] || [];

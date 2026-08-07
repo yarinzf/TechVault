@@ -1,18 +1,53 @@
 import { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
-  Search, Heart, ShoppingCart, ChevronDown,
-  Menu, X, Package, User, LogOut, Zap,
+  Search, Heart, ShoppingCart,
+  Menu, X, User,
   Globe, GitCompare, LayoutGrid,
 } from 'lucide-react';
 import { useAuth }     from '../../../hooks/useAuth';
 import { useCart }     from '../../../hooks/useCart';
 import { useWishlist } from '../../../hooks/useWishlist';
+import { useMembership } from '../../../hooks/useMembership';
 import { useTheme }    from '../../../context/ThemeContext';
 import { useLanguage } from '../../../context/LanguageContext';
 import { useAccessibility } from '../../../context/AccessibilityContext';
+import { useToast }    from '../../../hooks/useToast';
 import { productService } from '../../../features/products/api/product.service';
 import s from './CustomerNavbar.module.css';
+
+// Mirrors the same small helper already used by ProfilePage — first letters
+// of up to the first two words, uppercased. No shared util file for a
+// three-line function used in two places.
+function initials(name) {
+  if (!name) return '?';
+  return name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+}
+
+// User-menu positioning — anchored to the real trigger button rather than a
+// fixed page-corner offset, so it visually stays attached to whichever
+// button opened it regardless of language direction or viewport width.
+const MENU_WIDTH       = 300;
+const MENU_GAP         = 8;   // vertical gap below the trigger
+const VIEWPORT_MARGIN  = 12;  // never render closer than this to either edge
+
+// Which edge of the trigger the menu hangs from follows the active reading
+// direction, not a fixed side: RTL (Hebrew) expands the menu LEFT from the
+// trigger's right edge — the natural reading-direction expansion, and how a
+// menu anchored to a right-side control would read in Hebrew — while LTR
+// (English) expands it RIGHT from the trigger's left edge. Clamped
+// afterward so it's correct regardless of where the trigger ends up
+// (language switch, viewport resize).
+function computeMenuPos(triggerEl, dir) {
+  if (!triggerEl) return null;
+  const rect = triggerEl.getBoundingClientRect();
+  const top = rect.bottom + MENU_GAP;
+  const desiredLeft = dir === 'rtl' ? rect.right - MENU_WIDTH : rect.left;
+  const maxLeft = Math.max(VIEWPORT_MARGIN, window.innerWidth - MENU_WIDTH - VIEWPORT_MARGIN);
+  const left = Math.min(Math.max(desiredLeft, VIEWPORT_MARGIN), maxLeft);
+  return { top, left };
+}
 
 /* ── TechVault SVG logo (exact Sapir path data) ─────────────────────────────── */
 function TechVaultLogo() {
@@ -41,20 +76,32 @@ export default function CustomerNavbar({ onOpenCart = () => {} }) {
   const { user, logout }   = useAuth();
   const { totalItems }     = useCart();
   const { ids: wishIds }   = useWishlist();
+  const { isMember }       = useMembership();
   const { theme, toggle: toggleTheme } = useTheme();
   const { language, setLanguage, t } = useLanguage();
   const { isOpen: a11yOpen, toggle: toggleA11y } = useAccessibility();
+  const { toast } = useToast();
   const navigate  = useNavigate();
   const location  = useLocation();
+
+  // Real active direction (LanguageProvider drives document.dir from this
+  // same language state) — not a browser-locale guess.
+  const dir = language === 'he' ? 'rtl' : 'ltr';
 
   const [query,       setQuery]       = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [menuOpen,    setMenuOpen]    = useState(false);
+  const [menuPos,     setMenuPos]     = useState(null);
   const [mobileOpen,  setMobileOpen]  = useState(false);
   const [scrolled,    setScrolled]    = useState(false);
 
-  const menuRef   = useRef(null);
-  const searchRef = useRef(null);
+  // The user dropdown panel is portaled to document.body (see render below)
+  // so its stacking is never trapped by an ancestor's stacking context —
+  // its DOM position no longer nests under userBtnRef, so outside-click
+  // detection needs both refs checked independently.
+  const userBtnRef   = useRef(null);
+  const userPanelRef = useRef(null);
+  const searchRef    = useRef(null);
 
   /* ── Scroll detection ──────────────────────────────────────────────────────── */
   useEffect(() => {
@@ -105,17 +152,61 @@ export default function CustomerNavbar({ onOpenCart = () => {} }) {
   /* ── Close menus on outside click ─────────────────────────────────────────── */
   useEffect(() => {
     const handler = (e) => {
-      if (menuRef.current   && !menuRef.current.contains(e.target))   setMenuOpen(false);
+      const insideBtn   = userBtnRef.current   && userBtnRef.current.contains(e.target);
+      const insidePanel = userPanelRef.current && userPanelRef.current.contains(e.target);
+      if (!insideBtn && !insidePanel) setMenuOpen(false);
       if (searchRef.current && !searchRef.current.contains(e.target)) setSuggestions([]);
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
+  /* ── Keep the user menu anchored to its trigger on resize / direction change ─ */
+  useEffect(() => {
+    if (!menuOpen) return;
+    setMenuPos(computeMenuPos(userBtnRef.current, dir));
+    const onResize = () => setMenuPos(computeMenuPos(userBtnRef.current, dir));
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, [menuOpen, dir]);
+
+  /* ── Close the user menu on Escape ──────────────────────────────────────────── */
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKeyDown = (e) => { if (e.key === 'Escape') setMenuOpen(false); };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [menuOpen]);
+
+  const toggleUserMenu = () => {
+    setMenuOpen((open) => {
+      if (!open) setMenuPos(computeMenuPos(userBtnRef.current, dir));
+      return !open;
+    });
+  };
+
   const userName  = user?.name || '';
   const firstName = userName.split(' ')[0] || '';
   const hasWishItems = wishIds.size > 0;
   const nextLang  = language === 'he' ? 'en' : 'he';
+
+  const isAdmin     = ['admin', 'superadmin'].includes(user?.role);
+  const isWarehouse = ['warehouse', 'admin', 'superadmin'].includes(user?.role);
+  const roleLabel = isAdmin
+    ? t('nav.role_admin')
+    : user?.role === 'warehouse'
+    ? t('nav.role_warehouse')
+    : isMember
+    ? t('nav.role_member')
+    : t('nav.role_customer');
+
+  // No customer-facing coupons page exists yet — the row stays visible
+  // (matching the reference) but is non-destructive: it closes the menu and
+  // shows a "coming soon" toast instead of a dead link.
+  const handleCouponsClick = () => {
+    setMenuOpen(false);
+    toast.info(t('nav.coupons_soon'));
+  };
 
   return (
     <nav className={`${s.nav} ${scrolled ? s.scrolled : ''}`}>
@@ -242,64 +333,89 @@ export default function CustomerNavbar({ onOpenCart = () => {} }) {
             onClick={toggleTheme}
             type="button"
           >
+            {/* Icon is a STATE indicator (what the theme currently IS), not an
+                action icon — dark theme shows Moon, light theme shows Sun,
+                matching Sapir's reference. */}
             {theme === 'dark'
-              ? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="16" height="16"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-              : <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="16" height="16"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+              ? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="16" height="16"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+              : <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="16" height="16"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
             }
           </button>
 
           <div className={s.navDivider} aria-hidden="true" />
 
-          {/* Orders link — only when logged in */}
-          {user && (
-            <Link to="/orders" className={s.navUserBtn} aria-label={t('nav.orders')}>
-              <Package size={15} />
-              {t('nav.orders')}
-            </Link>
-          )}
-
-          {/* User menu / Login */}
+          {/* User menu / Login — no standalone top-level Orders action;
+              Orders lives inside the user menu (see below), matching Sapir. */}
           {user ? (
-            <div className={s.userMenuWrap} ref={menuRef}>
+            <>
               <button
-                className={s.navUserBtn}
-                onClick={() => setMenuOpen((o) => !o)}
+                ref={userBtnRef}
+                className={s.navUserLogged}
+                onClick={toggleUserMenu}
                 aria-expanded={menuOpen}
                 aria-haspopup="true"
               >
-                <User size={15} />
-                {firstName}
-                <ChevronDown
-                  size={12}
-                  className={`${s.chevron} ${menuOpen ? s.chevronOpen : ''}`}
-                  aria-hidden="true"
-                />
+                <span className={s.navUserAvatarSm} aria-hidden="true">{initials(userName)}</span>
+                <span className={s.navUserNameSm}>{firstName}</span>
               </button>
 
-              {menuOpen && (
-                <div className={s.dropdown} role="menu">
-                  <Link to="/orders"   className={s.dropdownItem} onClick={() => setMenuOpen(false)} role="menuitem"><Package size={14} />{t('nav.orders')}</Link>
-                  <Link to="/wishlist" className={s.dropdownItem} onClick={() => setMenuOpen(false)} role="menuitem"><Heart size={14} />{t('nav.wishlist')}</Link>
-                  <Link to="/profile"  className={s.dropdownItem} onClick={() => setMenuOpen(false)} role="menuitem"><User size={14} />{t('nav.profile')}</Link>
+              {menuOpen && createPortal(
+                <>
+                  <div className={s.tvUmOverlay} onClick={() => setMenuOpen(false)} aria-hidden="true" />
+                  <div
+                    ref={userPanelRef}
+                    className={s.tvUserMenu}
+                    style={menuPos ? { top: menuPos.top, left: menuPos.left } : undefined}
+                    role="dialog"
+                    aria-label={t('nav.user_menu_arialabel')}
+                  >
+                    <div className={s.tvUmHeader}>
+                      <div className={s.tvUmAvatar} aria-hidden="true">{initials(userName)}</div>
+                      <div className={s.tvUmInfo}>
+                        <div className={s.tvUmName}>{userName}</div>
+                        <div className={s.tvUmRole}>{roleLabel}</div>
+                      </div>
+                    </div>
 
-                  {['warehouse', 'admin', 'superadmin'].includes(user?.role) && (
-                    <Link to="/admin/inventory" className={s.dropdownItem} onClick={() => setMenuOpen(false)} role="menuitem">
-                      <Package size={14} />{t('nav.warehouse')}
-                    </Link>
-                  )}
-                  {['admin', 'superadmin'].includes(user?.role) && (
-                    <Link to="/admin" className={s.dropdownItem} onClick={() => setMenuOpen(false)} role="menuitem">
-                      <Zap size={14} />{t('nav.admin')}
-                    </Link>
-                  )}
+                    <Link to="/profile"  className={s.tvUmItem} onClick={() => setMenuOpen(false)} role="menuitem"><span className={s.tvUmIcon} aria-hidden="true">👤</span>{t('nav.account')}</Link>
+                    <Link to="/orders"   className={s.tvUmItem} onClick={() => setMenuOpen(false)} role="menuitem"><span className={s.tvUmIcon} aria-hidden="true">📦</span>{t('nav.orders')}</Link>
+                    <Link to="/wishlist" className={s.tvUmItem} onClick={() => setMenuOpen(false)} role="menuitem"><span className={s.tvUmIcon} aria-hidden="true">❤️</span>{t('nav.wishlist_menu')}</Link>
+                    <Link to="/compare"  className={s.tvUmItem} onClick={() => setMenuOpen(false)} role="menuitem"><span className={s.tvUmIcon} aria-hidden="true">⚖️</span>{t('nav.compare')}</Link>
 
-                  <div className={s.dropdownDivider} role="separator" />
-                  <button className={`${s.dropdownItem} ${s.danger}`} onClick={logout} role="menuitem">
-                    <LogOut size={14} />{t('nav.logout')}
-                  </button>
-                </div>
+                    <div className={s.tvUmDivider} role="separator" />
+                    <button type="button" className={s.tvUmItem} onClick={handleCouponsClick} role="menuitem">
+                      <span className={s.tvUmIcon} aria-hidden="true">🎟️</span>{t('nav.coupons')}
+                    </button>
+                    <Link
+                      to={isMember ? '/club' : '/club/join'}
+                      className={s.tvUmItem}
+                      onClick={() => setMenuOpen(false)}
+                      role="menuitem"
+                    >
+                      <span className={s.tvUmIcon} aria-hidden="true">⭐</span>{t('nav.club_member')}
+                    </Link>
+
+                    {(isAdmin || isWarehouse) && <div className={s.tvUmDivider} role="separator" />}
+                    {isAdmin && (
+                      <Link to="/admin" className={`${s.tvUmItem} ${s.tvUmAdmin}`} onClick={() => setMenuOpen(false)} role="menuitem">
+                        <span className={s.tvUmIcon} aria-hidden="true">🛠️</span>{t('nav.admin')}
+                      </Link>
+                    )}
+                    {isWarehouse && (
+                      <Link to="/admin/inventory" className={`${s.tvUmItem} ${s.tvUmAdmin}`} onClick={() => setMenuOpen(false)} role="menuitem">
+                        <span className={s.tvUmIcon} aria-hidden="true">📦</span>{t('nav.warehouse')}
+                      </Link>
+                    )}
+
+                    <div className={s.tvUmDivider} role="separator" />
+                    <button className={`${s.tvUmItem} ${s.tvUmLogout}`} onClick={() => { setMenuOpen(false); logout(); }} role="menuitem">
+                      <span className={s.tvUmIcon} aria-hidden="true">🚪</span>{t('nav.logout_menu')}
+                    </button>
+                  </div>
+                </>,
+                document.body
               )}
-            </div>
+            </>
           ) : (
             <Link to="/login" state={{ returnTo: `${location.pathname}${location.search}` }} className={s.navUserBtn}>
               <User size={15} />
@@ -343,18 +459,27 @@ export default function CustomerNavbar({ onOpenCart = () => {} }) {
 
           {user ? (
             <>
-              <Link to="/orders"   className={s.mobilePanelLink} onClick={() => setMobileOpen(false)}><Package size={16} />{t('nav.orders')}</Link>
-              <Link to="/wishlist" className={s.mobilePanelLink} onClick={() => setMobileOpen(false)}><Heart size={16} />{t('nav.wishlist')}</Link>
-              <Link to="/profile"  className={s.mobilePanelLink} onClick={() => setMobileOpen(false)}><User size={16} />{t('nav.profile')}</Link>
-              {['warehouse', 'admin', 'superadmin'].includes(user?.role) && (
-                <Link to="/admin/inventory" className={s.mobilePanelLink} onClick={() => setMobileOpen(false)}><Package size={16} />{t('nav.warehouse')}</Link>
+              <Link to="/profile"  className={s.mobilePanelLink} onClick={() => setMobileOpen(false)}><span className={s.tvUmIcon} aria-hidden="true">👤</span>{t('nav.account')}</Link>
+              <Link to="/orders"   className={s.mobilePanelLink} onClick={() => setMobileOpen(false)}><span className={s.tvUmIcon} aria-hidden="true">📦</span>{t('nav.orders')}</Link>
+              <Link to="/wishlist" className={s.mobilePanelLink} onClick={() => setMobileOpen(false)}><span className={s.tvUmIcon} aria-hidden="true">❤️</span>{t('nav.wishlist_menu')}</Link>
+              <Link to="/compare"  className={s.mobilePanelLink} onClick={() => setMobileOpen(false)}><span className={s.tvUmIcon} aria-hidden="true">⚖️</span>{t('nav.compare')}</Link>
+              <div className={s.mobileDivider} />
+              <button type="button" className={s.mobilePanelLink} onClick={() => { setMobileOpen(false); handleCouponsClick(); }}>
+                <span className={s.tvUmIcon} aria-hidden="true">🎟️</span>{t('nav.coupons')}
+              </button>
+              <Link to={isMember ? '/club' : '/club/join'} className={s.mobilePanelLink} onClick={() => setMobileOpen(false)}>
+                <span className={s.tvUmIcon} aria-hidden="true">⭐</span>{t('nav.club_member')}
+              </Link>
+              {(isAdmin || isWarehouse) && <div className={s.mobileDivider} />}
+              {isAdmin && (
+                <Link to="/admin" className={s.mobilePanelLink} onClick={() => setMobileOpen(false)}><span className={s.tvUmIcon} aria-hidden="true">🛠️</span>{t('nav.admin')}</Link>
               )}
-              {['admin', 'superadmin'].includes(user?.role) && (
-                <Link to="/admin" className={s.mobilePanelLink} onClick={() => setMobileOpen(false)}><Zap size={16} />{t('nav.admin')}</Link>
+              {isWarehouse && (
+                <Link to="/admin/inventory" className={s.mobilePanelLink} onClick={() => setMobileOpen(false)}><span className={s.tvUmIcon} aria-hidden="true">📦</span>{t('nav.warehouse')}</Link>
               )}
               <div className={s.mobileDivider} />
               <button className={`${s.mobilePanelLink} ${s.mobileLogout}`} onClick={() => { setMobileOpen(false); logout(); }}>
-                <LogOut size={16} />{t('nav.logout')}
+                <span className={s.tvUmIcon} aria-hidden="true">🚪</span>{t('nav.logout_menu')}
               </button>
             </>
           ) : (

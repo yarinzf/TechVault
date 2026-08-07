@@ -574,3 +574,122 @@ describe('Legacy campaign backward compatibility', () => {
     expect(dealRes.body.data.deal.product.name).toBe('Legacy Deal Product');
   });
 });
+
+// ── GET /api/v1/campaigns/active (public, powers the Deals page) ───────────
+
+describe('GET /api/v1/campaigns/active (public)', () => {
+  test('returns an empty array when no campaign is active', async () => {
+    const res = await request(app).get(`${PUBLIC_BASE}/active`);
+    expect(res.status).toBe(200);
+    expect(res.body.data.campaigns).toEqual([]);
+  });
+
+  test('is accessible without authentication', async () => {
+    const res = await request(app).get(`${PUBLIC_BASE}/active`);
+    expect(res.status).not.toBe(401);
+    expect(res.status).not.toBe(403);
+  });
+
+  test('returns an active campaign with correctly priced products', async () => {
+    const token   = await adminToken();
+    const product = await seedProduct({ name: 'Active Deal Product', price: 1000, brand: 'ASUS' });
+    await request(app).post(ADMIN_BASE).set('Authorization', `Bearer ${token}`)
+      .send(standardPayload({ name: 'Live Campaign', discountPercent: 30, products: [product._id.toString()] }));
+
+    const res = await request(app).get(`${PUBLIC_BASE}/active`);
+    expect(res.status).toBe(200);
+    expect(res.body.data.campaigns).toHaveLength(1);
+    const [campaign] = res.body.data.campaigns;
+    expect(campaign.name).toBe('Live Campaign');
+    expect(campaign.discountPercent).toBe(30);
+    expect(campaign.products).toHaveLength(1);
+    const [p] = campaign.products;
+    expect(p.name).toBe('Active Deal Product');
+    expect(p.brand).toBe('ASUS');
+    expect(p.price).toBe(1000);
+    expect(p.discountedPrice).toBe(700); // 1000 * (1 - 30/100)
+    expect(p.discountPercent).toBe(30);
+  });
+
+  test('excludes a disabled campaign', async () => {
+    const token   = await adminToken();
+    const product = await seedProduct();
+    const created = await request(app).post(ADMIN_BASE).set('Authorization', `Bearer ${token}`)
+      .send(standardPayload({ products: [product._id.toString()] }));
+    await request(app).patch(`${ADMIN_BASE}/${created.body.data.campaign._id}`)
+      .set('Authorization', `Bearer ${token}`).send({ isActive: false });
+
+    const res = await request(app).get(`${PUBLIC_BASE}/active`);
+    expect(res.body.data.campaigns).toEqual([]);
+  });
+
+  test('excludes a campaign that has not started yet', async () => {
+    const token   = await adminToken();
+    const product = await seedProduct();
+    await request(app).post(ADMIN_BASE).set('Authorization', `Bearer ${token}`)
+      .send(standardPayload({ startDate: inDays(3), endDate: inDays(10), products: [product._id.toString()] }));
+
+    const res = await request(app).get(`${PUBLIC_BASE}/active`);
+    expect(res.body.data.campaigns).toEqual([]);
+  });
+
+  test('excludes an expired campaign', async () => {
+    const token   = await adminToken();
+    const product = await seedProduct();
+    await request(app).post(ADMIN_BASE).set('Authorization', `Bearer ${token}`)
+      .send(standardPayload({ startDate: inDays(-10), endDate: inDays(-1), products: [product._id.toString()] }));
+
+    const res = await request(app).get(`${PUBLIC_BASE}/active`);
+    expect(res.body.data.campaigns).toEqual([]);
+  });
+
+  test('drops the campaign entirely when its only product is deleted', async () => {
+    const token   = await adminToken();
+    const product = await seedProduct();
+    await request(app).post(ADMIN_BASE).set('Authorization', `Bearer ${token}`)
+      .send(standardPayload({ products: [product._id.toString()] }));
+    await mongoose.model('Product').findByIdAndUpdate(product._id, { isDeleted: true });
+
+    const res = await request(app).get(`${PUBLIC_BASE}/active`);
+    expect(res.body.data.campaigns).toEqual([]);
+  });
+
+  test('drops the campaign entirely when its only product is unpublished', async () => {
+    const token   = await adminToken();
+    const product = await seedProduct();
+    await request(app).post(ADMIN_BASE).set('Authorization', `Bearer ${token}`)
+      .send(standardPayload({ products: [product._id.toString()] }));
+    await mongoose.model('Product').findByIdAndUpdate(product._id, { isPublished: false });
+
+    const res = await request(app).get(`${PUBLIC_BASE}/active`);
+    expect(res.body.data.campaigns).toEqual([]);
+  });
+
+  test('a campaign with one deleted and one valid product only omits the deleted one', async () => {
+    const token = await adminToken();
+    const good  = await seedProduct({ name: 'Still Here' });
+    const bad   = await seedProduct({ name: 'Soon Deleted' });
+    await request(app).post(ADMIN_BASE).set('Authorization', `Bearer ${token}`)
+      .send(standardPayload({ products: [good._id.toString(), bad._id.toString()] }));
+    await mongoose.model('Product').findByIdAndUpdate(bad._id, { isDeleted: true });
+
+    const res = await request(app).get(`${PUBLIC_BASE}/active`);
+    expect(res.body.data.campaigns).toHaveLength(1);
+    expect(res.body.data.campaigns[0].products).toHaveLength(1);
+    expect(res.body.data.campaigns[0].products[0].name).toBe('Still Here');
+  });
+
+  test('does not leak admin-only fields', async () => {
+    const token   = await adminToken();
+    const product = await seedProduct();
+    await request(app).post(ADMIN_BASE).set('Authorization', `Bearer ${token}`)
+      .send(standardPayload({ products: [product._id.toString()] }));
+
+    const res = await request(app).get(`${PUBLIC_BASE}/active`);
+    const [campaign] = res.body.data.campaigns;
+    expect(campaign).not.toHaveProperty('isActive');
+    expect(campaign).not.toHaveProperty('__v');
+    expect(campaign).not.toHaveProperty('updatedAt');
+    expect(campaign).not.toHaveProperty('createdAt');
+  });
+});

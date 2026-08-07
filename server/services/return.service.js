@@ -38,6 +38,17 @@ const requestReturn = async (userId, orderId, { items, customerNote = '' }, req)
     );
   }
 
+  // Membership (digital/service) purchases have no physical goods to return.
+  // Refund/deactivation policy for memberships is deferred — see Club
+  // Membership phase 2 plan, Step 20.
+  if (order.items.every(item => item.itemType !== 'product')) {
+    throw new AppError(
+      'Membership purchases are not eligible for returns',
+      StatusCodes.BAD_REQUEST,
+      'MEMBERSHIP_NOT_RETURNABLE'
+    );
+  }
+
   // Prevent duplicate pending/approved return on the same order
   const existing = await ReturnRequest.findOne({
     order: orderId,
@@ -51,9 +62,13 @@ const requestReturn = async (userId, orderId, { items, customerNote = '' }, req)
     );
   }
 
-  // Validate each item: must exist in order, qty ≤ purchased qty
+  // Validate each item: must exist in order, qty ≤ purchased qty.
+  // Non-product (e.g. membership) lines are never return-eligible and have
+  // no `product` ref — excluded here so a mixed order can't attempt to
+  // return them, and so this loop never dereferences a missing ref.
   const itemsMap = {};
   for (const oi of order.items) {
+    if (oi.itemType !== 'product') continue;
     itemsMap[oi.product.toString()] = oi;
   }
 

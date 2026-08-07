@@ -74,6 +74,15 @@ const USERS = [
   {
     name: 'Alice Johnson', email: 'alice@example.com', password: 'User123!', role: 'user', isActive: true,
     addresses: [{ label: 'Home', street: '10 Dizengoff St', city: 'Tel Aviv', zip: '64332', country: 'IL', isDefault: true }],
+    // Dev/test fixture for an active TechVault Club member — see Step 10 of
+    // the Club Membership phase-1 plan (no public self-activation endpoint).
+    membership: {
+      status: 'active',
+      joinedAt: new Date('2025-11-02'),
+      points: 340,
+      lifetimePoints: 620,
+      notificationPreference: 'email',
+    },
   },
   {
     name: 'Bob Smith', email: 'bob@example.com', password: 'User123!', role: 'user', isActive: true,

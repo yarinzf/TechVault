@@ -1,0 +1,158 @@
+.page {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 32px var(--sv-pad, 20px) 72px;
+}
+
+.breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--sv-muted); margin-bottom: 24px; }
+.breadcrumb a { color: inherit; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; }
+.breadcrumb a:hover { color: var(--sv-text); }
+.breadcrumbCurrent { color: var(--sv-text); font-weight: 600; }
+
+/* ── Hero card (shared shell for both states) ── */
+.hero {
+  position: relative;
+  border: 1px solid var(--sv-border);
+  border-radius: 20px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #0e0b1a 0%, #12101f 55%, #0a1020 100%);
+  padding: 48px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 16px;
+}
+
+.heroIcon {
+  width: 72px; height: 72px;
+  border-radius: 20px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(158,110,241,0.12);
+  border: 1px solid rgba(158,110,241,0.25);
+  color: var(--sv-violet);
+  box-shadow: 0 0 40px rgba(158,110,241,0.15);
+}
+.heroIconActive { background: rgba(16,185,129,0.12); border-color: rgba(16,185,129,0.28); color: var(--sv-success); }
+
+.badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(158,110,241,0.1);
+  border: 1px solid rgba(158,110,241,0.25);
+  border-radius: 100px;
+  padding: 5px 16px;
+  font-size: 12px; font-weight: 500;
+  color: var(--sv-violet);
+}
+.badgeActive { background: rgba(16,185,129,0.1); border-color: rgba(16,185,129,0.28); color: var(--sv-success); }
+
+.title { font-size: 32px; font-weight: 800; color: #F9FAFB; line-height: 1.15; max-width: 520px; }
+.titleAccent { color: var(--sv-violet); }
+
+.welcome { font-size: 15px; font-weight: 600; color: var(--sv-muted); }
+
+.desc { font-size: 15px; color: var(--sv-muted); line-height: 1.7; max-width: 480px; }
+
+.statusPill {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(16,185,129,0.1);
+  border: 1px solid rgba(16,185,129,0.25);
+  border-radius: 100px;
+  padding: 5px 14px;
+  font-size: 13px; font-weight: 600; color: var(--sv-success);
+}
+
+.ctaRow { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-top: 8px; }
+
+.btnPrimary {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--sv-violet); color: #fff; border: none;
+  border-radius: 10px; padding: 14px 30px;
+  font-size: 15px; font-weight: 600; font-family: var(--sv-font);
+  cursor: pointer; transition: background .15s ease, transform .1s ease;
+}
+.btnPrimary:hover { background: #8b5cf6; transform: translateY(-1px); }
+
+.btnMember { background: var(--sv-blue); }
+.btnMember:hover { background: var(--sv-blue-l); }
+
+.btnSecondary {
+  background: transparent; color: var(--sv-text);
+  border: 1.5px solid var(--sv-border); border-radius: 10px;
+  padding: 14px 26px; font-size: 14px; font-weight: 500; font-family: var(--sv-font);
+  cursor: pointer; transition: border-color .15s ease, color .15s ease;
+}
+.btnSecondary:hover { border-color: var(--sv-violet); color: var(--sv-violet); }
+
+/* ── Perks grid (non-member) ── */
+.perksGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  width: 100%;
+  max-width: 640px;
+  text-align: right;
+  margin-top: 8px;
+}
+.perk {
+  display: flex; align-items: flex-start; gap: 12px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+.perkIcon {
+  width: 32px; height: 32px; flex-shrink: 0; border-radius: 9px;
+  background: rgba(158,110,241,0.1); color: var(--sv-violet);
+  display: flex; align-items: center; justify-content: center;
+}
+.perkTitle { font-size: 13.5px; font-weight: 600; color: var(--sv-text); }
+.perkDesc { font-size: 12px; color: var(--sv-muted); margin-top: 2px; }
+
+/* ── Member summary section ── */
+.summarySection {
+  margin-top: 28px;
+  width: 100%;
+  max-width: 640px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+.summaryCard {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 18px;
+  text-align: center;
+}
+.summaryLabel { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 11.5px; color: var(--sv-muted); margin-bottom: 8px; }
+.summaryVal { font-size: 16px; font-weight: 700; color: var(--sv-text); }
+.summaryValAccent { color: var(--sv-mint); }
+
+/* ── Member benefits list ── */
+.benefitsSection { margin-top: 28px; width: 100%; max-width: 640px; text-align: right; }
+.benefitsTitle { font-size: 13px; font-weight: 700; color: var(--sv-text); margin-bottom: 12px; text-align: center; }
+.benefitRow {
+  display: flex; align-items: center; gap: 12px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-bottom: 8px;
+}
+.benefitIcon {
+  width: 30px; height: 30px; flex-shrink: 0; border-radius: 9px;
+  background: rgba(16,185,129,0.12); color: var(--sv-success);
+  display: flex; align-items: center; justify-content: center;
+}
+.benefitBody { flex: 1; }
+.benefitTitle { font-size: 13px; font-weight: 600; color: var(--sv-text); }
+.benefitDesc { font-size: 11.5px; color: var(--sv-muted); margin-top: 1px; }
+.benefitDot { width: 7px; height: 7px; border-radius: 50%; background: var(--sv-success); flex-shrink: 0; }
+
+@media (max-width: 640px) {
+  .hero { padding: 36px 22px; }
+  .title { font-size: 24px; }
+  .perksGrid { grid-template-columns: 1fr; }
+  .summarySection { grid-template-columns: 1fr; }
+}

@@ -76,6 +76,7 @@ router.get('/', ctrl.list);
  */
 // Must be declared BEFORE /:slug so Express doesn't match these as slugs
 router.get('/categories',    ctrl.listCategories);
+router.get('/new-brands',    ctrl.newBrands);
 router.get('/autocomplete',  ctrl.autocomplete);
 router.post('/compare',      ctrl.compare);
 router.get('/trending',      recCtrl.getTrending);

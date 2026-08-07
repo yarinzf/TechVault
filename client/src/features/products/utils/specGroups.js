@@ -29,7 +29,7 @@ const GROUPS_BY_CATEGORY = {
     { titleKey: 'specgroup.design',       keys: ['Buttons', 'Weight', 'RGB', 'Color'], secondaryKeys: ['RGB', 'Color'] },
     { titleKey: 'specgroup.general',      keys: ['Usage', 'Warranty'] },
   ],
-  headphones: [
+  headsets: [
     { titleKey: 'specgroup.audio',        keys: ['Driver Size', 'Frequency Response', 'Noise Cancellation'] },
     { titleKey: 'specgroup.connectivity', keys: ['Connection', 'Bluetooth Version', 'Charging Type'] },
     { titleKey: 'specgroup.design',       keys: ['Headphone Type', 'Color', 'Water Resistance'], secondaryKeys: ['Water Resistance'] },

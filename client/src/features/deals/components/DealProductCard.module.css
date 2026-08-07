@@ -1,0 +1,282 @@
+/* ── Card shell — matches Sapir's Deals .pc variant (shorter image, denser
+   body than the catalog ProductCard) ─────────────────────────────────────── */
+.card {
+  background: var(--sv-card);
+  border: 1px solid var(--sv-border);
+  border-radius: 14px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all .22s;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--sv-font);
+}
+
+.card:hover {
+  border-color: rgba(37, 99, 235, 0.45);
+  transform: translateY(-4px);
+  box-shadow: 0 16px 48px rgba(37, 99, 235, 0.1);
+}
+
+.imageWrap {
+  height: 130px;
+  background: #0A0A0F;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  transition: background .25s;
+}
+
+.card:hover .imageWrap { background: #181821; }
+
+.image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 12px;
+  box-sizing: border-box;
+}
+
+.imageFallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--sv-muted);
+}
+
+.badges {
+  position: absolute;
+  top: 10px;
+  inset-inline-start: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 2;
+}
+
+.badgeSale {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 5px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  background: var(--sv-red);
+  color: #fff;
+}
+
+.heartBtn {
+  position: absolute;
+  top: 10px;
+  inset-inline-end: 10px;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: rgba(13, 13, 15, 0.7);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--sv-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 150ms ease, color 150ms ease, background 150ms ease;
+  cursor: pointer;
+  z-index: 4;
+}
+
+.card:hover .heartBtn { opacity: 1; }
+.heartBtn:hover { background: rgba(13, 13, 15, 0.9); color: #f43f5e; }
+.heartActive { opacity: 1 !important; color: #f43f5e; }
+
+@media (hover: none) {
+  .heartBtn { opacity: 1; }
+}
+
+.outOfStock {
+  position: absolute;
+  inset: 0;
+  background: rgba(13, 13, 15, 0.78);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--sv-muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  z-index: 2;
+}
+
+/* ── Body ─────────────────────────────────────────────────────────────────── */
+.body {
+  padding: 12px 15px 14px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.brand {
+  font-size: 10px;
+  color: var(--sv-blue);
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+
+.name {
+  font-size: 13px;
+  color: var(--sv-text);
+  font-weight: 500;
+  margin-bottom: 6px;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 35px;
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.stars  { color: var(--sv-gold); font-size: 12px; }
+.rcount { font-size: 11px; color: var(--sv-muted); }
+
+/* ── Stock ────────────────────────────────────────────────────────────────── */
+.stock {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--sv-success);
+  margin-bottom: 8px;
+}
+
+.stockLow { color: var(--sv-gold); }
+
+/* ── Countdown (only on Limited-Time cards) ──────────────────────────────── */
+.countdownLabel {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--sv-red);
+  margin-bottom: 5px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.countdownExpired { color: var(--sv-muted); margin-bottom: 10px; }
+
+.countdownBlocks {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 8px;
+}
+
+.cBlock {
+  flex: 1;
+  background: rgba(10, 14, 26, 0.65);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 8px;
+  padding: 5px 4px;
+  text-align: center;
+}
+
+.cNum { display: block; font-size: 14px; font-weight: 800; color: #f87171; line-height: 1; }
+.cLbl { font-size: 8.5px; color: var(--sv-muted); margin-top: 2px; display: block; }
+
+/* ── Prices ───────────────────────────────────────────────────────────────── */
+.prices {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.price    { font-size: 21px; font-weight: 800; color: var(--sv-mint); letter-spacing: -.01em; }
+.priceOld { font-size: 11.5px; color: #7C8AA3; text-decoration: line-through; opacity: .85; }
+.priceDisc {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--sv-success);
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  border-radius: 5px;
+  padding: 1px 6px;
+}
+
+.save {
+  font-size: 11.5px;
+  color: var(--sv-success);
+  font-weight: 600;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ── Actions ──────────────────────────────────────────────────────────────── */
+.actions {
+  display: flex;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 2px;
+}
+
+.addBtn {
+  background: var(--sv-blue-d);
+  border: 1px solid var(--sv-blue-b);
+  border-radius: 8px;
+  color: var(--sv-blue);
+  padding: 9px;
+  font-size: 12.5px;
+  font-weight: 600;
+  font-family: var(--sv-font);
+  cursor: pointer;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all .18s;
+}
+
+.addBtn:hover:not(:disabled) { background: var(--sv-blue); color: #fff; border-color: var(--sv-blue); }
+.addBtn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.viewBtn {
+  background: none;
+  border: 1px solid var(--sv-border);
+  border-radius: 8px;
+  color: var(--sv-muted);
+  padding: 9px 10px;
+  font-size: 11.5px;
+  font-weight: 600;
+  font-family: var(--sv-font);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+  transition: all .18s;
+}
+
+.viewBtn:hover { border-color: var(--sv-blue-l); color: var(--sv-blue-l); }
+
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+.spin { animation: spin 0.75s linear infinite; }

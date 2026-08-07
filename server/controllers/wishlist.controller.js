@@ -24,4 +24,11 @@ const removeProduct = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
-module.exports = { getWishlist, addProduct, removeProduct };
+const clearWishlist = async (req, res, next) => {
+  try {
+    const wishlist = await wishlistService.clearWishlist(req.user._id);
+    sendSuccess(res, { wishlist }, 'Wishlist cleared');
+  } catch (err) { next(err); }
+};
+
+module.exports = { getWishlist, addProduct, removeProduct, clearWishlist };

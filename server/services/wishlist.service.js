@@ -2,34 +2,32 @@
 
 const Wishlist = require('../models/Wishlist');
 const Product  = require('../models/Product');
+const { getProductsByIds } = require('./product.service');
 const { AppError } = require('../middleware/errorHandler');
 const { StatusCodes } = require('http-status-codes');
 
-const PRODUCT_FIELDS = 'name slug images price discountedPrice discountPercent brand ratings stock isPublished isDeleted';
-
-const filterActive = (wishlist) => {
-  wishlist.products = wishlist.products.filter(p => p.isPublished && !p.isDeleted);
-  return wishlist;
-};
-
+// Wishlist docs only store ObjectId refs — actual product data (including
+// live campaign discountedPrice/discountPercent, which are computed, not
+// schema fields) is resolved via the same enrichment path as the rest of
+// the catalog (see product.service.js#getProductsByIds). This also drops
+// stale references to deleted/unpublished products for free (Step 11).
 const getWishlist = async (userId) => {
-  const wishlist = await Wishlist.findOne({ user: userId })
-    .populate('products', PRODUCT_FIELDS);
-  if (!wishlist) return { user: userId, products: [] };
-  return filterActive(wishlist);
+  const wishlist = await Wishlist.findOne({ user: userId }).lean();
+  const products = await getProductsByIds((wishlist?.products ?? []).map(String));
+  return { user: userId, products };
 };
 
 const addProduct = async (userId, productId) => {
   const product = await Product.findOne({ _id: productId, isPublished: true, isDeleted: false });
   if (!product) throw new AppError('Product not found', StatusCodes.NOT_FOUND, 'PRODUCT_NOT_FOUND');
 
-  const wishlist = await Wishlist.findOneAndUpdate(
+  await Wishlist.findOneAndUpdate(
     { user: userId },
     { $addToSet: { products: productId } },
-    { new: true, upsert: true }
-  ).populate('products', PRODUCT_FIELDS);
+    { upsert: true }
+  );
 
-  return filterActive(wishlist);
+  return getWishlist(userId);
 };
 
 const removeProduct = async (userId, productId) => {
@@ -37,10 +35,19 @@ const removeProduct = async (userId, productId) => {
     { user: userId },
     { $pull: { products: productId } },
     { new: true }
-  ).populate('products', PRODUCT_FIELDS);
+  );
 
   if (!wishlist) throw new AppError('Wishlist not found', StatusCodes.NOT_FOUND, 'WISHLIST_NOT_FOUND');
-  return filterActive(wishlist);
+  return getWishlist(userId);
 };
 
-module.exports = { getWishlist, addProduct, removeProduct };
+const clearWishlist = async (userId) => {
+  await Wishlist.findOneAndUpdate(
+    { user: userId },
+    { $set: { products: [] } },
+    { upsert: true }
+  );
+  return { user: userId, products: [] };
+};
+
+module.exports = { getWishlist, addProduct, removeProduct, clearWishlist };

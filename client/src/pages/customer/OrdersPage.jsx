@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import {
   Clock, CreditCard, Package, Truck, RotateCcw, Eye,
-  ArrowRight, ChevronDown, Search, Monitor, XCircle,
+  ArrowRight, ChevronDown, Search, Monitor, XCircle, Crown,
 } from 'lucide-react';
 import { orderService } from '../../features/orders/api/order.service';
 import { useToast } from '../../hooks/useToast';
@@ -23,6 +23,9 @@ const STATUS_CLASS_MAP = {
 
 const fmt = (iso) =>
   new Date(iso).toLocaleDateString('he-IL', { year: 'numeric', month: 'short', day: 'numeric' });
+
+const isMembershipOnlyOrder = (order) =>
+  (order.items ?? []).length > 0 && (order.items ?? []).every(item => item.itemType === 'membership');
 
 // ── Payment countdown for a single order ─────────────────────────────────────
 
@@ -288,7 +291,7 @@ function OrderDetail({ order, onClose, onCancel, formatPrice }) {
           {order.items?.map((item, i) => (
             <div key={i} className={s.modalItem}>
               <div className={s.modalItemIcon}>
-                <Monitor size={22} />
+                {item.itemType === 'membership' ? <Crown size={22} /> : <Monitor size={22} />}
               </div>
               <div className={s.modalItemName}>{item.nameAtAdd ?? item.name}</div>
               <div className={s.modalItemQty}>{'×'}{item.quantity}</div>
@@ -315,7 +318,9 @@ function OrderDetail({ order, onClose, onCancel, formatPrice }) {
           {(order.taxAmount ?? 0) > 0 && (
             <div className={s.summaryRow}><span>{t('order.detail.vat')}</span><span>{formatPrice(order.taxAmount ?? 0)}</span></div>
           )}
-          <div className={s.summaryRow}><span>{t('checkout.shipping')}</span><span style={{ color: 'var(--sv-success)' }}>{t('checkout.free')}</span></div>
+          {!isMembershipOnlyOrder(order) && (
+            <div className={s.summaryRow}><span>{t('checkout.shipping')}</span><span style={{ color: 'var(--sv-success)' }}>{t('checkout.free')}</span></div>
+          )}
           <div className={s.summaryTotal}>
             <span>{t('checkout.to_pay')}</span>
             <span>{formatPrice(order.total ?? 0)}</span>
@@ -402,7 +407,8 @@ export default function OrdersPage() {
 
   const canRequestReturn = (order) =>
     order.status === 'delivered' &&
-    ['paid', 'partially_refunded'].includes(order.paymentStatus);
+    ['paid', 'partially_refunded'].includes(order.paymentStatus) &&
+    !isMembershipOnlyOrder(order); // digital purchase — nothing physical to return
 
   const toggleOrder = (id) => {
     setOpenOrders(prev => {
@@ -582,11 +588,14 @@ export default function OrdersPage() {
                       {(order.items ?? []).map((item, i) => (
                         <div key={i} className={s.productRow}>
                           <div className={s.productIcon}>
-                            <Monitor size={20} />
+                            {item.itemType === 'membership' ? <Crown size={20} /> : <Monitor size={20} />}
                           </div>
                           <div className={s.productInfo}>
                             {item.brand && <div className={s.productBrand}>{item.brand}</div>}
                             <div className={s.productName}>{item.nameAtAdd ?? item.name}</div>
+                            {item.itemType === 'membership' && (
+                              <div className={s.productBrand}>{t('order.digital_membership')}</div>
+                            )}
                           </div>
                           <div className={s.productQty}>{'×'}{item.quantity}</div>
                           <div className={s.productPrice}>
@@ -608,10 +617,12 @@ export default function OrdersPage() {
                           <span>{formatPrice(order.taxAmount ?? 0)}</span>
                         </div>
                       )}
-                      <div className={s.ordTotalRow}>
-                        <span>{t('checkout.shipping')}</span>
-                        <span style={{ color: 'var(--sv-success)' }}>{t('checkout.free')}</span>
-                      </div>
+                      {!isMembershipOnlyOrder(order) && (
+                        <div className={s.ordTotalRow}>
+                          <span>{t('checkout.shipping')}</span>
+                          <span style={{ color: 'var(--sv-success)' }}>{t('checkout.free')}</span>
+                        </div>
+                      )}
                       <div className={s.ordTotalFinal}>
                         <span>{t('checkout.to_pay')}</span>
                         <span>{formatPrice(order.total ?? 0)}</span>
@@ -643,9 +654,16 @@ export default function OrdersPage() {
                         </button>
                       )}
 
-                      {order.status === 'delivered' && (
+                      {order.status === 'delivered' && !isMembershipOnlyOrder(order) && (
                         <button className={s.btnSecondary} onClick={() => navigate('/products')}>
                           {t('order.write_review')}
+                        </button>
+                      )}
+
+                      {isMembershipOnlyOrder(order) && order.status === 'delivered' && (
+                        <button className={s.btnSecondary} onClick={() => navigate('/club')}>
+                          <Crown size={13} />
+                          {t('nav.club')}
                         </button>
                       )}
 

@@ -97,6 +97,9 @@
 
 .badgeSale { background: var(--sv-red); color: #fff; }
 .badgeNew  { background: rgba(0,255,204,0.1); color: var(--sv-mint); border: 1px solid rgba(0,255,204,0.25); }
+/* Arrival label (New Arrivals page) — matches reference `.b-new` exactly:
+   solid blue, white text (distinct from the outlined mint .badgeNew above). */
+.badgeArrival { background: var(--sv-blue); color: #fff; }
 
 /* ── Wishlist button ──────────────────────────────────────────────────────── */
 .heartBtn {

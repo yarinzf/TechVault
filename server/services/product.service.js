@@ -14,24 +14,49 @@ const { SPEC_PARAM_MAP: MS_SPEC_MAP } = require('../utils/catalog/mouseFilterCon
 const { SPEC_PARAM_MAP: DT_SPEC_MAP } = require('../utils/catalog/desktopFilterConfig');
 const { SPEC_PARAM_MAP: HP_SPEC_MAP } = require('../utils/catalog/headphoneFilterConfig');
 const SPEC_PARAM_MAP = { ...KB_SPEC_MAP, ...MN_SPEC_MAP, ...MS_SPEC_MAP, ...DT_SPEC_MAP, ...HP_SPEC_MAP };
+const { LEGACY_CATEGORY_ALIASES } = require('../config/categoryTaxonomy');
 
 // ─── Base filter applied to every public query ────────────────────────────────
 const PUBLIC_FILTER = { isPublished: true, isDeleted: false };
+
+// ─── New Arrivals — single canonical "new" window, in days ────────────────────
+// Reused by the products list filter (?new=true), the New Brands derivation,
+// and the client's arrival-label helper — never re-defined independently.
+const NEW_PRODUCT_DAYS = 14;
+
+// ─── Category slug/id → matching product-category id(s) ───────────────────────
+// A leaf category (no children) resolves to just itself. A main category with
+// real subcategories resolves to itself PLUS every direct child, so
+// /category/computers aggregates laptops+desktops+mini-pc+all-in-one in one
+// query rather than requiring the client to fetch each child separately.
+// Only one level deep — the canonical taxonomy is main→leaf, never deeper.
+// Returns null when the category can't be resolved at all (caller forces
+// zero results, matching the prior behavior for an unknown slug).
+const resolveCategoryFilterIds = async (categoryParam) => {
+  let cat;
+  if (mongoose.Types.ObjectId.isValid(categoryParam)) {
+    cat = await Category.findById(categoryParam).select('_id').lean();
+  } else {
+    const resolvedSlug = LEGACY_CATEGORY_ALIASES[categoryParam] || categoryParam;
+    cat = await Category.findOne({ slug: resolvedSlug }).select('_id').lean();
+  }
+  if (!cat) return null;
+
+  const children = await Category.find({ parentCategory: cat._id }).select('_id').lean();
+  return children.length > 0 ? [cat._id, ...children.map((ch) => ch._id)] : [cat._id];
+};
 
 const listProducts = async (query) => {
   const { page, limit, skip } = paginate(query);
 
   const filter = { ...PUBLIC_FILTER };
 
-  // Category: accept slug (human-readable) or ObjectId string
+  // Category: accept slug (human-readable, including legacy aliases) or
+  // ObjectId string. A main category aggregates its subcategories.
   if (query.category) {
-    if (mongoose.Types.ObjectId.isValid(query.category)) {
-      filter.category = query.category;
-    } else {
-      const cat = await Category.findOne({ slug: query.category }).select('_id').lean();
-      // If slug not found, force zero results rather than ignoring the filter
-      filter.category = cat ? cat._id : new mongoose.Types.ObjectId();
-    }
+    const ids = await resolveCategoryFilterIds(query.category);
+    // Not found → force zero results rather than ignoring the filter
+    filter.category = ids ? { $in: ids } : { $in: [] };
   }
 
   if (query.brand)    filter.brand = new RegExp(query.brand.trim(), 'i');
@@ -65,6 +90,15 @@ const listProducts = async (query) => {
   if (query.trending   === 'true') tagFilters.push('trending');
   if (query.bestSeller === 'true') tagFilters.push('best-seller');
   if (tagFilters.length > 0) filter.tags = { $in: tagFilters };
+
+  // New Arrivals: catalog-added timestamp (createdAt) within the window.
+  // `newDays` narrows the window for a specific view (e.g. "arrived this
+  // week" uses 7) without ever exceeding the canonical NEW_PRODUCT_DAYS —
+  // one shared rule, only ever made stricter, never redefined.
+  if (query.new === 'true') {
+    const days = Math.min(parseInt(query.newDays, 10) || NEW_PRODUCT_DAYS, NEW_PRODUCT_DAYS);
+    filter.createdAt = { $gte: new Date(Date.now() - days * 86400000) };
+  }
 
   const sortMap = {
     price_asc:  { price: 1 },
@@ -105,8 +139,29 @@ const listProducts = async (query) => {
   return { products: enriched, meta: paginateMeta(total, page, limit) };
 };
 
+// New Arrivals — "new brands" are brands whose EARLIEST catalog product is
+// still within the New window, i.e. every one of that brand's published,
+// non-deleted products was added recently — not just some of them. A single
+// aggregation ($group by brand, $min createdAt), never one query per brand.
+const getNewBrands = async (limit = 8) => {
+  const threshold = new Date(Date.now() - NEW_PRODUCT_DAYS * 86400000);
+  const results = await Product.aggregate([
+    { $match: PUBLIC_FILTER },
+    { $group: { _id: '$brand', earliest: { $min: '$createdAt' }, count: { $sum: 1 } } },
+    { $match: { _id: { $ne: null }, earliest: { $gte: threshold } } },
+    { $sort: { earliest: -1 } },
+    { $limit: limit },
+  ]);
+  return results.map((r) => ({ brand: r._id, productCount: r.count, earliestAddedAt: r.earliest }));
+};
+
+// Flat list including parentCategory — the frontend builds the main→child
+// tree from this (see client/src/constants/categories.js buildCategoryTree).
+// Deliberately no product counts: computing them here would mean an extra
+// aggregation per category on every request; not worth it for a rarely-
+// changing nav list (see Step 7 of the catalog architecture task).
 const listCategories = async () => {
-  return Category.find({ isActive: true }).select('name slug').sort({ name: 1 }).lean();
+  return Category.find({ isActive: true }).select('name slug parentCategory').sort({ name: 1 }).lean();
 };
 
 const getProduct = async (slug) => {
@@ -255,4 +310,5 @@ module.exports = {
   listProducts, listCategories, getProduct, getProductByIdAdmin, getProductsByIds,
   createProduct, updateProduct, deleteProduct,
   autocomplete, updateStock, getStockHistory,
+  getNewBrands, NEW_PRODUCT_DAYS,
 };

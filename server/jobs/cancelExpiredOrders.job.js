@@ -27,7 +27,9 @@ const cancelWithSession = async (candidate, now) => {
     // exact state we expect. Returns null when another caller already won.
     const won = await Order.findOneAndUpdate(
       pendingFilter(candidate._id, now),
-      { $set: { status: 'cancelled' } },
+      // membershipPendingLock: null — no-op for physical orders, releases the
+      // duplicate-purchase lock for expired membership orders.
+      { $set: { status: 'cancelled', membershipPendingLock: null } },
       { new: false, session }, // new:false → get original doc; null = CAS lost
     );
 
@@ -38,7 +40,10 @@ const cancelWithSession = async (candidate, now) => {
 
     // Stock restore within the same transaction: atomically undo the
     // decrement that happened at order creation. salesCount also rolls back.
+    // Digital/service items (e.g. membership) never decremented stock and
+    // have no `product` ref — skip them explicitly.
     for (const item of candidate.items) {
+      if (item.itemType !== 'product') continue;
       await Product.findByIdAndUpdate(
         item.product,
         { $inc: { stock: item.quantity, salesCount: -item.quantity } },
@@ -62,13 +67,14 @@ const cancelWithSession = async (candidate, now) => {
 const cancelWithoutSession = async (candidate, now) => {
   const won = await Order.findOneAndUpdate(
     pendingFilter(candidate._id, now),
-    { $set: { status: 'cancelled' } },
+    { $set: { status: 'cancelled', membershipPendingLock: null } },
     { new: false },
   );
 
   if (!won) return false;
 
   for (const item of candidate.items) {
+    if (item.itemType !== 'product') continue;
     await Product.findByIdAndUpdate(item.product, {
       $inc: { stock: item.quantity, salesCount: -item.quantity },
     }).catch(err =>

@@ -386,10 +386,11 @@ export default function ComparePage() {
         <div className={s.slots}>
           {products.map((product, idx) => {
             const priceBest = priceData[product._id]?.isBest;
-            const discountPercent = product.discountPercent || (product.compareAtPrice && product.compareAtPrice > product.price
-              ? Math.round((1 - product.price / product.compareAtPrice) * 100)
-              : null);
-            const effectivePrice = product.discountedPrice ?? product.price;
+            // "On sale" means only a currently active Campaign — compareAtPrice
+            // never independently produces a discount badge or strikethrough.
+            const hasDiscount = product.discountedPrice != null && product.discountedPrice < product.price;
+            const discountPercent = hasDiscount ? product.discountPercent : null;
+            const effectivePrice = hasDiscount ? product.discountedPrice : product.price;
 
             return (
               <div key={product._id} className={s.slot}>
@@ -423,8 +424,8 @@ export default function ComparePage() {
                     {/* Price */}
                     <div className={priceBest ? s.slotPriceBest : s.slotPrice}>
                       {formatPrice(effectivePrice)}
-                      {product.compareAtPrice && product.compareAtPrice > effectivePrice && (
-                        <span className={s.slotPriceOld}>{formatPrice(product.compareAtPrice)}</span>
+                      {hasDiscount && (
+                        <span className={s.slotPriceOld}>{formatPrice(product.price)}</span>
                       )}
                     </div>
 

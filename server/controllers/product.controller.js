@@ -109,6 +109,14 @@ const listCategories = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+// New Arrivals — brands whose entire real catalog presence is recent.
+const newBrands = async (req, res, next) => {
+  try {
+    const brands = await productService.getNewBrands();
+    sendSuccess(res, { brands });
+  } catch (err) { next(err); }
+};
+
 const compare = async (req, res, next) => {
   try {
     const { ids } = req.body;
@@ -120,4 +128,4 @@ const compare = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
-module.exports = { list, getOne, getByIdAdmin, create, update, remove, autocomplete, updateStock, stockHistory, listCategories, compare };
+module.exports = { list, getOne, getByIdAdmin, create, update, remove, autocomplete, updateStock, stockHistory, listCategories, newBrands, compare };

@@ -107,9 +107,9 @@ async function main() {
   // ── 2. Category ───────────────────────────────────────────────────────────
   console.log('');
   console.log(c.bold('── MongoDB — Headphones category ──'));
-  const cat = await Category.findOne({ slug: 'headphones' }).lean();
+  const cat = await Category.findOne({ slug: 'headsets' }).lean();
   if (!cat) {
-    console.log(`  ${c.red('✗')} Category "headphones" NOT FOUND. Run ${c.yellow('npm run seed')} first.`);
+    console.log(`  ${c.red('✗')} Category "headsets" NOT FOUND. Run ${c.yellow('npm run seed')} then the category migration first.`);
   } else {
     console.log(`  ${c.green('✓')} Found: ${cat.name}`);
     console.log(`    _id  : ${c.cyan(String(cat._id))}`);

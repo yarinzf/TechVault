@@ -17,6 +17,8 @@ import { adminService } from '../../features/admin/api/admin.service';
 import { warehouseService } from '../../features/warehouse/api/warehouse.service';
 import { productService } from '../../features/products/api/product.service';
 import { useToast } from '../../hooks/useToast';
+import { buildCategoryTree } from '../../constants/categories';
+import { getCategoryLabel } from '../../features/products/utils/categoryLabels';
 
 function deriveStatus(product) {
     if (!product.isPublished) return 'draft';
@@ -100,6 +102,11 @@ export default function AdminProductsPage() {
     // Derived filter options from loaded data
     const brands     = useMemo(() => ['all', ...Array.from(new Set(products.map(p => p.brand).filter(Boolean)))], [products]);
     const catOptions = useMemo(() => ['all', ...categories.map(c => c.name)], [categories]);
+    // Real main→subcategory hierarchy for the create/edit form's category
+    // selector (see constants/categories.js buildCategoryTree) — the same
+    // tree-building helper the customer-facing "All Categories" modal uses,
+    // so there's one definition of "hierarchy" across the app.
+    const categoryTree = useMemo(() => buildCategoryTree(categories), [categories]);
 
     // Client-side filtering
     const filtered = useMemo(() => {
@@ -561,8 +568,23 @@ export default function AdminProductsPage() {
                                         className={inputCls}
                                     >
                                         <option value="">בחר קטגוריה</option>
-                                        {categories.map(cat => (
-                                            <option key={cat._id} value={cat._id}>{cat.name}</option>
+                                        {/* Real main→subcategory hierarchy — assign the most specific
+                                            leaf when one exists (e.g. "Laptops", not "Computers");
+                                            direct categories with no children (Monitors, Smartphones…)
+                                            are still assignable as-is. */}
+                                        {categoryTree.map(main => (
+                                            <optgroup key={main._id} label={getCategoryLabel(main, 'he')}>
+                                                {main.children.length > 0 ? (
+                                                    <>
+                                                        <option value={main._id}>{`${getCategoryLabel(main, 'he')} (כללי)`}</option>
+                                                        {main.children.map(child => (
+                                                            <option key={child._id} value={child._id}>{getCategoryLabel(child, 'he')}</option>
+                                                        ))}
+                                                    </>
+                                                ) : (
+                                                    <option value={main._id}>{getCategoryLabel(main, 'he')}</option>
+                                                )}
+                                            </optgroup>
                                         ))}
                                     </select>
                                 </FormField>

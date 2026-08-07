@@ -63,8 +63,26 @@ export function WishlistProvider({ children }) {
     }
   }, [user, ids, toast]);
 
+  const clearAll = useCallback(async () => {
+    if (!user || ids.size === 0) return;
+    const previous = ids;
+
+    // Optimistic update
+    setIds(new Set());
+
+    try {
+      await wishlistService.clear();
+      toast.success('המועדפים נוקו');
+    } catch (err) {
+      // Revert on failure
+      setIds(previous);
+      toast.error(err.message || 'שגיאה בניקוי המועדפים');
+      throw err;
+    }
+  }, [user, ids, toast]);
+
   return (
-    <WishlistContext.Provider value={{ ids, isInWishlist, toggle, loading }}>
+    <WishlistContext.Provider value={{ ids, isInWishlist, toggle, clearAll, loading }}>
       {children}
     </WishlistContext.Provider>
   );
