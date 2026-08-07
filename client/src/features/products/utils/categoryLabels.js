@@ -16,6 +16,17 @@ const CATEGORY_LABELS = {
   tvs:             { he: 'טלוויזיות',          en: 'TVs' },
   printers:        { he: 'מדפסות',             en: 'Printers' },
 
+  // Legacy pre-migration slugs (server/config/categoryTaxonomy.js
+  // LEGACY_CATEGORY_PLAN's two 'rename' entries: headphones -> headsets,
+  // components -> pc-components). A Category document is only ever renamed
+  // in place by re-running the migration script; until that has actually
+  // happened against a given database, these old slugs/names can still be
+  // what a real Category document carries. Mapped here to the SAME labels
+  // as their canonical replacement so the modal never falls back to a raw
+  // English name for a category that legitimately still exists.
+  headphones: { he: 'אוזניות',    en: 'Headsets' },
+  components: { he: 'רכיבי מחשב', en: 'PC Components' },
+
   // Computers
   laptops:      { he: 'מחשבים ניידים',   en: 'Laptops' },
   desktops:     { he: 'מחשבים נייחים',   en: 'Desktops' },

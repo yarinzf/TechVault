@@ -153,9 +153,9 @@ export default function DealProductCard({ product, endDate, showCountdown = fals
                 <Hourglass size={11} /> {t('deals.ends_in')}
               </div>
               <div className={s.countdownBlocks} dir="ltr">
-                <div className={s.cBlock}><span className={s.cNum}>{d}</span><span className={s.cLbl}>{t('deals.days_short')}</span></div>
-                <div className={s.cBlock}><span className={s.cNum}>{h}</span><span className={s.cLbl}>{t('deals.hours_short')}</span></div>
-                <div className={s.cBlock}><span className={s.cNum}>{m}</span><span className={s.cLbl}>{t('deals.mins_short')}</span></div>
+                <div className={s.cBlock}><span className={s.cNum}>{d}</span><span className={s.cLbl}>{t('deals.days_full')}</span></div>
+                <div className={s.cBlock}><span className={s.cNum}>{h}</span><span className={s.cLbl}>{t('deals.hours_full')}</span></div>
+                <div className={s.cBlock}><span className={s.cNum}>{m}</span><span className={s.cLbl}>{t('deals.mins_full')}</span></div>
               </div>
             </>
           )

@@ -27,6 +27,12 @@ export const CATEGORY_META = {
   tvs:           Tv,
   printers:      Printer,
 
+  // Legacy pre-migration slugs — same icon as their canonical replacement
+  // (categoryTaxonomy.js LEGACY_CATEGORY_PLAN: headphones -> headsets,
+  // components -> pc-components), for a Category document not yet renamed.
+  headphones: Headphones,
+  components: Cpu,
+
   // Computers
   laptops:      Laptop,
   desktops:     Server,

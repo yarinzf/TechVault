@@ -69,6 +69,19 @@ function CountdownBlocks({ secs, size = 'lg' }) {
   );
 }
 
+// One-time production storefront curation (server/scripts/curateProductionStorefront.js)
+// tags every campaign it creates with this fixed prefix so a second run can
+// detect existing curated campaigns (idempotency) — it's an internal marker,
+// never meant to reach a shopper. Strips it (and the optional " — <tag>"
+// segment right after it) so the Hero only ever shows the real, friendly
+// deal name that was always the last segment of the tagged string.
+const CURATION_NAME_PREFIX = /^Production Curation 2026\s*—\s*/;
+function displayCampaignName(rawName) {
+  if (!rawName || !CURATION_NAME_PREFIX.test(rawName)) return rawName;
+  const segments = rawName.split(' — ');
+  return segments[segments.length - 1];
+}
+
 // ── Hero — the single featured active campaign ──────────────────────────────
 function DealsHero({ campaign, product }) {
   const t = useTranslation();
@@ -101,7 +114,7 @@ function DealsHero({ campaign, product }) {
           </div>
           <h2 className={s.heroTitle}>
             {t('deals.hero_up_to')} <span>{campaign.discountPercent}% {t('deals.hero_off')}</span>
-            <br />{campaign.name}
+            <br />{displayCampaignName(campaign.name)}
           </h2>
           {product.category?.name && <p className={s.heroSub}>{product.category.name}</p>}
           <button className={s.heroCta} onClick={() => navigate(ctaHref)}>
