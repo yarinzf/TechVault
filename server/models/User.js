@@ -20,19 +20,41 @@ const addressSchema = new mongoose.Schema(
 );
 
 // TechVault Club membership — persisted independently of `role`/authorization.
-// Points earning, redemption, and tiers are later phases; this is the
-// foundational shape only. See Club Membership architecture phase 1.
+// ONE membership level only (a Club member IS a VIP member) — there are NO
+// tiers (no Silver/Gold/Platinum/Diamond) and never will be a `vipTier`
+// field. Membership is a TERM (plan + startedAt/expiresAt), not a lifetime
+// purchase — see server/config/membership.js for plan pricing/duration.
+//
+// `status` is a stored, eventually-consistent field (flipped to 'expired'
+// lazily — see isMembershipActive below — never via a cron in this phase).
+// `joinedAt` is preserved as the historical FIRST-ever join date and never
+// changes on renewal; `startedAt`/`expiresAt` describe the CURRENT term.
+//
+// Legacy compatibility: a pre-existing local-dev document with
+// status:'active' and no expiresAt (from the old lifetime-membership model)
+// is deliberately treated as still active forever by isMembershipActive
+// below — never auto-expired just because expiresAt is unset.
 const membershipSchema = new mongoose.Schema(
   {
     status: {
       type: String,
       enum: {
-        values: ['none', 'active'],
-        message: 'Membership status must be one of: none, active',
+        values: ['none', 'active', 'expired'],
+        message: 'Membership status must be one of: none, active, expired',
       },
       default: 'none',
     },
-    joinedAt: { type: Date, default: null },
+    plan: {
+      type: String,
+      enum: {
+        values: ['monthly', 'annual', null],
+        message: 'Membership plan must be one of: monthly, annual',
+      },
+      default: null,
+    },
+    joinedAt:  { type: Date, default: null }, // first-ever join date — historical, never overwritten by renewal
+    startedAt: { type: Date, default: null }, // start of the CURRENT term
+    expiresAt: { type: Date, default: null }, // end of the CURRENT term (null = legacy grandfathered, see above)
     points: { type: Number, default: 0, min: 0 },
     lifetimePoints: { type: Number, default: 0, min: 0 },
     notificationPreference: {
@@ -49,11 +71,25 @@ const membershipSchema = new mongoose.Schema(
 
 const DEFAULT_MEMBERSHIP = Object.freeze({
   status: 'none',
+  plan: null,
   joinedAt: null,
+  startedAt: null,
+  expiresAt: null,
   points: 0,
   lifetimePoints: 0,
   notificationPreference: 'none',
 });
+
+// Single source of truth for "is this membership document CURRENTLY VIP" —
+// used everywhere a real business decision is gated on membership (points
+// earning, VIP pricing, early access, checkout redemption), not just the
+// raw `status` string, so an expired-but-not-yet-lazily-synced document is
+// never mistakenly treated as active.
+const isMembershipActive = (membership) => {
+  if (!membership || membership.status !== 'active') return false;
+  if (!membership.expiresAt) return true; // legacy grandfathered — see comment above
+  return new Date(membership.expiresAt) > new Date();
+};
 
 const userSchema = new mongoose.Schema(
   {
@@ -143,6 +179,13 @@ const userSchema = new mongoose.Schema(
         // which don't apply to .lean() reads. Normalize here so the API
         // never returns a user without a well-formed membership object.
         ret.membership = { ...DEFAULT_MEMBERSHIP, ...ret.membership };
+        // Read-time expiry correction: the API must never claim a member is
+        // 'active' past their expiresAt, even if the stored field hasn't
+        // been lazily synced yet (see isMembershipActive) — this is
+        // display-only and does not write anything back to the database.
+        if (ret.membership.status === 'active' && !isMembershipActive(ret.membership)) {
+          ret.membership = { ...ret.membership, status: 'expired' };
+        }
         delete ret.__v;
         return ret;
       },
@@ -186,3 +229,4 @@ userSchema.index({ googleId: 1 }, { unique: true, sparse: true });
 userSchema.index({ appleId: 1 },  { unique: true, sparse: true });
 
 module.exports = mongoose.model('User', userSchema);
+module.exports.isMembershipActive = isMembershipActive;

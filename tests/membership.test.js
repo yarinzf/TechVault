@@ -85,7 +85,10 @@ describe('Legacy documents without a membership field', () => {
 
     expect(json.membership).toEqual({
       status: 'none',
+      plan: null,
       joinedAt: null,
+      startedAt: null,
+      expiresAt: null,
       points: 0,
       lifetimePoints: 0,
       notificationPreference: 'none',

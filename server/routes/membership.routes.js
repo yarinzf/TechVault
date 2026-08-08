@@ -5,7 +5,7 @@ const ctrl = require('../controllers/membership.controller');
 const { authenticate } = require('../middleware/auth');
 const { validate } = require('../middleware/validate');
 const { orderCreationLimiter } = require('../middleware/rateLimiter');
-const { updateNotificationPreferenceSchema } = require('../validators/membership.validator');
+const { updateNotificationPreferenceSchema, checkoutSchema } = require('../validators/membership.validator');
 
 const router = Router();
 
@@ -14,7 +14,7 @@ const router = Router();
 router.use(authenticate);
 
 // Reuses the order-creation limiter — a membership purchase is an order creation.
-router.post('/checkout', orderCreationLimiter, ctrl.checkout);
+router.post('/checkout', orderCreationLimiter, validate(checkoutSchema), ctrl.checkout);
 
 router.patch(
   '/notification-preference',

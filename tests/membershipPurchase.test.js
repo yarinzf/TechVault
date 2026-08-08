@@ -99,28 +99,55 @@ describe('POST /membership/checkout', () => {
     const res = await request(app)
       .post(`${MEMBERSHIP}/checkout`)
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({});
+      .send({ plan: 'monthly' });
 
     expect(res.status).toBe(201);
     const order = res.body.data.order;
     expect(order.items).toHaveLength(1);
     expect(order.items[0].itemType).toBe('membership');
-    expect(order.total).toBe(50);
+    expect(order.total).toBe(20); // monthly plan price
     expect(order.status).toBe('pending_payment');
     expect(order.paymentStatus).toBe('unpaid');
   });
 
-  it('uses the canonical ₪50 price regardless of client-submitted pricing', async () => {
+  it('uses the canonical plan price regardless of client-submitted pricing', async () => {
     const { accessToken } = await registerAndLogin();
     const res = await request(app)
       .post(`${MEMBERSHIP}/checkout`)
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({ price: 1, membershipPrice: 1, total: 1, unitPrice: 1 });
+      .send({ plan: 'monthly', price: 1, membershipPrice: 1, total: 1, unitPrice: 1 });
 
     expect(res.status).toBe(201);
-    expect(res.body.data.order.total).toBe(50);
-    expect(res.body.data.order.items[0].unitPrice).toBe(50);
-    expect(res.body.data.order.items[0].totalPrice).toBe(50);
+    expect(res.body.data.order.total).toBe(20);
+    expect(res.body.data.order.items[0].unitPrice).toBe(20);
+    expect(res.body.data.order.items[0].totalPrice).toBe(20);
+  });
+
+  it('creates an annual-plan order at the canonical ₪200 price', async () => {
+    const { accessToken } = await registerAndLogin();
+    const res = await request(app)
+      .post(`${MEMBERSHIP}/checkout`)
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({ plan: 'annual' });
+
+    expect(res.status).toBe(201);
+    expect(res.body.data.order.total).toBe(200);
+    expect(res.body.data.order.items[0].metadata.membershipPlan).toBe('annual');
+  });
+
+  it('rejects a checkout request with no plan / an invalid plan', async () => {
+    const { accessToken } = await registerAndLogin();
+    const noPlan = await request(app)
+      .post(`${MEMBERSHIP}/checkout`)
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({});
+    expect(noPlan.status).toBe(422);
+
+    const badPlan = await request(app)
+      .post(`${MEMBERSHIP}/checkout`)
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({ plan: 'lifetime' });
+    expect(badPlan.status).toBe(422);
   });
 
   it('rejects an unauthenticated (guest) purchase attempt', async () => {
@@ -128,20 +155,23 @@ describe('POST /membership/checkout', () => {
     expect(res.status).toBe(401);
   });
 
-  it('rejects a purchase attempt from an already-active member', async () => {
+  it('allows an already-active member to start a renewal purchase (unlike the old lifetime model)', async () => {
     const User = mongoose.model('User');
     const { accessToken, user } = await registerAndLogin();
     await User.findByIdAndUpdate(user._id, {
-      $set: { 'membership.status': 'active', 'membership.joinedAt': new Date() },
+      $set: {
+        'membership.status': 'active', 'membership.plan': 'monthly',
+        'membership.joinedAt': new Date(), 'membership.startedAt': new Date(),
+        'membership.expiresAt': new Date(Date.now() + 20 * 86400000),
+      },
     });
 
     const res = await request(app)
       .post(`${MEMBERSHIP}/checkout`)
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({});
+      .send({ plan: 'monthly' });
 
-    expect(res.status).toBe(409);
-    expect(res.body.error.code).toBe('ALREADY_MEMBER');
+    expect(res.status).toBe(201);
   });
 });
 
@@ -150,7 +180,7 @@ describe('POST /membership/checkout', () => {
 describe('Membership purchase → payment → activation', () => {
   it('does not activate membership while the order is unpaid', async () => {
     const { accessToken } = await registerAndLogin();
-    await request(app).post(`${MEMBERSHIP}/checkout`).set('Authorization', `Bearer ${accessToken}`).send({});
+    await request(app).post(`${MEMBERSHIP}/checkout`).set('Authorization', `Bearer ${accessToken}`).send({ plan: 'monthly' });
 
     const me = await request(app).get(`${AUTH}/me`).set('Authorization', `Bearer ${accessToken}`);
     expect(me.body.data.user.membership.status).toBe('none');
@@ -161,7 +191,7 @@ describe('Membership purchase → payment → activation', () => {
     const checkoutRes = await request(app)
       .post(`${MEMBERSHIP}/checkout`)
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({});
+      .send({ plan: 'monthly' });
     const orderId = checkoutRes.body.data.order._id;
 
     const payRes = await payOrder(accessToken, orderId);
@@ -181,7 +211,7 @@ describe('Membership purchase → payment → activation', () => {
     const checkoutRes = await request(app)
       .post(`${MEMBERSHIP}/checkout`)
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({});
+      .send({ plan: 'monthly' });
     await payOrder(accessToken, checkoutRes.body.data.order._id);
 
     const Product = mongoose.model('Product');
@@ -199,7 +229,7 @@ describe('Membership purchase → payment → activation', () => {
     const checkoutRes = await request(app)
       .post(`${MEMBERSHIP}/checkout`)
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({});
+      .send({ plan: 'monthly' });
     await payOrder(accessToken, checkoutRes.body.data.order._id);
 
     const fresh = await User.findById(user._id);
@@ -220,7 +250,7 @@ describe('membershipService — idempotency, ownership, and validation', () => {
     const checkoutRes = await request(app)
       .post(`${MEMBERSHIP}/checkout`)
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({});
+      .send({ plan: 'monthly' });
     const orderId = checkoutRes.body.data.order._id;
     await payOrder(accessToken, orderId); // first activation happens here
 
@@ -243,7 +273,7 @@ describe('membershipService — idempotency, ownership, and validation', () => {
     const checkoutRes = await request(app)
       .post(`${MEMBERSHIP}/checkout`)
       .set('Authorization', `Bearer ${owner.accessToken}`)
-      .send({});
+      .send({ plan: 'monthly' });
     const orderId = checkoutRes.body.data.order._id;
     await payOrder(owner.accessToken, orderId);
 
@@ -327,8 +357,8 @@ describe('Concurrent POST /membership/checkout requests (race condition)', () =>
     const { accessToken, user } = await registerAndLogin();
 
     const [res1, res2] = await Promise.all([
-      request(app).post(`${MEMBERSHIP}/checkout`).set('Authorization', `Bearer ${accessToken}`).send({}),
-      request(app).post(`${MEMBERSHIP}/checkout`).set('Authorization', `Bearer ${accessToken}`).send({}),
+      request(app).post(`${MEMBERSHIP}/checkout`).set('Authorization', `Bearer ${accessToken}`).send({ plan: 'monthly' }),
+      request(app).post(`${MEMBERSHIP}/checkout`).set('Authorization', `Bearer ${accessToken}`).send({ plan: 'monthly' }),
     ]);
 
     expect(res1.status).toBe(201);
@@ -348,7 +378,7 @@ describe('Concurrent POST /membership/checkout requests (race condition)', () =>
 
     const results = await Promise.all(
       Array.from({ length: 5 }, () =>
-        request(app).post(`${MEMBERSHIP}/checkout`).set('Authorization', `Bearer ${accessToken}`).send({}))
+        request(app).post(`${MEMBERSHIP}/checkout`).set('Authorization', `Bearer ${accessToken}`).send({ plan: 'monthly' }))
     );
 
     results.forEach(r => expect(r.status).toBe(201));
@@ -406,10 +436,10 @@ describe('Order shipping-address invariant', () => {
       orderNumber: `ORD-MEMBNOADDR-${Date.now()}`,
       user: user._id,
       items: [{
-        itemType: 'membership', name: 'TechVault Club Membership', sku: 'MEMBERSHIP-LIFETIME',
-        unitPrice: 50, quantity: 1, totalPrice: 50, metadata: { membershipType: 'lifetime' },
+        itemType: 'membership', name: 'TechVault Club Membership — Monthly', sku: 'MEMBERSHIP-MONTHLY',
+        unitPrice: 20, quantity: 1, totalPrice: 20, metadata: { membershipPlan: 'monthly' },
       }],
-      subtotal: 50, taxAmount: 0, shippingCost: 0, total: 50,
+      subtotal: 20, taxAmount: 0, shippingCost: 0, total: 20,
     });
 
     expect(order._id).toBeDefined();
@@ -425,7 +455,7 @@ describe('A real declined payment (mock provider test-card mechanism)', () => {
     const checkoutRes = await request(app)
       .post(`${MEMBERSHIP}/checkout`)
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({});
+      .send({ plan: 'monthly' });
     const orderId = checkoutRes.body.data.order._id;
 
     // 4000 0000 0000 0002 is the mock provider's built-in decline card
@@ -461,7 +491,7 @@ describe('Warehouse fulfillment queue exclusion (real listing endpoint)', () => 
     const checkoutRes = await request(app)
       .post(`${MEMBERSHIP}/checkout`)
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({});
+      .send({ plan: 'monthly' });
     const orderId = checkoutRes.body.data.order._id;
     const payRes = await payOrder(accessToken, orderId);
     expect(payRes.body.data.order.status).toBe('delivered');
@@ -519,7 +549,7 @@ describe('Paid-but-not-activated recovery (crash-recovery replay)', () => {
     const checkoutRes = await request(app)
       .post(`${MEMBERSHIP}/checkout`)
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({});
+      .send({ plan: 'monthly' });
     const orderId = checkoutRes.body.data.order._id;
 
     // Reproduce the crash scenario directly: payment succeeded and was
@@ -556,7 +586,7 @@ describe('Paid-but-not-activated recovery (crash-recovery replay)', () => {
     const checkoutRes = await request(app)
       .post(`${MEMBERSHIP}/checkout`)
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({});
+      .send({ plan: 'monthly' });
     const orderId = checkoutRes.body.data.order._id;
 
     await Order.findByIdAndUpdate(orderId, { $set: { paymentStatus: 'paid', status: 'delivered' } });
@@ -573,5 +603,108 @@ describe('Paid-but-not-activated recovery (crash-recovery replay)', () => {
 
     expect(afterSecond.membership.status).toBe('active');
     expect(afterSecond.membership.joinedAt.getTime()).toBe(joinedAtFirst);
+  });
+});
+
+// ── New: monthly/annual TERM model — activation, expiration, renewal ───────────
+
+describe('Membership TERM model (monthly/annual, no auto-renewal)', () => {
+  it('activates a monthly plan with expiresAt ~30 days out and plan="monthly"', async () => {
+    const { accessToken } = await registerAndLogin();
+    const checkoutRes = await request(app)
+      .post(`${MEMBERSHIP}/checkout`).set('Authorization', `Bearer ${accessToken}`).send({ plan: 'monthly' });
+    await payOrder(accessToken, checkoutRes.body.data.order._id);
+
+    const me = await request(app).get(`${AUTH}/me`).set('Authorization', `Bearer ${accessToken}`);
+    const m = me.body.data.user.membership;
+    expect(m.status).toBe('active');
+    expect(m.plan).toBe('monthly');
+    const days = (new Date(m.expiresAt) - new Date(m.startedAt)) / 86400000;
+    expect(days).toBeCloseTo(30, 0);
+  });
+
+  it('activates an annual plan with expiresAt ~365 days out and plan="annual"', async () => {
+    const { accessToken } = await registerAndLogin();
+    const checkoutRes = await request(app)
+      .post(`${MEMBERSHIP}/checkout`).set('Authorization', `Bearer ${accessToken}`).send({ plan: 'annual' });
+    await payOrder(accessToken, checkoutRes.body.data.order._id);
+
+    const me = await request(app).get(`${AUTH}/me`).set('Authorization', `Bearer ${accessToken}`);
+    const m = me.body.data.user.membership;
+    expect(m.status).toBe('active');
+    expect(m.plan).toBe('annual');
+    const days = (new Date(m.expiresAt) - new Date(m.startedAt)) / 86400000;
+    expect(days).toBeCloseTo(365, 0);
+  });
+
+  it('an expired member (expiresAt in the past) is reported as status "expired" and is NOT VIP', async () => {
+    const User = mongoose.model('User');
+    const { accessToken, user } = await registerAndLogin();
+    const past = new Date(Date.now() - 86400000); // yesterday
+    await User.findByIdAndUpdate(user._id, {
+      $set: {
+        'membership.status': 'active',
+        'membership.plan': 'monthly',
+        'membership.joinedAt': new Date(Date.now() - 40 * 86400000),
+        'membership.startedAt': new Date(Date.now() - 40 * 86400000),
+        'membership.expiresAt': past,
+      },
+    });
+
+    const me = await request(app).get(`${AUTH}/me`).set('Authorization', `Bearer ${accessToken}`);
+    expect(me.body.data.user.membership.status).toBe('expired');
+
+    const { isMembershipActive } = require('../server/models/User');
+    const fresh = await User.findById(user._id);
+    expect(isMembershipActive(fresh.membership)).toBe(false);
+  });
+
+  it('an expired member CAN purchase again (not blocked by ALREADY_MEMBER)', async () => {
+    const User = mongoose.model('User');
+    const { accessToken, user } = await registerAndLogin();
+    await User.findByIdAndUpdate(user._id, {
+      $set: {
+        'membership.status': 'active', 'membership.plan': 'monthly',
+        'membership.expiresAt': new Date(Date.now() - 86400000),
+      },
+    });
+
+    const res = await request(app)
+      .post(`${MEMBERSHIP}/checkout`).set('Authorization', `Bearer ${accessToken}`).send({ plan: 'annual' });
+    expect(res.status).toBe(201);
+  });
+
+  it('renewing BEFORE expiry extends the term from the current expiresAt (does not lose paid time)', async () => {
+    const User = mongoose.model('User');
+    const { accessToken, user } = await registerAndLogin();
+
+    const checkoutRes = await request(app)
+      .post(`${MEMBERSHIP}/checkout`).set('Authorization', `Bearer ${accessToken}`).send({ plan: 'monthly' });
+    await payOrder(accessToken, checkoutRes.body.data.order._id);
+    const afterFirst = await User.findById(user._id);
+    const firstExpiry = afterFirst.membership.expiresAt.getTime();
+
+    // Renew immediately (still active, well before expiry)
+    const renewRes = await request(app)
+      .post(`${MEMBERSHIP}/checkout`).set('Authorization', `Bearer ${accessToken}`).send({ plan: 'monthly' });
+    expect(renewRes.status).toBe(201);
+    await payOrder(accessToken, renewRes.body.data.order._id);
+
+    const afterRenew = await User.findById(user._id);
+    // ~60 days from the ORIGINAL start, not just ~30 days from renewal time
+    expect(afterRenew.membership.expiresAt.getTime()).toBeGreaterThan(firstExpiry + 25 * 86400000);
+  });
+
+  it('legacy grandfathered data (active status, no expiresAt) is treated as still active — backward compatibility', async () => {
+    const User = mongoose.model('User');
+    const { accessToken, user } = await registerAndLogin();
+    await User.findByIdAndUpdate(user._id, {
+      $set: { 'membership.status': 'active', 'membership.joinedAt': new Date() },
+      // expiresAt intentionally left unset — simulates a pre-existing local
+      // dev record created before the plan/expiresAt fields existed.
+    });
+
+    const me = await request(app).get(`${AUTH}/me`).set('Authorization', `Bearer ${accessToken}`);
+    expect(me.body.data.user.membership.status).toBe('active');
   });
 });

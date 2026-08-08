@@ -2,15 +2,14 @@
 
 const Order  = require('../models/Order');
 const User   = require('../models/User');
+const { isMembershipActive } = require('../models/User');
 const { AppError }  = require('../middleware/errorHandler');
 const { StatusCodes } = require('http-status-codes');
 const { generateOrderNumber } = require('./order.service');
 const {
-  MEMBERSHIP_PRICE,
   MEMBERSHIP_ITEM_TYPE,
-  MEMBERSHIP_SKU,
-  MEMBERSHIP_NAME,
-  MEMBERSHIP_TYPE,
+  MEMBERSHIP_PLANS,
+  MEMBERSHIP_PLAN_KEYS,
 } = require('../config/membership');
 
 const PAYMENT_TIMEOUT_MS = parseInt(process.env.PAYMENT_TIMEOUT_MS || '360000', 10); // 6 min
@@ -21,28 +20,32 @@ const orderContainsMembership = (order) =>
 
 // ─── Create (or recover) a pending membership purchase order ──────────────────
 // Bypasses Cart entirely — membership is not physical inventory and must
-// never enter the product stock-decrement path. Price is always the server's
-// canonical MEMBERSHIP_PRICE; any client-submitted price is ignored because
-// the endpoint accepts no pricing input at all.
+// never enter the product stock-decrement path. Price is always the
+// server's canonical MEMBERSHIP_PLANS[plan].price for the requested plan;
+// any client-submitted price is ignored because the endpoint accepts no
+// pricing input at all — only a plan key.
 //
 // Concurrency: a sequential find-then-create is NOT safe — two simultaneous
 // requests can both observe "no pending order" and each create a separate
-// payable ₪50 order, which would let a user (or attacker script) pay twice
-// for a single lifetime membership. `membershipPendingLock` + the partial
-// unique index on {user, membershipPendingLock:'pending'} (see Order model)
-// makes "at most one live pending membership order per user" a database-level
+// payable order, which would let a user (or attacker script) pay twice for
+// one membership term. `membershipPendingLock` + the partial unique index
+// on {user, membershipPendingLock:'pending'} (see Order model) makes "at
+// most one live pending membership order per user" a database-level
 // guarantee, not an application-level assumption.
-const createMembershipOrder = async (userId) => {
+const createMembershipOrder = async (userId, plan) => {
+  if (!MEMBERSHIP_PLAN_KEYS.includes(plan)) {
+    throw new AppError(`Invalid membership plan — expected one of: ${MEMBERSHIP_PLAN_KEYS.join(', ')}`, StatusCodes.BAD_REQUEST, 'INVALID_MEMBERSHIP_PLAN');
+  }
+
   const user = await User.findById(userId).select('membership');
   if (!user) throw new AppError('User not found', StatusCodes.NOT_FOUND, 'USER_NOT_FOUND');
 
-  if (user.membership?.status === 'active') {
-    throw new AppError(
-      'You are already a TechVault Club member',
-      StatusCodes.CONFLICT,
-      'ALREADY_MEMBER'
-    );
-  }
+  // Unlike the old lifetime model, an already-active member is NOT blocked
+  // from purchasing again — a term membership is meant to be renewable, and
+  // activateMembershipForOrder extends the term from the CURRENT expiresAt
+  // when the member is still active (see there), so renewing early never
+  // loses already-paid time. Only the membershipPendingLock mechanism below
+  // guards against genuine duplicate PAYABLE orders.
 
   // Self-heal: release any lock left behind by an order whose payment window
   // has already expired. The cleanup job (cancelExpiredOrders.job.js) also
@@ -53,17 +56,24 @@ const createMembershipOrder = async (userId) => {
     { $set: { membershipPendingLock: null } }
   );
 
-  // Fast path: reuse a live pending order (mirrors the product-checkout UX,
-  // which recovers a pending order the same way). This is an optimization
-  // only — the unique index below is what actually prevents duplicates.
+  // Fast path: reuse a live pending order FOR THE SAME PLAN (mirrors the
+  // product-checkout UX, which recovers a pending order the same way). A
+  // pending order for a DIFFERENT plan than the one now requested is left
+  // alone here — the unique index still guarantees only one can ever become
+  // payable, and letting the old one expire naturally is simpler and safer
+  // than mutating an in-flight order's price. This is an optimization only —
+  // the unique index below is what actually prevents duplicate purchases.
   const existing = await Order.findOne({
     user: userId,
     membershipPendingLock: 'pending',
     expiresAt: { $gt: new Date() },
   }).sort({ createdAt: -1 });
 
-  if (existing) return existing;
+  if (existing && orderContainsMembership(existing) && existing.items[0]?.metadata?.membershipPlan === plan) {
+    return existing;
+  }
 
+  const planConfig = MEMBERSHIP_PLANS[plan];
   const orderNumber = await generateOrderNumber();
 
   try {
@@ -73,18 +83,18 @@ const createMembershipOrder = async (userId) => {
       membershipPendingLock: 'pending',
       items: [{
         itemType:    MEMBERSHIP_ITEM_TYPE,
-        name:        MEMBERSHIP_NAME,
-        sku:         MEMBERSHIP_SKU,
-        unitPrice:   MEMBERSHIP_PRICE,
+        name:        planConfig.name,
+        sku:         planConfig.sku,
+        unitPrice:   planConfig.price,
         quantity:    1,
-        totalPrice:  MEMBERSHIP_PRICE,
-        metadata:    { membershipType: MEMBERSHIP_TYPE },
+        totalPrice:  planConfig.price,
+        metadata:    { membershipPlan: plan },
       }],
       // No shippingAddress — membership has nothing to ship.
-      subtotal:     MEMBERSHIP_PRICE,
+      subtotal:     planConfig.price,
       taxAmount:    0,
       shippingCost: 0,
-      total:        MEMBERSHIP_PRICE,
+      total:        planConfig.price,
       expiresAt:    new Date(Date.now() + PAYMENT_TIMEOUT_MS),
     });
   } catch (err) {
@@ -100,10 +110,13 @@ const createMembershipOrder = async (userId) => {
   }
 };
 
-// ─── Activate membership after a successful, paid membership order ────────────
+// ─── Activate (or renew) membership after a successful, paid order ────────────
 // Called only from the backend payment-confirmation path (never reachable
 // directly from the client). Idempotent: safe to call more than once for the
-// same order — subsequent calls are no-ops.
+// same order — subsequent calls are no-ops (the order is only ever consumed
+// once, guarded by a marker on the order itself since, unlike the old
+// lifetime model, 'status: active' is no longer sufficient to detect replay —
+// a member can legitimately purchase again to renew).
 const activateMembershipForOrder = async ({ userId, orderId }) => {
   const order = await Order.findById(orderId);
   if (!order) throw new AppError('Order not found', StatusCodes.NOT_FOUND, 'ORDER_NOT_FOUND');
@@ -132,28 +145,50 @@ const activateMembershipForOrder = async ({ userId, orderId }) => {
     );
   }
 
-  // Atomic, conditional activation: only flips status/sets joinedAt the
-  // first time. A concurrent or repeated call for the same (already-active)
-  // user simply matches nothing and is a safe no-op — this is what makes
-  // activation idempotent and race-safe without a distributed lock.
-  const activated = await User.findOneAndUpdate(
-    { _id: userId, 'membership.status': { $ne: 'active' } },
-    { $set: { 'membership.status': 'active', 'membership.joinedAt': new Date() } },
-    { new: true }
-  );
+  // Idempotency marker lives on the ORDER (not on User.membership.status,
+  // which legitimately changes across renewals) — a membershipActivatedAt
+  // stamp on the order itself means "this specific order already extended
+  // the term once", making a replayed webhook/confirm call a safe no-op.
+  if (order.membershipActivatedAt) {
+    return User.findById(userId);
+  }
 
-  if (activated) return activated;
+  const plan = order.items.find(i => i.itemType === MEMBERSHIP_ITEM_TYPE)?.metadata?.membershipPlan;
+  const planConfig = MEMBERSHIP_PLANS[plan];
+  if (!planConfig) {
+    throw new AppError('Order has an invalid/unrecognized membership plan', StatusCodes.BAD_REQUEST, 'INVALID_MEMBERSHIP_PLAN');
+  }
 
-  // Already active (idempotent replay) — return current state, untouched.
-  const current = await User.findById(userId);
-  if (!current) throw new AppError('User not found', StatusCodes.NOT_FOUND, 'USER_NOT_FOUND');
-  return current;
+  const now = new Date();
+  const user = await User.findById(userId);
+  if (!user) throw new AppError('User not found', StatusCodes.NOT_FOUND, 'USER_NOT_FOUND');
+
+  // Renewal extends from the CURRENT expiresAt if the member is still
+  // active (so renewing early never loses already-paid time); otherwise
+  // (first join, or renewing after expiry) the new term starts now.
+  const currentlyActive = isMembershipActive(user.membership);
+  const base = currentlyActive && user.membership.expiresAt ? new Date(user.membership.expiresAt) : now;
+  const expiresAt = new Date(base.getTime() + planConfig.durationDays * 24 * 60 * 60 * 1000);
+
+  user.membership.status = 'active';
+  user.membership.plan = plan;
+  user.membership.startedAt = now;
+  user.membership.expiresAt = expiresAt;
+  if (!user.membership.joinedAt) user.membership.joinedAt = now; // first-ever join date — never overwritten again
+  await user.save();
+
+  // Atomic, race-safe idempotency stamp — a concurrent replay of this same
+  // call will simply find membershipActivatedAt already set above and no-op.
+  await Order.updateOne({ _id: orderId, membershipActivatedAt: null }, { $set: { membershipActivatedAt: now } });
+
+  return user;
 };
 
 // ─── Update only the notification preference ───────────────────────────────────
 // Deliberately narrow: this is the ONLY membership field a user may change
-// themselves. status/joinedAt/points/lifetimePoints are never accepted here —
-// the validator upstream (membership.validator.js) doesn't even parse them.
+// themselves. status/plan/points/lifetimePoints/expiresAt are never accepted
+// here — the validator upstream (membership.validator.js) doesn't even
+// parse them.
 const updateNotificationPreference = async (userId, notificationPreference) => {
   const user = await User.findByIdAndUpdate(
     userId,
