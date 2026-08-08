@@ -7,7 +7,8 @@ const InventoryMovement = require('../models/InventoryMovement');
 const { AppError } = require('../middleware/errorHandler');
 const { StatusCodes } = require('http-status-codes');
 const { paginate, paginateMeta } = require('../utils/paginate');
-const { getActiveDiscountMap } = require('./campaign.service');
+const { getActiveDiscountMap, getActivePointsMultiplierMap } = require('./campaign.service');
+const { POINTS_DEFAULT_RATE } = require('../config/membership');
 const { SPEC_PARAM_MAP: KB_SPEC_MAP } = require('../utils/catalog/keyboardFilterConfig');
 const { SPEC_PARAM_MAP: MN_SPEC_MAP } = require('../utils/catalog/monitorFilterConfig');
 const { SPEC_PARAM_MAP: MS_SPEC_MAP } = require('../utils/catalog/mouseFilterConfig');
@@ -170,13 +171,41 @@ const getProduct = async (slug, { isMember = false } = {}) => {
     .populate('category', 'name slug');
   if (!product) throw new AppError('Product not found', StatusCodes.NOT_FOUND, 'PRODUCT_NOT_FOUND');
 
-  const discountMap = await getActiveDiscountMap({ isMember });
-  const discount = discountMap.get(product._id.toString());
-  if (!discount) return product;
+  const [discountMap, memberPointsMultiplierMap] = await Promise.all([
+    getActiveDiscountMap({ isMember }),
+    // Always computed as if the viewer WERE a member — this is authoritative
+    // DISPLAY info about what an active Club member earns/would earn on this
+    // product right now, shown to members and non-members alike (a non-
+    // member sees it as a "join to get this" enticement — see
+    // ProductBuyBox.jsx). Never used for a real order's earning calculation —
+    // that's order.service.js, which always gates on the requester's real,
+    // server-verified isMember.
+    getActivePointsMultiplierMap({ isMember: true }),
+  ]);
 
+  const discount = discountMap.get(product._id.toString());
   const obj = product.toObject();
-  obj.discountedPrice = Math.round(product.price * (1 - discount / 100) * 100) / 100;
-  obj.discountPercent = discount;
+  if (discount) {
+    obj.discountedPrice = Math.round(product.price * (1 - discount / 100) * 100) / 100;
+    obj.discountPercent = discount;
+  }
+
+  // Authoritative, real-time earning context — the frontend must never
+  // independently derive this from stale/local campaign data (see Part F
+  // of the Club/VIP spec).
+  const pointsEligible = product.pointsEligible !== false;
+  const basePointsRate = product.pointsRateOverride ?? POINTS_DEFAULT_RATE;
+  const activePointsMultiplier = memberPointsMultiplierMap.get(product._id.toString()) ?? 1;
+  const effectivePointsRate = pointsEligible ? basePointsRate * activePointsMultiplier : 0;
+  const pointsBasisPrice = obj.discountedPrice ?? product.price;
+  obj.pointsInfo = {
+    pointsEligible,
+    basePointsRate,
+    activePointsMultiplier,
+    effectivePointsRate,
+    estimatedPointsValue: pointsEligible ? Math.floor(pointsBasisPrice * effectivePointsRate) : 0,
+  };
+
   return obj;
 };
 

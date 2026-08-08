@@ -82,13 +82,19 @@ export default function ProductBuyBox({
   const { price, oldPrice, discountPercent, savings, hasDiscount } = getProductPricing(product);
   const outOfStock = product.stock === 0;
 
-  // Real, truthful Club earning indicator only — reflects the product's
-  // actual pointsEligible/pointsRateOverride fields (see Product.js /
-  // points.service.js), never a generic marketing claim. Nothing renders
-  // for an explicitly excluded product (pointsEligible === false).
-  const pointsEligible = product.pointsEligible !== false;
-  const pointsRate = product.pointsRateOverride ?? POINTS_DEFAULT_RATE;
-  const pointsAmount = Math.floor(price * pointsRate);
+  // Real, truthful Club earning indicator — sourced entirely from the
+  // server's authoritative pointsInfo (see product.service.js#getProduct).
+  // Never independently derived here from raw product/campaign fields —
+  // an active points-multiplier campaign is live, server-side state the
+  // frontend must not guess at. pointsInfo.activePointsMultiplier is always
+  // computed as if the viewer WERE a member, so a non-member sees exactly
+  // what the current promo is worth, as an enticement to join.
+  const pointsInfo = product.pointsInfo;
+  const pointsEligible = pointsInfo?.pointsEligible ?? (product.pointsEligible !== false);
+  const effectivePointsRate = pointsInfo?.effectivePointsRate ?? (product.pointsRateOverride ?? POINTS_DEFAULT_RATE);
+  const activePointsMultiplier = pointsInfo?.activePointsMultiplier ?? 1;
+  const pointsAmount = pointsInfo ? pointsInfo.estimatedPointsValue : Math.floor(price * effectivePointsRate);
+  const hasActivePointsPromo = activePointsMultiplier > 1;
 
   const isWireless   = product.specs?.['Wireless'] === 'true' || product.specs?.['Bluetooth'] === 'true';
   const isHotSwap    = product.specs?.['Hot Swap'] === 'true';
@@ -154,12 +160,24 @@ export default function ProductBuyBox({
             <div className={s.pointsEarnRow}>
               <Percent size={12} aria-hidden="true" />
               {isMember
-                ? t('product.points_earn_vip').replace('{amount}', pointsAmount)
-                : <>
-                    {t('product.points_earn_nonvip').replace('{rate}', Math.round(pointsRate * 100))}
-                    {' '}
-                    <Link to="/club" className={s.pointsEarnLink}>{t('product.points_earn_link')}</Link>
-                  </>
+                ? (hasActivePointsPromo
+                    ? t('product.points_earn_vip_multiplier')
+                        .replace('{amount}', pointsAmount)
+                        .replace('{rate}', Math.round(effectivePointsRate * 100))
+                    : t('product.points_earn_vip').replace('{amount}', pointsAmount))
+                : (hasActivePointsPromo
+                    ? <>
+                        {t('product.points_earn_nonvip_multiplier')
+                          .replace('{amount}', pointsAmount)
+                          .replace('{multiplier}', activePointsMultiplier)}
+                        {' '}
+                        <Link to="/club" className={s.pointsEarnLink}>{t('product.points_earn_link')}</Link>
+                      </>
+                    : <>
+                        {t('product.points_earn_nonvip').replace('{rate}', Math.round(effectivePointsRate * 100))}
+                        {' '}
+                        <Link to="/club" className={s.pointsEarnLink}>{t('product.points_earn_link')}</Link>
+                      </>)
               }
             </div>
           )}
