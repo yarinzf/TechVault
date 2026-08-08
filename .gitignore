@@ -83,3 +83,6 @@ backups/
 *.dump
 *.dump.gz
 devops/scripts/*.log
+
+# Local-only dev credentials — never commit
+local-dev-credentials.txt
