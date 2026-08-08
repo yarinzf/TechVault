@@ -100,12 +100,33 @@ export const productService = {
     }
   },
 
+  // Backward-compatible bare-array form — WishlistPage's fallback
+  // recommendation call relies on exactly this shape (a plain product
+  // array), so it always takes just a limit and returns `data.products`
+  // directly regardless of the richer envelope the endpoint now returns.
   async getBestSellers(limit = 8) {
     try {
       const { data } = await api.get(`/products/best-sellers${qs({ limit })}`);
       return data?.products ?? [];
     } catch {
       return [];
+    }
+  },
+
+  // Full envelope — { period, periodStart, periodEnd, products } — for the
+  // dedicated Best Sellers page, which needs the period metadata (e.g. to
+  // localize "this month"'s real name) alongside the ranked products.
+  async getBestSellersRanking({ limit = 4, period = 'overall' } = {}) {
+    try {
+      const { data } = await api.get(`/products/best-sellers${qs({ limit, period })}`);
+      return {
+        period:      data?.period ?? period,
+        periodStart: data?.periodStart ?? null,
+        periodEnd:   data?.periodEnd ?? null,
+        products:    data?.products ?? [],
+      };
+    } catch {
+      return { period, periodStart: null, periodEnd: null, products: [] };
     }
   },
 

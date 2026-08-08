@@ -32,9 +32,10 @@ const getTopRated = async (req, res, next) => {
 
 const getBestSellers = async (req, res, next) => {
   try {
-    const limit = Math.min(parseInt(req.query.limit, 10) || 5, 20);
-    const products = await svc.getBestSellers(limit);
-    sendSuccess(res, { products });
+    const limit  = Math.min(parseInt(req.query.limit, 10) || 5, 20);
+    const period = req.query.period; // invalid/missing values are safely normalized to 'overall' inside the service
+    const result = await svc.getBestSellers(limit, period);
+    sendSuccess(res, result); // { period, periodStart, periodEnd, products }
   } catch (err) { next(err); }
 };
 

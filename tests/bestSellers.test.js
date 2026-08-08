@@ -63,7 +63,11 @@ async function seedUser(overrides = {}) {
 let orderCounter = 0;
 // Creates a real Order document directly (bypassing the checkout API) so
 // each test can precisely control status/paymentStatus/item quantities.
-async function seedOrder({ user, items, status = 'confirmed', paymentStatus = 'paid' }) {
+// `createdAt` (optional) forces a specific transaction date via a raw
+// driver update — Mongoose's timestamps:true plugin silently strips any
+// createdAt passed to create()/save(), the same well-established pattern
+// used elsewhere in this codebase (e.g. curateProductionStorefront.js).
+async function seedOrder({ user, items, status = 'confirmed', paymentStatus = 'paid', createdAt = null }) {
   const Order = mongoose.model('Order');
   orderCounter += 1;
   const orderItems = items.map((it) => ({
@@ -80,7 +84,7 @@ async function seedOrder({ user, items, status = 'confirmed', paymentStatus = 'p
 
   const hasPhysical = orderItems.some((it) => it.itemType !== 'membership');
 
-  return Order.create({
+  const order = await Order.create({
     orderNumber: 'TEST-ORD-' + orderCounter + '-' + Date.now() + '-' + Math.random().toString(36).slice(2),
     user: user._id,
     items: orderItems,
@@ -92,6 +96,23 @@ async function seedOrder({ user, items, status = 'confirmed', paymentStatus = 'p
     status,
     paymentStatus,
   });
+
+  if (createdAt) {
+    await mongoose.connection.collection('orders').updateOne({ _id: order._id }, { $set: { createdAt } });
+  }
+
+  return order;
+}
+
+// Real UTC month boundaries, relative to right now — never a hardcoded
+// calendar month, so these tests pass regardless of when they run.
+function currentUtcMonthMiddle() {
+  const now = new Date();
+  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 15, 12, 0, 0));
+}
+function priorUtcMonthMiddle(monthsAgo = 1) {
+  const now = new Date();
+  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - monthsAgo, 15, 12, 0, 0));
 }
 
 // ── Aggregation correctness ─────────────────────────────────────────────────
@@ -317,5 +338,167 @@ describe('GET /api/v1/products/best-sellers — real sales aggregation', () => {
     const res = await request(app).get(PUBLIC_BASE);
     expect(res.status).not.toBe(401);
     expect(res.status).not.toBe(403);
+  });
+});
+
+// ── Two ranking periods: overall vs current month ───────────────────────────
+
+describe('GET /api/v1/products/best-sellers?period=... — overall vs current-month ranking', () => {
+  test('default (no period) behaves exactly like period=overall', async () => {
+    const buyer   = await seedUser();
+    const product = await seedProduct({ name: 'Default Period Product' });
+    await seedOrder({ user: buyer, items: [{ product: product._id, quantity: 6 }], createdAt: priorUtcMonthMiddle(3) });
+
+    const withoutPeriod = await request(app).get(PUBLIC_BASE);
+    const withOverall    = await request(app).get(`${PUBLIC_BASE}?period=overall`);
+    expect(withoutPeriod.body.data.period).toBe('overall');
+    expect(withoutPeriod.body.data.products).toEqual(withOverall.body.data.products);
+  });
+
+  test('an order from an old month is excluded from period=month but included in period=overall', async () => {
+    const buyer   = await seedUser();
+    const product = await seedProduct({ name: 'Old Month Product' });
+    await seedOrder({ user: buyer, items: [{ product: product._id, quantity: 9 }], createdAt: priorUtcMonthMiddle(2) });
+
+    const overall = await request(app).get(`${PUBLIC_BASE}?period=overall`);
+    const month   = await request(app).get(`${PUBLIC_BASE}?period=month`);
+
+    expect(overall.body.data.products.find((p) => p.name === 'Old Month Product')).toBeDefined();
+    expect(month.body.data.products.find((p) => p.name === 'Old Month Product')).toBeUndefined();
+  });
+
+  test('an order created within the current month is included in period=month', async () => {
+    const buyer   = await seedUser();
+    const product = await seedProduct({ name: 'This Month Product' });
+    await seedOrder({ user: buyer, items: [{ product: product._id, quantity: 4 }], createdAt: currentUtcMonthMiddle() });
+
+    const month = await request(app).get(`${PUBLIC_BASE}?period=month`);
+    const found = month.body.data.products.find((p) => p.name === 'This Month Product');
+    expect(found).toBeDefined();
+    expect(found.unitsSold).toBe(4);
+  });
+
+  test('the same product can have different unitsSold for overall vs month, and appear in both rankings', async () => {
+    const buyer   = await seedUser();
+    const product = await seedProduct({ name: 'Both Periods Product' });
+    // 10 units two months ago (counts only toward overall) + 3 units this month
+    await seedOrder({ user: buyer, items: [{ product: product._id, quantity: 10 }], createdAt: priorUtcMonthMiddle(2) });
+    await seedOrder({ user: buyer, items: [{ product: product._id, quantity: 3 }],  createdAt: currentUtcMonthMiddle() });
+
+    const overall = await request(app).get(`${PUBLIC_BASE}?period=overall`);
+    const month   = await request(app).get(`${PUBLIC_BASE}?period=month`);
+
+    const overallEntry = overall.body.data.products.find((p) => p.name === 'Both Periods Product');
+    const monthEntry   = month.body.data.products.find((p) => p.name === 'Both Periods Product');
+    expect(overallEntry.unitsSold).toBe(13); // 10 + 3, all real qualifying sales lifetime
+    expect(monthEntry.unitsSold).toBe(3);    // only this month's order
+  });
+
+  test('monthly ranking order can genuinely differ from overall ranking order', async () => {
+    const buyer = await seedUser();
+    const oldBig    = await seedProduct({ name: 'Old Big Seller' });
+    const newLeader = await seedProduct({ name: 'New Month Leader' });
+    // Old Big Seller dominates lifetime (sold long ago), but nothing this month
+    await seedOrder({ user: buyer, items: [{ product: oldBig._id, quantity: 100 }], createdAt: priorUtcMonthMiddle(6) });
+    // New Month Leader has modest lifetime sales but the most THIS month
+    await seedOrder({ user: buyer, items: [{ product: newLeader._id, quantity: 5 }], createdAt: priorUtcMonthMiddle(6) });
+    await seedOrder({ user: buyer, items: [{ product: newLeader._id, quantity: 20 }], createdAt: currentUtcMonthMiddle() });
+
+    const overall = await request(app).get(`${PUBLIC_BASE}?period=overall`);
+    const month   = await request(app).get(`${PUBLIC_BASE}?period=month`);
+
+    expect(overall.body.data.products[0].name).toBe('Old Big Seller');  // 100 lifetime > 25 lifetime
+    expect(month.body.data.products[0].name).toBe('New Month Leader');  // only one with any sales this month
+    expect(month.body.data.products.find((p) => p.name === 'Old Big Seller')).toBeUndefined();
+  });
+
+  test('a category leader in the monthly ranking can differ from the overall category leader', async () => {
+    const buyer = await seedUser();
+    const cat = await seedCategory({ name: 'Shared Category' });
+    const overallLeader = await seedProduct({ name: 'Overall Category Leader', category: cat._id });
+    const monthLeader   = await seedProduct({ name: 'Month Category Leader',   category: cat._id });
+
+    await seedOrder({ user: buyer, items: [{ product: overallLeader._id, quantity: 50 }], createdAt: priorUtcMonthMiddle(4) });
+    await seedOrder({ user: buyer, items: [{ product: monthLeader._id,   quantity: 5 }],  createdAt: priorUtcMonthMiddle(4) });
+    await seedOrder({ user: buyer, items: [{ product: monthLeader._id,   quantity: 12 }], createdAt: currentUtcMonthMiddle() });
+
+    const overall = await request(app).get(`${PUBLIC_BASE}?period=overall&limit=4`);
+    const month   = await request(app).get(`${PUBLIC_BASE}?period=month&limit=4`);
+
+    const overallEntry = overall.body.data.products.find((p) => p.name === 'Overall Category Leader');
+    const monthEntry   = month.body.data.products.find((p) => p.name === 'Month Category Leader');
+    expect(overallEntry.isCategoryLeader).toBe(true);
+    expect(monthEntry.isCategoryLeader).toBe(true); // leader within the SAME category, but for the month period
+  });
+
+  test('an invalid period value is safely normalized to overall rather than erroring', async () => {
+    const buyer   = await seedUser();
+    const product = await seedProduct({ name: 'Normalized Period Product' });
+    await seedOrder({ user: buyer, items: [{ product: product._id, quantity: 7 }], createdAt: priorUtcMonthMiddle(5) });
+
+    const res = await request(app).get(`${PUBLIC_BASE}?period=not_a_real_period`);
+    expect(res.status).toBe(200);
+    expect(res.body.data.period).toBe('overall');
+    expect(res.body.data.products.find((p) => p.name === 'Normalized Period Product')).toBeDefined();
+  });
+
+  test('limit=4 caps both periods', async () => {
+    const buyer = await seedUser();
+    for (let i = 0; i < 6; i++) {
+      const p = await seedProduct({ name: `Capped Seller ${i}` });
+      await seedOrder({ user: buyer, items: [{ product: p._id, quantity: 10 - i }], createdAt: currentUtcMonthMiddle() });
+    }
+    const overall = await request(app).get(`${PUBLIC_BASE}?period=overall&limit=4`);
+    const month   = await request(app).get(`${PUBLIC_BASE}?period=month&limit=4`);
+    expect(overall.body.data.products).toHaveLength(4);
+    expect(month.body.data.products).toHaveLength(4);
+  });
+
+  test('month boundary correctness: an order dated exactly at the start of the current month counts, one millisecond before does not', async () => {
+    const buyer = await seedUser();
+    const now = new Date();
+    const monthStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1, 0, 0, 0, 0));
+    const justBefore  = new Date(monthStart.getTime() - 1);
+
+    const inside  = await seedProduct({ name: 'Right At Month Start' });
+    const outside = await seedProduct({ name: 'One Ms Before Month Start' });
+    await seedOrder({ user: buyer, items: [{ product: inside._id,  quantity: 2 }], createdAt: monthStart });
+    await seedOrder({ user: buyer, items: [{ product: outside._id, quantity: 2 }], createdAt: justBefore });
+
+    const month = await request(app).get(`${PUBLIC_BASE}?period=month`);
+    expect(month.body.data.products.find((p) => p.name === 'Right At Month Start')).toBeDefined();
+    expect(month.body.data.products.find((p) => p.name === 'One Ms Before Month Start')).toBeUndefined();
+  });
+
+  test('campaign pricing is applied identically in both the overall and monthly sections', async () => {
+    const Campaign = mongoose.model('Campaign');
+    const buyer   = await seedUser();
+    const product = await seedProduct({ name: 'Discounted In Both Periods', price: 400 });
+    await seedOrder({ user: buyer, items: [{ product: product._id, quantity: 2 }], createdAt: currentUtcMonthMiddle() });
+
+    const now = new Date();
+    await Campaign.create({
+      name: 'Both Periods Campaign', discountPercent: 10, isActive: true,
+      startDate: new Date(now.getTime() - 86400000), endDate: new Date(now.getTime() + 86400000),
+      products: [product._id], placement: 'none',
+    });
+
+    const overall = await request(app).get(`${PUBLIC_BASE}?period=overall`);
+    const month   = await request(app).get(`${PUBLIC_BASE}?period=month`);
+    const overallEntry = overall.body.data.products.find((p) => p.name === 'Discounted In Both Periods');
+    const monthEntry   = month.body.data.products.find((p) => p.name === 'Discounted In Both Periods');
+    expect(overallEntry.discountPercent).toBe(10);
+    expect(overallEntry.discountedPrice).toBe(360);
+    expect(monthEntry.discountPercent).toBe(10);
+    expect(monthEntry.discountedPrice).toBe(360);
+  });
+
+  test('response includes periodStart/periodEnd for month, and null for overall', async () => {
+    const overall = await request(app).get(`${PUBLIC_BASE}?period=overall`);
+    const month   = await request(app).get(`${PUBLIC_BASE}?period=month`);
+    expect(overall.body.data.periodStart).toBeNull();
+    expect(overall.body.data.periodEnd).toBeNull();
+    expect(typeof month.body.data.periodStart).toBe('string');
+    expect(typeof month.body.data.periodEnd).toBe('string');
   });
 });

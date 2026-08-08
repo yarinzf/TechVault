@@ -22,6 +22,32 @@ const SALES_TRUTH_MATCH = {
   status: { $nin: ['cancelled', 'refunded'] },
 };
 
+const VALID_PERIODS = ['overall', 'month'];
+
+// Month boundaries computed in UTC — matches report.service.js's existing
+// $dateToString month-grouping, which has no explicit `timezone` option and
+// therefore already defaults to UTC. Using the same convention here means
+// "month" means the identical thing across the public Best Sellers ranking,
+// the monthly analytics rebuild, and the existing admin sales report —
+// never three silently-different definitions of "this month".
+//
+// `createdAt` (not a payment-history-derived timestamp) is the transaction
+// date used throughout: it's the field every existing date-bucketed report
+// in this codebase already uses (report.service.js's day/week/month
+// grouping, analytics.service.js's range filters), and in this app's real
+// order lifecycle a `pending_payment` order that isn't paid within its
+// window is auto-cancelled (see cancelExpiredOrders.job.js) — so any order
+// that survives SALES_TRUTH_MATCH was, in practice, paid at essentially the
+// same time it was created. There is no dedicated `paidAt` field on Order;
+// the alternative (extracting a 'paid' transition from paymentHistory[])
+// would be less reliable and inconsistent with every other report in this
+// codebase, for no real gain in accuracy.
+function getUtcMonthBoundaries(year, month) {
+  const start = new Date(Date.UTC(year, month - 1, 1, 0, 0, 0, 0));
+  const end   = new Date(Date.UTC(year, month, 1, 0, 0, 0, 0));
+  return { start, end };
+}
+
 const PROJECT_FIELDS = {
   name: 1, slug: 1, images: 1, price: 1, compareAtPrice: 1,
   brand: 1, category: 1, 'ratings.average': 1, 'ratings.count': 1,
@@ -168,7 +194,7 @@ const getTopRated = async (limit = 8) => {
     .lean();
 };
 
-// ─── Best-sellers — real, lifetime quantity sold from actual paid orders ──────
+// ─── Best-sellers — real quantity sold from actual paid orders ────────────────
 //
 // Product.salesCount is NOT used here — it's seeded with large static
 // baseline values in server/data/**/*.js (e.g. `salesCount: 172`) and only
@@ -176,18 +202,36 @@ const getTopRated = async (limit = 8) => {
 // order.service.js, so it can never represent genuine sales history. This
 // aggregates directly from real Order/OrderItem data instead, ranked by
 // total QUANTITY sold (not order count — a single order for 3 units counts
-// as 3, not 1), lifetime-to-date (matches the visible Sapir reference's own
-// rendering, which sorts by `salesRankTotal`/shows `salesCountTotal` — the
-// monthly/weekly fields exist in its demo data but are never what's
-// actually rendered on the page).
+// as 3, not 1).
 //
-// One aggregation computes the FULL real ranking (not capped at `limit`)
-// because "is this product the #1 seller in its own category" must be
-// judged against every real seller, not just whichever ones survived a
-// small page-size cutoff — see isCategoryLeader below.
-const getBestSellers = async (limit = 5) => {
+// period: 'overall' (lifetime-to-date, the default — matches the visible
+// Sapir reference's own rendering, which sorts by `salesRankTotal`/shows
+// `salesCountTotal`) or 'month' (the current UTC calendar month only, see
+// getUtcMonthBoundaries above). Any other value silently normalizes to
+// 'overall' — GET query params are defensively clamped elsewhere in this
+// file (see getTrending/getTopRated's own limit handling), never hard-
+// rejected with a 4xx for a read-only, cosmetic ranking endpoint.
+//
+// One aggregation computes the FULL real ranking for the requested period
+// (not capped at `limit`) because "is this product the #1 seller in its own
+// category" must be judged against every real seller in that SAME period,
+// never a mix of overall and monthly data — see isCategoryLeader below.
+const getBestSellers = async (limit = 5, period = 'overall') => {
+  const normalizedPeriod = VALID_PERIODS.includes(period) ? period : 'overall';
+
+  const now = new Date();
+  let periodStart = null;
+  let periodEnd   = null;
+  let dateMatch   = {};
+  if (normalizedPeriod === 'month') {
+    const { start, end } = getUtcMonthBoundaries(now.getUTCFullYear(), now.getUTCMonth() + 1);
+    periodStart = start;
+    periodEnd   = end;
+    dateMatch   = { createdAt: { $gte: start, $lt: end } };
+  }
+
   const fullRanking = await Order.aggregate([
-    { $match: SALES_TRUTH_MATCH },
+    { $match: { ...SALES_TRUTH_MATCH, ...dateMatch } },
     { $unwind: '$items' },
     { $match: { 'items.itemType': 'product' } }, // membership lines have no real Product document
     { $group: { _id: '$items.product', unitsSold: { $sum: '$items.quantity' } } },
@@ -207,12 +251,15 @@ const getBestSellers = async (limit = 5) => {
     { $sort: { unitsSold: -1, _id: 1 } }, // deterministic tie-break by _id
   ]);
 
-  if (fullRanking.length === 0) return [];
+  if (fullRanking.length === 0) {
+    return { period: normalizedPeriod, periodStart, periodEnd, products: [] };
+  }
 
   // Category leader = the single highest-unitsSold real product within each
-  // real category, computed against the FULL ranking above — never just the
-  // displayed top N, so a weak product can't "become" a leader merely
-  // because its stronger same-category competitors were cut off by `limit`.
+  // real category, computed against the FULL ranking for THIS period only
+  // — never just the displayed top N, and never mixed with the other
+  // period's ranking, so a product can legitimately be a category leader
+  // overall but not this month, or vice versa (see task requirement).
   const categoryLeaderIds = new Set();
   const seenCategories = new Set();
   for (const r of fullRanking) {
@@ -236,7 +283,7 @@ const getBestSellers = async (limit = 5) => {
   ]);
   const productById = new Map(products.map((p) => [String(p._id), p]));
 
-  return top
+  const rankedProducts = top
     .map((r, i) => {
       const p = productById.get(String(r._id));
       if (!p) return null; // defensive; the $lookup/$unwind above already excludes these
@@ -259,6 +306,8 @@ const getBestSellers = async (limit = 5) => {
       };
     })
     .filter(Boolean);
+
+  return { period: normalizedPeriod, periodStart, periodEnd, products: rankedProducts };
 };
 
 module.exports = {
@@ -267,4 +316,11 @@ module.exports = {
   getTrending,
   getTopRated,
   getBestSellers,
+  // Shared with productSalesAnalytics.service.js so both the live public
+  // ranking and the persisted monthly analytics agree on the exact same
+  // "what counts as a real sale" definition and "what counts as a month" —
+  // never two drifting copies.
+  SALES_TRUTH_MATCH,
+  ACTIVE_MATCH,
+  getUtcMonthBoundaries,
 };

@@ -16,7 +16,7 @@ import s from './ProductCard.module.css';
 // and campaign pricing are shared unchanged — no forked business logic.
 export default function ProductCard({
   product, rank, fit = 'cover', arrivalLabel,
-  rankLabel = false, salesCount = null, contextBadge = null, showViewButton = false,
+  rankLabel = false, salesCount = null, salesCountLabel = null, contextBadge = null, showViewButton = false,
 }) {
   const { addItem }              = useCart();
   const { isInWishlist, toggle } = useWishlist();
@@ -212,11 +212,14 @@ export default function ProductCard({
           </div>
         )}
 
-        {/* Sales line (.bs-sales-line) — Best Sellers only, real aggregated units sold */}
+        {/* Sales line (.bs-sales-line) — Best Sellers only, real aggregated
+            units sold. salesCountLabel lets the caller supply period-correct
+            wording (e.g. "...sold this month" vs plain "...sold"); falls
+            back to the generic label when omitted. */}
         {salesCount != null && (
           <div className={s.salesLine}>
             <TrendingUp size={12} aria-hidden="true" />
-            {t('product.units_sold_label').replace('{count}', salesCount.toLocaleString())}
+            {salesCountLabel ?? t('product.units_sold_label').replace('{count}', salesCount.toLocaleString())}
           </div>
         )}
 
