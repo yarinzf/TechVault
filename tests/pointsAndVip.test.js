@@ -308,7 +308,11 @@ describe('Points earning — default rate, eligibility, multiplier', () => {
     // have created back then.
     const earnedAt = new Date(Date.now() - 396 * 86400000);
     const expiresAt = new Date(earnedAt); expiresAt.setMonth(expiresAt.getMonth() + 12);
-    await Tx.create({ user: user._id, type: 'earn', points: 80, expiresAt, createdAt: earnedAt });
+    // remainingPoints is what real FIFO expiry now reads (never a capped
+    // aggregate-balance guess) — every real earn lot always carries it (see
+    // realizeEarnedPoints), so it's seeded here too, matching a lot that has
+    // never had anything redeemed from it.
+    await Tx.create({ user: user._id, type: 'earn', points: 80, remainingPoints: 80, expiresAt, createdAt: earnedAt });
     await User.findByIdAndUpdate(user._id, { $inc: { 'membership.points': 80, 'membership.lifetimePoints': 80 } });
 
     const pointsService = require('../server/services/points.service');
@@ -726,6 +730,424 @@ describe('Admin controls — product points fields, campaign VIP fields', () => 
     expect(res2.body.data.product.pointsEligible).toBe(false);
   });
 
+});
+
+// ══════════════════════════════════════════════════════════════════════════
+// ZERO-CASH CHECKOUT — order fully paid with redeemed points (Fix 1)
+// ══════════════════════════════════════════════════════════════════════════
+describe('Zero-cash checkout — order.total === 0 fully paid with points', () => {
+  it('create-intent skips the payment provider entirely when payable is ₪0', async () => {
+    const product = await seedProduct({ price: 300 });
+    const { accessToken, user } = await registerAndLogin();
+    await makeMember(user._id, { points: 500 });
+
+    await addToCart(accessToken, product._id, 1);
+    const orderRes = await createOrder(accessToken, { pointsToRedeem: 300 });
+    expect(orderRes.status).toBe(201);
+    const order = orderRes.body.data.order;
+    expect(order.total).toBe(0);
+    const orderId = order._id;
+
+    const intentRes = await request(app).post(`${PAYMENTS}/create-intent`).set('Authorization', `Bearer ${accessToken}`).send({ orderId });
+    expect(intentRes.status).toBe(200);
+    expect(intentRes.body.data.provider).toBe('zero_payment');
+    expect(intentRes.body.data.clientSecret).toBeNull();
+    // Never a mock/stripe-provider-shaped id (mock_pi_...) — proves the real
+    // provider's createIntent was never called for a ₪0 order.
+    expect(intentRes.body.data.paymentIntentId).toBe(`zero_${orderId}`);
+
+    const Order = mongoose.model('Order');
+    const fresh = await Order.findById(orderId);
+    expect(fresh.paymentRef).toBe(`zero_${orderId}`);
+  });
+
+  it('confirm completes a ₪0 order as paid, through the same order/payment state machine as a real payment', async () => {
+    const product = await seedProduct({ price: 300 });
+    const { accessToken, user } = await registerAndLogin();
+    await makeMember(user._id, { points: 500 });
+
+    await addToCart(accessToken, product._id, 1);
+    const orderRes = await createOrder(accessToken, { pointsToRedeem: 300 });
+    const orderId = orderRes.body.data.order._id;
+
+    const intentRes = await request(app).post(`${PAYMENTS}/create-intent`).set('Authorization', `Bearer ${accessToken}`).send({ orderId });
+    const { paymentIntentId } = intentRes.body.data;
+
+    const confirmRes = await request(app).post(`${PAYMENTS}/confirm`).set('Authorization', `Bearer ${accessToken}`).send({ orderId, paymentIntentId });
+    expect(confirmRes.status).toBe(200);
+    const confirmed = confirmRes.body.data.order;
+    expect(confirmed.paymentStatus).toBe('paid');
+    expect(confirmed.status).toBe('confirmed'); // physical order — same auto-advance as a real payment
+    expect(confirmed.paymentHistory.at(-1).transactionId).toBe(paymentIntentId);
+    expect(confirmed.paymentHistory.at(-1).amount).toBe(0);
+
+    // Cart cleared normally, exactly like a real paid order.
+    const Cart = mongoose.model('Cart');
+    const cart = await Cart.findOne({ user: user._id });
+    expect(cart.items).toHaveLength(0);
+
+    // Points ledger: redemption is final (not reversed), no negative totals.
+    const fresh = await mongoose.model('User').findById(user._id);
+    expect(fresh.membership.points).toBe(200); // 500 - 300
+    const Order = mongoose.model('Order');
+    const freshOrder = await Order.findById(orderId);
+    expect(freshOrder.pointsRedeemedReversed).toBe(false);
+    expect(freshOrder.total).toBe(0);
+  });
+
+  it('confirm rejects a mismatched paymentIntentId for a zero-cash order', async () => {
+    const product = await seedProduct({ price: 300 });
+    const { accessToken, user } = await registerAndLogin();
+    await makeMember(user._id, { points: 500 });
+
+    await addToCart(accessToken, product._id, 1);
+    const orderRes = await createOrder(accessToken, { pointsToRedeem: 300 });
+    const orderId = orderRes.body.data.order._id;
+    await request(app).post(`${PAYMENTS}/create-intent`).set('Authorization', `Bearer ${accessToken}`).send({ orderId });
+
+    const badConfirm = await request(app).post(`${PAYMENTS}/confirm`).set('Authorization', `Bearer ${accessToken}`).send({ orderId, paymentIntentId: 'not_the_real_ref' });
+    expect(badConfirm.status).toBe(400);
+    expect(badConfirm.body.error.code).toBe('PAYMENT_NOT_CONFIRMED');
+
+    const Order = mongoose.model('Order');
+    const fresh = await Order.findById(orderId);
+    expect(fresh.paymentStatus).toBe('unpaid');
+  });
+
+  it('confirm is idempotent for a zero-cash order — a replay does not double-complete or double-clear the cart', async () => {
+    const product = await seedProduct({ price: 300 });
+    const { accessToken, user } = await registerAndLogin();
+    await makeMember(user._id, { points: 500 });
+
+    await addToCart(accessToken, product._id, 1);
+    const orderRes = await createOrder(accessToken, { pointsToRedeem: 300 });
+    const orderId = orderRes.body.data.order._id;
+    const intentRes = await request(app).post(`${PAYMENTS}/create-intent`).set('Authorization', `Bearer ${accessToken}`).send({ orderId });
+    const { paymentIntentId } = intentRes.body.data;
+
+    const first  = await request(app).post(`${PAYMENTS}/confirm`).set('Authorization', `Bearer ${accessToken}`).send({ orderId, paymentIntentId });
+    const second = await request(app).post(`${PAYMENTS}/confirm`).set('Authorization', `Bearer ${accessToken}`).send({ orderId, paymentIntentId });
+    expect(first.status).toBe(200);
+    expect(second.status).toBe(200);
+    expect(second.body.message).toBe('Payment already confirmed');
+
+    const Order = mongoose.model('Order');
+    const fresh = await Order.findById(orderId);
+    expect(fresh.paymentHistory).toHaveLength(1); // no duplicate completion entry
+
+    const freshUser = await mongoose.model('User').findById(user._id);
+    expect(freshUser.membership.points).toBe(200); // unchanged by the replay
+  });
+
+  it('an order-creation failure after points reservation rolls the reservation back (no stranded deduction)', async () => {
+    const product = await seedProduct({ price: 300 });
+    const { accessToken, user } = await registerAndLogin();
+    await makeMember(user._id, { points: 500 });
+    await addToCart(accessToken, product._id, 1);
+
+    // Force Order.create to fail AFTER reservePoints has already run, on the
+    // exact standalone-Mongo fallback path createOrder retries through —
+    // reproduces the real gap this fix closes (see order.service.js).
+    const Order = mongoose.model('Order');
+    const originalCreate = Order.create.bind(Order);
+    const spy = jest.spyOn(Order, 'create').mockImplementation(async (...args) => {
+      throw new Error('simulated order creation failure');
+    });
+
+    const orderService = require('../server/services/order.service');
+    await expect(orderService.createOrder(user._id, {
+      shippingAddress: { street: '1 Main St', city: 'Tel Aviv', zip: '61000', country: 'IL' },
+      pointsToRedeem: 300,
+    })).rejects.toThrow();
+
+    spy.mockRestore();
+
+    const fresh = await mongoose.model('User').findById(user._id);
+    expect(fresh.membership.points).toBe(500); // fully rolled back, not stranded at 200
+
+    const Tx = mongoose.model('MembershipPointsTransaction');
+    const reversal = await Tx.findOne({ user: user._id, type: 'reversal' });
+    expect(reversal).not.toBeNull();
+  });
+});
+
+// ══════════════════════════════════════════════════════════════════════════
+// FIFO POINTS LOT ACCOUNTING (Fix 2)
+// ══════════════════════════════════════════════════════════════════════════
+describe('FIFO points lot accounting — real lots, not aggregate-balance approximation', () => {
+  async function seedEarnLot(userId, points, earnedAt) {
+    const Tx = mongoose.model('MembershipPointsTransaction');
+    const expiresAt = new Date(earnedAt); expiresAt.setMonth(expiresAt.getMonth() + 12);
+    const lot = await Tx.create({
+      user: userId, type: 'earn', points, remainingPoints: points, expiresAt, createdAt: earnedAt,
+    });
+    await mongoose.model('User').findByIdAndUpdate(userId, { $inc: { 'membership.points': points, 'membership.lifetimePoints': points } });
+    return lot;
+  }
+
+  it('redeeming exactly the oldest lot leaves the newer lot fully untouched, and 0 expires at the old lot\'s due date', async () => {
+    const { user } = await registerAndLogin();
+    await makeMember(user._id, { points: 0 });
+
+    const janEarnedAt = new Date('2026-01-01T00:00:00.000Z');
+    const junEarnedAt = new Date('2026-06-01T00:00:00.000Z');
+    const janLot = await seedEarnLot(user._id, 100, janEarnedAt);
+    const junLot = await seedEarnLot(user._id, 100, junEarnedAt);
+
+    const pointsService = require('../server/services/points.service');
+    const orderId = new mongoose.Types.ObjectId();
+    await pointsService.reservePoints(user._id, 100, orderId);
+
+    const Tx = mongoose.model('MembershipPointsTransaction');
+    const freshJan = await Tx.findById(janLot._id);
+    const freshJun = await Tx.findById(junLot._id);
+    expect(freshJan.remainingPoints).toBe(0);   // fully consumed first (oldest expiresAt)
+    expect(freshJun.remainingPoints).toBe(100); // completely untouched
+
+    const redeemTx = await Tx.findOne({ order: orderId, type: 'redeem' });
+    expect(redeemTx.consumedLots).toHaveLength(1);
+    expect(String(redeemTx.consumedLots[0].lot)).toBe(String(janLot._id));
+    expect(redeemTx.consumedLots[0].amount).toBe(100);
+
+    // Advance past the Jan lot's expiry and reconcile — it should expire
+    // exactly its OWN remainingPoints (0), not a stale aggregate-balance guess.
+    await Tx.updateOne({ _id: janLot._id }, { $set: { expiresAt: new Date(Date.now() - 1000) } });
+    const result = await pointsService.expireDuePoints(user._id);
+    expect(result.expired).toBe(0);
+
+    const fresh = await mongoose.model('User').findById(user._id);
+    expect(fresh.membership.points).toBe(100); // the untouched June lot is all that remains
+  });
+
+  it('a redemption crossing two lots consumes the remainder of the old lot then the start of the new lot', async () => {
+    const { user } = await registerAndLogin();
+    await makeMember(user._id, { points: 0 });
+
+    const janLot = await seedEarnLot(user._id, 100, new Date('2026-01-01T00:00:00.000Z'));
+    const junLot = await seedEarnLot(user._id, 100, new Date('2026-06-01T00:00:00.000Z'));
+
+    const pointsService = require('../server/services/points.service');
+    const orderId = new mongoose.Types.ObjectId();
+    await pointsService.reservePoints(user._id, 150, orderId);
+
+    const Tx = mongoose.model('MembershipPointsTransaction');
+    const freshJan = await Tx.findById(janLot._id);
+    const freshJun = await Tx.findById(junLot._id);
+    expect(freshJan.remainingPoints).toBe(0);
+    expect(freshJun.remainingPoints).toBe(50);
+
+    const redeemTx = await Tx.findOne({ order: orderId, type: 'redeem' });
+    expect(redeemTx.consumedLots).toHaveLength(2);
+    const byLot = Object.fromEntries(redeemTx.consumedLots.map(c => [String(c.lot), c.amount]));
+    expect(byLot[String(janLot._id)]).toBe(100);
+    expect(byLot[String(junLot._id)]).toBe(50);
+  });
+
+  it('reversing a redemption restores the exact consumed amounts to their exact origin lots', async () => {
+    const { user } = await registerAndLogin();
+    await makeMember(user._id, { points: 0 });
+
+    const janLot = await seedEarnLot(user._id, 100, new Date('2026-01-01T00:00:00.000Z'));
+    const junLot = await seedEarnLot(user._id, 100, new Date('2026-06-01T00:00:00.000Z'));
+
+    const pointsService = require('../server/services/points.service');
+    const Order = mongoose.model('Order');
+    const orderId = new mongoose.Types.ObjectId();
+    await pointsService.reservePoints(user._id, 150, orderId);
+    // reverseRedemption reads order.pointsRedeemed/pointsRedeemedReversed —
+    // build a minimal stand-in order document matching what it needs.
+    const stubOrder = new Order({
+      _id: orderId, user: user._id, orderNumber: `ORD-FIFO-${Date.now()}`,
+      items: [{ itemType: 'membership', name: 'x', sku: 'x', unitPrice: 1, quantity: 1, totalPrice: 1 }],
+      subtotal: 1, taxAmount: 0, total: 1, pointsRedeemed: 150, pointsRedeemedReversed: false,
+    });
+    await pointsService.reverseRedemption(stubOrder);
+
+    const Tx = mongoose.model('MembershipPointsTransaction');
+    const freshJan = await Tx.findById(janLot._id);
+    const freshJun = await Tx.findById(junLot._id);
+    expect(freshJan.remainingPoints).toBe(100); // fully restored
+    expect(freshJun.remainingPoints).toBe(100); // fully restored
+
+    const fresh = await mongoose.model('User').findById(user._id);
+    expect(fresh.membership.points).toBe(200);
+  });
+
+  it('expiry reconciliation expires only each lot\'s own remainingPoints after a prior partial redemption', async () => {
+    const { user } = await registerAndLogin();
+    await makeMember(user._id, { points: 0 });
+
+    const dueLot = await seedEarnLot(user._id, 100, new Date(Date.now() - 396 * 86400000));
+    const freshLot = await seedEarnLot(user._id, 100, new Date());
+
+    const pointsService = require('../server/services/points.service');
+    const orderId = new mongoose.Types.ObjectId();
+    // Redeem 60 — consumed entirely from the due (oldest) lot, leaving it 40.
+    await pointsService.reservePoints(user._id, 60, orderId);
+
+    const Tx = mongoose.model('MembershipPointsTransaction');
+    expect((await Tx.findById(dueLot._id)).remainingPoints).toBe(40);
+
+    const result = await pointsService.expireDuePoints(user._id);
+    expect(result.expired).toBe(40); // exactly the lot's real remainder, not the full original 100
+
+    const fresh = await mongoose.model('User').findById(user._id);
+    expect(fresh.membership.points).toBe(100); // 140 - 40 expired
+    expect((await Tx.findById(freshLot._id)).remainingPoints).toBe(100); // untouched, not due yet
+
+    // No double expiry on a second run.
+    const second = await pointsService.expireDuePoints(user._id);
+    expect(second.expired).toBe(0);
+  });
+});
+
+// ══════════════════════════════════════════════════════════════════════════
+// COUPON + POINTS EARNING BASE (Fix 5)
+// ══════════════════════════════════════════════════════════════════════════
+describe('Points earning base accounts for coupon allocation', () => {
+  it('earns on the real net eligible amount after coupon AND points redemption (₪2,000 → ₪1,500 → 75 points)', async () => {
+    const product = await seedProduct({ price: 2000 });
+    const { accessToken, user } = await registerAndLogin();
+    await makeMember(user._id, { points: 300 });
+
+    const Coupon = mongoose.model('Coupon');
+    await Coupon.create({
+      code: 'SAVE200', type: 'fixed', value: 200,
+      validFrom: new Date(Date.now() - 86400000), validUntil: new Date(Date.now() + 86400000),
+      isActive: true, minOrderAmount: 0,
+    });
+
+    await addToCart(accessToken, product._id, 1);
+    const orderRes = await createOrder(accessToken, { couponCode: 'SAVE200', pointsToRedeem: 300 });
+    expect(orderRes.status).toBe(201);
+    const order = orderRes.body.data.order;
+    expect(order.couponDiscount).toBe(200);
+    expect(order.pointsRedeemedValue).toBe(300);
+    // (2000 - 200 - 300) * 5% = 75, not (2000-300)*5%=85 and not 2000*5%=100
+    expect(order.pointsEarned).toBe(75);
+  });
+
+  it('a coupon proportionally reduces the earning base even with no points redeemed', async () => {
+    const product = await seedProduct({ price: 1000 });
+    const { accessToken, user } = await registerAndLogin();
+    await makeMember(user._id);
+
+    const Coupon = mongoose.model('Coupon');
+    await Coupon.create({
+      code: 'SAVE100', type: 'fixed', value: 100,
+      validFrom: new Date(Date.now() - 86400000), validUntil: new Date(Date.now() + 86400000),
+      isActive: true, minOrderAmount: 0,
+    });
+
+    await addToCart(accessToken, product._id, 1);
+    const orderRes = await createOrder(accessToken, { couponCode: 'SAVE100' });
+    expect(orderRes.body.data.order.pointsEarned).toBe(45); // (1000-100)*5%=45, not 1000*5%=50
+  });
+
+  it('a coupon is allocated proportionally across two lines — an excluded product still reduces the coupon pool but earns nothing', async () => {
+    const eligible  = await seedProduct({ price: 800, name: 'Eligible Item' });
+    const excluded  = await seedProduct({ price: 200, name: 'Excluded Item', pointsEligible: false });
+    const { accessToken, user } = await registerAndLogin();
+    await makeMember(user._id);
+
+    const Coupon = mongoose.model('Coupon');
+    await Coupon.create({
+      code: 'SAVE100B', type: 'fixed', value: 100,
+      validFrom: new Date(Date.now() - 86400000), validUntil: new Date(Date.now() + 86400000),
+      isActive: true, minOrderAmount: 0,
+    });
+
+    await addToCart(accessToken, eligible._id, 1);
+    await addToCart(accessToken, excluded._id, 1);
+    const orderRes = await createOrder(accessToken, { couponCode: 'SAVE100B' });
+    // subtotal=1000, coupon=100. Eligible line's share of the coupon: 800/1000*100=80.
+    // Net eligible base = 800-80=720. 5% of 720 = 36.
+    expect(orderRes.body.data.order.pointsEarned).toBe(36);
+  });
+});
+
+// ══════════════════════════════════════════════════════════════════════════
+// PRODUCT PAGE — authoritative effective points multiplier (Fix 6)
+// ══════════════════════════════════════════════════════════════════════════
+describe('GET /products/:slug — pointsInfo (authoritative effective earning context)', () => {
+  it('exposes the base 5% rate with no active multiplier by default', async () => {
+    const product = await seedProduct({ price: 1000 });
+    const res = await request(app).get(`/api/v1/products/${product.slug}`);
+    expect(res.status).toBe(200);
+    const { pointsInfo } = res.body.data.product;
+    expect(pointsInfo.pointsEligible).toBe(true);
+    expect(pointsInfo.basePointsRate).toBe(0.05);
+    expect(pointsInfo.activePointsMultiplier).toBe(1);
+    expect(pointsInfo.effectivePointsRate).toBe(0.05);
+    expect(pointsInfo.estimatedPointsValue).toBe(50);
+  });
+
+  it('reflects a custom pointsRateOverride', async () => {
+    const product = await seedProduct({ price: 1000, pointsRateOverride: 0.02 });
+    const res = await request(app).get(`/api/v1/products/${product.slug}`);
+    const { pointsInfo } = res.body.data.product;
+    expect(pointsInfo.basePointsRate).toBe(0.02);
+    expect(pointsInfo.estimatedPointsValue).toBe(20);
+  });
+
+  it('reflects an active 2x points campaign in effectivePointsRate/estimatedPointsValue — shown to a member', async () => {
+    const product = await seedProduct({ price: 1000 });
+    const Campaign = mongoose.model('Campaign');
+    await Campaign.create({
+      name: 'PDP 2x Points', discountPercent: 1,
+      startDate: new Date(Date.now() - 86400000), endDate: new Date(Date.now() + 86400000),
+      isActive: true, products: [product._id], pointsMultiplier: 2,
+    });
+
+    const { accessToken, user } = await registerAndLogin();
+    await makeMember(user._id);
+    const res = await request(app).get(`/api/v1/products/${product.slug}`).set('Authorization', `Bearer ${accessToken}`);
+    const { pointsInfo } = res.body.data.product;
+    expect(pointsInfo.activePointsMultiplier).toBe(2);
+    expect(pointsInfo.effectivePointsRate).toBe(0.1);
+  });
+
+  it('a non-member ALSO sees the real active multiplier as authoritative context (enticement), never a guessed value', async () => {
+    const product = await seedProduct({ price: 1000 });
+    const Campaign = mongoose.model('Campaign');
+    await Campaign.create({
+      name: 'PDP 2x Points Guest', discountPercent: 1,
+      startDate: new Date(Date.now() - 86400000), endDate: new Date(Date.now() + 86400000),
+      isActive: true, products: [product._id], pointsMultiplier: 2,
+    });
+
+    const res = await request(app).get(`/api/v1/products/${product.slug}`); // guest, no auth
+    const { pointsInfo } = res.body.data.product;
+    expect(pointsInfo.activePointsMultiplier).toBe(2);
+    expect(pointsInfo.effectivePointsRate).toBe(0.1);
+  });
+
+  it('an explicitly excluded product (pointsEligible:false) reports zero earning context', async () => {
+    const product = await seedProduct({ price: 1000, pointsEligible: false });
+    const res = await request(app).get(`/api/v1/products/${product.slug}`);
+    const { pointsInfo } = res.body.data.product;
+    expect(pointsInfo.pointsEligible).toBe(false);
+    expect(pointsInfo.effectivePointsRate).toBe(0);
+    expect(pointsInfo.estimatedPointsValue).toBe(0);
+  });
+
+  it('an expired campaign does not affect the effective rate', async () => {
+    const product = await seedProduct({ price: 1000 });
+    const Campaign = mongoose.model('Campaign');
+    await Campaign.create({
+      name: 'PDP Expired 2x', discountPercent: 1,
+      startDate: new Date(Date.now() - 48 * 3600000), endDate: new Date(Date.now() - 3600000),
+      isActive: true, products: [product._id], pointsMultiplier: 2,
+    });
+
+    const res = await request(app).get(`/api/v1/products/${product.slug}`);
+    const { pointsInfo } = res.body.data.product;
+    expect(pointsInfo.activePointsMultiplier).toBe(1);
+    expect(pointsInfo.effectivePointsRate).toBe(0.05);
+  });
+});
+
+describe('Admin controls — product points fields, campaign VIP fields', () => {
   it('admin can create a campaign with membershipOnly/pointsMultiplier/vipEarlyAccessHours via the real campaign endpoint', async () => {
     const product = await seedProduct({ price: 500 });
     const token = await adminToken();
