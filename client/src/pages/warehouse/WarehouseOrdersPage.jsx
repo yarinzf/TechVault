@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { ShoppingCart, AlertCircle, Loader2, Package, ChevronLeft } from 'lucide-react';
+import { ShoppingCart, AlertCircle, Loader2, Package, ChevronLeft, Crown } from 'lucide-react';
 import { adminService } from '../../features/admin/api/admin.service';
 
 const STATUS_META = {
@@ -37,7 +37,11 @@ export default function WarehouseOrdersPage() {
     setter(true);
     if (page === 1) setError('');
     try {
-      const params = { page, limit: 20 };
+      // VIP orders first, oldest-first within each group — real warehouse
+      // priority (see Order.isVipOrder / order.service.js listAllOrders
+      // sortMap.priority). Opt-in only — does not affect the Admin order
+      // list, which still defaults to newest-first.
+      const params = { page, limit: 20, sort: 'priority' };
       if (tab) params.status = tab;
       const { orders: data, meta: m } = await adminService.listAllOrders(params);
       setMeta(m);
@@ -124,9 +128,19 @@ export default function WarehouseOrdersPage() {
                   const sm        = STATUS_META[statusKey];
                   const isPending = advancing === order._id;
                   return (
-                    <tr key={order._id} className="hover:bg-muted/20 transition-colors">
+                    <tr key={order._id} className={`hover:bg-muted/20 transition-colors${order.isVipOrder ? ' bg-[#9E6EF1]/5' : ''}`}>
                       <td className="px-4 py-3 font-mono text-xs text-muted-foreground whitespace-nowrap">
-                        {order.orderNumber ?? order._id?.slice(-8)}
+                        <div className="flex items-center gap-1.5">
+                          {order.isVipOrder && (
+                            <span
+                              className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#9E6EF1]/15 text-[#9E6EF1]"
+                              title="הזמנת חבר מועדון — עדיפות בטיפול"
+                            >
+                              <Crown className="w-2.5 h-2.5" /> VIP
+                            </span>
+                          )}
+                          {order.orderNumber ?? order._id?.slice(-8)}
+                        </div>
                       </td>
                       <td className="px-4 py-3 text-foreground max-w-[160px] truncate">
                         {order.user?.name ?? order.user?.email ?? '—'}
