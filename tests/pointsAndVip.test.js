@@ -999,6 +999,158 @@ describe('FIFO points lot accounting — real lots, not aggregate-balance approx
     const second = await pointsService.expireDuePoints(user._id);
     expect(second.expired).toBe(0);
   });
+
+  it('a DB failure mid-reservation fully rolls back — no stranded consumed lot, no persisted redemption row', async () => {
+    const { user } = await registerAndLogin();
+    await makeMember(user._id, { points: 0 });
+
+    const lotA = await seedEarnLot(user._id, 100, new Date('2026-01-01T00:00:00.000Z'));
+    const lotB = await seedEarnLot(user._id, 100, new Date('2026-06-01T00:00:00.000Z'));
+
+    const before = await mongoose.model('User').findById(user._id);
+    expect(before.membership.points).toBe(200);
+
+    const Tx = mongoose.model('MembershipPointsTransaction');
+    const totalRemainingBefore = (await Tx.find({ user: user._id, type: 'earn' }))
+      .reduce((sum, t) => sum + t.remainingPoints, 0);
+    expect(totalRemainingBefore).toBe(200);
+
+    // Force a DB failure AFTER FIFO lot consumption has already happened but
+    // BEFORE the redemption ledger row is written — the exact gap this fix
+    // closes. Standalone MongoDB (this test harness) has no surrounding
+    // transaction to undo it automatically, so this only passes if the
+    // explicit compensating rollback actually works.
+    const createSpy = jest.spyOn(Tx, 'create').mockImplementation(async () => {
+      throw new Error('simulated ledger write failure');
+    });
+
+    const pointsService = require('../server/services/points.service');
+    const orderId = new mongoose.Types.ObjectId();
+    await expect(pointsService.reservePoints(user._id, 150, orderId))
+      .rejects.toThrow('simulated ledger write failure');
+
+    createSpy.mockRestore();
+
+    const after = await mongoose.model('User').findById(user._id);
+    expect(after.membership.points).toBe(200); // fully restored, not stranded at 50
+
+    const freshLotA = await Tx.findById(lotA._id);
+    const freshLotB = await Tx.findById(lotB._id);
+    expect(freshLotA.remainingPoints).toBe(100); // fully restored
+    expect(freshLotB.remainingPoints).toBe(100); // fully restored
+
+    const totalRemainingAfter = (await Tx.find({ user: user._id, type: 'earn' }))
+      .reduce((sum, t) => sum + t.remainingPoints, 0);
+    expect(totalRemainingAfter).toBe(200);
+
+    const redeemTx = await Tx.findOne({ order: orderId, type: 'redeem' });
+    expect(redeemTx).toBeNull(); // no half-written redemption row persisted
+  });
+});
+
+// ══════════════════════════════════════════════════════════════════════════
+// POINTS EXPIRY ENFORCED ON REAL READ PATHS (not just on-demand)
+// ══════════════════════════════════════════════════════════════════════════
+describe('Points expiry is enforced automatically on balance read/use paths', () => {
+  async function seedExpiredLot(userId, points) {
+    const Tx = mongoose.model('MembershipPointsTransaction');
+    const User = mongoose.model('User');
+    const earnedAt = new Date(Date.now() - 396 * 86400000); // 13 months ago
+    const expiresAt = new Date(Date.now() - 1000); // already due
+    const lot = await Tx.create({ user: userId, type: 'earn', points, remainingPoints: points, expiresAt, createdAt: earnedAt });
+    await User.findByIdAndUpdate(userId, { $inc: { 'membership.points': points, 'membership.lifetimePoints': points } });
+    return lot;
+  }
+
+  it('GET /auth/me reconciles an expired earn lot automatically — no manual expireDuePoints call', async () => {
+    const { accessToken, user } = await registerAndLogin();
+    await makeMember(user._id, { points: 0 });
+    await seedExpiredLot(user._id, 80);
+
+    // Sanity: the raw balance is still 80 before any read-path reconciliation.
+    const raw = await mongoose.model('User').findById(user._id);
+    expect(raw.membership.points).toBe(80);
+
+    const res = await request(app).get(`${AUTH}/me`).set('Authorization', `Bearer ${accessToken}`);
+    expect(res.status).toBe(200);
+    expect(res.body.data.user.membership.points).toBe(0); // reconciled inline, not stale
+
+    const fresh = await mongoose.model('User').findById(user._id);
+    expect(fresh.membership.points).toBe(0);
+
+    const Tx = mongoose.model('MembershipPointsTransaction');
+    const expiryTx = await Tx.findOne({ user: user._id, type: 'expiry' });
+    expect(expiryTx).not.toBeNull();
+    expect(expiryTx.points).toBe(80);
+  });
+
+  it('a second GET /auth/me does not double-expire (idempotent reconciliation)', async () => {
+    const { accessToken, user } = await registerAndLogin();
+    await makeMember(user._id, { points: 0 });
+    await seedExpiredLot(user._id, 80);
+
+    await request(app).get(`${AUTH}/me`).set('Authorization', `Bearer ${accessToken}`);
+    const second = await request(app).get(`${AUTH}/me`).set('Authorization', `Bearer ${accessToken}`);
+    expect(second.body.data.user.membership.points).toBe(0);
+
+    const Tx = mongoose.model('MembershipPointsTransaction');
+    const expiryCount = await Tx.countDocuments({ user: user._id, type: 'expiry' });
+    expect(expiryCount).toBe(1);
+  });
+
+  it('checkout cannot redeem points that have already expired', async () => {
+    const product = await seedProduct({ price: 500 });
+    const { accessToken, user } = await registerAndLogin();
+    await makeMember(user._id, { points: 0 });
+    await seedExpiredLot(user._id, 80); // raw balance shows 80, but it's entirely expired
+
+    await addToCart(accessToken, product._id, 1);
+    const orderRes = await createOrder(accessToken, { pointsToRedeem: 80 });
+    expect(orderRes.status).toBe(400);
+    expect(orderRes.body.error.code).toBe('INSUFFICIENT_POINTS');
+
+    const fresh = await mongoose.model('User').findById(user._id);
+    expect(fresh.membership.points).toBe(0); // expired during the checkout attempt, not left at 80
+  });
+
+  it('checkout correctly redeems the real post-expiry balance when a non-expired lot also exists', async () => {
+    const product = await seedProduct({ price: 500 });
+    const { accessToken, user } = await registerAndLogin();
+    await makeMember(user._id, { points: 0 });
+    await seedExpiredLot(user._id, 80); // expired
+    await seedEarnLotHelper(user._id, 50, new Date()); // still good
+
+    await addToCart(accessToken, product._id, 1);
+    // Requesting exactly the real, post-expiry balance (50) must succeed —
+    // proving checkout reconciled the expired 80 before checking, rather
+    // than trusting the raw (stale) 130 aggregate.
+    const orderRes = await createOrder(accessToken, { pointsToRedeem: 50 });
+    expect(orderRes.status).toBe(201);
+    expect(orderRes.body.data.order.pointsRedeemed).toBe(50);
+
+    const fresh = await mongoose.model('User').findById(user._id);
+    expect(fresh.membership.points).toBe(0); // 130 raw - 80 expired - 50 redeemed = 0
+
+    // And requesting more than that real balance (e.g. trusting the stale
+    // 130) must still be rejected — not silently capped, not overspent.
+    const Cart = mongoose.model('Cart');
+    await Cart.deleteMany({ user: user._id });
+    await seedExpiredLot(user._id, 80);
+    await seedEarnLotHelper(user._id, 50, new Date());
+    await addToCart(accessToken, product._id, 1);
+    const overRes = await createOrder(accessToken, { pointsToRedeem: 100 });
+    expect(overRes.status).toBe(400);
+    expect(overRes.body.error.code).toBe('INSUFFICIENT_POINTS');
+  });
+
+  async function seedEarnLotHelper(userId, points, earnedAt) {
+    const Tx = mongoose.model('MembershipPointsTransaction');
+    const User = mongoose.model('User');
+    const expiresAt = new Date(earnedAt); expiresAt.setMonth(expiresAt.getMonth() + 12);
+    const lot = await Tx.create({ user: userId, type: 'earn', points, remainingPoints: points, expiresAt, createdAt: earnedAt });
+    await User.findByIdAndUpdate(userId, { $inc: { 'membership.points': points, 'membership.lifetimePoints': points } });
+    return lot;
+  }
 });
 
 // ══════════════════════════════════════════════════════════════════════════
