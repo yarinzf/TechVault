@@ -1,25 +1,25 @@
 import { useRef, useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { LayoutGrid } from 'lucide-react';
 import { useTranslation } from '../../../context/LanguageContext';
 import CategoriesModal from './CategoriesModal';
 import s from './CategoryNavBar.module.css';
 
 /* Sapir's content-oriented nav row: real filtered/sorted product views for
-   deals, new arrivals, and bestsellers; the club item scrolls to the real
-   homepage section since there is no dedicated club listing route. Markers
-   are the reference's own emoji (not SVG icons) for these four items only —
-   "All Categories" keeps its real SVG grid icon. */
+   deals, new arrivals, bestsellers, and — now that /club is a real
+   dedicated page — the club item too. Markers are the reference's own
+   emoji (not SVG icons) for these four items only — "All Categories" keeps
+   its real SVG grid icon. */
 const NAV_ITEMS = [
   { key: 'nav.deals',        emoji: '🔥', to: '/deals' },
   { key: 'nav.new_arrivals', emoji: '🆕', to: '/new' },
   { key: 'nav.bestsellers',  emoji: '🏆', to: '/best-sellers' },
+  { key: 'nav.club',         emoji: '⭐', to: '/club' },
 ];
 
 export default function CategoryNavBar() {
   const t = useTranslation();
   const location = useLocation();
-  const navigate = useNavigate();
   const [modalOpen, setModalOpen] = useState(false);
   const allCategoriesBtnRef = useRef(null);
 
@@ -31,18 +31,6 @@ export default function CategoryNavBar() {
   const closeModal = ({ navigated = false } = {}) => {
     setModalOpen(false);
     if (!navigated) allCategoriesBtnRef.current?.focus();
-  };
-
-  const scrollToClub = (e) => {
-    e.preventDefault();
-    if (location.pathname === '/') {
-      document.getElementById('club-section')?.scrollIntoView({ behavior: 'smooth' });
-    } else {
-      navigate('/');
-      setTimeout(() => {
-        document.getElementById('club-section')?.scrollIntoView({ behavior: 'smooth' });
-      }, 100);
-    }
   };
 
   return (
@@ -78,10 +66,6 @@ export default function CategoryNavBar() {
               {t(key)}
             </Link>
           ))}
-          <a href="#club-section" className={s.item} onClick={scrollToClub}>
-            <span className={s.itemEmoji} aria-hidden="true">⭐</span>
-            {t('nav.club')}
-          </a>
 
         </div>
       </nav>
