@@ -364,9 +364,15 @@ export default function DealsPage() {
       if (b.discountPercent !== a.discountPercent) return b.discountPercent - a.discountPercent;
       return new Date(b.startDate) - new Date(a.startDate);
     };
-    const nonWeekly = campaigns.filter((c) => c.placement !== 'homepage_weekly_deal');
+    // Clearance campaigns belong to their own section (חיסול מלאי) — no
+    // matter how large their discount, they must never win the Mega Deal
+    // slot. Excluded first, before the existing weekly/non-weekly
+    // preference below, so the fallback path can't pick one either.
+    const eligible = campaigns.filter((c) => !c.isClearance);
+    if (eligible.length === 0) return null;
+    const nonWeekly = eligible.filter((c) => c.placement !== 'homepage_weekly_deal');
     if (nonWeekly.length > 0) return [...nonWeekly].sort(byDiscountThenRecency)[0];
-    return [...campaigns].sort(byDiscountThenRecency)[0];
+    return [...eligible].sort(byDiscountThenRecency)[0];
   }, [campaigns]);
 
   const heroProduct = useMemo(() => {
