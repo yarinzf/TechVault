@@ -150,6 +150,13 @@ const _buildAndSaveOrder = async (userId, { shippingAddress, notes, couponCode, 
   if (requestedPoints > 0 && !isMember) {
     throw new AppError('Only active Club members can redeem points', StatusCodes.BAD_REQUEST, 'NOT_A_MEMBER');
   }
+  // Expired points must never be redeemable — reconcile any due lots BEFORE
+  // the balance is read/used below (see points.service.js#expireDuePoints).
+  // Only runs when a redemption is actually being attempted, so a normal
+  // cash-only checkout never pays this cost.
+  if (requestedPoints > 0) {
+    await pointsService.expireDuePoints(userId);
+  }
   const maxRedeemableValue = Math.max(0, subtotal - couponDiscount);
   const actualPointsToRedeem = Math.min(requestedPoints, Math.floor(maxRedeemableValue / POINTS_REDEMPTION_RATE));
 

@@ -7,6 +7,7 @@ const { sendTemplate } = require('./email/email.service');
 const { generateAccessToken, generateRefreshToken, verifyToken } = require('../utils/jwt');
 const { AppError } = require('../middleware/errorHandler');
 const { StatusCodes } = require('http-status-codes');
+const pointsService = require('./points.service');
 
 // OAuth + SMS services — loaded lazily so missing credentials only throw on use
 const googleService = require('./oauth/google.service');
@@ -235,6 +236,23 @@ const revokeSession = async (userId, sessionId, currentSessionId) => {
 const getMe = async (userId) => {
   const user = await User.findById(userId);
   if (!user) throw new AppError('User not found', StatusCodes.NOT_FOUND, 'USER_NOT_FOUND');
+
+  // This is the sole read path the client uses for the member's points
+  // balance (see client/src/hooks/useMembership.js — there is no separate
+  // points-summary endpoint) — reconcile any due-but-not-yet-expired lots
+  // BEFORE returning it, so a stale balance is never shown or trusted.
+  // Skipped when the cached balance is already 0 — nothing could be due.
+  if (user.membership?.points > 0) {
+    const result = await pointsService.expireDuePoints(userId);
+    if (result.expired > 0) {
+      // Re-fetch rather than adjust in-memory — expireDuePoints' own
+      // aggregate write is the single source of truth for the exact
+      // resulting balance (it clamps defensively at 0), so this avoids any
+      // chance of the response drifting from what's actually persisted.
+      return User.findById(userId);
+    }
+  }
+
   return user;
 };
 
