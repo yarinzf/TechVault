@@ -34,29 +34,44 @@ const MEMBERSHIP_PLANS = Object.freeze({
 const MEMBERSHIP_PLAN_KEYS = Object.freeze(Object.keys(MEMBERSHIP_PLANS));
 
 // ─── Calendar-accurate term arithmetic ─────────────────────────────────────
-// Deliberately native Date.setUTCMonth/setUTCFullYear — NOT `+30*86400000` /
-// `+365*86400000`. A term now genuinely means "the same calendar day next
-// month/year", so a monthly member who joins on the 8th always renews on
-// the 8th, and Aug 8 2026 (annual) → Aug 8 2027, including through a leap
-// year, rather than drifting by however many days a fixed-ms window would
-// accumulate.
+// Same calendar day next month/year where that day genuinely exists;
+// otherwise CLAMPED to the last valid day of the destination month — never
+// left to native Date's raw month/year rollover, which instead overflows
+// into the following month (e.g. Jan 31 + 1 month would silently become
+// Mar 3). That overflow is unacceptable for billing: a member who joins on
+// the 31st must renew within the destination month, not drift into a third
+// calendar month.
 //
-// Documented native JS rollover behavior for the day-doesn't-exist-in-
-// target-month case (verified, not assumed):
-//   Jan 31 + 1 month  → Mar 3  (2026, non-leap: Feb has 28 days, JS rolls
-//                                forward by the 3-day overflow)
-//   Jan 31 + 1 month  → Mar 2  (a leap year: Feb has 29 days, 2-day overflow)
-//   Mar 31 + 1 month  → May 1  (April has 30 days, 1-day overflow)
-//   Feb 29 (leap) + 1 year → Mar 1  (target year's Feb has no 29th, 1-day overflow)
-// This is standard, predictable JS Date semantics — accepted as-is per the
-// spec's explicit instruction, not reimplemented with custom clamping.
+// Verified behavior (see membership.test.js / membershipPurchase.test.js):
+//   Aug 8, 2026  + 1 month → Sep 8, 2026   (same day — no clamp needed)
+//   Jan 31, 2026 + 1 month → Feb 28, 2026  (Feb 2026 has 28 days — clamped)
+//   Jan 31, 2028 + 1 month → Feb 29, 2028  (Feb 2028 is a leap year — clamped to 29)
+//   Feb 29, 2028 + 1 year  → Feb 28, 2029  (2029 is not a leap year — clamped)
+//   Dec 31, 2026 + 1 month → Jan 31, 2027  (December → January rolls the year forward
+//                                            normally; January has 31 days, no clamp)
 function addCalendarTerm(date, plan) {
   const d = new Date(date);
   const unit = MEMBERSHIP_PLANS[plan]?.calendarUnit;
-  if (unit === 'month') d.setUTCMonth(d.getUTCMonth() + 1);
-  else if (unit === 'year') d.setUTCFullYear(d.getUTCFullYear() + 1);
-  else throw new Error(`addCalendarTerm: unknown plan "${plan}"`);
-  return d;
+  if (unit !== 'month' && unit !== 'year') {
+    throw new Error(`addCalendarTerm: unknown plan "${plan}"`);
+  }
+
+  const year  = d.getUTCFullYear();
+  const month = d.getUTCMonth();
+  const day   = d.getUTCDate();
+
+  const targetYear  = unit === 'year'  ? year + 1  : year;
+  const targetMonth = unit === 'month' ? month + 1 : month; // Date.UTC normalizes a month of 12 into January of targetYear+1
+
+  // Date.UTC(y, m+1, 0) is "day 0 of month m+1" = the last real day of month m,
+  // including automatic year rollover when m+1 itself overflows past 11.
+  const lastDayOfTargetMonth = new Date(Date.UTC(targetYear, targetMonth + 1, 0)).getUTCDate();
+  const clampedDay = Math.min(day, lastDayOfTargetMonth);
+
+  return new Date(Date.UTC(
+    targetYear, targetMonth, clampedDay,
+    d.getUTCHours(), d.getUTCMinutes(), d.getUTCSeconds(), d.getUTCMilliseconds()
+  ));
 }
 
 // ─── Points / cashback ──────────────────────────────────────────────────────

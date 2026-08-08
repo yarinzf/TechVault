@@ -620,10 +620,13 @@ describe('Membership TERM model (monthly/annual, no auto-renewal)', () => {
     expect(m.status).toBe('active');
     expect(m.plan).toBe('monthly');
 
-    // Calendar-accurate: exactly "the same day next month", whatever that
-    // month's real length is (28-31 days) — never a fixed 30-day window.
-    const expected = new Date(m.startedAt);
-    expected.setUTCMonth(expected.getUTCMonth() + 1);
+    // Calendar-accurate: exactly "the same day next month" where that day
+    // exists, otherwise clamped to the destination month's last real day —
+    // never a fixed 30-day window and never an overflow into a third month.
+    // Uses the real production helper (not hand-rolled date math) so this
+    // test stays correct even if it happens to run on a month-end day.
+    const { addCalendarTerm } = require('../server/config/membership');
+    const expected = addCalendarTerm(new Date(m.startedAt), 'monthly');
     expect(new Date(m.expiresAt).toISOString()).toBe(expected.toISOString());
   });
 
@@ -638,21 +641,39 @@ describe('Membership TERM model (monthly/annual, no auto-renewal)', () => {
     expect(m.status).toBe('active');
     expect(m.plan).toBe('annual');
 
-    const expected = new Date(m.startedAt);
-    expected.setUTCFullYear(expected.getUTCFullYear() + 1);
+    const { addCalendarTerm } = require('../server/config/membership');
+    const expected = addCalendarTerm(new Date(m.startedAt), 'annual');
     expect(new Date(m.expiresAt).toISOString()).toBe(expected.toISOString());
   });
 
-  it('calendar month-end rollover: Jan 31 + 1 month lands on Mar 3 (non-leap year) — documented native Date behavior', async () => {
+  it('a normal same-day renewal: Aug 8, 2026 + 1 month → Sep 8, 2026 (no clamp needed)', () => {
     const { addCalendarTerm } = require('../server/config/membership');
-    const result = addCalendarTerm(new Date('2026-01-31T00:00:00.000Z'), 'monthly');
-    expect(result.toISOString()).toBe('2026-03-03T00:00:00.000Z');
+    const result = addCalendarTerm(new Date('2026-08-08T00:00:00.000Z'), 'monthly');
+    expect(result.toISOString()).toBe('2026-09-08T00:00:00.000Z');
   });
 
-  it('calendar leap-year rollover: Feb 29 (leap) + 1 year lands on Mar 1 the following (non-leap) year', async () => {
+  it('calendar month-end clamp: Jan 31, 2026 + 1 month lands on Feb 28, 2026 (Feb has no 31st, non-leap)', () => {
+    const { addCalendarTerm } = require('../server/config/membership');
+    const result = addCalendarTerm(new Date('2026-01-31T00:00:00.000Z'), 'monthly');
+    expect(result.toISOString()).toBe('2026-02-28T00:00:00.000Z');
+  });
+
+  it('calendar month-end clamp: Jan 31, 2028 + 1 month lands on Feb 29, 2028 (leap year — clamped, not overflowed)', () => {
+    const { addCalendarTerm } = require('../server/config/membership');
+    const result = addCalendarTerm(new Date('2028-01-31T00:00:00.000Z'), 'monthly');
+    expect(result.toISOString()).toBe('2028-02-29T00:00:00.000Z');
+  });
+
+  it('calendar leap-year clamp: Feb 29, 2028 + 1 year lands on Feb 28, 2029 (2029 is not a leap year)', () => {
     const { addCalendarTerm } = require('../server/config/membership');
     const result = addCalendarTerm(new Date('2028-02-29T00:00:00.000Z'), 'annual');
-    expect(result.toISOString()).toBe('2029-03-01T00:00:00.000Z');
+    expect(result.toISOString()).toBe('2029-02-28T00:00:00.000Z');
+  });
+
+  it('calendar year-end rollover: Dec 31, 2026 + 1 month lands on Jan 31, 2027 (no clamp — January has 31 days)', () => {
+    const { addCalendarTerm } = require('../server/config/membership');
+    const result = addCalendarTerm(new Date('2026-12-31T00:00:00.000Z'), 'monthly');
+    expect(result.toISOString()).toBe('2027-01-31T00:00:00.000Z');
   });
 
   it('an expired member (expiresAt in the past) is reported as status "expired" and is NOT VIP', async () => {
