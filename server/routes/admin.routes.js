@@ -16,6 +16,7 @@ const insightsCtrl      = require('../controllers/insights.controller');
 const reviewCtrl        = require('../controllers/review.controller');
 const jobsCtrl          = require('../controllers/jobs.controller');
 const systemStatusCtrl  = require('../controllers/systemStatus.controller');
+const productSalesCtrl  = require('../controllers/productSalesAnalytics.controller');
 const { moderateReviewSchema } = require('../validators/review.validator');
 const { authenticate, authorize } = require('../middleware/auth');
 const { validate } = require('../middleware/validate');
@@ -189,6 +190,28 @@ router.get('/analytics/orders',    authorize(...ADMIN_ROLES), analyticsCtrl.getO
  */
 router.get('/analytics/products',  authorize(...ADMIN_ROLES), analyticsCtrl.getProducts);
 router.get('/insights',            authorize(...ADMIN_ROLES), insightsCtrl.getInsights);
+
+/**
+ * @swagger
+ * /admin/products/{productId}/sales-history:
+ *   get:
+ *     summary: Real monthly sales history for a single product (materialized from Orders, rebuildable — never Product.salesCount)
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: productId
+ *         required: true
+ *         schema: { type: string }
+ *       - in: query
+ *         name: months
+ *         schema: { type: integer, default: 12, minimum: 1, maximum: 24 }
+ *     responses:
+ *       200:
+ *         description: Product sales history (total, current/previous month, month-over-month %, chronological monthly table)
+ */
+router.get('/products/:productId/sales-history', authorize(...ADMIN_ROLES), productSalesCtrl.getProductSalesHistory);
 
 /**
  * @swagger

@@ -6,12 +6,15 @@ import {
     Edit,
     Trash2,
     TrendingUp,
+    TrendingDown,
+    BarChart3,
     AlertCircle,
     Filter,
     X,
     Loader2,
     Save,
 } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { ImageWithFallback } from '../../components/ui/ImageWithFallback';
 import { adminService } from '../../features/admin/api/admin.service';
 import { warehouseService } from '../../features/warehouse/api/warehouse.service';
@@ -75,6 +78,9 @@ export default function AdminProductsPage() {
     const [saving, setSaving]                 = useState(false);
     const [formError, setFormError]           = useState('');
     const [editLoading, setEditLoading]       = useState(false);
+
+    // Sales-history modal state — a real product whose modal is open, or null
+    const [historyTarget, setHistoryTarget]   = useState(null);
 
     // Load products + health stats + categories in parallel
     useEffect(() => {
@@ -440,6 +446,14 @@ export default function AdminProductsPage() {
                                             >
                                                 <Trash2 className="w-4 h-4" />
                                             </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => setHistoryTarget(product)}
+                                                className="p-2 bg-card rounded-lg hover:bg-[#2563eb] hover:text-white transition-colors"
+                                                aria-label="היסטוריית מכירות"
+                                            >
+                                                <BarChart3 className="w-4 h-4" />
+                                            </button>
                                         </div>
                                     </div>
 
@@ -678,6 +692,153 @@ export default function AdminProductsPage() {
                     </div>
                 </div>
             )}
+
+            {/* Sales-history modal — real, rebuildable Order-derived data only */}
+            {historyTarget && (
+                <ProductSalesHistoryModal product={historyTarget} onClose={() => setHistoryTarget(null)} />
+            )}
+        </div>
+    );
+}
+
+const MONTH_LABEL_FORMATTER = new Intl.DateTimeFormat('he-IL', { month: 'short', year: '2-digit' });
+function monthLabel(year, month) {
+    return MONTH_LABEL_FORMATTER.format(new Date(Date.UTC(year, month - 1, 1)));
+}
+
+function ProductSalesHistoryModal({ product, onClose }) {
+    const [data, setData]       = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError]     = useState('');
+
+    useEffect(() => {
+        let cancelled = false;
+        setLoading(true);
+        setError('');
+        adminService.getProductSalesHistory(product._id, 12)
+            .then((res) => { if (!cancelled) setData(res); })
+            .catch((err) => { if (!cancelled) setError(err.message || 'שגיאה בטעינת היסטוריית מכירות'); })
+            .finally(() => { if (!cancelled) setLoading(false); });
+        return () => { cancelled = true; };
+    }, [product._id]);
+
+    const chartData = (data?.history ?? []).map((h) => ({
+        label: monthLabel(h.year, h.month),
+        unitsSold: h.unitsSold,
+    }));
+
+    return (
+        <div
+            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+            onClick={onClose}
+            dir="rtl"
+        >
+            <div
+                className="bg-card border border-border rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+                onClick={(e) => e.stopPropagation()}
+            >
+                <div className="flex items-center justify-between p-6 border-b border-border sticky top-0 bg-card z-10">
+                    <div>
+                        <h2 className="text-xl text-foreground">היסטוריית מכירות</h2>
+                        <p className="text-sm text-muted-foreground">{product.name}</p>
+                    </div>
+                    <button type="button" onClick={onClose} className="p-2 hover:bg-secondary rounded-lg transition-colors">
+                        <X className="w-5 h-5" />
+                    </button>
+                </div>
+
+                <div className="p-6 space-y-6">
+                    {loading ? (
+                        <div className="flex items-center justify-center py-16">
+                            <Loader2 className="w-8 h-8 animate-spin text-[#2563eb]" />
+                        </div>
+                    ) : error ? (
+                        <div className="flex items-center gap-2 bg-[#ef4444]/10 border border-[#ef4444]/20 rounded-lg px-3 py-2 text-sm text-[#ef4444]">
+                            <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                            {error}
+                        </div>
+                    ) : !data || data.totalUnitsSold === 0 ? (
+                        <div className="text-center py-16 text-muted-foreground">
+                            אין עדיין היסטוריית מכירות אמיתית למוצר זה
+                        </div>
+                    ) : (
+                        <>
+                            {/* Summary */}
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                <div className="bg-secondary/40 border border-border rounded-lg p-4">
+                                    <p className="text-xs text-muted-foreground mb-1">סה״כ נמכרו</p>
+                                    <p className="text-xl text-foreground">{data.totalUnitsSold.toLocaleString()}</p>
+                                </div>
+                                <div className="bg-secondary/40 border border-border rounded-lg p-4">
+                                    <p className="text-xs text-muted-foreground mb-1">החודש</p>
+                                    <p className="text-xl text-foreground">{(data.currentMonth?.unitsSold ?? 0).toLocaleString()}</p>
+                                </div>
+                                <div className="bg-secondary/40 border border-border rounded-lg p-4">
+                                    <p className="text-xs text-muted-foreground mb-1">חודש קודם</p>
+                                    <p className="text-xl text-foreground">{(data.previousMonth?.unitsSold ?? 0).toLocaleString()}</p>
+                                </div>
+                                <div className="bg-secondary/40 border border-border rounded-lg p-4">
+                                    <p className="text-xs text-muted-foreground mb-1">שינוי מול חודש קודם</p>
+                                    {data.monthOverMonthPercent == null ? (
+                                        <p className="text-xl text-muted-foreground">—</p>
+                                    ) : (
+                                        <p className={`text-xl flex items-center gap-1 ${data.monthOverMonthPercent >= 0 ? 'text-[#10b981]' : 'text-[#ef4444]'}`}>
+                                            {data.monthOverMonthPercent >= 0 ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
+                                            {data.monthOverMonthPercent > 0 ? '+' : ''}{data.monthOverMonthPercent}%
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Chart — last 12 months, units sold */}
+                            <div>
+                                <h3 className="text-sm text-foreground mb-3">מכירות לפי חודש (12 חודשים אחרונים)</h3>
+                                <ResponsiveContainer width="100%" height={220}>
+                                    <BarChart data={chartData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
+                                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                                        <XAxis dataKey="label" stroke="#8b8b99" style={{ fontSize: '11px', fill: '#8b8b99' }} />
+                                        <YAxis stroke="#8b8b99" style={{ fontSize: '11px', fill: '#8b8b99' }} allowDecimals={false} />
+                                        <Tooltip
+                                            contentStyle={{ backgroundColor: '#1a1a24', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', padding: '8px 12px' }}
+                                            labelStyle={{ color: '#e5e5ea', fontSize: '12px', marginBottom: '4px' }}
+                                            itemStyle={{ color: '#e5e5ea', fontSize: '11px' }}
+                                            formatter={(value) => [value, 'יחידות נמכרו']}
+                                        />
+                                        <Bar dataKey="unitsSold" fill="#2563eb" radius={[4, 4, 0, 0]} />
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </div>
+
+                            {/* Monthly table */}
+                            <div>
+                                <h3 className="text-sm text-foreground mb-3">טבלה חודשית</h3>
+                                <div className="overflow-x-auto">
+                                    <table className="w-full text-sm">
+                                        <thead>
+                                            <tr className="text-right text-muted-foreground border-b border-border">
+                                                <th className="py-2 pr-2 font-normal">חודש</th>
+                                                <th className="py-2 font-normal">יחידות נמכרו</th>
+                                                <th className="py-2 font-normal">מספר הזמנות</th>
+                                                <th className="py-2 font-normal">הכנסה</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {[...data.history].reverse().map((h) => (
+                                                <tr key={`${h.year}-${h.month}`} className="border-b border-border/50">
+                                                    <td className="py-2 pr-2 text-foreground">{monthLabel(h.year, h.month)}</td>
+                                                    <td className="py-2 text-foreground">{h.unitsSold.toLocaleString()}</td>
+                                                    <td className="py-2 text-foreground">{h.orderCount.toLocaleString()}</td>
+                                                    <td className="py-2 text-foreground">₪{h.revenue.toLocaleString()}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </>
+                    )}
+                </div>
+            </div>
         </div>
     );
 }

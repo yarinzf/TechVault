@@ -171,6 +171,15 @@ export const adminService = {
     return data?.product ?? data;
   },
 
+  // Real, rebuildable monthly sales history — never a mock fallback (this
+  // is real transactional data, same principle as listUsers: a genuine
+  // failure should surface as an error, not silently show fabricated
+  // numbers).
+  async getProductSalesHistory(productId, months = 12) {
+    const { data } = await api.get(`/admin/products/${productId}/sales-history${qs({ months })}`);
+    return data;
+  },
+
   async createProduct(dto) {
     const { data } = await api.post('/products', dto);
     return data?.product ?? data;
