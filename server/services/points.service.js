@@ -1,5 +1,6 @@
 'use strict';
 
+const mongoose = require('mongoose');
 const User = require('../models/User');
 const Order = require('../models/Order');
 const MembershipPointsTransaction = require('../models/MembershipPointsTransaction');
@@ -93,23 +94,36 @@ async function consumeLotsFIFO(userId, pointsToConsume, session = null) {
     { session }
   ).sort({ expiresAt: 1 });
 
-  for (const lot of lots) {
-    if (remaining <= 0) break;
-    const take = Math.min(lot.remainingPoints, remaining);
-    if (take <= 0) continue;
+  try {
+    for (const lot of lots) {
+      if (remaining <= 0) break;
+      const take = Math.min(lot.remainingPoints, remaining);
+      if (take <= 0) continue;
 
-    // Atomic, conditional — never lets a lot go negative even under a
-    // concurrent consumer (defense in depth on top of the balance-level
-    // serialization already provided by reservePoints).
-    const updatedLot = await MembershipPointsTransaction.findOneAndUpdate(
-      { _id: lot._id, remainingPoints: { $gte: take } },
-      { $inc: { remainingPoints: -take } },
-      { new: true, session }
-    );
-    if (!updatedLot) continue; // lost a race on this specific lot — move on, try the next one
+      // Atomic, conditional — never lets a lot go negative even under a
+      // concurrent consumer (defense in depth on top of the balance-level
+      // serialization already provided by reservePoints).
+      const updatedLot = await MembershipPointsTransaction.findOneAndUpdate(
+        { _id: lot._id, remainingPoints: { $gte: take } },
+        { $inc: { remainingPoints: -take } },
+        { new: true, session }
+      );
+      if (!updatedLot) continue; // lost a race on this specific lot — move on, try the next one
 
-    consumedLots.push({ lot: lot._id, amount: take });
-    remaining -= take;
+      consumedLots.push({ lot: lot._id, amount: take });
+      remaining -= take;
+    }
+  } catch (err) {
+    // This helper is "all or nothing" from the caller's perspective — a
+    // failure partway through the loop (e.g. a transient write error on the
+    // 3rd of 4 lots) must never leave earlier lots decremented with nothing
+    // to show for it. Self-heal whatever was already consumed before
+    // rethrowing, so reservePoints never has to guess what partial state
+    // this call left behind.
+    if (consumedLots.length > 0) {
+      await restoreLotsFIFO(consumedLots, session);
+    }
+    throw err;
   }
 
   return { consumedLots, shortfall: Math.max(0, remaining) };
@@ -145,9 +159,15 @@ async function restoreLotsFIFO(consumedLots, session = null) {
 // ledger 'redeem' row reference its order atomically from the moment it's
 // created, so the unique {order,type:'redeem'} index gives real idempotency
 // immediately instead of via a fragile two-step "reserve, then attach later".
-async function reservePoints(userId, points, orderId, session = null) {
-  if (!points || points <= 0) return { pointsRedeemedValue: 0 };
-
+// Core reservation logic — always runs under SOME session (real or null).
+// The ledger and the aggregate balance must never intentionally diverge:
+// if anything after the balance decrement fails, every already-consumed lot
+// is restored via its exact consumption list AND the aggregate balance is
+// credited back, so no partially-applied redemption can ever survive — see
+// reservePoints below for how a real Mongo transaction wraps this when
+// available, and how the standalone-MongoDB fallback relies on this
+// compensating rollback alone.
+async function _reservePointsCore(userId, points, orderId, session) {
   const updated = await User.findOneAndUpdate(
     { _id: userId, 'membership.points': { $gte: points } },
     { $inc: { 'membership.points': -points } },
@@ -162,8 +182,10 @@ async function reservePoints(userId, points, orderId, session = null) {
     );
   }
 
+  let consumedLots = [];
   try {
-    const { consumedLots } = await consumeLotsFIFO(userId, points, session);
+    const result = await consumeLotsFIFO(userId, points, session);
+    consumedLots = result.consumedLots;
 
     await MembershipPointsTransaction.create([{
       user: userId,
@@ -175,17 +197,77 @@ async function reservePoints(userId, points, orderId, session = null) {
       consumedLots,
     }], { session });
   } catch (err) {
-    // A genuine DB error here must not silently leave points deducted with
-    // no ledger trail — refund the reservation and re-throw. (Any partial
-    // lot consumption that happened before the error is intentionally left
-    // as-is: those specific lots are simply short by their consumed amount
-    // until reconciled — an exceedingly rare failure path, not worth a
-    // second layer of compensating transactions for local/mock providers.)
-    await User.updateOne({ _id: userId }, { $inc: { 'membership.points': points } });
+    // Full compensating rollback — restore every already-consumed lot to
+    // its exact prior amount (consumeLotsFIFO already self-heals its OWN
+    // partial failures, so `consumedLots` here is only ever non-empty when
+    // it fully succeeded and a LATER step — the ledger insert — failed),
+    // then credit the aggregate balance back. No stranded lot, no
+    // half-written redemption row, no divergence between the ledger and
+    // the aggregate balance.
+    if (consumedLots.length > 0) {
+      await restoreLotsFIFO(consumedLots, session);
+    }
+    await User.updateOne({ _id: userId }, { $inc: { 'membership.points': points } }, { session });
     throw err;
   }
 
   return { pointsRedeemedValue: points * POINTS_REDEMPTION_RATE };
+}
+
+// ─── Redemption reservation — atomic, concurrency-safe ────────────────────────
+// Deducts `points` from the user's AVAILABLE balance immediately (this IS
+// the reservation — see reverseRedemption for how it's given back on
+// failure/cancellation) using a single atomic conditional update, so two
+// simultaneous checkouts can never both spend the same points: only one
+// findOneAndUpdate can match `points >= requested` and win the race: the
+// loser gets null back and the order is rejected with INSUFFICIENT_POINTS.
+// Then records exactly which earn lots the spend came from (FIFO).
+//
+// `orderId` is a CALLER-PREGENERATED ObjectId (order.service.js creates it
+// with `new mongoose.Types.ObjectId()` before building the order, then
+// passes the same id as the new Order document's `_id`) — this lets the
+// ledger 'redeem' row reference its order atomically from the moment it's
+// created, so the unique {order,type:'redeem'} index gives real idempotency
+// immediately instead of via a fragile two-step "reserve, then attach later".
+//
+// Session handling — mirrors the exact transactional/standalone-fallback
+// pattern used by order.service.js#createOrder:
+//   - a session was already passed in (this call is part of a larger
+//     transaction, e.g. order creation) → run under it directly; the
+//     caller owns commit/abort, and if THAT transaction later aborts, it
+//     discards this reservation's writes (including any compensating
+//     writes below) along with everything else.
+//   - no session was passed in (e.g. a direct/standalone call) → try
+//     wrapping this reservation in its OWN transaction so a partial
+//     failure can never be observed at all; if the deployment doesn't
+//     support transactions (standalone MongoDB — error code 20), retry
+//     the same core logic with no session, relying on _reservePointsCore's
+//     own explicit compensating rollback instead.
+async function reservePoints(userId, points, orderId, session = null) {
+  if (!points || points <= 0) return { pointsRedeemedValue: 0 };
+
+  if (session) {
+    return _reservePointsCore(userId, points, orderId, session);
+  }
+
+  const ownSession = await mongoose.startSession();
+  try {
+    ownSession.startTransaction();
+    const result = await _reservePointsCore(userId, points, orderId, ownSession);
+    await ownSession.commitTransaction();
+    return result;
+  } catch (err) {
+    try { await ownSession.abortTransaction(); } catch (_) { /* standalone: ignore */ }
+
+    const isNoReplicaSet = err.code === 20 ||
+      (typeof err.message === 'string' && err.message.includes('Transaction numbers'));
+    if (isNoReplicaSet) {
+      return _reservePointsCore(userId, points, orderId, null);
+    }
+    throw err;
+  } finally {
+    ownSession.endSession();
+  }
 }
 
 // ─── Reverse a reservation by order id — the shared core ──────────────────────
