@@ -28,7 +28,7 @@ function initials(name) {
 // User-menu positioning — anchored to the real trigger button rather than a
 // fixed page-corner offset, so it visually stays attached to whichever
 // button opened it regardless of language direction or viewport width.
-const MENU_WIDTH       = 300;
+const MENU_WIDTH       = 280;
 const MENU_GAP         = 8;   // vertical gap below the trigger
 const VIEWPORT_MARGIN  = 12;  // never render closer than this to either edge
 
@@ -379,21 +379,6 @@ export default function CustomerNavbar({ onOpenCart = () => {} }) {
 
                     <Link to="/profile"  className={s.tvUmItem} onClick={() => setMenuOpen(false)} role="menuitem"><span className={s.tvUmIcon} aria-hidden="true">👤</span>{t('nav.account')}</Link>
                     <Link to="/orders"   className={s.tvUmItem} onClick={() => setMenuOpen(false)} role="menuitem"><span className={s.tvUmIcon} aria-hidden="true">📦</span>{t('nav.orders')}</Link>
-                    <Link to="/wishlist" className={s.tvUmItem} onClick={() => setMenuOpen(false)} role="menuitem"><span className={s.tvUmIcon} aria-hidden="true">❤️</span>{t('nav.wishlist_menu')}</Link>
-                    <Link to="/compare"  className={s.tvUmItem} onClick={() => setMenuOpen(false)} role="menuitem"><span className={s.tvUmIcon} aria-hidden="true">⚖️</span>{t('nav.compare')}</Link>
-
-                    <div className={s.tvUmDivider} role="separator" />
-                    <button type="button" className={s.tvUmItem} onClick={handleCouponsClick} role="menuitem">
-                      <span className={s.tvUmIcon} aria-hidden="true">🎟️</span>{t('nav.coupons')}
-                    </button>
-                    <Link
-                      to={isMember ? '/club' : '/club/join'}
-                      className={s.tvUmItem}
-                      onClick={() => setMenuOpen(false)}
-                      role="menuitem"
-                    >
-                      <span className={s.tvUmIcon} aria-hidden="true">⭐</span>{t('nav.club_member')}
-                    </Link>
 
                     {(isAdmin || isWarehouse) && <div className={s.tvUmDivider} role="separator" />}
                     {isAdmin && (
