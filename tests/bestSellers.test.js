@@ -78,7 +78,7 @@ async function seedOrder({ user, items, status = 'confirmed', paymentStatus = 'p
     unitPrice:  it.unitPrice ?? 10,
     quantity:   it.quantity,
     totalPrice: (it.unitPrice ?? 10) * it.quantity,
-    metadata:   it.itemType === 'membership' ? { membershipType: 'lifetime' } : undefined,
+    metadata:   it.itemType === 'membership' ? { membershipPlan: 'monthly' } : undefined,
   }));
   const subtotal = orderItems.reduce((s, it) => s + it.totalPrice, 0);
 

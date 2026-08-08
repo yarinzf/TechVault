@@ -22,6 +22,10 @@ const createProductSchema = Joi.object({
   tags:             Joi.array().items(Joi.string().trim()).optional(),
   isFeatured:       Joi.boolean().optional(),
   isPublished:      Joi.boolean().optional(),
+  // Club points eligibility — see Product.js. Most products earn points by
+  // default; an admin may exclude a product entirely or override its rate.
+  pointsEligible:     Joi.boolean().optional(),
+  pointsRateOverride: Joi.number().min(0).max(1).allow(null).optional(),
 });
 
 const updateProductSchema = createProductSchema

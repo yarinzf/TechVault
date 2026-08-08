@@ -74,6 +74,15 @@ const productSchema = new mongoose.Schema(
     isFeatured:  { type: Boolean, default: false },
     isPublished: { type: Boolean, default: false },
 
+    // ── Club points eligibility (VIP earning) ──────────────────────────────
+    // Most products earn points (pointsEligible defaults true). A product
+    // may be fully excluded (false) or earn at a different rate than the
+    // store default (pointsRateOverride, e.g. 0.01/0.02 for low-margin
+    // items) — see server/config/membership.js POINTS_DEFAULT_RATE and
+    // points.service.js for how these are combined at checkout.
+    pointsEligible:     { type: Boolean, default: true },
+    pointsRateOverride: { type: Number,  default: null, min: 0, max: 1 },
+
     // Soft-delete — use isDeleted/deletedAt instead of destroying records
     isDeleted: { type: Boolean, default: false },
     deletedAt: { type: Date,    default: null },

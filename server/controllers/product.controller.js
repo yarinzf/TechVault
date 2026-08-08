@@ -1,21 +1,27 @@
 'use strict';
 
 const Product        = require('../models/Product');
+const { isMembershipActive } = require('../models/User');
 const productService = require('../services/product.service');
 const audit          = require('../services/audit.service');
 const { sendSuccess } = require('../utils/response');
 const { StatusCodes } = require('http-status-codes');
 
+// req.user is only present when optionalAuth found a valid token (see
+// product.routes.js) — these routes stay fully public either way. Real,
+// server-verified VIP status only; a client can never claim isMember itself.
+const reqIsMember = (req) => isMembershipActive(req.user?.membership);
+
 const list = async (req, res, next) => {
   try {
-    const { products, meta } = await productService.listProducts(req.query);
+    const { products, meta } = await productService.listProducts(req.query, { isMember: reqIsMember(req) });
     sendSuccess(res, { products }, 'Products retrieved', StatusCodes.OK, meta);
   } catch (err) { next(err); }
 };
 
 const getOne = async (req, res, next) => {
   try {
-    const product = await productService.getProduct(req.params.slug);
+    const product = await productService.getProduct(req.params.slug, { isMember: reqIsMember(req) });
     sendSuccess(res, { product }, 'Product retrieved');
   } catch (err) { next(err); }
 };

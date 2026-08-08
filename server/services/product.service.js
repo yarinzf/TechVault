@@ -46,7 +46,7 @@ const resolveCategoryFilterIds = async (categoryParam) => {
   return children.length > 0 ? [cat._id, ...children.map((ch) => ch._id)] : [cat._id];
 };
 
-const listProducts = async (query) => {
+const listProducts = async (query, { isMember = false } = {}) => {
   const { page, limit, skip } = paginate(query);
 
   const filter = { ...PUBLIC_FILTER };
@@ -113,7 +113,7 @@ const listProducts = async (query) => {
   // onSale: active campaign products only (campaigns are the sole discount source).
   let preloadedDiscountMap = null;
   if (query.onSale === 'true') {
-    preloadedDiscountMap = await getActiveDiscountMap();
+    preloadedDiscountMap = await getActiveDiscountMap({ isMember });
     const campaignIds = [...preloadedDiscountMap.keys()].map(id => {
       try { return new mongoose.Types.ObjectId(id); } catch { return null; }
     }).filter(Boolean);
@@ -124,7 +124,7 @@ const listProducts = async (query) => {
   const [products, total, discountMap] = await Promise.all([
     Product.find(filter).sort(sort).skip(skip).limit(limit).populate('category', 'name slug'),
     Product.countDocuments(filter),
-    preloadedDiscountMap ? Promise.resolve(preloadedDiscountMap) : getActiveDiscountMap(),
+    preloadedDiscountMap ? Promise.resolve(preloadedDiscountMap) : getActiveDiscountMap({ isMember }),
   ]);
 
   const enriched = products.map((p) => {
@@ -164,13 +164,13 @@ const listCategories = async () => {
   return Category.find({ isActive: true }).select('name slug parentCategory').sort({ name: 1 }).lean();
 };
 
-const getProduct = async (slug) => {
+const getProduct = async (slug, { isMember = false } = {}) => {
   const product = await Product
     .findOne({ slug, ...PUBLIC_FILTER })
     .populate('category', 'name slug');
   if (!product) throw new AppError('Product not found', StatusCodes.NOT_FOUND, 'PRODUCT_NOT_FOUND');
 
-  const discountMap = await getActiveDiscountMap();
+  const discountMap = await getActiveDiscountMap({ isMember });
   const discount = discountMap.get(product._id.toString());
   if (!discount) return product;
 

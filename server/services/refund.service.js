@@ -4,6 +4,7 @@ const { StatusCodes } = require('http-status-codes');
 const Order          = require('../models/Order');
 const { AppError }   = require('../middleware/errorHandler');
 const paymentService = require('./payment.service');
+const pointsService  = require('./points.service');
 const audit          = require('./audit.service');
 const emitter        = require('../events/emitter');
 const EVENTS         = require('../events/events');
@@ -73,6 +74,16 @@ const refundOrder = async (orderId, { amount, reason = '', note = '' }, actor) =
       note:       reason ? `החזר תשלום מלא — ${reason}` : 'החזר תשלום מלא',
     });
     order.status = 'refunded';
+  }
+
+  // Club points reconciliation — FULL refunds only in this phase. Partial
+  // refunds do not reverse points: the OrderItem schema has no per-item
+  // refunded-quantity field, so precise partial reconciliation isn't safely
+  // derivable yet (documented limitation — see the Club/VIP final report).
+  // Both calls are individually idempotent no-ops when nothing applies.
+  if (isFullRefund) {
+    await pointsService.reverseEarnedPoints(order);
+    await pointsService.reverseRedemption(order);
   }
 
   await order.save();

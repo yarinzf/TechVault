@@ -5,6 +5,8 @@ const mongoose = require('mongoose');
 const Order    = require('../models/Order');
 const Cart     = require('../models/Cart');
 const Product  = require('../models/Product');
+const User     = require('../models/User');
+const { isMembershipActive } = require('../models/User');
 const { AppError } = require('../middleware/errorHandler');
 const { StatusCodes } = require('http-status-codes');
 const { paginate, paginateMeta } = require('../utils/paginate');
@@ -15,7 +17,9 @@ const audit             = require('./audit.service');
 const InventoryMovement = require('../models/InventoryMovement');
 const emitter = require('../events/emitter');
 const EVENTS  = require('../events/events');
-const { getActiveDiscountMap } = require('./campaign.service');
+const { getActiveDiscountMap, getActivePointsMultiplierMap } = require('./campaign.service');
+const pointsService = require('./points.service');
+const { POINTS_DEFAULT_RATE, POINTS_REDEMPTION_RATE } = require('../config/membership');
 
 // ─── Status transition rules ──────────────────────────────────────────────────
 const ALLOWED_TRANSITIONS = {
@@ -51,13 +55,18 @@ const generateOrderNumber = async (sess, retries = 3) => {
 // ─── Core order logic — session-agnostic ─────────────────────────────────────
 // sess = Mongoose ClientSession for transactional execution, or null for none.
 // The MongoDB driver treats { session: null } as "no session" — safe either way.
-const _buildAndSaveOrder = async (userId, { shippingAddress, notes, couponCode }, sess) => {
+const _buildAndSaveOrder = async (userId, { shippingAddress, notes, couponCode, pointsToRedeem }, sess) => {
   const cart = await Cart.findOne({ user: userId }, null, { session: sess });
   if (!cart || cart.items.length === 0) {
     throw new AppError('Cart is empty', StatusCodes.BAD_REQUEST, 'CART_EMPTY');
   }
 
+  const user = await User.findById(userId, 'membership', { session: sess });
+  if (!user) throw new AppError('User not found', StatusCodes.NOT_FOUND, 'USER_NOT_FOUND');
+  const isMember = isMembershipActive(user.membership);
+
   const orderNumber = await generateOrderNumber(sess);
+  const orderId      = new mongoose.Types.ObjectId(); // pre-generated — see points.service.js#reservePoints
   const orderItems  = [];
   let   subtotal    = 0;
 
@@ -67,7 +76,13 @@ const _buildAndSaveOrder = async (userId, { shippingAddress, notes, couponCode }
   // every line from the real, just-verified product price plus a single
   // fresh discount-map lookup (one query for the whole order, not per item)
   // so the campaign system remains the sole, live source of truth for price.
-  const discountMap = await getActiveDiscountMap();
+  // Both maps are VIP-aware (membershipOnly campaigns / vipEarlyAccessHours /
+  // pointsMultiplier) — real, server-verified isMember only, never a client
+  // claim (see user.membership above).
+  const [discountMap, pointsMultiplierMap] = await Promise.all([
+    getActiveDiscountMap({ isMember }),
+    getActivePointsMultiplierMap({ isMember }),
+  ]);
 
   for (const item of cart.items) {
     // Atomic check-and-decrement: update only succeeds if stock is sufficient.
@@ -75,7 +90,7 @@ const _buildAndSaveOrder = async (userId, { shippingAddress, notes, couponCode }
       { _id: item.product, isPublished: true, isDeleted: false, stock: { $gte: item.quantity } },
       { $inc: { stock: -item.quantity, salesCount: item.quantity } },
       { new: true, session: sess }
-    ).select('name sku images price');
+    ).select('name sku images price pointsEligible pointsRateOverride');
 
     if (!updatedProduct) {
       const probe = await Product.findOne(
@@ -104,6 +119,12 @@ const _buildAndSaveOrder = async (userId, { shippingAddress, notes, couponCode }
       unitPrice,
       quantity:   item.quantity,
       totalPrice: lineTotal,
+      // Points-earning inputs — resolved NOW from live Product/Campaign
+      // state, then LOCKED into computeOrderPointsPlan below. Never
+      // recomputed later from state that may have since changed.
+      pointsEligible: updatedProduct.pointsEligible !== false,
+      pointsRate:     updatedProduct.pointsRateOverride ?? POINTS_DEFAULT_RATE,
+      pointsMultiplier: pointsMultiplierMap.get(updatedProduct._id.toString()) ?? 1,
     });
   }
 
@@ -119,12 +140,41 @@ const _buildAndSaveOrder = async (userId, { shippingAddress, notes, couponCode }
     appliedCoupon  = result.coupon;
   }
 
-  const total = parseFloat(Math.max(0, subtotal - couponDiscount + shippingCost).toFixed(2));
+  // ── Club points redemption — server-authoritative, never trust a client
+  // total. Capped at the order's real payable amount so redemption can
+  // never buy points-value that doesn't exist on this order, and gated on
+  // CURRENT real VIP status (never a client claim). See points.service.js
+  // for the atomic reservation (this deducts the user's balance immediately
+  // — reverseRedemption gives it back on cancel/expiry/refund).
+  const requestedPoints = Math.max(0, Math.floor(pointsToRedeem || 0));
+  if (requestedPoints > 0 && !isMember) {
+    throw new AppError('Only active Club members can redeem points', StatusCodes.BAD_REQUEST, 'NOT_A_MEMBER');
+  }
+  const maxRedeemableValue = Math.max(0, subtotal - couponDiscount);
+  const actualPointsToRedeem = Math.min(requestedPoints, Math.floor(maxRedeemableValue / POINTS_REDEMPTION_RATE));
+
+  let pointsRedeemedValue = 0;
+  if (actualPointsToRedeem > 0) {
+    const reserved = await pointsService.reservePoints(userId, actualPointsToRedeem, orderId, sess);
+    pointsRedeemedValue = reserved.pointsRedeemedValue;
+  }
+
+  const total = parseFloat(Math.max(0, subtotal - couponDiscount - pointsRedeemedValue + shippingCost).toFixed(2));
+
+  // ── Club points earning — locked at checkout, realized only once the
+  // order reaches 'delivered' (see updateStatus below / points.service.js).
+  const pointsPlan = pointsService.computeOrderPointsPlan({
+    items: orderItems.map(it => ({ totalPrice: it.totalPrice, pointsEligible: it.pointsEligible, pointsRate: it.pointsRate, pointsMultiplier: it.pointsMultiplier })),
+    isMember,
+    pointsRedeemedValue,
+  });
+  orderItems.forEach((it, i) => { it.pointsEarned = pointsPlan.items[i].pointsEarned; });
 
   const PAYMENT_TIMEOUT_MS = parseInt(process.env.PAYMENT_TIMEOUT_MS || '360000', 10); // 6 min
 
   const [order] = await Order.create(
     [{
+      _id: orderId,
       orderNumber,
       user: userId,
       items: orderItems,
@@ -137,6 +187,11 @@ const _buildAndSaveOrder = async (userId, { shippingAddress, notes, couponCode }
       couponValue:    appliedCoupon?.value ?? null,
       couponDiscount: parseFloat(couponDiscount.toFixed(2)),
       total,
+      pointsRedeemed:      actualPointsToRedeem,
+      pointsRedeemedValue: parseFloat(pointsRedeemedValue.toFixed(2)),
+      pointsEarned:        pointsPlan.pointsEarned,
+      isVipOrder:          isMember,
+      membershipPlanSnapshot: isMember ? (user.membership.plan ?? null) : null,
       notes,
       expiresAt:      new Date(Date.now() + PAYMENT_TIMEOUT_MS),
     }],
@@ -265,9 +320,28 @@ const cancelOrder = async (orderId, actor) => {
   }
 
   const prevStatus = order.status;
-  const session = await mongoose.startSession();
-  session.startTransaction();
-  try {
+
+  // In-memory mutations happen exactly ONCE, before any DB attempt — so a
+  // retry (see below) never double-pushes into statusHistory. Only the
+  // actual DB writes are retried.
+  order.statusHistory.push({
+    fromStatus: prevStatus,
+    toStatus:   'cancelled',
+    changedBy:  actor._id,
+    changedAt:  new Date(),
+    note:       'ביטול על ידי לקוח',
+  });
+  order.status = 'cancelled';
+  // Release the membership duplicate-purchase lock (no-op for physical
+  // orders — the field is never set for them).
+  order.membershipPendingLock = null;
+
+  // Same replica-set-required-for-transactions fallback as createOrder
+  // above: standalone MongoDB (local dev / the test harness's
+  // mongodb-memory-server, which is NOT a replica set) throws error code 20
+  // on startTransaction — retry the same DB operations without a session in
+  // that case. All operations still run, just not atomically as a group.
+  const runCancel = async (sess) => {
     // Restore stock and undo salesCount atomically per line item.
     // Digital/service items (e.g. membership) never touched stock at
     // purchase time and have no `product` ref — skip them explicitly.
@@ -276,25 +350,28 @@ const cancelOrder = async (orderId, actor) => {
       await Product.findByIdAndUpdate(
         item.product,
         { $inc: { stock: item.quantity, salesCount: -item.quantity } },
-        { session }
+        { session: sess }
       );
     }
-    order.statusHistory.push({
-      fromStatus: prevStatus,
-      toStatus:   'cancelled',
-      changedBy:  actor._id,
-      changedAt:  new Date(),
-      note:       'ביטול על ידי לקוח',
-    });
-    order.status = 'cancelled';
-    // Release the membership duplicate-purchase lock (no-op for physical
-    // orders — the field is never set for them).
-    order.membershipPendingLock = null;
-    await order.save({ session });
+    // Return any reserved Club points — idempotent no-op if none were
+    // redeemed on this order (see points.service.js#reverseRedemption).
+    await pointsService.reverseRedemption(order, sess);
+    await order.save({ session: sess });
+  };
+
+  const session = await mongoose.startSession();
+  try {
+    session.startTransaction();
+    await runCancel(session);
     await session.commitTransaction();
   } catch (err) {
-    await session.abortTransaction();
-    throw err;
+    try { await session.abortTransaction(); } catch (_) { /* standalone: ignore */ }
+
+    const isNoReplicaSet = err.code === 20 ||
+      (typeof err.message === 'string' && err.message.includes('Transaction numbers'));
+    if (!isNoReplicaSet) throw err;
+
+    await runCancel(null);
   } finally {
     session.endSession();
   }
@@ -375,6 +452,18 @@ const updateStatus = async (orderId, newStatus, actor, req = null, note = '') =>
   order.status = newStatus;
   await order.save();
 
+  // Club points become earned/available only once the order reaches this
+  // safe, sufficiently-final status — never at cart/checkout/payment-intent
+  // time (see Part D of the Club/VIP spec). 'delivered' is the chosen point
+  // because it is the existing terminal, non-reversible-in-the-ordinary-
+  // course status the fulfillment pipeline already uses (shipped→delivered
+  // is the last normal transition; only a refund reverses it afterward —
+  // see refund.service.js#reverseEarnedPoints). Idempotent — safe even if
+  // called more than once for the same order.
+  if (newStatus === 'delivered') {
+    await pointsService.realizeEarnedPoints(order);
+  }
+
   // Non-fatal audit log — does not roll back the status change on failure
   audit.log({
     action:   'order.status_changed',
@@ -437,6 +526,11 @@ const listAllOrders = async (query) => {
     oldest:     { createdAt:  1 },
     total_asc:  { total:  1 },
     total_desc: { total: -1 },
+    // Warehouse fulfillment queue — VIP orders first, oldest-first within
+    // each group (fair FIFO among equally-prioritized orders). Opt-in only
+    // (WarehouseOrdersPage requests it explicitly); the Admin order list's
+    // default ('newest') is completely untouched by this addition.
+    priority:   { isVipOrder: -1, createdAt: 1 },
   };
   const sort = sortMap[query.sort] || { createdAt: -1 };
 

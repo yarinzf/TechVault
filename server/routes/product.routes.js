@@ -2,7 +2,7 @@
 
 const { Router } = require('express');
 const ctrl = require('../controllers/product.controller');
-const { authenticate, authorize } = require('../middleware/auth');
+const { authenticate, authorize, optionalAuth } = require('../middleware/auth');
 const { validate } = require('../middleware/validate');
 const { createProductSchema, updateProductSchema, updateStockSchema } = require('../validators/product.validator');
 const { ADMIN_ROLES, STAFF_ROLES } = require('../config/roles');
@@ -53,7 +53,7 @@ const router = Router();
  *       200:
  *         description: Paginated product list
  */
-router.get('/', ctrl.list);
+router.get('/', optionalAuth, ctrl.list);
 
 /**
  * @swagger
@@ -124,7 +124,7 @@ router.get('/:id/admin-detail', authenticate, authorize(...ADMIN_ROLES), ctrl.ge
  *       404:
  *         description: Not found
  */
-router.get('/:slug', ctrl.getOne);
+router.get('/:slug', optionalAuth, ctrl.getOne);
 
 /**
  * @swagger

@@ -11,6 +11,10 @@ const createOrderSchema = Joi.object({
   }).required(),
   notes:      Joi.string().trim().allow('').optional(),
   couponCode: Joi.string().trim().uppercase().min(3).max(20).optional(),
+  // How many Club points the customer wants to redeem on this order — the
+  // server (order.service.js) is the sole authority on whether this is
+  // affordable/eligible/capped; this is only the customer's REQUEST.
+  pointsToRedeem: Joi.number().integer().min(0).optional(),
 });
 
 const updateStatusSchema = Joi.object({

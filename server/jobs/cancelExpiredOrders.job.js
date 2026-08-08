@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const Order    = require('../models/Order');
 const Product  = require('../models/Product');
 const logger   = require('../config/logger');
+const pointsService = require('../services/points.service');
 
 // ── CAS filter — applied identically at read time and at atomic update time ───
 // Using the same filter in both places ensures we never process an order that
@@ -51,6 +52,12 @@ const cancelWithSession = async (candidate, now) => {
       );
     }
 
+    // Return any reserved Club points — the order never got paid, so any
+    // redemption reservation must be released. Idempotent no-op if none
+    // were redeemed. `won` is the pre-update document (new:false above), so
+    // its points fields are still the pre-cancellation values.
+    await pointsService.reverseRedemption(won, session);
+
     await session.commitTransaction();
     return true;
   } catch (err) {
@@ -85,6 +92,10 @@ const cancelWithoutSession = async (candidate, now) => {
       }),
     );
   }
+
+  await pointsService.reverseRedemption(won).catch(err =>
+    logger.warn('expiry_points_reversal_failure', { orderId: candidate._id, error: err.message }),
+  );
 
   return true;
 };

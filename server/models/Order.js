@@ -40,11 +40,23 @@ const orderItemSchema = new mongoose.Schema(
     unitPrice:  { type: Number, required: true, min: 0 },
     quantity:   { type: Number, required: true, min: 1 },
     totalPrice: { type: Number, required: true, min: 0 },
-    // Free-form, item-type-specific immutable purchase info (e.g. { membershipType: 'lifetime' }).
-    // Always server-set (never taken from client input) — no business/security
-    // decision reads this field; itemType alone drives all membership logic.
-    // Still constrained for membership lines so a malformed/arbitrary shape
-    // can never be persisted as purchase history.
+
+    // ── Club points — locked at checkout, never recomputed from live
+    // Product/Campaign state later (see points.service.js). Absent/0 for
+    // membership lines and for any order placed by a non-member.
+    pointsEligible:   { type: Boolean, default: false }, // this line's product.pointsEligible AND buyer was VIP at checkout
+    pointsRate:       { type: Number,  default: 0, min: 0 }, // effective rate used (product override or POINTS_DEFAULT_RATE)
+    pointsMultiplier: { type: Number,  default: 1, min: 1 }, // active campaign multiplier applied to this line, if any
+    pointsEarned:     { type: Number,  default: 0, min: 0 }, // final points this line contributes — locked at checkout
+    // Free-form, item-type-specific immutable purchase info (e.g.
+    // { membershipPlan: 'monthly' }). Always server-set (never taken from
+    // client input) — no business/security decision reads this field;
+    // itemType alone drives all membership logic. Still constrained for
+    // membership lines so a malformed/arbitrary shape can never be
+    // persisted as purchase history. 'lifetime' is intentionally no longer
+    // accepted for NEW documents — the one-time-lifetime plan is retired —
+    // but historical orders already containing it are untouched (this
+    // validator only runs on write, never on read of old data).
     metadata: {
       type: mongoose.Schema.Types.Mixed,
       default: undefined,
@@ -53,9 +65,9 @@ const orderItemSchema = new mongoose.Schema(
           if (this.itemType !== 'membership') return true; // unconstrained for other item types
           if (val == null || typeof val !== 'object' || Array.isArray(val)) return false;
           const keys = Object.keys(val);
-          return keys.length === 1 && keys[0] === 'membershipType' && val.membershipType === 'lifetime';
+          return keys.length === 1 && keys[0] === 'membershipPlan' && ['monthly', 'annual'].includes(val.membershipPlan);
         },
-        message: 'Invalid membership metadata — expected exactly { membershipType: "lifetime" }',
+        message: 'Invalid membership metadata — expected exactly { membershipPlan: "monthly" | "annual" }',
       },
     },
   },
@@ -108,6 +120,30 @@ const orderSchema = new mongoose.Schema(
     couponDiscount: { type: Number, default: 0, min: 0 },
 
     total:          { type: Number, required: true, min: 0 },
+
+    // ── Club points — locked at checkout, authoritative for this order
+    // forever (never recomputed from later Product/Campaign/points-rate
+    // changes — see points.service.js and Part M of the Club/VIP spec).
+    pointsRedeemed:      { type: Number,  default: 0, min: 0 }, // points spent on this order (reserved at creation)
+    pointsRedeemedValue: { type: Number,  default: 0, min: 0 }, // ₪ value of the above, at POINTS_REDEMPTION_RATE
+    pointsRedeemedReversed: { type: Boolean, default: false },  // true once a cancel/refund has returned the reserved points
+    pointsEarned:        { type: Number,  default: 0, min: 0 }, // sum of items[].pointsEarned — locked at creation
+    pointsEarnedRealized:{ type: Boolean, default: false },     // true once the 'earn' ledger transaction has been posted (order reached delivered)
+    pointsEarnedReversed:{ type: Boolean, default: false },     // true once a full refund has reversed the earned points
+
+    // Real membership context at the moment of purchase — audit trail only;
+    // never re-derived from the user's CURRENT (possibly since-changed)
+    // membership state. See Part M — historical order economics must stay
+    // stable even if the user's plan/points-rate changes later.
+    isVipOrder: { type: Boolean, default: false },
+    membershipPlanSnapshot: { type: String, enum: ['monthly', 'annual', null], default: null },
+
+    // Idempotency marker for membership PURCHASE orders only — set once
+    // activateMembershipForOrder has extended the user's term for this
+    // specific order, so a replayed webhook/confirm call is a safe no-op
+    // even across renewals (where membership.status legitimately stays
+    // 'active' across the whole transition, unlike the old lifetime model).
+    membershipActivatedAt: { type: Date, default: null },
 
     status: {
       type: String,
@@ -192,6 +228,7 @@ orderSchema.index({ status: 1, createdAt: -1 });
 orderSchema.index({ paymentStatus: 1 });
 orderSchema.index({ status: 1, expiresAt: 1 }); // for expiry cancellation job
 orderSchema.index({ createdAt: -1 }); // unfiltered admin list
+orderSchema.index({ status: 1, isVipOrder: -1, createdAt: 1 }); // warehouse VIP-priority queue sort
 
 // Partial unique index — see membershipPendingLock comment above. Only
 // documents where the field equals 'pending' participate in uniqueness, so
