@@ -85,14 +85,31 @@ const createIntent = async (req, res, next) => {
       );
     }
 
-    const { clientSecret, paymentIntentId } = await paymentService.createIntent(order, { cardNumber, cardHolder, expiry, cvv });
-    logger.info('payment_intent_created', { provider: paymentService.PROVIDER, orderId: order._id, paymentIntentId });
+    // An order fully covered by redeemed Club points has nothing left to
+    // charge (order.total === 0) — there is no card, no Stripe customer, no
+    // real money changing hands, so no PaymentIntent should ever be created
+    // with a real provider. This still goes through the SAME create-intent /
+    // confirm two-step flow as every other order (see confirmPayment below)
+    // — only the two provider-touching calls are skipped, everything else
+    // (order state machine, paymentHistory, membership activation, cart
+    // clearing, audit, events) is identical to a normal paid order.
+    let clientSecret, paymentIntentId, provider;
+    if (order.total === 0) {
+      paymentIntentId = `zero_${order._id}`;
+      clientSecret    = null;
+      provider        = 'zero_payment';
+      logger.info('zero_cash_intent_created', { orderId: order._id, paymentIntentId });
+    } else {
+      ({ clientSecret, paymentIntentId } = await paymentService.createIntent(order, { cardNumber, cardHolder, expiry, cvv }));
+      provider = paymentService.PROVIDER;
+      logger.info('payment_intent_created', { provider, orderId: order._id, paymentIntentId });
+    }
 
     // Persist the intent ID so the webhook / confirm endpoint can look it up
     order.paymentRef = paymentIntentId;
     await order.save();
 
-    sendSuccess(res, { clientSecret, paymentIntentId, provider: paymentService.PROVIDER });
+    sendSuccess(res, { clientSecret, paymentIntentId, provider });
   } catch (err) { next(err); }
 };
 
@@ -133,15 +150,32 @@ const confirmPayment = async (req, res, next) => {
     }
 
     logger.info('payment_confirm_start', { orderId: order._id, paymentIntentId, provider: paymentService.PROVIDER });
-    // Server-side verification — never trust the client's claim alone
-    const intent = await paymentService.retrieveIntent(paymentIntentId);
-    logger.info('payment_intent_retrieved', { paymentIntentId, intentStatus: intent.status });
-    if (intent.status !== 'succeeded') {
-      throw new AppError(
-        `Payment not yet confirmed — intent status: "${intent.status}"`,
-        StatusCodes.BAD_REQUEST,
-        'PAYMENT_NOT_CONFIRMED',
-      );
+
+    // Zero-cash order (fully paid with redeemed Club points, see createIntent
+    // above) — there is no real PaymentIntent to verify with any provider.
+    // The only thing to check server-side is that the client is confirming
+    // the exact synthesized reference this order was actually given.
+    const isZeroCash = order.total === 0;
+    if (isZeroCash) {
+      if (!paymentIntentId || paymentIntentId !== order.paymentRef) {
+        throw new AppError(
+          'Payment reference does not match this zero-cash order',
+          StatusCodes.BAD_REQUEST,
+          'PAYMENT_NOT_CONFIRMED',
+        );
+      }
+      logger.info('zero_cash_confirm', { orderId: order._id, paymentIntentId });
+    } else {
+      // Server-side verification — never trust the client's claim alone
+      const intent = await paymentService.retrieveIntent(paymentIntentId);
+      logger.info('payment_intent_retrieved', { paymentIntentId, intentStatus: intent.status });
+      if (intent.status !== 'succeeded') {
+        throw new AppError(
+          `Payment not yet confirmed — intent status: "${intent.status}"`,
+          StatusCodes.BAD_REQUEST,
+          'PAYMENT_NOT_CONFIRMED',
+        );
+      }
     }
 
     const prevPayStatus = order.paymentStatus;
@@ -153,7 +187,9 @@ const confirmPayment = async (req, res, next) => {
       changedBy:     req.user._id,
       transactionId: paymentIntentId,
       amount:        order.total,
-      note:          `Confirmed via ${paymentService.PROVIDER === 'stripe' ? 'Stripe sandbox' : 'mock provider'}`,
+      note:          isZeroCash
+        ? 'Fully paid using Club points — no payment provider charge'
+        : `Confirmed via ${paymentService.PROVIDER === 'stripe' ? 'Stripe sandbox' : 'mock provider'}`,
     });
 
     // Auto-advance order status when payment is confirmed (membership orders

@@ -307,7 +307,10 @@ export default function CheckoutPage() {
   const validate = () => {
     setSubmitted(true);
     const shippingErrs = validateShipping();
-    const cardErrs     = payment === 'credit_card' ? validateCard() : {};
+    // An order fully covered by redeemed points has nothing to charge — no
+    // card details are collected or sent (see handlePlaceOrder), so none
+    // need to be validated either.
+    const cardErrs     = payment === 'credit_card' && displayTotal > 0 ? validateCard() : {};
     const deliveryErr  = !delivery ? { delivery: t('checkout.err.delivery') } : {};
     setErrors({ ...shippingErrs, ...deliveryErr });
     setCardErrors(cardErrs);

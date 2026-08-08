@@ -163,8 +163,24 @@ const _buildAndSaveOrder = async (userId, { shippingAddress, notes, couponCode, 
 
   // ── Club points earning — locked at checkout, realized only once the
   // order reaches 'delivered' (see updateStatus below / points.service.js).
+  //
+  // The earning BASE is the REAL cash-eligible spend, not the raw pre-
+  // coupon line price: a coupon discount is allocated proportionally
+  // across every line (by its share of subtotal, eligible or not — standard
+  // e-commerce allocation) before computeOrderPointsPlan further reduces it
+  // by the redeemed-points portion. Example: ₪2,000 eligible, ₪200 coupon,
+  // ₪300 points redeemed → net ₪1,500 → 5% = 75 points (not 100).
+  const pointsEarningItems = orderItems.map((it) => {
+    const couponShare = subtotal > 0 ? (it.totalPrice / subtotal) * couponDiscount : 0;
+    return {
+      totalPrice:       Math.max(0, it.totalPrice - couponShare),
+      pointsEligible:   it.pointsEligible,
+      pointsRate:       it.pointsRate,
+      pointsMultiplier: it.pointsMultiplier,
+    };
+  });
   const pointsPlan = pointsService.computeOrderPointsPlan({
-    items: orderItems.map(it => ({ totalPrice: it.totalPrice, pointsEligible: it.pointsEligible, pointsRate: it.pointsRate, pointsMultiplier: it.pointsMultiplier })),
+    items: pointsEarningItems,
     isMember,
     pointsRedeemedValue,
   });
@@ -172,31 +188,43 @@ const _buildAndSaveOrder = async (userId, { shippingAddress, notes, couponCode, 
 
   const PAYMENT_TIMEOUT_MS = parseInt(process.env.PAYMENT_TIMEOUT_MS || '360000', 10); // 6 min
 
-  const [order] = await Order.create(
-    [{
-      _id: orderId,
-      orderNumber,
-      user: userId,
-      items: orderItems,
-      shippingAddress,
-      subtotal:       parseFloat(subtotal.toFixed(2)),
-      taxAmount,
-      shippingCost,
-      couponCode:     appliedCoupon?.code  ?? null,
-      couponType:     appliedCoupon?.type  ?? null,
-      couponValue:    appliedCoupon?.value ?? null,
-      couponDiscount: parseFloat(couponDiscount.toFixed(2)),
-      total,
-      pointsRedeemed:      actualPointsToRedeem,
-      pointsRedeemedValue: parseFloat(pointsRedeemedValue.toFixed(2)),
-      pointsEarned:        pointsPlan.pointsEarned,
-      isVipOrder:          isMember,
-      membershipPlanSnapshot: isMember ? (user.membership.plan ?? null) : null,
-      notes,
-      expiresAt:      new Date(Date.now() + PAYMENT_TIMEOUT_MS),
-    }],
-    { session: sess }
-  );
+  let order;
+  try {
+    [order] = await Order.create(
+      [{
+        _id: orderId,
+        orderNumber,
+        user: userId,
+        items: orderItems,
+        shippingAddress,
+        subtotal:       parseFloat(subtotal.toFixed(2)),
+        taxAmount,
+        shippingCost,
+        couponCode:     appliedCoupon?.code  ?? null,
+        couponType:     appliedCoupon?.type  ?? null,
+        couponValue:    appliedCoupon?.value ?? null,
+        couponDiscount: parseFloat(couponDiscount.toFixed(2)),
+        total,
+        pointsRedeemed:      actualPointsToRedeem,
+        pointsRedeemedValue: parseFloat(pointsRedeemedValue.toFixed(2)),
+        pointsEarned:        pointsPlan.pointsEarned,
+        isVipOrder:          isMember,
+        membershipPlanSnapshot: isMember ? (user.membership.plan ?? null) : null,
+        notes,
+        expiresAt:      new Date(Date.now() + PAYMENT_TIMEOUT_MS),
+      }],
+      { session: sess }
+    );
+  } catch (err) {
+    // The points reservation above already deducted the user's balance —
+    // if the order itself fails to save (most reachable on the standalone-
+    // MongoDB fallback path, which has no surrounding transaction to undo
+    // this automatically), that reservation must not be left stranded.
+    if (actualPointsToRedeem > 0) {
+      await pointsService.releaseReservation(userId, orderId, sess);
+    }
+    throw err;
+  }
 
   // Cart is NOT cleared here. It is cleared only after payment is confirmed
   // (in payment.controller.js for credit card) or by the frontend for COD.

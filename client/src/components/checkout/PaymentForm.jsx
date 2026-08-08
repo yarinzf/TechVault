@@ -45,6 +45,7 @@ export default function PaymentForm({
   ];
 
   const showInstall = displayTotal >= INSTALLMENTS_THRESHOLD;
+  const isZeroCash  = displayTotal === 0;
 
   const cardInp = (field, extra = {}) => ({
     id:             `card_${field}`,
@@ -64,6 +65,10 @@ export default function PaymentForm({
         <h2 className={s.sectionTitle}>{t('checkout.payment_title')}</h2>
       </div>
       <div className={s.demoBanner}>{t('checkout.demo_banner')}</div>
+
+      {isZeroCash && (
+        <div className={s.demoBanner}>{t('checkout.zero_cash_paid')}</div>
+      )}
 
       <div className={s.optionList}>
         {PAYMENT_METHODS.map(m => (
@@ -92,7 +97,7 @@ export default function PaymentForm({
         ))}
       </div>
 
-      {payment === 'credit_card' && (
+      {payment === 'credit_card' && !isZeroCash && (
         <div className={s.cardForm}>
           <Field id="card_cardHolder" label={t('checkout.card_holder')} required error={cardErrors.cardHolder}>
             <input {...cardInp('cardHolder')} placeholder="Israel Israelowitz" autoComplete="cc-name" />
