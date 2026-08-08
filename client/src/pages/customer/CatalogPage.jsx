@@ -525,13 +525,16 @@ export default function CatalogPage() {
   };
 
   // ── Inline club banner (inside product grid every 6 items) ───────────────────
+  // Real facts only — 5% points, VIP prices, and early access are the actual
+  // implemented Club benefits (see ClubPage.jsx); no extended-warranty or
+  // 24/7-support claim, and no obsolete lifetime ₪50 price.
   const InlineClubBanner = () => (
     <div className={s.inlineClubBanner}>
       <ShieldCheck size={20} style={{ stroke: 'var(--sv-violet)', fill: 'none' }} />
       <div className={s.inlineClubBannerText}>
-        <strong>מועדון TechVault</strong> — קבל אחריות מורחבת 3 שנים + תמיכה 24/7 על כל רכישה. רק ₪50 לכל החיים.
+        <strong>מועדון TechVault</strong> — 5% חזרה בנקודות, מחירי VIP וגישה מוקדמת למבצעים. החל מ-₪20 לחודש.
       </div>
-      <button className={s.inlineClubBannerBtn}>הצטרף עכשיו</button>
+      <button className={s.inlineClubBannerBtn} onClick={() => navigate('/club')}>הצטרף עכשיו</button>
     </div>
   );
 
@@ -583,9 +586,9 @@ export default function CatalogPage() {
         <div className={s.clubBanner}>
           <ShieldCheck size={20} className={s.clubBannerIcon} />
           <div className={s.clubBannerText}>
-            <strong>מועדון TechVault</strong> — קבל אחריות מורחבת 3 שנים + תמיכה 24/7 על כל רכישה. רק ₪50 לכל החיים.
+            <strong>מועדון TechVault</strong> — 5% חזרה בנקודות, מחירי VIP וגישה מוקדמת למבצעים. החל מ-₪20 לחודש.
           </div>
-          <button className={s.clubBannerBtn}>הצטרף עכשיו</button>
+          <button className={s.clubBannerBtn} onClick={() => navigate('/club')}>הצטרף עכשיו</button>
         </div>
 
         {/* Brand logo grid — above page title */}

@@ -52,9 +52,12 @@ export const orderService = {
     }
   },
 
-  async create(shippingAddress, notes, couponCode) {
+  async create(shippingAddress, notes, couponCode, pointsToRedeem) {
     const body = { shippingAddress, notes };
     if (couponCode) body.couponCode = couponCode.trim().toUpperCase();
+    // Server (order.service.js) is the sole authority on the actual
+    // redemption amount/discount — this is only the customer's request.
+    if (pointsToRedeem) body.pointsToRedeem = pointsToRedeem;
     const { data } = await api.post('/orders', body);
     return data?.order ?? data;
   },

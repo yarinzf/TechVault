@@ -1,5 +1,8 @@
-import { Heart, ShoppingCart, Loader, CreditCard, GitCompare, Truck, RotateCcw, ShieldCheck, Lock } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Heart, ShoppingCart, Loader, CreditCard, GitCompare, Truck, RotateCcw, ShieldCheck, Lock, Percent } from 'lucide-react';
 import { useLanguage } from '../../../../context/LanguageContext';
+import { useMembership } from '../../../../hooks/useMembership';
+import { POINTS_DEFAULT_RATE } from '../../../membership/api/membership.service';
 import StarRating from '../../../../components/ui/StarRating/StarRating';
 import Badge from '../../../../components/ui/Badge/Badge';
 import QuantitySelector from '../../../../components/ui/QuantitySelector';
@@ -75,8 +78,17 @@ export default function ProductBuyBox({
   onScrollToReviews,
 }) {
   const { t, language } = useLanguage();
+  const { isMember } = useMembership();
   const { price, oldPrice, discountPercent, savings, hasDiscount } = getProductPricing(product);
   const outOfStock = product.stock === 0;
+
+  // Real, truthful Club earning indicator only — reflects the product's
+  // actual pointsEligible/pointsRateOverride fields (see Product.js /
+  // points.service.js), never a generic marketing claim. Nothing renders
+  // for an explicitly excluded product (pointsEligible === false).
+  const pointsEligible = product.pointsEligible !== false;
+  const pointsRate = product.pointsRateOverride ?? POINTS_DEFAULT_RATE;
+  const pointsAmount = Math.floor(price * pointsRate);
 
   const isWireless   = product.specs?.['Wireless'] === 'true' || product.specs?.['Bluetooth'] === 'true';
   const isHotSwap    = product.specs?.['Hot Swap'] === 'true';
@@ -137,6 +149,19 @@ export default function ProductBuyBox({
           </div>
           {hasDiscount && savings != null && (
             <div className={s.saving}>{t('product.saved_prefix')} ₪{savings.toFixed(2)}</div>
+          )}
+          {pointsEligible && (
+            <div className={s.pointsEarnRow}>
+              <Percent size={12} aria-hidden="true" />
+              {isMember
+                ? t('product.points_earn_vip').replace('{amount}', pointsAmount)
+                : <>
+                    {t('product.points_earn_nonvip').replace('{rate}', Math.round(pointsRate * 100))}
+                    {' '}
+                    <Link to="/club" className={s.pointsEarnLink}>{t('product.points_earn_link')}</Link>
+                  </>
+              }
+            </div>
           )}
         </div>
         <ProductVariants variants={product.variants} />

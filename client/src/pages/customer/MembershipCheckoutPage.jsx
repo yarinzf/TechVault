@@ -1,10 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { ArrowRight, Loader2, Crown, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useMembership } from '../../hooks/useMembership';
 import { useToast } from '../../hooks/useToast';
-import { membershipService } from '../../features/membership/api/membership.service';
+import { membershipService, MEMBERSHIP_PLANS } from '../../features/membership/api/membership.service';
+import { formatPlanLabel } from '../../features/membership/utils/membershipDisplay';
+import { useLanguage } from '../../context/LanguageContext';
 import { paymentService } from '../../features/payments/api/payment.service';
 import PaymentForm from '../../components/checkout/PaymentForm';
 import { PageSpinner } from '../../components/ui/Spinner/Spinner';
@@ -26,11 +28,22 @@ const detectCard = num => {
 
 const formatPrice = (n) => `₪${n}`;
 
+const VALID_PLANS = Object.keys(MEMBERSHIP_PLANS);
+
 export default function MembershipCheckoutPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { refreshProfile } = useAuth();
   const { isMember, loading: membershipLoading } = useMembership();
+  const { language } = useLanguage();
   const { toast } = useToast();
+
+  // Carried from the Club page's plan chooser (see ClubPage.jsx) — falls
+  // back to monthly for any deep link that skips the chooser (e.g. a
+  // bookmarked /club/join URL).
+  const requestedPlan = location.state?.plan;
+  const plan = VALID_PLANS.includes(requestedPlan) ? requestedPlan : 'monthly';
+  const planConfig = MEMBERSHIP_PLANS[plan];
 
   const [order,   setOrder]   = useState(null);
   const [loading, setLoading] = useState(true);
@@ -41,8 +54,12 @@ export default function MembershipCheckoutPage() {
   const [payError, setPayError] = useState('');
   const [placing, setPlacing] = useState(false);
 
-  // Active members must never be able to buy membership again — guard both
-  // the render and any deep-linked/stale URL to this page.
+  // An active (non-expired) member does not need to buy again through this
+  // guarded flow — renewal while still active is real (see
+  // membership.service.js), but it's initiated from the Club page's own
+  // renew action, not by silently redirecting here. This guard exists so a
+  // stale/deep-linked URL never re-triggers a purchase for someone already
+  // covered.
   useEffect(() => {
     if (!membershipLoading && isMember) {
       navigate('/club', { replace: true });
@@ -51,7 +68,7 @@ export default function MembershipCheckoutPage() {
 
   useEffect(() => {
     if (membershipLoading || isMember) return;
-    membershipService.checkout()
+    membershipService.checkout(plan)
       .then(setOrder)
       .catch(err => {
         if (err.code === 'ALREADY_MEMBER') {
@@ -61,7 +78,8 @@ export default function MembershipCheckoutPage() {
         setError(err.message || 'שגיאה ביצירת הזמנת המועדון');
       })
       .finally(() => setLoading(false));
-  }, [membershipLoading, isMember, navigate]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [membershipLoading, isMember, navigate, plan]);
 
   const onCardChange = (field, rawValue) => {
     let val = rawValue;
@@ -163,16 +181,16 @@ export default function MembershipCheckoutPage() {
 
       <div className={s.header}>
         <h1 className={s.heading}>הצטרפות למועדון TechVault</h1>
-        <p className={s.subtitle}>תשלום חד-פעמי — חברות לכל החיים</p>
+        <p className={s.subtitle}>מסלול {formatPlanLabel(plan, language)} — ללא חיוב אוטומטי, חידוש בכל תקופה</p>
       </div>
 
       <div className={s.orderCard}>
         <div className={s.orderIcon}><Crown size={20} /></div>
         <div className={s.orderInfo}>
-          <div className={s.orderTitle}>חברות מועדון TechVault — לכל החיים</div>
+          <div className={s.orderTitle}>חברות מועדון TechVault — מסלול {formatPlanLabel(plan, language)}</div>
           <div className={s.orderSub}>הזמנה #{order?.orderNumber}</div>
         </div>
-        <div className={s.orderPrice}>{formatPrice(order?.total ?? 50)}</div>
+        <div className={s.orderPrice}>{formatPrice(order?.total ?? planConfig.price)}</div>
       </div>
 
       <PaymentForm
@@ -185,7 +203,7 @@ export default function MembershipCheckoutPage() {
         placing={placing}
         installments={1}
         onInstallmentsChange={() => {}}
-        displayTotal={order?.total ?? 50}
+        displayTotal={order?.total ?? planConfig.price}
         formatPrice={formatPrice}
         cardBrand={cardBrand}
         onFillTest={fillTestCard}
@@ -195,7 +213,7 @@ export default function MembershipCheckoutPage() {
         <button className={s.payBtn} onClick={handlePay} disabled={placing || !order}>
           {placing
             ? <><Loader2 size={16} className={s.spinIcon} /> מעבד תשלום…</>
-            : <><ShieldCheck size={16} /> הצטרפות ותשלום · {formatPrice(order?.total ?? 50)}</>}
+            : <><ShieldCheck size={16} /> הצטרפות ותשלום · {formatPrice(order?.total ?? planConfig.price)}</>}
         </button>
       </div>
     </div>

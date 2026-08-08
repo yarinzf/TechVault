@@ -1,6 +1,6 @@
-/* ── Page shell — same breadcrumbStrip/hero/pageInner pattern as
-   BestSellersPage.module.css, matched against Sapir's latest
-   design-reference/techvault-club.html (.club-page-wrap / .clv-hero). ── */
+/* ── Page shell — breadcrumbStrip/hero/pageInner pattern matched against
+   Sapir's latest design-reference/techvault-club.html (.club-page-wrap /
+   .clv-hero / .clv-*). ── */
 .page {
   background: var(--sv-bg);
   font-family: var(--sv-font);
@@ -68,7 +68,7 @@
   position: relative;
   font-family: var(--sv-font);
   font-size: 28px; font-weight: 800; color: var(--sv-text);
-  line-height: 1.3; max-width: 600px;
+  line-height: 1.3; max-width: 620px;
   margin: 0 auto 8px;
 }
 .heroTitle span {
@@ -77,11 +77,7 @@
 }
 @media (max-width: 640px) { .heroTitle { font-size: 22px; } }
 
-.heroSub { position: relative; font-size: 14px; color: #A9B4C7; max-width: 520px; margin: 0 auto 4px; line-height: 1.5; }
-
-.priceRow { position: relative; display: flex; flex-direction: column; align-items: center; gap: 2px; margin: 11px 0 14px; }
-.price { font-size: 32px; font-weight: 800; color: var(--sv-mint); }
-.priceSub { font-size: 12px; color: var(--sv-muted); }
+.heroSub { position: relative; font-size: 14px; color: #A9B4C7; max-width: 540px; margin: 0 auto 4px; line-height: 1.5; }
 
 .statusPill {
   position: relative;
@@ -91,9 +87,45 @@
   border: 1px solid rgba(37,99,235,.35);
   border-radius: 20px;
   padding: 7px 16px;
-  margin-top: 3px;
+  margin-top: 8px;
 }
 .statusPill svg { color: var(--sv-success); }
+
+/* ── Plan chooser (new — replaces the old single ₪50-for-life price row) ── */
+.planChooser {
+  position: relative;
+  display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;
+  margin: 16px 0 8px;
+  width: 100%;
+}
+.planCard {
+  position: relative;
+  width: 180px;
+  background: rgba(255,255,255,.03);
+  border: 1.5px solid var(--sv-border);
+  border-radius: 14px;
+  padding: 16px 14px;
+  text-align: center;
+  cursor: pointer;
+  font-family: var(--sv-font);
+  transition: border-color .15s ease, background .15s ease, transform .1s ease;
+}
+.planCard:hover { border-color: rgba(37,99,235,.4); transform: translateY(-1px); }
+.planCardSelected { border-color: var(--sv-blue-l); background: rgba(37,99,235,.08); box-shadow: 0 0 0 1px var(--sv-blue-l) inset; }
+.planCardAnnual.planCardSelected { border-color: var(--sv-violet); box-shadow: 0 0 0 1px var(--sv-violet) inset; }
+
+.planBestValue {
+  position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+  background: linear-gradient(90deg, var(--sv-blue), var(--sv-violet));
+  color: #fff; font-size: 10px; font-weight: 800; letter-spacing: .04em;
+  border-radius: 20px; padding: 3px 10px; white-space: nowrap;
+}
+.planLabel { font-size: 13px; font-weight: 700; color: var(--sv-text); margin-top: 4px; }
+.planPrice { font-size: 26px; font-weight: 800; color: var(--sv-mint); margin-top: 4px; }
+.planSub { font-size: 11.5px; color: var(--sv-muted); }
+.planSavings { font-size: 11px; font-weight: 700; color: var(--sv-success); margin-top: 6px; }
+
+.planNote { position: relative; font-size: 11.5px; color: var(--sv-muted); margin: 4px 0 14px; }
 
 /* ── Primary/secondary buttons (Sapir's dedicated-page override: blue, not
    violet — see #clubNonVip .club-btn-primary in techvault-club.html) ──── */
@@ -123,21 +155,57 @@
 .section { margin-bottom: 26px; }
 .sectionTitle { font-size: 18px; font-weight: 800; font-family: var(--sv-font); color: var(--sv-text); margin-bottom: 16px; text-align: center; }
 
-/* ── Benefits grid (Sapir's .clv-benefits-grid, 4-column variant) ───────── */
-.benefitsGrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
-@media (max-width: 1100px) { .benefitsGrid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 460px)  { .benefitsGrid { grid-template-columns: 1fr; } }
+/* ── Benefits grid (Sapir's .clv-benefits-grid, 5-column) ────────────────── */
+.benefitsGrid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
+@media (max-width: 1100px) { .benefitsGrid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 640px)  { .benefitsGrid { grid-template-columns: repeat(2, 1fr); } }
 
-.benefitCard { background: var(--sv-card); border: 1px solid var(--sv-border); border-radius: 12px; padding: 14px 12px; text-align: center; }
+.benefitCard { background: var(--sv-card); border: 1px solid var(--sv-border); border-radius: 12px; padding: 13px 12px; text-align: center; }
 .benefitIcon {
   width: 38px; height: 38px; border-radius: 10px;
   display: flex; align-items: center; justify-content: center;
-  margin: 0 auto 9px;
+  margin: 0 auto 8px;
   background: rgba(37,99,235,.12); border: 1px solid rgba(37,99,235,.3);
   color: var(--sv-blue-l);
 }
 .benefitTitle { font-size: 13px; font-weight: 700; color: var(--sv-text); margin-bottom: 3px; }
-.benefitDesc { font-size: 11px; color: var(--sv-muted); line-height: 1.4; }
+.benefitDesc { font-size: 11px; color: var(--sv-muted); line-height: 1.35; }
+.activeTag {
+  display: inline-flex; align-items: center; justify-content: center; gap: 3px;
+  font-size: 10.5px; font-weight: 700; color: var(--sv-success); margin-top: 4px;
+}
+
+/* ── Campaign teaser card (Sapir's .clv-campaign-card) ───────────────────── */
+.campaignCard {
+  max-width: 620px; margin: 0 auto;
+  background: linear-gradient(120deg, rgba(37,99,235,.08), var(--sv-card) 55%);
+  border: 1px solid rgba(37,99,235,.25);
+  border-radius: 16px;
+  padding: 18px 26px;
+  text-align: center;
+}
+.campaignIcon {
+  width: 34px; height: 34px; border-radius: 10px;
+  background: rgba(37,99,235,.14); border: 1px solid rgba(37,99,235,.3);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 10px; color: var(--sv-blue-l);
+}
+.campaignBadge {
+  display: inline-flex; align-items: center;
+  font-size: 10px; font-weight: 800; letter-spacing: .06em; color: #fff;
+  background: linear-gradient(90deg, var(--sv-blue), var(--sv-violet));
+  border-radius: 20px; padding: 4px 12px; margin-bottom: 6px;
+}
+.campaignEyebrow { font-size: 12px; color: var(--sv-muted); text-transform: uppercase; letter-spacing: .05em; }
+.campaignName { font-size: 18px; font-weight: 800; color: var(--sv-text); margin: 6px 0; }
+.campaignDesc { font-size: 13px; color: #A9B4C7; max-width: 480px; margin: 0 auto 12px; line-height: 1.5; }
+.campaignCta {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: transparent; color: var(--sv-muted); border: none;
+  font-family: var(--sv-font); font-size: 13.5px; font-weight: 500; cursor: pointer;
+  transition: color .15s ease;
+}
+.campaignCta:hover { color: var(--sv-blue-l); }
 
 /* ── How it works (Sapir's .clv-steps) ───────────────────────────────────── */
 .stepsGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
@@ -162,23 +230,50 @@
 .faqItem[open] summary::before { content: '−'; }
 .faqItem p { font-size: 12.5px; color: var(--sv-muted); margin-top: 8px; line-height: 1.5; }
 
-/* ── Member summary (Sapir's .clv-summary-compact) ───────────────────────── */
+/* ── Member points summary (Sapir's .clv-summary-compact — PLATINUM
+   replaced with real points, see ClubPage.jsx) ──────────────────────────── */
 .summaryCompact {
-  max-width: 460px; margin: 0 auto;
+  max-width: 480px; margin: 0 auto;
   background: linear-gradient(160deg, rgba(158,110,241,.07), var(--sv-card) 55%);
   border: 1px solid rgba(158,110,241,.25);
   border-radius: 12px;
-  padding: 18px 26px;
+  padding: 20px 26px;
   text-align: center;
   box-shadow: 0 0 24px -12px rgba(158,110,241,.35);
 }
-.summaryCompactPoints { font-size: 18px; font-weight: 800; color: var(--sv-mint); margin-bottom: 13px; }
+.pointsHeading { font-size: 12px; color: var(--sv-muted); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 4px; }
+.pointsValue { font-size: 34px; font-weight: 800; color: var(--sv-mint); line-height: 1.2; }
+.pointsLabel { font-size: 12px; color: var(--sv-muted); margin-bottom: 13px; }
 .summaryCompactMeta {
-  display: flex; justify-content: center; gap: 18px; flex-wrap: wrap;
+  display: flex; justify-content: center; gap: 16px; flex-wrap: wrap;
   padding-top: 13px; border-top: 1px solid rgba(255,255,255,.07);
 }
 .summaryCompactMeta span { display: inline-flex; align-items: center; gap: 4px; font-size: 11.5px; color: var(--sv-muted); }
 .summaryCompactMeta strong { color: var(--sv-blue-l); font-weight: 700; }
+
+/* ── VIP exclusive products (Sapir's .clvm-deals-grid) ───────────────────── */
+.vipDealsGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+@media (max-width: 760px) { .vipDealsGrid { grid-template-columns: 1fr; } }
+.vipDealCard {
+  display: block;
+  background: var(--sv-card); border: 1px solid rgba(158,110,241,.22);
+  border-radius: 12px; overflow: hidden; text-decoration: none;
+  transition: border-color .18s;
+}
+.vipDealCard:hover { border-color: rgba(158,110,241,.5); }
+.vipDealImg {
+  height: 84px; background: #0A0A0F;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--sv-blue-l);
+}
+.vipDealImg img { width: 100%; height: 100%; object-fit: contain; padding: 10px; box-sizing: border-box; }
+.vipDealBody { padding: 12px 14px; }
+.vipDealBrand { font-size: 10px; color: var(--sv-blue-l); font-weight: 700; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 3px; }
+.vipDealName { font-size: 13px; font-weight: 600; color: var(--sv-text); margin-bottom: 8px; line-height: 1.3; }
+.vipDealPriceRow { display: flex; align-items: center; justify-content: space-between; }
+.vipDealPriceLabel { font-size: 10.5px; color: var(--sv-violet); font-weight: 700; }
+.vipDealPrice { font-size: 15px; font-weight: 800; color: var(--sv-mint); }
+.vipDealsEmpty { text-align: center; font-size: 13px; color: var(--sv-muted); padding: 20px; }
 
 /* ── Member actions (Sapir's .clv-member-actions) ────────────────────────── */
 .memberActions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
@@ -187,4 +282,5 @@
   .heroTitle { font-size: 22px; }
   .stepsGrid { grid-template-columns: 1fr; }
   .summaryCompactMeta { flex-direction: column; gap: 8px; }
+  .planCard { width: 150px; }
 }

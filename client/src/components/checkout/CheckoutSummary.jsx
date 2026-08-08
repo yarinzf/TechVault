@@ -1,4 +1,4 @@
-import { Loader2, Truck, CreditCard, Lock, ShieldCheck, RotateCcw, Ticket, Monitor } from 'lucide-react';
+import { Loader2, Truck, CreditCard, Lock, ShieldCheck, RotateCcw, Ticket, Monitor, Gift } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from '../../context/LanguageContext';
 import s from './checkout.module.css';
@@ -12,6 +12,7 @@ const DELIVERY_LABEL_KEYS = {
 export default function CheckoutSummary({
   items,
   coupon,        // { input, applied, loading, error, onInput, onApply, onRemove }
+  points,        // { isMember, available, maxRedeemable, redeem, discount, onRedeemChange }
   totals,        // { totalPrice, displayTotal, installments }
   currency,      // { formatPrice, loading, fallback, code }
   delivery,
@@ -74,6 +75,61 @@ export default function CheckoutSummary({
         )}
       </div>
 
+      {/* Club points redemption — active VIP members only. Server
+          (order.service.js) recomputes and caps the real discount; this
+          control only expresses the customer's REQUEST. */}
+      {points?.isMember && (
+        <div className={s.couponSectionTop}>
+          <div className={s.couponSectionTitle}>
+            <Gift size={14} /> {t('checkout.points_title')}
+          </div>
+          {points.available > 0 ? (
+            <>
+              <p className={s.couponAppliedLabel} style={{ marginBottom: 8 }}>
+                {t('checkout.points_available').replace('{count}', points.available.toLocaleString())}
+              </p>
+              <div className={s.couponRow}>
+                <input
+                  type="number"
+                  className="input"
+                  min={0}
+                  max={points.maxRedeemable}
+                  value={points.redeem || ''}
+                  placeholder="0"
+                  disabled={placing}
+                  onChange={e => {
+                    const raw = parseInt(e.target.value, 10);
+                    const clamped = Number.isFinite(raw) ? Math.max(0, Math.min(raw, points.maxRedeemable)) : 0;
+                    points.onRedeemChange(clamped);
+                  }}
+                />
+                <button
+                  type="button"
+                  className={s.couponApplyBtn}
+                  disabled={placing || points.maxRedeemable === 0}
+                  onClick={() => points.onRedeemChange(points.maxRedeemable)}
+                >
+                  {t('checkout.points_use_max')}
+                </button>
+                {points.redeem > 0 && (
+                  <button
+                    type="button"
+                    className={s.couponRemoveBtn}
+                    disabled={placing}
+                    onClick={() => points.onRedeemChange(0)}
+                    aria-label={t('checkout.points_clear')}
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
+            </>
+          ) : (
+            <p className={s.couponError} role="status">{t('checkout.points_none')}</p>
+          )}
+        </div>
+      )}
+
       {/* Summary title */}
       <div className={s.summaryTitle}>{t('checkout.summary_title')}</div>
 
@@ -113,6 +169,12 @@ export default function CheckoutSummary({
         <div className={`${s.summaryRow} ${s.discountRow}`}>
           <span>{t('checkout.coupon_discount')} ({coupon.applied.code})</span>
           <span>−{formatPrice(coupon.applied.discount)}</span>
+        </div>
+      )}
+      {points?.discount > 0 && (
+        <div className={`${s.summaryRow} ${s.discountRow}`}>
+          <span>{t('checkout.points_discount')} ({points.redeem.toLocaleString()})</span>
+          <span>−{formatPrice(points.discount)}</span>
         </div>
       )}
       <div className={s.summaryRow}>

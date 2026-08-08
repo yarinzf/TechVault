@@ -294,7 +294,7 @@ function SecurityTab({ user, toast }) {
 function ClubTab({ toast }) {
   const navigate = useNavigate();
   const { language, t } = useLanguage();
-  const { isMember, points, joinedAt, notificationPreference } = useMembership();
+  const { isMember, points, plan, joinedAt, expiresAt, notificationPreference } = useMembership();
   const [saving, setSaving] = useState(false);
 
   const handlePrefChange = async (e) => {
@@ -324,7 +324,7 @@ function ClubTab({ toast }) {
           עדיין לא חברים במועדון TechVault
         </h3>
         <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-muted)', marginBottom: 20, maxWidth: 380, marginInline: 'auto' }}>
-          הצטרפו עכשיו — ₪50 בלבד לכל החיים. סטטוס חברות ונקודות מוצגים בחשבון שלך, והטבות נוספות בדרך.
+          הצטרפו עכשיו — החל מ-₪20 לחודש. 5% חזרה בנקודות, מחירי VIP וגישה מוקדמת למבצעים.
         </p>
         <Button onClick={() => navigate('/club')}>הצטרפות למועדון</Button>
       </div>
@@ -340,12 +340,24 @@ function ClubTab({ toast }) {
             <ShieldCheck size={13} /> חברות פעילה
           </span>
         </div>
+        {plan && (
+          <div className={s.infoRow}>
+            <span className={s.infoKey}>מסלול</span>
+            <span className={s.infoVal}>{plan === 'annual' ? 'שנתי' : 'חודשי'}</span>
+          </div>
+        )}
         <div className={s.infoRow}>
           <span className={s.infoKey}>הצטרפות</span>
           <span className={s.infoVal}>{formatJoinedDate(joinedAt, language) ?? '—'}</span>
         </div>
+        {expiresAt && (
+          <div className={s.infoRow}>
+            <span className={s.infoKey}>מתחדש ב</span>
+            <span className={s.infoVal}>{formatJoinedDate(expiresAt, language)}</span>
+          </div>
+        )}
         <div className={s.infoRow}>
-          <span className={s.infoKey}>נקודות שנצברו</span>
+          <span className={s.infoKey}>נקודות זמינות</span>
           <span className={s.infoVal}>{points.toLocaleString()}</span>
         </div>
       </div>

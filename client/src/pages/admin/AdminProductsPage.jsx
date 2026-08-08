@@ -56,6 +56,8 @@ const BLANK_FORM = {
     name: '', description: '', category: '', brand: '',
     price: '', stock: '0', imageUrl: '', isPublished: false,
     nameHe: '', shortDescriptionHe: '', descriptionHe: '',
+    // Club points eligibility — most products earn points by default.
+    pointsEligible: true, pointsRateOverride: '',
 };
 
 export default function AdminProductsPage() {
@@ -167,6 +169,8 @@ export default function AdminProductsPage() {
                 nameHe:             full.nameHe || '',
                 shortDescriptionHe: full.shortDescriptionHe || '',
                 descriptionHe:      full.descriptionHe || '',
+                pointsEligible:     full.pointsEligible !== false,
+                pointsRateOverride: full.pointsRateOverride != null ? String(Math.round(full.pointsRateOverride * 100)) : '',
             });
             setFormError('');
             setModalMode('edit');
@@ -192,11 +196,18 @@ export default function AdminProductsPage() {
             price:       parseFloat(form.price),
             stock:       parseInt(form.stock, 10) || 0,
             isPublished: form.isPublished,
+            pointsEligible: form.pointsEligible,
         };
         if (form.description.trim()) dto.description  = form.description.trim();
         if (form.brand.trim())       dto.brand         = form.brand.trim();
         if (form.category)           dto.category      = form.category;
         if (form.imageUrl.trim())    dto.images        = [form.imageUrl.trim()];
+        // Stored as a 0-1 rate; the admin UI shows/accepts a whole-number
+        // percentage for readability. Empty = no override (use the store
+        // default POINTS_DEFAULT_RATE server-side).
+        dto.pointsRateOverride = form.pointsRateOverride.trim()
+            ? Math.max(0, Math.min(100, parseFloat(form.pointsRateOverride))) / 100
+            : null;
 
         // Hebrew fields: in edit mode the form is pre-populated with the
         // product's current values (see openEdit), so an empty field here
@@ -661,6 +672,30 @@ export default function AdminProductsPage() {
                                 />
                                 <span className="text-sm text-foreground">פרסם מוצר (גלוי ללקוחות)</span>
                             </label>
+
+                            {/* Club points eligibility — see Product.js pointsEligible/pointsRateOverride */}
+                            <label className="flex items-center gap-3 cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    name="pointsEligible"
+                                    checked={form.pointsEligible}
+                                    onChange={handleFormChange}
+                                    className="w-4 h-4 rounded border-border text-[#2563eb]"
+                                />
+                                <span className="text-sm text-foreground">מוצר זכאי לנקודות מועדון (5% ברירת מחדל)</span>
+                            </label>
+                            {form.pointsEligible && (
+                                <FormField label="שיעור נקודות מותאם אישית (%) — השאר ריק לברירת מחדל 5%">
+                                    <input
+                                        type="number" min="0" max="100" step="1"
+                                        name="pointsRateOverride"
+                                        value={form.pointsRateOverride}
+                                        onChange={handleFormChange}
+                                        placeholder="5"
+                                        className={inputCls}
+                                    />
+                                </FormField>
+                            )}
 
                             {formError && (
                                 <p className="text-sm text-[#ef4444] flex items-center gap-1.5">

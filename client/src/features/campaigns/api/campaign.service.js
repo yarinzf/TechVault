@@ -16,4 +16,16 @@ export const campaignService = {
     const { data } = await api.get('/campaigns/active');
     return data?.campaigns ?? [];
   },
+
+  // Public, personalized when authenticated — real "2x points" campaign
+  // teaser + VIP-only exclusive deals for the Club page. A non-member
+  // always gets vipDeals: [] (server-enforced, not merely hidden here).
+  async getClubSummary() {
+    try {
+      const { data } = await api.get('/campaigns/club-summary');
+      return { pointsCampaign: data?.pointsCampaign ?? null, vipDeals: data?.vipDeals ?? [] };
+    } catch {
+      return { pointsCampaign: null, vipDeals: [] };
+    }
+  },
 };

@@ -87,14 +87,16 @@ const POLICY_ITEMS = [
   { Icon: Headset,     title: 'תמיכה 24/7',        desc: "צוות מומחים זמין תמיד\nצ'אט, טלפון ואימייל" },
 ];
 
-/* Non-member sales pitch — real, currently-enforced facts only. No numeric
-   or feature promises for systems that aren't implemented yet (points
-   earning, free shipping, early access, VIP support are all deferred). */
+/* Non-member sales pitch — real, currently-enforced Club benefits (see
+   ClubPage.jsx BENEFITS, the single source of truth for this list). No
+   tiers, no "free shipping always", no lifetime price — see
+   server/services/points.service.js and campaign.service.js for what's
+   actually implemented. */
 const CLUB_JOIN_FACTS = [
-  { Icon: Crown,   title: 'חברות לכל החיים',      desc: 'תשלום חד-פעמי של ₪50, ללא חיוב חוזר' },
-  { Icon: Star,    title: 'סטטוס חברות בחשבון',   desc: 'תג חברות פעיל ותאריך הצטרפות מוצגים בחשבון שלך' },
-  { Icon: Percent, title: 'מעקב נקודות מועדון',   desc: 'יתרת הנקודות שלך נשמרת ומוצגת בחשבון' },
-  { Icon: Clock,   title: 'הטבות נוספות בדרך',    desc: 'משלוח, מבצעים ותמיכה מורחבת יתווספו למועדון בהמשך' },
+  { Icon: Percent, title: '5% חזרה בנקודות',        desc: 'על מוצרים זכאים בכל קנייה' },
+  { Icon: Zap,     title: 'מחירי VIP בלעדיים',       desc: 'מבצעים והנחות ייחודיות לחברי המועדון' },
+  { Icon: Clock,   title: 'גישה מוקדמת למבצעים',    desc: 'לפני שאר הלקוחות, במבצעים נבחרים' },
+  { Icon: Headset, title: 'שירות בעדיפות',           desc: 'קדימות בטיפול בהזמנות ובפניות' },
 ];
 
 /* ── Weekly deal: response validation ────────────────────────────────────── */
@@ -535,41 +537,22 @@ function GamerClubSection() {
             הצטרפו ל<span className={s.clubTitleAccent}>מועדון</span><br />הגיימרים שלנו
           </h2>
           <p className={s.clubDesc}>
-            חברות לכל החיים בתשלום חד-פעמי של ₪50 — סטטוס חברות ונקודות מוצגים בחשבון שלך.
+            חברות מועדון עם הטבות אמיתיות — נקודות, מחירי VIP וגישה מוקדמת למבצעים. החל מ-₪20 לחודש.
           </p>
           <div className={s.clubPerks}>
-            <div className={s.clubPerk}>
-              <div className={s.clubPerkIcon}><Crown size={16} /></div>
-              <div className={s.clubPerkText}>
-                <div className={s.clubPerkTitle}>חברות לכל החיים</div>
-                <div className={s.clubPerkDesc}>תשלום חד-פעמי של ₪50, ללא חיוב חוזר</div>
+            {CLUB_JOIN_FACTS.map(({ Icon, title, desc }) => (
+              <div key={title} className={s.clubPerk}>
+                <div className={s.clubPerkIcon}><Icon size={16} /></div>
+                <div className={s.clubPerkText}>
+                  <div className={s.clubPerkTitle}>{title}</div>
+                  <div className={s.clubPerkDesc}>{desc}</div>
+                </div>
               </div>
-            </div>
-            <div className={s.clubPerk}>
-              <div className={s.clubPerkIcon}><Star size={16} /></div>
-              <div className={s.clubPerkText}>
-                <div className={s.clubPerkTitle}>סטטוס חברות בחשבון</div>
-                <div className={s.clubPerkDesc}>תג חברות פעיל ותאריך הצטרפות מוצגים בחשבון שלך</div>
-              </div>
-            </div>
-            <div className={s.clubPerk}>
-              <div className={s.clubPerkIcon}><Percent size={16} /></div>
-              <div className={s.clubPerkText}>
-                <div className={s.clubPerkTitle}>מעקב נקודות מועדון</div>
-                <div className={s.clubPerkDesc}>יתרת הנקודות שלך נשמרת ומוצגת בחשבון</div>
-              </div>
-            </div>
-            <div className={s.clubPerk}>
-              <div className={s.clubPerkIcon}><Clock size={16} /></div>
-              <div className={s.clubPerkText}>
-                <div className={s.clubPerkTitle}>הטבות נוספות בדרך</div>
-                <div className={s.clubPerkDesc}>משלוח, מבצעים ותמיכה מורחבת יתווספו למועדון בהמשך</div>
-              </div>
-            </div>
+            ))}
           </div>
           <div className={s.clubCta}>
-            <button className={s.clubBtnPrimary} onClick={() => navigate('/club/join')}>
-              <UserPlus size={16} /> הצטרף עכשיו — ₪50 בלבד
+            <button className={s.clubBtnPrimary} onClick={() => navigate('/club')}>
+              <UserPlus size={16} /> הצטרפות למועדון — מ-₪20 לחודש
             </button>
           </div>
         </div>
@@ -778,13 +761,13 @@ export default function HomePage() {
                 <div className={s.heroClubIcon}><ShieldCheck size={32} strokeWidth={1.4} /></div>
                 <div className={s.heroClubTitle}>מועדון TechVault</div>
                 <div className={s.heroClubPerks}>
-                  <div className={s.heroClubPerk}><Check size={13} /> חברות לכל החיים בתשלום חד-פעמי</div>
-                  <div className={s.heroClubPerk}><Check size={13} /> סטטוס וחשבון מועדון אישי</div>
-                  <div className={s.heroClubPerk}><Check size={13} /> מעקב נקודות בחשבון שלך</div>
-                  <div className={s.heroClubPerk}><Check size={13} /> הטבות נוספות בדרך</div>
+                  <div className={s.heroClubPerk}><Check size={13} /> 5% חזרה בנקודות על כל קנייה</div>
+                  <div className={s.heroClubPerk}><Check size={13} /> מחירי VIP בלעדיים</div>
+                  <div className={s.heroClubPerk}><Check size={13} /> גישה מוקדמת למבצעים</div>
+                  <div className={s.heroClubPerk}><Check size={13} /> שירות בעדיפות</div>
                 </div>
-                <div className={s.heroClubPrice}>רק <span>₪50</span> לכל החיים</div>
-                <button className={s.heroClubBtn} onClick={() => navigate('/club/join')}>
+                <div className={s.heroClubPrice}>החל מ-<span>₪20</span> לחודש</div>
+                <button className={s.heroClubBtn} onClick={() => navigate('/club')}>
                   <UserPlus size={15} /> הצטרף עכשיו
                 </button>
               </div>

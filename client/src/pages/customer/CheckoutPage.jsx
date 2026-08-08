@@ -3,6 +3,7 @@ import { Loader2, ArrowRight, ShoppingCart, Monitor, Check } from 'lucide-react'
 import { useNavigate, Link }    from 'react-router-dom';
 import { useCart }              from '../../hooks/useCart';
 import { useToast }             from '../../hooks/useToast';
+import { useMembership }        from '../../hooks/useMembership';
 import { useTranslation }       from '../../context/LanguageContext';
 import { orderService }         from '../../features/orders/api/order.service';
 import { paymentService }       from '../../features/payments/api/payment.service';
@@ -68,6 +69,7 @@ export default function CheckoutPage() {
   const { toast }  = useToast();
   const t          = useTranslation();
   const navigate   = useNavigate();
+  const { isMember, points: availablePoints } = useMembership();
 
   const draft = loadDraft();
 
@@ -90,6 +92,11 @@ export default function CheckoutPage() {
   const [couponLoading, setCouponLoading] = useState(false);
   const [couponError,   setCouponError]   = useState('');
 
+  // ── Club points redemption ───────────────────────────────────────────────
+  // Client-side value is only ever a REQUEST — order.service.js recomputes
+  // and caps the real discount server-side (never trusts this number).
+  const [pointsToRedeem, setPointsToRedeem] = useState(0);
+
   // ── Pending order state ──────────────────────────────────────────────────
   const [pendingOrderId,  setPendingOrderId]  = useState(() => draft?.pendingOrderId  ?? null);
   const [pendingOrderNum, setPendingOrderNum] = useState(() => draft?.pendingOrderNum ?? null);
@@ -111,7 +118,14 @@ export default function CheckoutPage() {
     useCurrency(form.country);
 
   const isIsrael    = form.country === 'Israel';
-  const displayTotal = couponApplied ? couponApplied.finalTotal : totalPrice;
+  const preDiscountTotal = couponApplied ? couponApplied.finalTotal : totalPrice;
+  // Client-side estimate only — capped at both the available balance and
+  // the order's own payable amount, mirroring (not replacing) the server's
+  // authoritative cap in order.service.js. The real order.total returned
+  // after creation is what's actually charged.
+  const maxRedeemablePoints = isMember ? Math.min(availablePoints, Math.floor(preDiscountTotal)) : 0;
+  const pointsDiscountEstimate = Math.min(pointsToRedeem, maxRedeemablePoints);
+  const displayTotal = Math.max(0, preDiscountTotal - pointsDiscountEstimate);
   const cardBrand    = detectCard(card.cardNumber);
   const isRetry      = !!pendingOrderId;
 
@@ -333,6 +347,7 @@ export default function CheckoutPage() {
           shippingAddress,
           notesParts.join(' | '),
           couponApplied?.code ?? null,
+          maxRedeemablePoints > 0 ? pointsToRedeem : 0,
         );
         orderId = orderObj._id;
         setPendingOrderId(String(orderId));
@@ -357,6 +372,7 @@ export default function CheckoutPage() {
       setPendingOrderNum(null);
       setExpiresAt(null);
       setCouponApplied(null);
+      setPointsToRedeem(0);
       clearDraft();
       resetCart();
       navigate(`/order-success/${orderId}`, { replace: true });
@@ -596,6 +612,14 @@ export default function CheckoutPage() {
               onRemove: removeCoupon,
             }}
             totals={{ totalPrice, displayTotal, installments }}
+            points={{
+              isMember,
+              available: availablePoints,
+              maxRedeemable: maxRedeemablePoints,
+              redeem: pointsToRedeem,
+              discount: pointsDiscountEstimate,
+              onRedeemChange: setPointsToRedeem,
+            }}
             currency={{ formatPrice, loading: loadingCurrency, fallback: currencyFallback, code: currencyCode }}
             delivery={delivery}
             placing={placing}

@@ -27,3 +27,17 @@ export function formatJoinedDate(joinedAt, language = 'he') {
     day: 'numeric',
   });
 }
+
+// Same real-date formatting as formatJoinedDate — used for expiresAt/renewal
+// date display. Kept as a separate named export (rather than reusing
+// formatJoinedDate directly at call sites) so the Club page's intent reads
+// clearly wherever it's used.
+export const formatExpiryDate = formatJoinedDate;
+
+const PLAN_LABELS_HE = { monthly: 'חודשי', annual: 'שנתי' };
+const PLAN_LABELS_EN = { monthly: 'Monthly', annual: 'Annual' };
+
+export function formatPlanLabel(plan, language = 'he') {
+  const dict = language === 'en' ? PLAN_LABELS_EN : PLAN_LABELS_HE;
+  return plan ? (dict[plan] ?? plan) : null;
+}

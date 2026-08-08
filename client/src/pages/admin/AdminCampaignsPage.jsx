@@ -477,6 +477,11 @@ function CreateEditModal({ campaign, onSave, closeModal }) {
         endDate:         toDateTimeLocal(campaign?.endDate),
         placement:       campaign?.placement ?? PLACEMENT_NONE,
         isClearance:     campaign?.isClearance ?? false,
+        // VIP campaign benefits — see Campaign.js membershipOnly/
+        // pointsMultiplier/vipEarlyAccessHours.
+        membershipOnly:      campaign?.membershipOnly ?? false,
+        pointsMultiplier:    campaign?.pointsMultiplier ?? 1,
+        vipEarlyAccessHours: campaign?.vipEarlyAccessHours ?? 0,
     });
     const [selectedProducts, setSelectedProducts] = useState(campaign?.products ?? []);
     const [searchResults, setSearchResults] = useState([]);
@@ -560,6 +565,9 @@ function CreateEditModal({ campaign, onSave, closeModal }) {
                 products:        selectedProducts.map((p) => p._id),
                 placement:       form.placement,
                 isClearance:     form.isClearance,
+                membershipOnly:      form.membershipOnly,
+                pointsMultiplier:    Number(form.pointsMultiplier) || 1,
+                vipEarlyAccessHours: Number(form.vipEarlyAccessHours) || 0,
             });
         } catch (err) {
             setError(mapBackendError(err, t));
@@ -639,6 +647,41 @@ function CreateEditModal({ campaign, onSave, closeModal }) {
                         {form.isClearance && (
                             <p className="text-xs text-muted-foreground mt-2">{t('admin.campaigns.clearance_stock_hint')}</p>
                         )}
+                    </div>
+
+                    {/* VIP campaign benefits — see Campaign.js membershipOnly/
+                        pointsMultiplier/vipEarlyAccessHours. Opt-in only —
+                        most campaigns leave all three at their defaults. */}
+                    <div>
+                        <label className="flex items-center gap-2 px-3 py-2.5 rounded-lg border border-border cursor-pointer hover:bg-secondary/50 transition-colors">
+                            <input
+                                type="checkbox"
+                                checked={form.membershipOnly}
+                                onChange={(e) => setForm((f) => ({ ...f, membershipOnly: e.target.checked }))}
+                                className="w-4 h-4"
+                            />
+                            <span className="text-sm text-foreground">מבצע בלעדי לחברי מועדון (VIP בלבד)</span>
+                        </label>
+                        {form.membershipOnly && (
+                            <p className="text-xs text-muted-foreground mt-2">מחיר זה יוצג ויחול רק על חברי מועדון פעילים — לקוחות שאינם חברים לא יראו ולא יוכלו לרכוש במחיר זה.</p>
+                        )}
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                        <ControlledInput
+                            label="הכפלת נקודות (pointsMultiplier)"
+                            type="number" min="1" max="10" step="1"
+                            value={form.pointsMultiplier}
+                            onChange={handle('pointsMultiplier')}
+                            placeholder="1"
+                        />
+                        <ControlledInput
+                            label="גישה מוקדמת ל-VIP (שעות)"
+                            type="number" min="0" max="168" step="1"
+                            value={form.vipEarlyAccessHours}
+                            onChange={handle('vipEarlyAccessHours')}
+                            placeholder="0"
+                        />
                     </div>
 
                     {/* Product picker */}

@@ -58,6 +58,12 @@
   border-radius: 20px; display: inline-flex; align-items: center; justify-content: center; direction: ltr;
 }
 .saving { font-size: 11.5px; color: var(--sv-success); font-weight: 500; margin-top: 6px; opacity: 0.85; }
+.pointsEarnRow {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 12px; color: var(--sv-violet); font-weight: 500; margin-top: 8px;
+}
+.pointsEarnLink { color: var(--sv-blue-l); text-decoration: underline; font-weight: 600; }
+.pointsEarnLink:hover { color: var(--sv-blue); }
 
 /* Variants (inert until real variant data exists) */
 .variants { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
