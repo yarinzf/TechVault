@@ -32,7 +32,7 @@ const getTopRated = async (req, res, next) => {
 
 const getBestSellers = async (req, res, next) => {
   try {
-    const limit = Math.min(parseInt(req.query.limit, 10) || 8, 20);
+    const limit = Math.min(parseInt(req.query.limit, 10) || 5, 20);
     const products = await svc.getBestSellers(limit);
     sendSuccess(res, { products });
   } catch (err) { next(err); }

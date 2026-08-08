@@ -13,7 +13,7 @@ import s from './CategoryNavBar.module.css';
 const NAV_ITEMS = [
   { key: 'nav.deals',        emoji: '🔥', to: '/deals' },
   { key: 'nav.new_arrivals', emoji: '🆕', to: '/new' },
-  { key: 'nav.bestsellers',  emoji: '🏆', to: '/products?sort=popularity' },
+  { key: 'nav.bestsellers',  emoji: '🏆', to: '/best-sellers' },
 ];
 
 export default function CategoryNavBar() {

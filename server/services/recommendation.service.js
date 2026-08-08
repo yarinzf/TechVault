@@ -3,8 +3,24 @@
 const mongoose = require('mongoose');
 const Order   = require('../models/Order');
 const Product = require('../models/Product');
+const { getActiveDiscountMap, calculateDiscountedPrice } = require('./campaign.service');
 
 const ACTIVE_MATCH = { isDeleted: false, isPublished: true };
+
+// A real, completed, paid sale — mirrors report.service.js's REVENUE_MATCH,
+// the most rigorous "did money actually change hands" definition already
+// established in this codebase (used for real revenue reporting), rather
+// than this file's own looser status-only check (used elsewhere below for
+// lower-stakes recommendation heuristics) or analytics.service.js's
+// fulfillment-stage-based SALES_MATCH (which excludes the 'pending' status
+// for a different, admin-pipeline reason unrelated to "was this paid for").
+// Best Sellers is customer-facing and represents real purchases, so it uses
+// the strictest, payment-verified signal: paymentStatus checked directly,
+// not inferred from order.status alone.
+const SALES_TRUTH_MATCH = {
+  paymentStatus: 'paid',
+  status: { $nin: ['cancelled', 'refunded'] },
+};
 
 const PROJECT_FIELDS = {
   name: 1, slug: 1, images: 1, price: 1, compareAtPrice: 1,
@@ -152,15 +168,97 @@ const getTopRated = async (limit = 8) => {
     .lean();
 };
 
-// ─── Best-sellers — all-time salesCount ───────────────────────────────────────
-const getBestSellers = async (limit = 8) => {
-  return Product.find({
-    ...ACTIVE_MATCH,
-    salesCount: { $gt: 0 },
-  }, PROJECT_FIELDS)
-    .sort({ salesCount: -1 })
-    .limit(limit)
-    .lean();
+// ─── Best-sellers — real, lifetime quantity sold from actual paid orders ──────
+//
+// Product.salesCount is NOT used here — it's seeded with large static
+// baseline values in server/data/**/*.js (e.g. `salesCount: 172`) and only
+// incremented/decremented incrementally on top of that fake baseline by
+// order.service.js, so it can never represent genuine sales history. This
+// aggregates directly from real Order/OrderItem data instead, ranked by
+// total QUANTITY sold (not order count — a single order for 3 units counts
+// as 3, not 1), lifetime-to-date (matches the visible Sapir reference's own
+// rendering, which sorts by `salesRankTotal`/shows `salesCountTotal` — the
+// monthly/weekly fields exist in its demo data but are never what's
+// actually rendered on the page).
+//
+// One aggregation computes the FULL real ranking (not capped at `limit`)
+// because "is this product the #1 seller in its own category" must be
+// judged against every real seller, not just whichever ones survived a
+// small page-size cutoff — see isCategoryLeader below.
+const getBestSellers = async (limit = 5) => {
+  const fullRanking = await Order.aggregate([
+    { $match: SALES_TRUTH_MATCH },
+    { $unwind: '$items' },
+    { $match: { 'items.itemType': 'product' } }, // membership lines have no real Product document
+    { $group: { _id: '$items.product', unitsSold: { $sum: '$items.quantity' } } },
+    { $match: { unitsSold: { $gt: 0 } } },
+    {
+      $lookup: {
+        from: 'products', localField: '_id', foreignField: '_id',
+        pipeline: [{ $match: ACTIVE_MATCH }, { $project: { category: 1 } }],
+        as: 'prod',
+      },
+    },
+    // No preserveNullAndEmptyArrays — a product that's deleted/unpublished/
+    // gone produces no `prod` match and is dropped here, at the DB level,
+    // rather than filtered out after the fact.
+    { $unwind: '$prod' },
+    { $project: { _id: 1, unitsSold: 1, category: '$prod.category' } },
+    { $sort: { unitsSold: -1, _id: 1 } }, // deterministic tie-break by _id
+  ]);
+
+  if (fullRanking.length === 0) return [];
+
+  // Category leader = the single highest-unitsSold real product within each
+  // real category, computed against the FULL ranking above — never just the
+  // displayed top N, so a weak product can't "become" a leader merely
+  // because its stronger same-category competitors were cut off by `limit`.
+  const categoryLeaderIds = new Set();
+  const seenCategories = new Set();
+  for (const r of fullRanking) {
+    if (!r.category) continue;
+    const catKey = String(r.category);
+    if (!seenCategories.has(catKey)) {
+      seenCategories.add(catKey);
+      categoryLeaderIds.add(String(r._id));
+    }
+  }
+
+  const top = fullRanking.slice(0, limit);
+  const productIds = top.map((r) => r._id);
+
+  const [products, discountMap] = await Promise.all([
+    Product.find({ _id: { $in: productIds } })
+      .populate('category', 'name slug')
+      .select('name slug brand images category price stock ratings')
+      .lean(),
+    getActiveDiscountMap(),
+  ]);
+  const productById = new Map(products.map((p) => [String(p._id), p]));
+
+  return top
+    .map((r, i) => {
+      const p = productById.get(String(r._id));
+      if (!p) return null; // defensive; the $lookup/$unwind above already excludes these
+      const discountPercent = discountMap.get(String(p._id)) ?? null;
+      return {
+        _id:      p._id,
+        slug:     p.slug,
+        name:     p.name,
+        brand:    p.brand ?? null,
+        images:   p.images ?? [],
+        category: p.category ? { _id: p.category._id, name: p.category.name, slug: p.category.slug } : null,
+        price:    p.price,
+        stock:    p.stock,
+        ratings:  p.ratings ?? { average: 0, count: 0 },
+        discountPercent,
+        discountedPrice: discountPercent != null ? calculateDiscountedPrice(p.price, discountPercent) : null,
+        unitsSold: r.unitsSold,
+        rank: i + 1,
+        isCategoryLeader: categoryLeaderIds.has(String(r._id)),
+      };
+    })
+    .filter(Boolean);
 };
 
 module.exports = {

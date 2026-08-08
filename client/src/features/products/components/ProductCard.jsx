@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Heart, Plus, Loader, ImageOff } from 'lucide-react';
+import { Heart, Plus, Loader, ImageOff, Crown, TrendingUp, ExternalLink } from 'lucide-react';
 import { useCart }     from '../../../hooks/useCart';
 import { useWishlist } from '../../../hooks/useWishlist';
 import { useToast }    from '../../../hooks/useToast';
@@ -8,7 +8,16 @@ import { useLanguage } from '../../../context/LanguageContext';
 import { getLocalizedProductName } from '../utils/localizedProduct';
 import s from './ProductCard.module.css';
 
-export default function ProductCard({ product, rank, fit = 'cover', arrivalLabel }) {
+// rankLabel/salesCount/contextBadge/showViewButton are additive, opt-in
+// presentation props for the Best Sellers rank-card treatment (Sapir's
+// .bs-rank-card) — every existing caller (HomePage's showRanks preview,
+// CatalogPage, NewArrivalsPage, WishlistPage, RelatedProducts) omits them
+// and renders exactly as before. Real cart/wishlist hooks, routing, stock
+// and campaign pricing are shared unchanged — no forked business logic.
+export default function ProductCard({
+  product, rank, fit = 'cover', arrivalLabel,
+  rankLabel = false, salesCount = null, contextBadge = null, showViewButton = false,
+}) {
   const { addItem }              = useCart();
   const { isInWishlist, toggle } = useWishlist();
   const { toast }                = useToast();
@@ -56,6 +65,9 @@ export default function ProductCard({ product, rank, fit = 'cover', arrivalLabel
   };
 
   const rankClass = rank === 1 ? s.gold : rank === 2 ? s.silver : rank === 3 ? s.bronze : '';
+  // Card border/glow tint for rank 1-3 — only in the Best Sellers rankLabel
+  // mode, never for the plain-numeral rank badge used elsewhere.
+  const cardTintClass = rankLabel && rankClass ? rankClass : '';
 
   // Text stars matching Sapir's ★ pattern
   const avgRating  = product.ratings?.average || 0;
@@ -104,7 +116,7 @@ export default function ProductCard({ product, rank, fit = 'cover', arrivalLabel
 
   return (
     <article
-      className={s.card}
+      className={`${s.card}${cardTintClass ? ' ' + cardTintClass : ''}`}
       onClick={() => navigate(`/products/${product.slug}`)}
     >
       {/* ── Image area (.pc-img) ── */}
@@ -127,11 +139,21 @@ export default function ProductCard({ product, rank, fit = 'cover', arrivalLabel
           )
         }
 
-        {/* Rank badge — top right (.pc-rank) */}
+        {/* Rank badge — top right (.pc-rank) — plain numeral by default
+            (HomePage's showRanks preview and any other existing caller),
+            or Sapir's Best Sellers pill treatment ("מקום N" + crown for #1)
+            when rankLabel is explicitly requested. */}
         {rank != null && (
-          <div className={`${s.rank} ${rankClass}`} aria-label={t('product.rank_badge_label').replace('{rank}', rank)}>
-            {rank}
-          </div>
+          rankLabel ? (
+            <div className={`${s.rankBadge} ${rankClass}`}>
+              {rank === 1 && <Crown size={12} className={s.rankCrown} aria-hidden="true" />}
+              <span>{t('product.rank_badge_label').replace('{rank}', rank)}</span>
+            </div>
+          ) : (
+            <div className={`${s.rank} ${rankClass}`} aria-label={t('product.rank_badge_label').replace('{rank}', rank)}>
+              {rank}
+            </div>
+          )
         )}
 
         {/* Sale + feature badges — top left (.pc-badges) */}
@@ -169,6 +191,11 @@ export default function ProductCard({ product, rank, fit = 'cover', arrivalLabel
 
       {/* ── Body (.pc-body) ── */}
       <div className={s.body}>
+        {/* Context badge (.bs-context-badge) — Best Sellers only, deterministic */}
+        {contextBadge && (
+          <div className={s.contextBadge}>{contextBadge}</div>
+        )}
+
         {/* Brand (.pc-brand) */}
         {product.brand && (
           <div className={s.brand}>{product.brand}</div>
@@ -185,8 +212,17 @@ export default function ProductCard({ product, rank, fit = 'cover', arrivalLabel
           </div>
         )}
 
-        {/* Spec chips (.pc-chips) — short spec highlights */}
-        {specChips.length > 0 && (
+        {/* Sales line (.bs-sales-line) — Best Sellers only, real aggregated units sold */}
+        {salesCount != null && (
+          <div className={s.salesLine}>
+            <TrendingUp size={12} aria-hidden="true" />
+            {t('product.units_sold_label').replace('{count}', salesCount.toLocaleString())}
+          </div>
+        )}
+
+        {/* Spec chips (.pc-chips) — short spec highlights; omitted on the
+            Best Sellers rank card to match Sapir's cleaner card layout. */}
+        {specChips.length > 0 && salesCount == null && (
           <div className={s.chips}>
             {specChips.map((v, i) => (
               <span key={i} className={s.chip}>{v}</span>
@@ -209,22 +245,34 @@ export default function ProductCard({ product, rank, fit = 'cover', arrivalLabel
           )}
         </div>
 
-        {/* Add to cart (.pc-add) — full width */}
-        <button
-          className={s.addBtn}
-          onClick={handleAddToCart}
-          disabled={adding || product.stock === 0}
-        >
-          {adding
-            ? <Loader size={14} className={s.spin} />
-            : <Plus size={14} />
-          }
-          {product.stock === 0
-            ? t('product.out_of_stock')
-            : adding
-            ? t('product.adding')
-            : t('product.add_to_cart_btn')}
-        </button>
+        {/* Add to cart (.pc-add) — full width by default; shares a row with
+            the optional secondary "View Product" button (Best Sellers rank
+            card only — Sapir's card has both). */}
+        <div className={showViewButton ? s.actions : undefined}>
+          <button
+            className={s.addBtn}
+            onClick={handleAddToCart}
+            disabled={adding || product.stock === 0}
+          >
+            {adding
+              ? <Loader size={14} className={s.spin} />
+              : <Plus size={14} />
+            }
+            {product.stock === 0
+              ? t('product.out_of_stock')
+              : adding
+              ? t('product.adding')
+              : t('product.add_to_cart_btn')}
+          </button>
+          {showViewButton && (
+            <button
+              className={s.viewBtn}
+              onClick={(e) => { e.stopPropagation(); navigate(`/products/${product.slug}`); }}
+            >
+              <ExternalLink size={13} aria-hidden="true" /> {t('deals.view_product')}
+            </button>
+          )}
+        </div>
       </div>
     </article>
   );
