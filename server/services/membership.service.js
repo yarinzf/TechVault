@@ -10,6 +10,7 @@ const {
   MEMBERSHIP_ITEM_TYPE,
   MEMBERSHIP_PLANS,
   MEMBERSHIP_PLAN_KEYS,
+  addCalendarTerm,
 } = require('../config/membership');
 
 const PAYMENT_TIMEOUT_MS = parseInt(process.env.PAYMENT_TIMEOUT_MS || '360000', 10); // 6 min
@@ -166,9 +167,10 @@ const activateMembershipForOrder = async ({ userId, orderId }) => {
   // Renewal extends from the CURRENT expiresAt if the member is still
   // active (so renewing early never loses already-paid time); otherwise
   // (first join, or renewing after expiry) the new term starts now.
+  // Real calendar-month/year arithmetic — see addCalendarTerm.
   const currentlyActive = isMembershipActive(user.membership);
   const base = currentlyActive && user.membership.expiresAt ? new Date(user.membership.expiresAt) : now;
-  const expiresAt = new Date(base.getTime() + planConfig.durationDays * 24 * 60 * 60 * 1000);
+  const expiresAt = addCalendarTerm(base, plan);
 
   user.membership.status = 'active';
   user.membership.plan = plan;

@@ -30,10 +30,16 @@ const addressSchema = new mongoose.Schema(
 // `joinedAt` is preserved as the historical FIRST-ever join date and never
 // changes on renewal; `startedAt`/`expiresAt` describe the CURRENT term.
 //
-// Legacy compatibility: a pre-existing local-dev document with
-// status:'active' and no expiresAt (from the old lifetime-membership model)
-// is deliberately treated as still active forever by isMembershipActive
-// below — never auto-expired just because expiresAt is unset.
+// A record with status:'active' but no expiresAt is NOT treated as
+// permanently VIP — that legacy "grandfather forever" rule from the old
+// lifetime-membership model has been removed (see isMembershipActive
+// below). Every real membership now requires a real plan/startedAt/
+// expiresAt; a status:'active' document missing expiresAt is malformed
+// data, not a special permanent-access case. Pre-existing local-dev
+// records in this shape should be normalized via
+// server/scripts/normalizeLegacyMembership.js (local/dev only, never run
+// against production automatically — see that script and the Club/VIP
+// follow-up report for the required production migration).
 const membershipSchema = new mongoose.Schema(
   {
     status: {
@@ -54,7 +60,7 @@ const membershipSchema = new mongoose.Schema(
     },
     joinedAt:  { type: Date, default: null }, // first-ever join date — historical, never overwritten by renewal
     startedAt: { type: Date, default: null }, // start of the CURRENT term
-    expiresAt: { type: Date, default: null }, // end of the CURRENT term (null = legacy grandfathered, see above)
+    expiresAt: { type: Date, default: null }, // end of the CURRENT term — required for real VIP access, see isMembershipActive
     points: { type: Number, default: 0, min: 0 },
     lifetimePoints: { type: Number, default: 0, min: 0 },
     notificationPreference: {
@@ -87,7 +93,11 @@ const DEFAULT_MEMBERSHIP = Object.freeze({
 // never mistakenly treated as active.
 const isMembershipActive = (membership) => {
   if (!membership || membership.status !== 'active') return false;
-  if (!membership.expiresAt) return true; // legacy grandfathered — see comment above
+  // A real membership always has a real expiresAt. status:'active' with no
+  // expiresAt is malformed/legacy data, not a permanent-access case — see
+  // server/scripts/normalizeLegacyMembership.js for the local/dev
+  // normalization path (the old "grandfather forever" rule is retired).
+  if (!membership.expiresAt) return false;
   return new Date(membership.expiresAt) > new Date();
 };
 

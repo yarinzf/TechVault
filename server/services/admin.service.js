@@ -2,6 +2,8 @@
 
 const Order   = require('../models/Order');
 const User    = require('../models/User');
+const { isMembershipActive } = require('../models/User');
+const { addCalendarTerm } = require('../config/membership');
 const Product = require('../models/Product');
 const Alert   = require('../models/Alert');
 const { AppError } = require('../middleware/errorHandler');
@@ -282,8 +284,24 @@ const updateUser = async (targetId, dto, requestingUserId, actor = null, req = n
   if (membershipDto) {
     if (membershipDto.status !== undefined) {
       setFields['membership.status'] = membershipDto.status;
-      if (membershipDto.status === 'active' && !target.membership?.joinedAt) {
-        setFields['membership.joinedAt'] = new Date();
+      if (membershipDto.status === 'active') {
+        if (!target.membership?.joinedAt) {
+          setFields['membership.joinedAt'] = new Date();
+        }
+        // A real membership always needs plan/startedAt/expiresAt — the old
+        // "active with no expiresAt = forever" rule is retired (see
+        // isMembershipActive on the User model). Grant a real term here
+        // unless the target already has one that's still currently valid —
+        // this admin tool predates that removal and must not be able to
+        // silently create a dead "active" record. Only a real, calendar-
+        // dated term is ever assigned (no direct expiresAt input exists on
+        // this endpoint — see admin.validator.js).
+        if (!isMembershipActive(target.membership)) {
+          const now = new Date();
+          setFields['membership.plan']      = 'annual';
+          setFields['membership.startedAt'] = now;
+          setFields['membership.expiresAt'] = addCalendarTerm(now, 'annual');
+        }
       } else if (membershipDto.status === 'none') {
         setFields['membership.joinedAt'] = null;
       }

@@ -134,12 +134,18 @@ describe('Membership exposure on authenticated user data', () => {
     const User = mongoose.model('User');
     await registerUser({ email: 'active-member@example.com' });
 
+    // A real membership always needs a real expiresAt (see
+    // isMembershipActive / the legacy grandfather-rule removal) — status
+    // 'active' with no expiresAt is malformed data, not permanently VIP.
     await User.findOneAndUpdate(
       { email: 'active-member@example.com' },
       {
         $set: {
           'membership.status': 'active',
+          'membership.plan': 'annual',
           'membership.joinedAt': new Date('2026-01-15'),
+          'membership.startedAt': new Date('2026-01-15'),
+          'membership.expiresAt': new Date(Date.now() + 30 * 86400000),
           'membership.points': 120,
           'membership.lifetimePoints': 120,
           'membership.notificationPreference': 'both',

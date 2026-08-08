@@ -609,7 +609,7 @@ describe('Paid-but-not-activated recovery (crash-recovery replay)', () => {
 // ── New: monthly/annual TERM model — activation, expiration, renewal ───────────
 
 describe('Membership TERM model (monthly/annual, no auto-renewal)', () => {
-  it('activates a monthly plan with expiresAt ~30 days out and plan="monthly"', async () => {
+  it('activates a monthly plan with expiresAt exactly one real calendar month out (not a fixed 30-day window)', async () => {
     const { accessToken } = await registerAndLogin();
     const checkoutRes = await request(app)
       .post(`${MEMBERSHIP}/checkout`).set('Authorization', `Bearer ${accessToken}`).send({ plan: 'monthly' });
@@ -619,11 +619,15 @@ describe('Membership TERM model (monthly/annual, no auto-renewal)', () => {
     const m = me.body.data.user.membership;
     expect(m.status).toBe('active');
     expect(m.plan).toBe('monthly');
-    const days = (new Date(m.expiresAt) - new Date(m.startedAt)) / 86400000;
-    expect(days).toBeCloseTo(30, 0);
+
+    // Calendar-accurate: exactly "the same day next month", whatever that
+    // month's real length is (28-31 days) — never a fixed 30-day window.
+    const expected = new Date(m.startedAt);
+    expected.setUTCMonth(expected.getUTCMonth() + 1);
+    expect(new Date(m.expiresAt).toISOString()).toBe(expected.toISOString());
   });
 
-  it('activates an annual plan with expiresAt ~365 days out and plan="annual"', async () => {
+  it('activates an annual plan with expiresAt exactly one real calendar year out (not a fixed 365-day window)', async () => {
     const { accessToken } = await registerAndLogin();
     const checkoutRes = await request(app)
       .post(`${MEMBERSHIP}/checkout`).set('Authorization', `Bearer ${accessToken}`).send({ plan: 'annual' });
@@ -633,8 +637,22 @@ describe('Membership TERM model (monthly/annual, no auto-renewal)', () => {
     const m = me.body.data.user.membership;
     expect(m.status).toBe('active');
     expect(m.plan).toBe('annual');
-    const days = (new Date(m.expiresAt) - new Date(m.startedAt)) / 86400000;
-    expect(days).toBeCloseTo(365, 0);
+
+    const expected = new Date(m.startedAt);
+    expected.setUTCFullYear(expected.getUTCFullYear() + 1);
+    expect(new Date(m.expiresAt).toISOString()).toBe(expected.toISOString());
+  });
+
+  it('calendar month-end rollover: Jan 31 + 1 month lands on Mar 3 (non-leap year) — documented native Date behavior', async () => {
+    const { addCalendarTerm } = require('../server/config/membership');
+    const result = addCalendarTerm(new Date('2026-01-31T00:00:00.000Z'), 'monthly');
+    expect(result.toISOString()).toBe('2026-03-03T00:00:00.000Z');
+  });
+
+  it('calendar leap-year rollover: Feb 29 (leap) + 1 year lands on Mar 1 the following (non-leap) year', async () => {
+    const { addCalendarTerm } = require('../server/config/membership');
+    const result = addCalendarTerm(new Date('2028-02-29T00:00:00.000Z'), 'annual');
+    expect(result.toISOString()).toBe('2029-03-01T00:00:00.000Z');
   });
 
   it('an expired member (expiresAt in the past) is reported as status "expired" and is NOT VIP', async () => {
@@ -695,16 +713,48 @@ describe('Membership TERM model (monthly/annual, no auto-renewal)', () => {
     expect(afterRenew.membership.expiresAt.getTime()).toBeGreaterThan(firstExpiry + 25 * 86400000);
   });
 
-  it('legacy grandfathered data (active status, no expiresAt) is treated as still active — backward compatibility', async () => {
+  it('a legacy record (active status, no expiresAt) is NOT treated as permanently active — the old grandfather rule is retired', async () => {
     const User = mongoose.model('User');
     const { accessToken, user } = await registerAndLogin();
     await User.findByIdAndUpdate(user._id, {
       $set: { 'membership.status': 'active', 'membership.joinedAt': new Date() },
       // expiresAt intentionally left unset — simulates a pre-existing local
-      // dev record created before the plan/expiresAt fields existed.
+      // dev record created before the plan/expiresAt fields existed. A real
+      // membership always requires a real expiresAt now — see
+      // isMembershipActive on the User model and
+      // server/scripts/normalizeLegacyMembership.js for the local/dev
+      // normalization path for records in this exact shape.
     });
 
+    const { isMembershipActive } = require('../server/models/User');
+    const fresh = await User.findById(user._id);
+    expect(isMembershipActive(fresh.membership)).toBe(false);
+
     const me = await request(app).get(`${AUTH}/me`).set('Authorization', `Bearer ${accessToken}`);
-    expect(me.body.data.user.membership.status).toBe('active');
+    expect(me.body.data.user.membership.status).toBe('expired');
+  });
+
+  it('normalizeLegacyMembership grants a real calendar-dated annual term to a legacy no-expiresAt record', async () => {
+    const User = mongoose.model('User');
+    const { user } = await registerAndLogin();
+    const joinedAt = new Date('2026-02-01T00:00:00.000Z');
+    await User.findByIdAndUpdate(user._id, {
+      $set: { 'membership.status': 'active', 'membership.joinedAt': joinedAt },
+    });
+
+    const normalizeLegacyMembership = require('../server/scripts/normalizeLegacyMembership');
+    const results = await normalizeLegacyMembership({ dryRun: false, verbose: false });
+    expect(results.some(r => String(r.email) === String(user.email))).toBe(true);
+
+    const { isMembershipActive } = require('../server/models/User');
+    const fresh = await User.findById(user._id);
+    expect(fresh.membership.plan).toBe('annual');
+    expect(fresh.membership.startedAt.toISOString()).toBe(joinedAt.toISOString());
+    expect(fresh.membership.expiresAt.toISOString()).toBe(new Date('2027-02-01T00:00:00.000Z').toISOString());
+    expect(isMembershipActive(fresh.membership)).toBe(true);
+
+    // Idempotent — a second run touches nothing further for this user.
+    const second = await normalizeLegacyMembership({ dryRun: false, verbose: false });
+    expect(second.some(r => String(r.email) === String(user.email))).toBe(false);
   });
 });
