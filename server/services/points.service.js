@@ -20,14 +20,18 @@ const {
 // Product/Campaign state — see Part M of the Club/VIP spec.
 //
 // items: [{ totalPrice, pointsEligible: bool, pointsRate: number, pointsMultiplier: number }]
+//   `totalPrice` here is the line's NET eligible amount for points purposes
+//   — the caller has already subtracted this item's proportional share of
+//   any coupon discount (see order.service.js) before calling this. Never
+//   the raw pre-coupon line total.
 // isMember: whether the buyer is an active VIP member AT CHECKOUT TIME
 // pointsRedeemedValue: ₪ value of points being redeemed on this same order
 //
 // Redemption reduces the EARNING BASE proportionally across all
 // point-eligible lines (never favoring one line over another) — see the
 // worked example in points.service.test.js:
-//   ₪1,000 eligible, 200 points redeemed → net eligible base ₪800 → 5% = 40
-//   points (NOT 50 — the redeemed portion never earns points).
+//   ₪1,000 eligible (net of coupon), 200 points redeemed → net base ₪800 →
+//   5% = 40 points (NOT 50 — the redeemed portion never earns points).
 function computeOrderPointsPlan({ items, isMember, pointsRedeemedValue = 0 }) {
   if (!isMember) {
     return {
@@ -56,6 +60,76 @@ function computeOrderPointsPlan({ items, isMember, pointsRedeemedValue = 0 }) {
   return { items: itemResults, pointsEarned };
 }
 
+// ─── FIFO lot consumption — the real accounting engine ─────────────────────────
+// Consumes `pointsToConsume` from the user's real earn LOTS, oldest-
+// expiring first (which is also oldest-earned-first, since every lot's
+// expiresAt = its own createdAt + 12 months — a fixed offset preserves
+// earn order). Returns the exact { lot, amount } breakdown so a later
+// reversal can restore precisely what was taken from precisely where.
+//
+// This function does NOT re-check the user's aggregate balance — the
+// caller (reservePoints) already atomically reserved the right to spend
+// this many points via the User.membership.points conditional decrement,
+// which serializes concurrent spenders. This function's only job is
+// bookkeeping: WHICH lots the already-approved spend came from.
+//
+// Edge case (documented, not silently papered over): if the sum of real
+// lot remainingPoints is LESS than pointsToConsume (only possible if
+// points were ever granted without a matching earn lot — e.g. a direct
+// admin adjustment via AdminUsersPage, which predates this ledger and
+// writes membership.points directly), the shortfall is consumed from no
+// lot at all (absent from the returned breakdown). That shortfall can
+// never be restored to a specific lot on reversal — it is simply credited
+// back to the aggregate balance, same as before this fix. This is a
+// narrow, pre-existing gap (admin-adjustment points were never lot-
+// tracked), not a new one.
+async function consumeLotsFIFO(userId, pointsToConsume, session = null) {
+  let remaining = pointsToConsume;
+  const consumedLots = [];
+
+  const lots = await MembershipPointsTransaction.find(
+    { user: userId, type: 'earn', remainingPoints: { $gt: 0 } },
+    null,
+    { session }
+  ).sort({ expiresAt: 1 });
+
+  for (const lot of lots) {
+    if (remaining <= 0) break;
+    const take = Math.min(lot.remainingPoints, remaining);
+    if (take <= 0) continue;
+
+    // Atomic, conditional — never lets a lot go negative even under a
+    // concurrent consumer (defense in depth on top of the balance-level
+    // serialization already provided by reservePoints).
+    const updatedLot = await MembershipPointsTransaction.findOneAndUpdate(
+      { _id: lot._id, remainingPoints: { $gte: take } },
+      { $inc: { remainingPoints: -take } },
+      { new: true, session }
+    );
+    if (!updatedLot) continue; // lost a race on this specific lot — move on, try the next one
+
+    consumedLots.push({ lot: lot._id, amount: take });
+    remaining -= take;
+  }
+
+  return { consumedLots, shortfall: Math.max(0, remaining) };
+}
+
+// Restores previously-consumed amounts to their exact origin lots, capped
+// at each lot's original `points` (never overshoots what was truly
+// earned there — relevant if the lot was independently invalidated by a
+// refund in between, see reverseEarnedPoints). Atomic per lot via an
+// aggregation-pipeline update.
+async function restoreLotsFIFO(consumedLots, session = null) {
+  for (const { lot, amount } of consumedLots) {
+    await MembershipPointsTransaction.updateOne(
+      { _id: lot },
+      [{ $set: { remainingPoints: { $min: ['$points', { $add: ['$remainingPoints', amount] }] } } }],
+      { session }
+    );
+  }
+}
+
 // ─── Redemption reservation — atomic, concurrency-safe ────────────────────────
 // Deducts `points` from the user's AVAILABLE balance immediately (this IS
 // the reservation — see reverseRedemption for how it's given back on
@@ -63,6 +137,7 @@ function computeOrderPointsPlan({ items, isMember, pointsRedeemedValue = 0 }) {
 // simultaneous checkouts can never both spend the same points: only one
 // findOneAndUpdate can match `points >= requested` and win the race: the
 // loser gets null back and the order is rejected with INSUFFICIENT_POINTS.
+// Then records exactly which earn lots the spend came from (FIFO).
 //
 // `orderId` is a CALLER-PREGENERATED ObjectId (order.service.js creates it
 // with `new mongoose.Types.ObjectId()` before building the order, then
@@ -88,6 +163,8 @@ async function reservePoints(userId, points, orderId, session = null) {
   }
 
   try {
+    const { consumedLots } = await consumeLotsFIFO(userId, points, session);
+
     await MembershipPointsTransaction.create([{
       user: userId,
       order: orderId,
@@ -95,10 +172,15 @@ async function reservePoints(userId, points, orderId, session = null) {
       points,
       balanceAfter: updated.membership.points,
       description: 'Points redeemed at checkout',
+      consumedLots,
     }], { session });
   } catch (err) {
     // A genuine DB error here must not silently leave points deducted with
-    // no ledger trail — refund the reservation and re-throw.
+    // no ledger trail — refund the reservation and re-throw. (Any partial
+    // lot consumption that happened before the error is intentionally left
+    // as-is: those specific lots are simply short by their consumed amount
+    // until reconciled — an exceedingly rare failure path, not worth a
+    // second layer of compensating transactions for local/mock providers.)
     await User.updateOne({ _id: userId }, { $inc: { 'membership.points': points } });
     throw err;
   }
@@ -106,32 +188,59 @@ async function reservePoints(userId, points, orderId, session = null) {
   return { pointsRedeemedValue: points * POINTS_REDEMPTION_RATE };
 }
 
-// ─── Reverse a reservation — cancelled/expired/failed order ───────────────────
-// Idempotent: safe to call more than once for the same order (checks
-// pointsRedeemedReversed on the order first). Returns the reserved points to
-// the user's available balance without touching lifetimePoints, since the
-// original 'redeem' never touched lifetimePoints either.
-async function reverseRedemption(order, session = null) {
-  if (!order.pointsRedeemed || order.pointsRedeemed <= 0) return;
-  if (order.pointsRedeemedReversed) return; // already reversed — no-op
+// ─── Reverse a reservation by order id — the shared core ──────────────────────
+// Looks up the 'redeem' ledger row for this order directly (works whether
+// or not an Order document itself ever successfully saved — see
+// releaseReservation), restores the exact consumed lot amounts, credits
+// the aggregate balance back, and marks the ledger row itself as reversed
+// (the ledger, not the Order, is the true idempotency source — Order.
+// pointsRedeemedReversed is kept in sync for callers that already read it).
+async function _reverseRedeemByOrderId(userId, orderId, session = null) {
+  const redeemTx = await MembershipPointsTransaction.findOne(
+    { order: orderId, type: 'redeem', reversedAt: null },
+    null,
+    { session }
+  );
+  if (!redeemTx) return null; // nothing redeemed, or already reversed
 
-  const original = await MembershipPointsTransaction.findOne({ order: order._id, type: 'redeem' }, null, { session });
+  await restoreLotsFIFO(redeemTx.consumedLots || [], session);
 
   const updated = await User.findOneAndUpdate(
-    { _id: order.user },
-    { $inc: { 'membership.points': order.pointsRedeemed } },
+    { _id: userId },
+    { $inc: { 'membership.points': redeemTx.points } },
     { new: true, session }
   );
 
   await MembershipPointsTransaction.create([{
-    user: order.user,
-    order: order._id,
+    user: userId,
+    order: orderId,
     type: 'reversal',
-    points: order.pointsRedeemed,
+    points: redeemTx.points,
     balanceAfter: updated?.membership?.points ?? null,
-    description: 'Redeemed points returned — order cancelled/expired/refunded',
-    relatedTransaction: original?._id ?? null,
+    description: 'Redeemed points returned',
+    relatedTransaction: redeemTx._id,
   }], { session });
+
+  await MembershipPointsTransaction.updateOne(
+    { _id: redeemTx._id },
+    { $set: { reversedAt: new Date() } },
+    { session }
+  );
+
+  return redeemTx;
+}
+
+// ─── Reverse a reservation — cancelled/expired/refunded order ─────────────────
+// Idempotent: safe to call more than once for the same order (checks
+// pointsRedeemedReversed on the order first — a fast path that avoids the
+// ledger lookup; _reverseRedeemByOrderId's own reversedAt check is the
+// true source of idempotency either way).
+async function reverseRedemption(order, session = null) {
+  if (!order.pointsRedeemed || order.pointsRedeemed <= 0) return;
+  if (order.pointsRedeemedReversed) return; // already reversed — no-op
+
+  const reversedTx = await _reverseRedeemByOrderId(order.user, order._id, session);
+  if (!reversedTx) return;
 
   // Persisted directly (not left to the caller's own order.save(), whose
   // timing relative to this call varies by caller) — plus kept in sync on
@@ -139,6 +248,18 @@ async function reverseRedemption(order, session = null) {
   // correct value either way.
   await Order.updateOne({ _id: order._id }, { $set: { pointsRedeemedReversed: true } }, { session });
   order.pointsRedeemedReversed = true;
+}
+
+// ─── Release a reservation when order creation itself failed ──────────────────
+// A points reservation happens BEFORE the Order document is built (see
+// order.service.js#_buildAndSaveOrder) so an insufficient-balance error can
+// abort order creation entirely. If Order.create() subsequently throws for
+// an unrelated reason (validation error, etc.) — most relevant on the
+// standalone-MongoDB fallback path, which has no surrounding transaction to
+// roll the reservation back automatically — this releases it explicitly.
+// Safe to call even if no reservation was ever made (no-op).
+async function releaseReservation(userId, orderId, session = null) {
+  await _reverseRedeemByOrderId(userId, orderId, session);
 }
 
 // ─── Realize earned points — order reached 'delivered' ────────────────────────
@@ -159,11 +280,13 @@ async function realizeEarnedPoints(order) {
       { new: true }
     );
 
+    // This transaction IS the new lot — remainingPoints starts full.
     await MembershipPointsTransaction.create({
       user: order.user,
       order: order._id,
       type: 'earn',
       points: order.pointsEarned,
+      remainingPoints: order.pointsEarned,
       balanceAfter: updated?.membership?.points ?? null,
       description: '5% Club points earned on eligible purchase',
       expiresAt,
@@ -217,6 +340,13 @@ async function reverseEarnedPoints(order) {
     await User.updateOne({ _id: order.user }, { $set: { 'membership.lifetimePoints': 0 } });
   }
 
+  // The lot itself is fully invalidated — the sale it represents no longer
+  // exists, so nothing may be redeemed from it going forward, regardless of
+  // how much was already spent vs still sitting unspent in the lot.
+  if (original) {
+    await MembershipPointsTransaction.updateOne({ _id: original._id }, { $set: { remainingPoints: 0 } });
+  }
+
   await MembershipPointsTransaction.create({
     user: order.user,
     order: order._id,
@@ -231,19 +361,17 @@ async function reverseEarnedPoints(order) {
   order.pointsEarnedReversed = true;
 }
 
-// ─── Points expiry reconciliation ──────────────────────────────────────────────
+// ─── Points expiry reconciliation — real FIFO, lot-precise ─────────────────────
 // No cron is added in this phase (see final report) — this is called
 // lazily/on-demand (e.g. from a future points-summary read path or a manual
 // script) and is fully idempotent: each 'earn' row is marked
 // expiredProcessed once handled and never reprocessed.
 //
-// Simplification (documented, not silently invented): this does NOT do
-// exact FIFO lot-by-lot tracking of which specific earned points survived
-// redemption — it expires min(that batch's amount, the user's CURRENT
-// available balance) per due batch, oldest first, so a user can never be
-// pushed into a negative balance by expiry even if they've already spent
-// points from a newer batch. See the final report for the precision
-// tradeoff this implies.
+// Each due lot expires EXACTLY its own remainingPoints — not an aggregate-
+// balance-capped approximation. remainingPoints already correctly reflects
+// everything that's happened to that specific lot (redemptions that
+// consumed from it, refund-driven invalidation), so this is precise real
+// FIFO accounting, not an estimate.
 async function expireDuePoints(userId) {
   const now = new Date();
   const due = await MembershipPointsTransaction.find({
@@ -256,31 +384,29 @@ async function expireDuePoints(userId) {
   if (due.length === 0) return { expired: 0 };
 
   let totalExpired = 0;
-  for (const batch of due) {
-    const user = await User.findById(userId).select('membership.points');
-    const available = user?.membership?.points ?? 0;
-    if (available <= 0) {
-      await MembershipPointsTransaction.updateOne({ _id: batch._id }, { $set: { expiredProcessed: true } });
-      continue;
-    }
-    const expireAmount = Math.min(batch.points, available);
+  for (const lot of due) {
+    const expireAmount = lot.remainingPoints || 0;
     if (expireAmount > 0) {
+      // Defensive clamp — the aggregate balance should always be >= this
+      // lot's remainingPoints, but never let it go negative regardless.
       const updated = await User.findOneAndUpdate(
-        { _id: userId, 'membership.points': { $gte: expireAmount } },
-        { $inc: { 'membership.points': -expireAmount } },
-        { new: true }
+        { _id: userId },
+        [{ $set: { 'membership.points': { $max: [0, { $subtract: ['$membership.points', expireAmount] }] } } }],
       );
       await MembershipPointsTransaction.create({
         user: userId,
         type: 'expiry',
         points: expireAmount,
-        balanceAfter: updated?.membership?.points ?? null,
+        balanceAfter: updated ? Math.max(0, updated.membership.points - expireAmount) : null,
         description: `${POINTS_EXPIRY_MONTHS}-month points expiry`,
-        relatedTransaction: batch._id,
+        relatedTransaction: lot._id,
       });
       totalExpired += expireAmount;
     }
-    await MembershipPointsTransaction.updateOne({ _id: batch._id }, { $set: { expiredProcessed: true } });
+    await MembershipPointsTransaction.updateOne(
+      { _id: lot._id },
+      { $set: { remainingPoints: 0, expiredProcessed: true } }
+    );
   }
 
   return { expired: totalExpired, batchesProcessed: due.length };
@@ -288,8 +414,11 @@ async function expireDuePoints(userId) {
 
 module.exports = {
   computeOrderPointsPlan,
+  consumeLotsFIFO,
+  restoreLotsFIFO,
   reservePoints,
   reverseRedemption,
+  releaseReservation,
   realizeEarnedPoints,
   reverseEarnedPoints,
   expireDuePoints,

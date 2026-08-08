@@ -50,6 +50,34 @@ const membershipPointsTransactionSchema = new mongoose.Schema(
     // points.service.js#expireDuePoints. Irrelevant for other types.
     expiredProcessed: { type: Boolean, default: false },
 
+    // Only meaningful for type:'redeem' — set once this specific redemption
+    // has been reversed (order cancelled/failed/refunded). This is the TRUE
+    // idempotency source for reversal (Order.pointsRedeemedReversed is kept
+    // in sync for callers that read it, but this field is authoritative and
+    // works even when no Order document exists — see
+    // points.service.js#releaseReservation).
+    reversedAt: { type: Date, default: null },
+
+    // ── FIFO lot accounting (real, not an approximation) ───────────────────
+    // Only meaningful for type:'earn' — this transaction IS a "lot". It
+    // starts with remainingPoints === points and is decremented as later
+    // redemptions consume from it (oldest-expiring lot first) and as it
+    // expires. The CURRENT balance is always
+    // sum(remainingPoints) across a user's non-fully-consumed earn lots —
+    // User.membership.points is a cached mirror of that sum, never the
+    // source of truth. See points.service.js#consumeLotsFIFO.
+    remainingPoints: { type: Number, default: null, min: 0 },
+
+    // Only meaningful for type:'redeem' — exactly which earn lots (and how
+    // much from each) this redemption drew from, in consumption order, so
+    // a later reversal can restore the exact amounts to the exact lots
+    // rather than a generic aggregate credit.
+    consumedLots: [{
+      _id: false,
+      lot:    { type: mongoose.Schema.Types.ObjectId, ref: 'MembershipPointsTransaction', required: true },
+      amount: { type: Number, required: true, min: 0 },
+    }],
+
     // References the ORIGINAL transaction this one reverses/expires, so a
     // 'reversal' or 'expiry' entry is always traceable back to the 'earn'
     // or 'redeem' it offsets.
