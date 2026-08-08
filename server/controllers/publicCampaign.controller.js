@@ -1,6 +1,7 @@
 'use strict';
 
 const campaignService = require('../services/campaign.service');
+const { isMembershipActive } = require('../models/User');
 const { sendSuccess } = require('../utils/response');
 
 // Public, unauthenticated, read-only. Deliberately kept separate from
@@ -22,4 +23,21 @@ const getActiveCampaigns = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
-module.exports = { getWeeklyDeal, getActiveCampaigns };
+// Powers the Club page's real "2x points" campaign teaser and "VIP
+// exclusive deals" section. optionalAuth (see campaign.routes.js) means
+// req.user may or may not be present — a guest/non-member always gets
+// vipDeals: [] and only the non-early-access pointsCampaign, never a
+// membership-only campaign's real price (server-enforced, not merely
+// hidden client-side).
+const getClubSummary = async (req, res, next) => {
+  try {
+    const isMember = isMembershipActive(req.user?.membership);
+    const [pointsCampaign, vipDeals] = await Promise.all([
+      campaignService.getActivePointsCampaign({ isMember }),
+      isMember ? campaignService.getVipExclusiveDeals(3) : Promise.resolve([]),
+    ]);
+    sendSuccess(res, { pointsCampaign, vipDeals }, 'Club summary retrieved');
+  } catch (err) { next(err); }
+};
+
+module.exports = { getWeeklyDeal, getActiveCampaigns, getClubSummary };

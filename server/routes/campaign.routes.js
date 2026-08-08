@@ -2,6 +2,7 @@
 
 const { Router } = require('express');
 const publicCampaignCtrl = require('../controllers/publicCampaign.controller');
+const { optionalAuth } = require('../middleware/auth');
 
 const router = Router();
 
@@ -35,5 +36,21 @@ router.get('/weekly-deal', publicCampaignCtrl.getWeeklyDeal);
  *         description: Active campaigns with their available, priced products
  */
 router.get('/active', publicCampaignCtrl.getActiveCampaigns);
+
+/**
+ * @swagger
+ * /campaigns/club-summary:
+ *   get:
+ *     summary: Real Club-page data — active points campaign teaser + VIP-only exclusive deals
+ *     description: >
+ *       Public, but personalized when authenticated (optionalAuth). A
+ *       non-member never receives a membershipOnly campaign's price —
+ *       vipDeals is always empty for them, server-enforced.
+ *     tags: [Campaigns]
+ *     responses:
+ *       200:
+ *         description: "{ pointsCampaign: object|null, vipDeals: array }"
+ */
+router.get('/club-summary', optionalAuth, publicCampaignCtrl.getClubSummary);
 
 module.exports = router;

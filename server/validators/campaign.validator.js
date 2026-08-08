@@ -18,6 +18,14 @@ const placement = Joi.string().valid('none', 'homepage_weekly_deal');
 // for it is silently dropped before reaching the controller/service. It can
 // only ever be written by campaign.service.js's buildClearanceSnapshots,
 // from a real, current Product.stock read — never from request input.
+// VIP campaign benefits — see Campaign.js. membershipOnly is a plain
+// boolean gate (reuses the normal discountPercent/products/dates
+// mechanism); pointsMultiplier and vipEarlyAccessHours default to "no
+// change" (1 / 0) so an admin must opt in explicitly per campaign.
+const membershipOnly      = Joi.boolean();
+const pointsMultiplier    = Joi.number().min(1).max(10);
+const vipEarlyAccessHours = Joi.number().integer().min(0).max(168);
+
 const createCampaignSchema = Joi.object({
   name:            Joi.string().trim().min(1).max(100).required(),
   discountPercent: Joi.number().integer().min(1).max(90).required(),
@@ -27,6 +35,9 @@ const createCampaignSchema = Joi.object({
   products:        Joi.array().items(objectId).default([]),
   placement:       placement.default('none'),
   isClearance:     Joi.boolean().default(false),
+  membershipOnly:      membershipOnly.default(false),
+  pointsMultiplier:    pointsMultiplier.default(1),
+  vipEarlyAccessHours: vipEarlyAccessHours.default(0),
 });
 
 const updateCampaignSchema = Joi.object({
@@ -38,6 +49,9 @@ const updateCampaignSchema = Joi.object({
   products:        Joi.array().items(objectId).optional(),
   placement:       placement.optional(),
   isClearance:     Joi.boolean().optional(),
+  membershipOnly:      membershipOnly.optional(),
+  pointsMultiplier:    pointsMultiplier.optional(),
+  vipEarlyAccessHours: vipEarlyAccessHours.optional(),
 }).min(1);
 
 module.exports = { createCampaignSchema, updateCampaignSchema };

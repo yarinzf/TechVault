@@ -19,6 +19,9 @@ const listCampaigns = async () => {
     ...campaign,
     placement:   campaign.placement ?? 'none',
     isClearance: campaign.isClearance ?? false,
+    membershipOnly:      campaign.membershipOnly ?? false,
+    pointsMultiplier:    campaign.pointsMultiplier ?? 1,
+    vipEarlyAccessHours: campaign.vipEarlyAccessHours ?? 0,
   }));
 };
 
@@ -188,15 +191,39 @@ const deleteCampaign = async (id) => {
   return campaign;
 };
 
-// Returns Map<productId string → discountPercent> for all currently live campaigns.
-// When a product belongs to multiple active campaigns, the highest discount wins.
-const getActiveDiscountMap = async () => {
+// Returns Map<productId string → discountPercent> for all currently live
+// campaigns VISIBLE TO THIS REQUESTER. When a product belongs to multiple
+// eligible campaigns, the highest discount wins.
+//
+// `isMember` (real, server-verified VIP status — never trust a client
+// claim) unlocks two VIP-only behaviors, both opt-in per campaign (most
+// campaigns use neither):
+//   - membershipOnly campaigns are completely excluded for non-members —
+//     the discount must never be computable/checkoutable by a non-VIP
+//     customer, so it's dropped from the map entirely rather than merely
+//     hidden in the UI.
+//   - vipEarlyAccessHours campaigns become visible to VIP members that many
+//     hours BEFORE their real startDate; non-members still only see them
+//     starting at the real startDate.
+const getActiveDiscountMap = async ({ isMember = false } = {}) => {
   const now = new Date();
-  const active = await Campaign.find({
-    isActive:  true,
-    startDate: { $lte: now },
-    endDate:   { $gte: now },
-  }).select('products discountPercent').lean();
+  const query = {
+    isActive: true,
+    endDate:  { $gte: now },
+    $or: [
+      { startDate: { $lte: now } },
+      // VIP early-access window: startDate is still in the future, but
+      // within vipEarlyAccessHours of it — only matches when isMember.
+      ...(isMember ? [{
+        vipEarlyAccessHours: { $gt: 0 },
+        $expr: { $lte: [now, { $add: ['$startDate', { $multiply: ['$vipEarlyAccessHours', 3600000] }] }] },
+        startDate: { $gt: now },
+      }] : []),
+    ],
+  };
+  if (!isMember) query.membershipOnly = { $ne: true };
+
+  const active = await Campaign.find(query).select('products discountPercent').lean();
 
   const map = new Map();
   for (const c of active) {
@@ -204,6 +231,43 @@ const getActiveDiscountMap = async () => {
       const key = pid.toString();
       if (!map.has(key) || map.get(key) < c.discountPercent) {
         map.set(key, c.discountPercent);
+      }
+    }
+  }
+  return map;
+};
+
+// Returns Map<productId string → multiplier> for currently-live campaigns'
+// pointsMultiplier (the "2x points" concept — Part D of the Club/VIP spec).
+// Same VIP-visibility rules as getActiveDiscountMap (membershipOnly /
+// vipEarlyAccessHours), since a campaign's points boost is part of the same
+// campaign record as its price discount. When a product is covered by more
+// than one eligible campaign, the HIGHEST multiplier wins (never stacked/
+// multiplied together — that would silently invent a bigger boost than any
+// single campaign actually promises).
+const getActivePointsMultiplierMap = async ({ isMember = false } = {}) => {
+  if (!isMember) return new Map(); // multiplier only ever matters for VIP earning
+  const now = new Date();
+  const active = await Campaign.find({
+    isActive: true,
+    endDate:  { $gte: now },
+    pointsMultiplier: { $gt: 1 },
+    $or: [
+      { startDate: { $lte: now } },
+      {
+        vipEarlyAccessHours: { $gt: 0 },
+        $expr: { $lte: [now, { $add: ['$startDate', { $multiply: ['$vipEarlyAccessHours', 3600000] }] }] },
+        startDate: { $gt: now },
+      },
+    ],
+  }).select('products pointsMultiplier').lean();
+
+  const map = new Map();
+  for (const c of active) {
+    for (const pid of c.products) {
+      const key = pid.toString();
+      if (!map.has(key) || map.get(key) < c.pointsMultiplier) {
+        map.set(key, c.pointsMultiplier);
       }
     }
   }
@@ -347,13 +411,96 @@ const getActiveCampaigns = async () => {
     .filter((c) => c.products.length > 0);
 };
 
+// ─── VIP exclusive deals (Club page "מבצעים בלעדיים לך") ──────────────────
+// Real membershipOnly campaigns, with real priced products — never exposed
+// to a non-member (this function should only ever be called after the
+// caller has already verified isMembershipActive(req.user.membership); it
+// does not re-check isMember itself, matching getActiveCampaigns' shape,
+// but the controller enforces the gate — see campaign.controller VIP route).
+const getVipExclusiveDeals = async (limit = 3) => {
+  const now = new Date();
+  const campaigns = await Campaign.find({
+    isActive: true,
+    membershipOnly: true,
+    startDate: { $lte: now },
+    endDate:   { $gte: now },
+  }).sort({ startDate: -1 }).lean();
+
+  if (campaigns.length === 0) return [];
+
+  const productIds = [...new Set(campaigns.flatMap((c) => c.products.map(String)))];
+  const products = await Product.find({
+    _id: { $in: productIds }, isPublished: true, isDeleted: false,
+  }).populate('category', 'name slug').lean();
+  const productById = new Map(products.map((p) => [String(p._id), p]));
+
+  const deals = [];
+  for (const c of campaigns) {
+    for (const pid of c.products) {
+      const p = productById.get(String(pid));
+      if (!p) continue;
+      deals.push({
+        campaignId: String(c._id),
+        campaignName: c.name,
+        id: String(p._id),
+        name: p.name,
+        slug: p.slug,
+        brand: p.brand ?? null,
+        image: p.images?.[0] ?? null,
+        price: p.price,
+        vipPrice: calculateDiscountedPrice(p.price, c.discountPercent),
+        discountPercent: c.discountPercent,
+      });
+      if (deals.length >= limit) return deals;
+    }
+  }
+  return deals;
+};
+
+// ─── Real "2x points" style campaign teaser (Club page campaign card) ─────
+// Returns the single most-relevant currently-active points campaign
+// (pointsMultiplier > 1), or null when none exists — the Club page shows a
+// truthful empty state rather than a fake "2x points" claim when this is
+// null. `isMember` gates early-access visibility the same way
+// getActivePointsMultiplierMap does.
+const getActivePointsCampaign = async ({ isMember = false } = {}) => {
+  const now = new Date();
+  const query = {
+    isActive: true,
+    endDate:  { $gte: now },
+    pointsMultiplier: { $gt: 1 },
+    $or: [
+      { startDate: { $lte: now } },
+      ...(isMember ? [{
+        vipEarlyAccessHours: { $gt: 0 },
+        $expr: { $lte: [now, { $add: ['$startDate', { $multiply: ['$vipEarlyAccessHours', 3600000] }] }] },
+        startDate: { $gt: now },
+      }] : []),
+    ],
+  };
+  if (!isMember) query.membershipOnly = { $ne: true };
+
+  const campaign = await Campaign.findOne(query).sort({ startDate: -1 }).lean();
+  if (!campaign) return null;
+
+  return {
+    id: String(campaign._id),
+    name: campaign.name,
+    pointsMultiplier: campaign.pointsMultiplier,
+    endDate: campaign.endDate,
+  };
+};
+
 module.exports = {
   listCampaigns,
   createCampaign,
   updateCampaign,
   deleteCampaign,
   getActiveDiscountMap,
+  getActivePointsMultiplierMap,
   getActiveWeeklyDeal,
   getActiveCampaigns,
+  getVipExclusiveDeals,
+  getActivePointsCampaign,
   calculateDiscountedPrice,
 };

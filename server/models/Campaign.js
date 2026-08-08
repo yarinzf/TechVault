@@ -44,6 +44,26 @@ const campaignSchema = new mongoose.Schema(
         startingStock: { type: Number, min: 0, required: true },
       },
     ],
+
+    // ── VIP campaign benefits (Part G/H of the Club/VIP spec) ──────────────
+    // A membership-only campaign uses the SAME discountPercent/products/date
+    // mechanism as any other campaign — membershipOnly just restricts who it
+    // applies to server-side (see campaign.service.js), rather than
+    // inventing a second parallel pricing mechanism. Non-VIP customers must
+    // never see or be able to check out at this price.
+    membershipOnly: { type: Boolean, default: false },
+
+    // "2x points" style promo — multiplies POINTS_DEFAULT_RATE (or a
+    // product's own override) for this campaign's products while it's
+    // active. 1 = no change (default); e.g. 2 → 10% effective when the
+    // base rate is 5%.
+    pointsMultiplier: { type: Number, default: 1, min: 1, max: 10 },
+
+    // VIP members can see/use this campaign starting this many hours BEFORE
+    // startDate; non-VIP customers only get it at the real startDate. 0
+    // (default) = no early access — most campaigns are NOT early-access by
+    // default, this must be set explicitly per campaign.
+    vipEarlyAccessHours: { type: Number, default: 0, min: 0, max: 168 },
   },
   { timestamps: true }
 );
