@@ -171,6 +171,11 @@
 .badge.preparing .badgeIcon { background: var(--sv-blue); }
 .badge.shipping { background: rgba(245, 158, 11, 0.1); color: var(--sv-gold); }
 .badge.shipping .badgeIcon { background: var(--sv-gold); }
+/* Same gold "payment" language already used by the countdown/Continue
+   Payment UI on this page — pending_payment/pending are not a fulfillment
+   stage, so they get their own badge instead of joining "preparing". */
+.badge.pendingPaymentBadge { background: rgba(245, 158, 11, 0.1); color: var(--sv-gold); }
+.badge.pendingPaymentBadge .badgeIcon { background: var(--sv-gold); }
 .badge.delivered { background: rgba(16, 185, 129, 0.1); color: var(--sv-success); }
 .badge.delivered .badgeIcon { background: var(--sv-success); }
 .badge.cancelledBadge { background: rgba(239, 68, 68, 0.1); color: var(--sv-red); }

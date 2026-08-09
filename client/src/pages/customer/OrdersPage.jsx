@@ -16,9 +16,17 @@ const PAGE_SIZE = 20;
 // Sapir's 4 badge states + a "cancelled" state map onto the real backend
 // status field this way — a PRESENTATION mapping only, the real `status`
 // value is never renamed or altered.
+//
+// pending_payment/pending are NOT "preparing" — the order hasn't been paid
+// or confirmed yet, so grouping it with confirmed/processing would claim
+// fulfillment work is happening when it isn't (payment.controller.js and
+// admin.service.js both treat pending_payment/pending as pre-confirmation,
+// not-yet-real-revenue states). They get their own "Pending Payment" badge
+// instead, using the same gold/credit-card payment language already used
+// by the countdown and "Continue Payment" UI on this page.
 const FILTER_TABS = [
   { key: 'all',       statuses: null },
-  { key: 'preparing', statuses: 'pending_payment,pending,confirmed,processing' },
+  { key: 'preparing', statuses: 'confirmed,processing' },
   { key: 'shipping',  statuses: 'shipped' },
   { key: 'delivered', statuses: 'delivered' },
   { key: 'cancelled', statuses: 'cancelled' },
@@ -33,17 +41,19 @@ const FILTER_LABEL_KEY = {
 };
 
 const BADGE_META = {
-  preparing: { cls: s.preparing,      Icon: Clock,   labelKey: 'order.filter.preparing' },
-  shipping:  { cls: s.shipping,       Icon: Truck,   labelKey: 'order.status.shipped' },
-  delivered: { cls: s.delivered,      Icon: Check,   labelKey: 'order.status.delivered' },
-  cancelled: { cls: s.cancelledBadge, Icon: XCircle, labelKey: 'order.status.cancelled' },
+  pending_payment: { cls: s.pendingPaymentBadge, Icon: CreditCard, labelKey: 'order.status.pending_payment' },
+  preparing:       { cls: s.preparing,           Icon: Clock,      labelKey: 'order.filter.preparing' },
+  shipping:        { cls: s.shipping,            Icon: Truck,      labelKey: 'order.status.shipped' },
+  delivered:       { cls: s.delivered,           Icon: Check,      labelKey: 'order.status.delivered' },
+  cancelled:       { cls: s.cancelledBadge,      Icon: XCircle,    labelKey: 'order.status.cancelled' },
 };
 
 const getBadgeBucket = (status) => {
   if (status === 'cancelled') return 'cancelled';
   if (status === 'delivered') return 'delivered';
   if (status === 'shipped') return 'shipping';
-  return 'preparing'; // pending_payment, pending, confirmed, processing
+  if (status === 'pending_payment' || status === 'pending') return 'pending_payment';
+  return 'preparing'; // confirmed, processing
 };
 
 // 5 real stages — the reference's 6th stage ("נארזה"/Packed) has no
@@ -643,7 +653,9 @@ export default function OrdersPage() {
             const visibleThumbs = items.slice(0, 3);
             const extraCount = items.length - visibleThumbs.length;
             const membershipOnly = isMembershipOnlyOrder(order);
-            const showTimeline = order.status !== 'cancelled' && !membershipOnly;
+            // Sapir's reference never renders the timeline once an order is
+            // delivered — a completed order has nothing left to track.
+            const showTimeline = !['cancelled', 'delivered'].includes(order.status) && !membershipOnly;
             const hasProductItems = items.some(item => item.itemType !== 'membership');
 
             return (
@@ -780,12 +792,6 @@ export default function OrdersPage() {
                     >
                       <XCircle size={13} />
                       {cancelling === order._id ? t('order.cancelling') : t('order.cancel_btn')}
-                    </button>
-                  )}
-
-                  {order.status === 'delivered' && !membershipOnly && (
-                    <button className={s.btnSecondary} onClick={() => navigate('/products')}>
-                      {t('order.write_review')}
                     </button>
                   )}
 
