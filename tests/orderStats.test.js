@@ -226,3 +226,88 @@ describe('GET /orders/stats — server-authoritative Total Spent / order count',
     expect(res.body.data).toEqual({ totalOrders: 0, totalPaidSpend: 0 });
   });
 });
+
+// ══════════════════════════════════════════════════════════════════════════
+// GET /orders?status=... — single and comma-separated multi-status filtering
+// (powers the Orders page's "preparing" filter tab, which spans several
+// real fulfillment statuses at once) — server-side, not a client-side
+// filter over a single fetched page.
+// ══════════════════════════════════════════════════════════════════════════
+describe('GET /orders?status= — single and multi-status server-side filtering', () => {
+  it('a single status value filters exactly as before (unchanged behavior)', async () => {
+    const product = await seedProduct({ price: 50 });
+    const { accessToken } = await registerAndLogin();
+
+    await addToCart(accessToken, product._id, 1);
+    const paidOrder = await createOrder(accessToken);
+    await payOrder(accessToken, paidOrder.body.data.order._id);
+
+    await addToCart(accessToken, product._id, 1);
+    await createOrder(accessToken); // stays pending_payment
+
+    const res = await request(app)
+      .get(`${ORDERS}?status=confirmed`)
+      .set('Authorization', `Bearer ${accessToken}`);
+    expect(res.status).toBe(200);
+    expect(res.body.data.orders).toHaveLength(1);
+    expect(res.body.data.orders[0].status).toBe('confirmed');
+  });
+
+  it('a comma-separated status list matches any of the given statuses, server-side', async () => {
+    const product = await seedProduct({ price: 50, stock: 10 });
+    const { accessToken } = await registerAndLogin();
+
+    // One confirmed (paid), one still pending_payment, one cancelled.
+    await addToCart(accessToken, product._id, 1);
+    const confirmedRes = await createOrder(accessToken);
+    await payOrder(accessToken, confirmedRes.body.data.order._id);
+
+    await addToCart(accessToken, product._id, 1);
+    await createOrder(accessToken); // pending_payment
+
+    await addToCart(accessToken, product._id, 1);
+    const toCancelRes = await createOrder(accessToken);
+    await request(app).patch(`${ORDERS}/${toCancelRes.body.data.order._id}/cancel`).set('Authorization', `Bearer ${accessToken}`);
+
+    const res = await request(app)
+      .get(`${ORDERS}?status=pending_payment,confirmed`)
+      .set('Authorization', `Bearer ${accessToken}`);
+    expect(res.status).toBe(200);
+    expect(res.body.data.orders).toHaveLength(2);
+    const statuses = res.body.data.orders.map(o => o.status).sort();
+    expect(statuses).toEqual(['confirmed', 'pending_payment']);
+    // The cancelled order must not appear in this bucket.
+    expect(res.body.data.orders.some(o => o.status === 'cancelled')).toBe(false);
+  });
+
+  it('supports real pagination via page/limit — proven with more than one page of real orders', async () => {
+    const product = await seedProduct({ price: 20, stock: 200 });
+    const { accessToken, user } = await registerAndLogin();
+    const Cart = mongoose.model('Cart');
+
+    // Order creation deliberately does NOT clear the cart (only a
+    // confirmed payment does) — reset it explicitly between iterations so
+    // each of the 25 orders is a fresh, guaranteed-succeeding single item,
+    // rather than an ever-growing cart whose accumulating quantity would
+    // eventually exceed stock and silently fail past a certain point.
+    for (let i = 0; i < 25; i++) {
+      await Cart.deleteMany({ user: user._id });
+      await addToCart(accessToken, product._id, 1);
+      const res = await createOrder(accessToken);
+      expect(res.status).toBe(201);
+    }
+
+    const page1 = await request(app).get(`${ORDERS}?limit=20&page=1`).set('Authorization', `Bearer ${accessToken}`);
+    expect(page1.body.data.orders).toHaveLength(20);
+    expect(page1.body.meta.total).toBe(25);
+    expect(page1.body.meta.pages).toBe(2);
+
+    const page2 = await request(app).get(`${ORDERS}?limit=20&page=2`).set('Authorization', `Bearer ${accessToken}`);
+    expect(page2.body.data.orders).toHaveLength(5);
+
+    // No overlap between the two pages.
+    const ids1 = new Set(page1.body.data.orders.map(o => o._id));
+    const ids2 = page2.body.data.orders.map(o => o._id);
+    expect(ids2.every(id => !ids1.has(id))).toBe(true);
+  }, 30000);
+});

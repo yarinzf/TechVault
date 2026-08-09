@@ -312,8 +312,17 @@ const listMyOrders = async (userId, query) => {
   const filter = { user: userId };
 
   // Allow callers to narrow by order/payment status (used by CheckoutPage
-  // on mount to recover the active pending-payment order server-side).
-  if (query.status)        filter.status        = query.status;
+  // on mount to recover the active pending-payment order server-side, and
+  // by the Orders page's status filter tabs). A single value keeps its
+  // exact-match behavior; a comma-separated list (e.g. the "preparing"
+  // tab, which covers several real fulfillment statuses at once) becomes
+  // an $in match instead — this is the ONLY case that needs more than a
+  // single real status, so it's handled here rather than fetching every
+  // order and filtering client-side.
+  if (query.status) {
+    const statuses = String(query.status).split(',').map(s => s.trim()).filter(Boolean);
+    filter.status = statuses.length > 1 ? { $in: statuses } : statuses[0];
+  }
   if (query.paymentStatus) filter.paymentStatus = query.paymentStatus;
 
   const [orders, total] = await Promise.all([
