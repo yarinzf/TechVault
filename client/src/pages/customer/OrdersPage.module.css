@@ -1,6 +1,6 @@
-/* ── OrdersPage — Sapir design v2 ── */
+/* ── OrdersPage — matched against design-reference/techvault-orders.html
+   (.ord-page / .ord-filters / .ord-card / .ordc-*) ── */
 
-/* Page wrapper */
 .ordPage {
   min-height: 100vh;
   background: var(--sv-bg);
@@ -15,12 +15,13 @@
 .breadcrumbInner {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 0 40px;
+  padding: 0 48px;
   display: flex;
   align-items: center;
   gap: 8px;
   font-size: 13px;
 }
+@media (max-width: 640px) { .breadcrumbInner { padding: 0 16px; } }
 .bcLink {
   color: var(--sv-muted);
   cursor: pointer;
@@ -35,708 +36,422 @@
   padding: 0;
   text-decoration: none;
 }
-.bcLink:hover {
-  color: var(--sv-blue-l);
-}
-.bcSep {
-  color: var(--sv-dim);
-}
-.bcCurrent {
-  color: var(--sv-text);
-  font-weight: 500;
-}
+.bcLink:hover { color: var(--sv-blue-l); }
+.bcSep { color: var(--sv-dim); }
+.bcCurrent { color: var(--sv-text); font-weight: 500; }
 
-/* ── Header ── */
+/* ── Header (Sapir .ord-header) ── */
 .ordHeader {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 32px 40px 0;
+  padding: 32px 48px 0;
 }
 .ordTitle {
-  font-size: 26px;
+  font-size: 27px;
   font-weight: 800;
   color: var(--sv-text);
-  margin-bottom: 4px;
+  margin-bottom: 6px;
+  letter-spacing: -0.01em;
 }
-.ordSubtitle {
-  font-size: 14px;
-  color: var(--sv-muted);
-}
+.ordSubtitle { font-size: 14px; color: var(--sv-muted); }
 
-/* ── Toolbar ── */
-.ordToolbar {
+/* ── Filter tabs (Sapir .ord-filters / .ord-filter-chip) ── */
+.ordFilters {
   max-width: 1100px;
-  margin: 20px auto 0;
-  padding: 0 40px;
+  margin: 22px auto 0;
+  padding: 0 48px;
   display: flex;
-  gap: 12px;
   align-items: center;
-  flex-wrap: wrap;
+  gap: 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  overflow-x: auto;
+  scrollbar-width: none;
 }
-.searchWrap {
+.ordFilters::-webkit-scrollbar { display: none; }
+.filterChip {
   position: relative;
-  flex: 1;
-  min-width: 200px;
-  max-width: 340px;
-}
-.searchInput {
-  width: 100%;
-  background: var(--sv-card);
-  border: 1px solid var(--sv-border);
-  border-radius: 8px;
-  padding: 0 36px 0 12px;
-  height: 38px;
-  color: var(--sv-text);
-  font-size: 13px;
+  background: none;
+  border: none;
   font-family: var(--sv-font);
-  outline: none;
-  transition: border-color 0.18s;
-  box-sizing: border-box;
-}
-.searchInput::placeholder {
-  color: var(--sv-dim);
-}
-.searchInput:focus {
-  border-color: var(--sv-blue-l);
-}
-.searchIcon {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 15px;
-  height: 15px;
-  stroke: var(--sv-muted);
-  pointer-events: none;
-}
-.filterSelect {
-  background: var(--sv-card);
-  border: 1px solid var(--sv-border);
-  border-radius: 8px;
-  padding: 0 12px;
-  height: 38px;
-  color: var(--sv-text);
-  font-size: 13px;
-  font-family: var(--sv-font);
-  outline: none;
+  color: var(--sv-muted);
+  font-size: 13.5px;
+  font-weight: 600;
+  padding: 12px 16px 13px;
   cursor: pointer;
-  transition: border-color 0.18s;
+  white-space: nowrap;
+  transition: color 0.15s;
 }
-.filterSelect:focus {
-  border-color: var(--sv-blue-l);
+.filterChip:hover { color: var(--sv-text); }
+.filterChip::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--sv-blue);
+  transform: scaleX(0);
+  transition: transform 0.2s ease;
 }
+.filterChipActive { color: var(--sv-blue-l); }
+.filterChipActive::after { transform: scaleX(1); }
 
 /* ── Order list ── */
 .ordList {
   max-width: 1100px;
-  margin: 20px auto 80px;
-  padding: 0 40px;
+  margin: 22px auto 0;
+  padding: 0 48px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
+}
+@media (max-width: 680px) {
+  .ordHeader, .ordFilters, .ordList { padding-left: 16px; padding-right: 16px; }
 }
 
-/* ── Order card (accordion) ── */
+/* ── Order card (Sapir .ord-card) ── */
 .ordCard {
   background: var(--sv-card);
   border: 1px solid var(--sv-border);
-  border-radius: 14px;
+  border-radius: 16px;
   overflow: hidden;
-  transition: border-color 0.2s;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
+  transition: border-color 0.25s, box-shadow 0.3s, transform 0.3s;
 }
 .ordCard:hover {
-  border-color: rgba(37, 99, 235, 0.25);
+  border-color: rgba(37, 99, 235, 0.26);
+  box-shadow: 0 14px 44px rgba(0, 0, 0, 0.32);
+  transform: translateY(-3px);
 }
-.cancelled {
-  opacity: 0.75;
-}
+.cancelled { opacity: 0.8; }
+.cancelled:hover { transform: none; }
 
-/* ── Card head (clickable toggle) ── */
-.cardHead {
-  padding: 18px 20px;
+/* ── Topbar: badge · id/date · total (Sapir .ordc-topbar) ── */
+.cardTopbar {
+  padding: 14px 20px;
   display: flex;
   align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+@media (max-width: 640px) { .cardTopbar { padding: 14px 16px; } }
+@media (max-width: 520px) {
+  .cardTopbar { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .cardTotalBlock { margin-inline-start: 0; text-align: start; }
+}
+
+.cardId { font-size: 14px; font-weight: 700; color: var(--sv-text); }
+.cardDate {
+  font-size: 11.5px; color: var(--sv-muted);
+  display: flex; align-items: center; gap: 4px; margin-top: 2px;
+}
+.cardDate svg { width: 11px; height: 11px; }
+
+.cardTotalBlock { margin-inline-start: auto; text-align: end; }
+.cardTotalLabel {
+  font-size: 9.5px; font-weight: 700; color: var(--sv-muted);
+  text-transform: uppercase; letter-spacing: 0.06em;
+}
+.cardTotalVal { font-size: 17px; font-weight: 800; color: var(--sv-blue-l); }
+
+/* ── Status badge (Sapir .ordc-badge) ── */
+.badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 12px 4px 5px; border-radius: 20px;
+  font-size: 12px; font-weight: 700; white-space: nowrap; flex-shrink: 0;
+}
+[dir="rtl"] .badge { padding: 4px 5px 4px 12px; }
+.badgeIcon {
+  width: 20px; height: 20px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.badgeIcon svg { width: 11px; height: 11px; color: #fff; }
+
+.badge.preparing { background: rgba(37, 99, 235, 0.1); color: var(--sv-blue-l); }
+.badge.preparing .badgeIcon { background: var(--sv-blue); }
+.badge.shipping { background: rgba(245, 158, 11, 0.1); color: var(--sv-gold); }
+.badge.shipping .badgeIcon { background: var(--sv-gold); }
+.badge.delivered { background: rgba(16, 185, 129, 0.1); color: var(--sv-success); }
+.badge.delivered .badgeIcon { background: var(--sv-success); }
+.badge.cancelledBadge { background: rgba(239, 68, 68, 0.1); color: var(--sv-red); }
+.badge.cancelledBadge .badgeIcon { background: var(--sv-red); }
+/* Refund states — no equivalent in the reference (no refund scenario is
+   demonstrated there); extended using the same tinted-pill language with
+   the site's existing violet accent, distinct from all 4 real statuses. */
+.badge.refunded { background: rgba(158, 110, 241, 0.1); color: var(--sv-violet); }
+.badge.refunded .badgeIcon { background: var(--sv-violet); }
+
+/* ── Body: info column + thumbnails column (Sapir .ordc-body/.ordc-summary) ── */
+.cardBody {
+  padding: 0 20px 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
   gap: 16px;
-  cursor: pointer;
-  user-select: none;
+  flex-wrap: wrap;
 }
-.ordNum {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--sv-text);
-  min-width: 110px;
-}
-.numLabel {
-  font-size: 11px;
-  color: var(--sv-muted);
-  font-weight: 400;
-  display: block;
-}
-.dateCol {
-  font-size: 13px;
-  color: var(--sv-muted);
-  min-width: 100px;
-}
-.itemsCol {
-  font-size: 13px;
-  color: var(--sv-muted);
-}
-.totalCol {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--sv-text);
-  margin-right: auto;
-}
+@media (max-width: 640px) { .cardBody { padding: 0 16px 14px; } }
+@media (max-width: 520px) { .cardBody { flex-direction: column; } }
 
-/* ── Status pill ── */
-.status {
-  padding: 3px 10px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 600;
-  flex-shrink: 0;
-  white-space: nowrap;
+.infoCol { padding-top: 14px; display: flex; flex-direction: column; gap: 7px; min-width: 0; }
+.infoRow {
+  display: flex; align-items: center; gap: 7px;
+  font-size: 12px; font-weight: 500; color: var(--sv-muted);
 }
-.confirmed {
-  background: rgba(37, 99, 235, 0.12);
-  color: var(--sv-blue-l);
-}
-.processing {
-  background: rgba(245, 158, 11, 0.12);
-  color: var(--sv-gold);
-}
-.shipped {
-  background: rgba(158, 110, 241, 0.12);
-  color: var(--sv-violet);
-}
-.done {
-  background: rgba(16, 185, 129, 0.12);
-  color: var(--sv-success);
-}
-.statusCancelled {
-  background: rgba(239, 68, 68, 0.1);
-  color: var(--sv-red);
-}
+.infoRow svg { width: 13px; height: 13px; flex-shrink: 0; }
+.infoRowGold { color: var(--sv-gold); }
+.infoRowGold svg { color: var(--sv-gold); }
+.infoRowRefund { color: var(--sv-violet); font-weight: 600; }
 
-/* ── Toggle icon ── */
-.toggleIcon {
-  width: 18px;
-  height: 18px;
-  stroke: var(--sv-muted);
-  flex-shrink: 0;
-  transition: transform 0.22s, color 0.18s;
-}
-.cardHead:hover .toggleIcon {
-  color: var(--sv-blue-l);
-}
-.openCard .toggleIcon {
-  transform: rotate(180deg);
-}
+.thumbsCol { padding-top: 14px; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; flex-shrink: 0; }
+@media (max-width: 520px) { .thumbsCol { align-items: flex-start; } }
+.thumbs { display: flex; gap: 8px; }
 
-/* ── Expanded details (accordion) ── */
-.details {
-  max-height: 0;
+.thumb {
+  position: relative;
+  width: 44px; height: 44px; border-radius: 10px; flex-shrink: 0;
+  background: linear-gradient(135deg, #0d0d14, #12121e);
+  border: 1px solid var(--sv-border);
+  display: flex; align-items: center; justify-content: center;
   overflow: hidden;
-  transition: max-height 0.32s ease;
 }
-.openCard .details {
-  max-height: 2000px;
+.thumbImg { width: 100%; height: 100%; object-fit: cover; }
+.thumb svg { width: 18px; height: 18px; color: var(--sv-muted); }
+.thumbQty {
+  position: absolute; top: -5px; inset-inline-start: -5px;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--sv-blue); color: #fff;
+  font-size: 9px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
 }
-.detailsInner {
-  padding: 0 20px 20px;
-  border-top: 1px solid var(--sv-border);
-}
-
-/* ── Details grid ── */
-.detailsGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  margin-top: 16px;
-  margin-bottom: 20px;
-}
-.detailLabel {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--sv-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 8px;
-}
-.detailVal {
-  font-size: 13px;
-  color: var(--sv-text);
-  line-height: 1.7;
+.thumbMore {
+  width: 44px; height: 44px; border-radius: 10px; flex-shrink: 0;
+  border: 1px dashed rgba(37, 99, 235, 0.4);
+  color: var(--sv-blue-l); font-size: 11px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  background: none; cursor: pointer; font-family: var(--sv-font);
 }
 
-/* ── Products in order ── */
-.productsTitle {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--sv-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 10px;
+.expandBtn {
+  display: flex; align-items: center; gap: 4px;
+  background: none; border: none; padding: 0;
+  font-size: 11px; font-weight: 600; color: var(--sv-muted);
+  cursor: pointer; font-family: var(--sv-font); transition: color 0.15s;
 }
-.productsList {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-bottom: 16px;
+.expandBtn:hover { color: var(--sv-blue-l); }
+.expandBtn svg { width: 12px; height: 12px; transition: transform 0.2s; }
+.expandBtnOpen svg { transform: rotate(180deg); }
+
+/* ── Expand panel — per-item rows (Sapir .ordc-expand-panel) ── */
+.itemsPanel {
+  max-height: 0; overflow: hidden; transition: max-height 0.3s ease;
 }
-.productRow {
-  background: var(--sv-surface);
-  border: 1px solid var(--sv-border);
-  border-radius: 10px;
-  padding: 12px 14px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
+.itemsPanelOpen { max-height: 600px; }
+.itemsPanelInner { padding: 4px 20px 14px; display: flex; flex-direction: column; gap: 8px; }
+@media (max-width: 640px) { .itemsPanelInner { padding: 4px 16px 14px; } }
+.itemRow { display: flex; align-items: center; gap: 10px; }
+.itemImg {
+  width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0;
+  background: var(--sv-surface); border: 1px solid var(--sv-border);
+  display: flex; align-items: center; justify-content: center; overflow: hidden;
 }
-.productIcon {
-  width: 40px;
-  height: 40px;
-  background: var(--sv-card);
-  border: 1px solid var(--sv-border);
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+.itemImg img { width: 100%; height: 100%; object-fit: cover; }
+.itemImg svg { width: 15px; height: 15px; color: var(--sv-muted); }
+.itemName { flex: 1; min-width: 0; font-size: 11.5px; font-weight: 600; color: var(--sv-text); }
+.itemMeta { font-size: 10.5px; color: var(--sv-muted); margin-top: 1px; }
+.itemPrice { font-size: 12px; font-weight: 700; color: var(--sv-text); white-space: nowrap; }
+
+/* ── Progress timeline (Sapir .ordc-htimeline) ──────────────────────────────
+   5 real stages (not Sapir's 6) — "נארזה"/Packed has no backend-fulfillment
+   equivalent (real statuses are pending→confirmed→processing→shipped→
+   delivered), so it's omitted rather than faked. See the final report. ── */
+.timelineWrap { padding: 4px 20px 16px; }
+@media (max-width: 640px) { .timelineWrap { padding: 4px 16px 16px; } }
+.timeline { display: flex; align-items: flex-start; }
+.step { flex: 1; display: flex; flex-direction: column; align-items: center; position: relative; }
+.step::before {
+  content: '';
+  position: absolute; top: 5px; inset-inline-end: 50%; width: 100%; height: 2px;
+  background: var(--sv-border); z-index: 0;
 }
-.productIcon svg {
-  width: 20px;
-  height: 20px;
-  stroke: var(--sv-blue-l);
-  stroke-width: 1.4;
+.step:first-child::before { display: none; }
+.stepDot {
+  width: 12px; height: 12px; border-radius: 50%; background: var(--sv-dim);
+  border: 2px solid var(--sv-bg); z-index: 1; flex-shrink: 0;
 }
-.productInfo {
-  flex: 1;
-  min-width: 0;
+.stepDone .stepDot { background: var(--sv-blue-l); }
+.stepDone::before { background: var(--sv-blue-l); }
+.stepCurrent .stepDot { background: var(--sv-blue-l); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25); }
+.stepCurrent.orange .stepDot { background: var(--sv-gold); box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.25); }
+.stepCancelled .stepDot { background: var(--sv-red); }
+.stepCancelled::before { background: var(--sv-red); }
+.stepLabel { font-size: 10px; color: var(--sv-muted); margin-top: 6px; text-align: center; white-space: nowrap; }
+.stepDone .stepLabel, .stepCurrent .stepLabel { color: var(--sv-text); font-weight: 600; }
+.stepCancelled .stepLabel { color: var(--sv-red); font-weight: 600; }
+@media (max-width: 640px) { .stepLabel { display: none; } .timelineWrap { padding-top: 0; } }
+
+/* ── Actions row (Sapir .ordc-actions-row) ── */
+.actionsRow {
+  padding: 12px 20px; border-top: 1px solid var(--sv-border);
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
 }
-.productBrand {
-  font-size: 10px;
-  color: var(--sv-muted);
-  font-weight: 600;
-  text-transform: uppercase;
-}
-.productName {
-  font-size: 13px;
-  color: var(--sv-text);
-  font-weight: 500;
-}
-.productQty {
-  font-size: 12px;
-  color: var(--sv-muted);
-  white-space: nowrap;
-}
-.productPrice {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--sv-text);
-  white-space: nowrap;
+@media (max-width: 640px) { .actionsRow { padding: 12px 16px; } }
+@media (max-width: 520px) {
+  .actionsRow { flex-direction: column; align-items: stretch; }
+  .btnPrimary, .btnSecondary, .btnDanger { justify-content: center; }
 }
 
-/* ── Order totals ── */
-.ordTotals {
-  background: var(--sv-surface);
-  border: 1px solid var(--sv-border);
-  border-radius: 10px;
-  padding: 14px 16px;
-  margin-bottom: 16px;
-  max-width: 320px;
+.btnPrimary {
+  display: flex; align-items: center; gap: 6px;
+  padding: 9px 16px; border-radius: 9px; font-size: 12px; font-weight: 700;
+  background: var(--sv-blue); border: 1px solid var(--sv-blue); color: #fff;
+  cursor: pointer; font-family: var(--sv-font); transition: background 0.15s;
 }
-.ordTotalRow {
-  display: flex;
-  justify-content: space-between;
-  font-size: 13px;
-  margin-bottom: 6px;
-  color: var(--sv-muted);
-}
-.ordTotalFinal {
-  display: flex;
-  justify-content: space-between;
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--sv-text);
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px solid var(--sv-border);
-}
-.ordTotalFinal span:last-child {
-  color: var(--sv-blue-l);
-}
+.btnPrimary:hover { background: var(--sv-blue-dk); }
 
-/* ── Action buttons ── */
-.ordActions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-.btnReorder {
-  background: linear-gradient(135deg, var(--sv-blue), var(--sv-violet));
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 9px 20px;
-  font-size: 13px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  cursor: pointer;
-  font-family: var(--sv-font);
-  transition: all 0.18s;
-}
-.btnReorder:hover {
-  opacity: 0.9;
-  transform: translateY(-1px);
-}
-.btnCancel {
-  background: none;
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  color: var(--sv-red);
-  border-radius: 8px;
-  padding: 9px 16px;
-  font-size: 13px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  cursor: pointer;
-  font-family: var(--sv-font);
-  transition: all 0.18s;
-}
-.btnCancel:hover {
-  background: rgba(239, 68, 68, 0.08);
-  border-color: var(--sv-red);
-}
-.btnCancel:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
 .btnSecondary {
-  background: none;
-  border: 1px solid var(--sv-border);
-  color: var(--sv-text);
-  border-radius: 8px;
-  padding: 9px 16px;
-  font-size: 13px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  cursor: pointer;
-  font-family: var(--sv-font);
-  transition: all 0.18s;
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 13px; border-radius: 9px; font-size: 11.5px; font-weight: 600;
+  background: none; border: 1px solid var(--sv-border); color: var(--sv-muted);
+  cursor: pointer; font-family: var(--sv-font); transition: all 0.15s;
 }
-.btnSecondary:hover {
-  border-color: var(--sv-blue);
-  color: var(--sv-blue-l);
+.btnSecondary:hover { border-color: rgba(37, 99, 235, 0.3); color: var(--sv-blue-l); }
+.btnSecondary:disabled { opacity: 0.55; cursor: not-allowed; }
+
+/* Danger (Cancel) — reference has no danger button variant at all (no
+   cancel action exists there); extended from the same secondary-button
+   shell using the site's existing red token, since real cancellation is
+   safety-relevant functionality the reference simply never had to show
+   (all 4 of its demo orders happen to already be in non-cancellable
+   states). See the final report. */
+.btnDanger {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 13px; border-radius: 9px; font-size: 11.5px; font-weight: 600;
+  background: none; border: 1px solid rgba(239, 68, 68, 0.3); color: var(--sv-red);
+  cursor: pointer; font-family: var(--sv-font); transition: all 0.15s;
 }
+.btnDanger:hover { background: rgba(239, 68, 68, 0.08); border-color: var(--sv-red); }
+.btnDanger:disabled { opacity: 0.55; cursor: not-allowed; }
+
 .btnContinuePay {
-  background: var(--sv-gold);
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 9px 16px;
-  font-size: 13px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  cursor: pointer;
-  font-family: var(--sv-font);
-  transition: all 0.18s;
+  display: flex; align-items: center; gap: 6px;
+  padding: 9px 16px; border-radius: 9px; font-size: 12px; font-weight: 700;
+  background: var(--sv-gold); border: none; color: #fff;
+  cursor: pointer; font-family: var(--sv-font); transition: opacity 0.15s;
 }
-.btnContinuePay:hover {
-  opacity: 0.9;
-  transform: translateY(-1px);
-}
+.btnContinuePay:hover { opacity: 0.9; }
 
-/* ── Pending payment bar inside expanded details ── */
+/* ── Pending payment bar ── */
 .pendingBar {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-bottom: 16px;
-  padding: 10px 14px;
-  background: rgba(245, 158, 11, 0.08);
-  border: 1px solid rgba(245, 158, 11, 0.25);
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  margin: 12px 20px 0; padding: 10px 14px;
+  background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.25);
   border-radius: 10px;
 }
+@media (max-width: 640px) { .pendingBar { margin-inline: 16px; } }
 
-/* ── Payment timer badge ── */
 .timerBadge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  background: var(--sv-gold);
-  color: #fff;
-  font-size: 11px;
-  font-weight: 700;
-  font-family: monospace;
-  padding: 3px 8px;
-  border-radius: 20px;
-  letter-spacing: 0.03em;
-  white-space: nowrap;
+  display: inline-flex; align-items: center; gap: 4px;
+  background: var(--sv-gold); color: #fff;
+  font-size: 11px; font-weight: 700; font-family: monospace;
+  padding: 3px 8px; border-radius: 20px; letter-spacing: 0.03em; white-space: nowrap;
 }
-.timerUrgent {
-  background: var(--sv-red);
-  animation: timerPulse 1s ease-in-out infinite;
-}
-@keyframes timerPulse {
-  0%, 100% { opacity: 1; }
-  50%      { opacity: 0.65; }
-}
+.timerUrgent { background: var(--sv-red); animation: timerPulse 1s ease-in-out infinite; }
+@keyframes timerPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.65; } }
 .expiredBadge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  background: rgba(239, 68, 68, 0.1);
-  color: var(--sv-red);
+  display: inline-flex; align-items: center; gap: 4px;
+  background: rgba(239, 68, 68, 0.1); color: var(--sv-red);
   border: 1px solid rgba(239, 68, 68, 0.3);
-  font-size: 11px;
-  font-weight: 600;
-  padding: 3px 8px;
-  border-radius: 20px;
-  white-space: nowrap;
+  font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 20px; white-space: nowrap;
 }
 
-/* ── Empty state ── */
-.ordEmpty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 80px 20px;
-  text-align: center;
+/* ── Load more (Sapir has no pagination UI to match — the reference never
+   demonstrates more than 4 orders; this is the standard pattern for a
+   real paginated list without one) ── */
+.loadMoreWrap { display: flex; justify-content: center; padding: 8px 0 4px; }
+.loadMoreBtn {
+  padding: 11px 28px; border-radius: 10px; font-size: 13px; font-weight: 600;
+  background: var(--sv-surface); border: 1px solid var(--sv-border); color: var(--sv-text);
+  cursor: pointer; font-family: var(--sv-font); transition: all 0.15s;
 }
+.loadMoreBtn:hover { border-color: var(--sv-blue-l); color: var(--sv-blue-l); }
+.loadMoreBtn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* ── Empty state (Sapir .ord-empty — literal emoji icon, not an SVG) ── */
+.ordEmpty { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 90px 24px; }
 .ordEmptyIcon {
-  width: 80px;
-  height: 80px;
-  border-radius: 20px;
-  background: rgba(37, 99, 235, 0.08);
-  border: 1px solid rgba(37, 99, 235, 0.15);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 24px;
+  width: 72px; height: 72px; border-radius: 20px;
+  background: var(--sv-surface); border: 1px solid var(--sv-border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 30px; margin-bottom: 24px;
 }
-.ordEmptyIcon svg {
-  width: 40px;
-  height: 40px;
-  stroke: var(--sv-blue-l);
-  stroke-width: 1.3;
-}
-.ordEmptyTitle {
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--sv-text);
-  margin-bottom: 8px;
-}
-.ordEmptySub {
-  font-size: 14px;
-  color: var(--sv-muted);
-  margin-bottom: 28px;
-}
+.ordEmptyTitle { font-size: 22px; font-weight: 700; color: var(--sv-text); margin-bottom: 8px; }
+.ordEmptySub { font-size: 14px; color: var(--sv-muted); margin-bottom: 28px; }
 .ordEmptyBtn {
-  background: linear-gradient(135deg, var(--sv-blue), var(--sv-violet));
-  color: #fff;
-  border: none;
-  border-radius: 10px;
-  padding: 12px 28px;
-  font-size: 15px;
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  font-family: var(--sv-font);
-  transition: all 0.18s;
-  text-decoration: none;
+  background: var(--sv-blue); color: #fff; border: none; border-radius: 10px;
+  padding: 12px 28px; font-size: 13px; font-weight: 700;
+  display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
+  font-family: var(--sv-font); transition: background 0.18s; text-decoration: none;
 }
-.ordEmptyBtn:hover {
-  opacity: 0.9;
-  transform: translateY(-1px);
-}
+.ordEmptyBtn:hover { background: var(--sv-blue-dk); }
 
 /* ── Loading spinner ── */
-.loadingWrap {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 120px 20px;
-}
+.loadingWrap { display: flex; align-items: center; justify-content: center; padding: 120px 20px; }
 .spinner {
-  width: 36px;
-  height: 36px;
-  border: 3px solid var(--sv-border);
-  border-top-color: var(--sv-blue);
-  border-radius: 50%;
+  width: 36px; height: 36px; border: 3px solid var(--sv-border);
+  border-top-color: var(--sv-blue); border-radius: 50%;
   animation: ordSpin 0.7s linear infinite;
 }
-@keyframes ordSpin {
-  to { transform: rotate(360deg); }
-}
+@keyframes ordSpin { to { transform: rotate(360deg); } }
 
-/* ── Detail modal overlay ── */
+/* ── Detail modal (Sapir's separate "full breakdown" surface) ── */
 .overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.6);
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
+  position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); z-index: 1000;
+  display: flex; align-items: center; justify-content: center; padding: 16px;
 }
 .modal {
-  background: var(--sv-card);
-  border: 1px solid var(--sv-border);
-  border-radius: 14px;
-  width: 100%;
-  max-width: 560px;
-  max-height: 90vh;
-  overflow-y: auto;
-  padding: 24px;
+  background: var(--sv-card); border: 1px solid var(--sv-border); border-radius: 14px;
+  width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; padding: 24px;
 }
-.modalHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 20px;
-}
-.modalTitle {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--sv-text);
-}
+.modalHeader { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+.modalTitle { font-size: 18px; font-weight: 700; color: var(--sv-text); }
 .modalClose {
-  font-size: 18px;
-  color: var(--sv-muted);
-  padding: 4px 8px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  transition: color 0.18s;
+  font-size: 18px; color: var(--sv-muted); padding: 4px 8px;
+  background: none; border: none; cursor: pointer; transition: color 0.18s;
 }
-.modalClose:hover {
-  color: var(--sv-text);
-}
-.modalSection {
-  margin-bottom: 20px;
-}
+.modalClose:hover { color: var(--sv-text); }
+.modalSection { margin-bottom: 20px; }
 .modalSectionTitle {
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--sv-muted);
-  margin-bottom: 12px;
+  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+  color: var(--sv-muted); margin-bottom: 12px;
 }
-.modalItem {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--sv-border);
-}
-.modalItem:last-child {
-  border-bottom: none;
-}
-.modalItemImg {
-  width: 48px;
-  height: 48px;
-  border-radius: 6px;
-  object-fit: cover;
-  background: var(--sv-surface);
-}
+.modalItem { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--sv-border); }
+.modalItem:last-child { border-bottom: none; }
+.modalItemImg { width: 48px; height: 48px; border-radius: 10px; object-fit: cover; background: var(--sv-surface); }
 .modalItemIcon {
-  width: 48px;
-  height: 48px;
-  border-radius: 6px;
-  background: var(--sv-surface);
-  border: 1px solid var(--sv-border);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+  width: 48px; height: 48px; border-radius: 10px; background: var(--sv-surface); border: 1px solid var(--sv-border);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
 }
-.modalItemIcon svg {
-  width: 22px;
-  height: 22px;
-  stroke: var(--sv-blue-l);
-  stroke-width: 1.4;
-}
-.modalItemName {
-  flex: 1;
-  font-size: 13px;
-  color: var(--sv-text);
-}
-.modalItemQty {
-  font-size: 12px;
-  color: var(--sv-muted);
-}
-.modalItemPrice {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--sv-text);
-  min-width: 60px;
-  text-align: right;
-}
+.modalItemIcon svg { width: 22px; height: 22px; stroke: var(--sv-blue-l); stroke-width: 1.4; }
+.modalItemName { flex: 1; font-size: 13px; color: var(--sv-text); }
+.modalItemQty { font-size: 12px; color: var(--sv-muted); }
+.modalItemPrice { font-size: 13.5px; font-weight: 700; color: var(--sv-text); min-width: 60px; text-align: end; }
 .addressBlock {
-  font-size: 13px;
-  color: var(--sv-muted);
-  line-height: 1.6;
-  background: var(--sv-surface);
-  border-radius: 8px;
-  padding: 10px 12px;
+  font-size: 13px; color: var(--sv-muted); line-height: 1.6;
+  background: var(--sv-surface); border-radius: 8px; padding: 10px 12px;
 }
-.summaryRow {
-  display: flex;
-  justify-content: space-between;
-  font-size: 13px;
-  color: var(--sv-muted);
-  margin-bottom: 6px;
-}
+.summaryRow { display: flex; justify-content: space-between; font-size: 13px; color: var(--sv-muted); margin-bottom: 6px; }
+.summaryRowDiscount span:last-child { color: var(--sv-success); }
+.summaryRowCoupon span:last-child { color: var(--sv-blue-l); }
+.summaryRowPoints span:last-child { color: var(--sv-violet); }
+.summaryRowRefund span:last-child { color: var(--sv-red); }
 .summaryTotal {
-  display: flex;
-  justify-content: space-between;
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--sv-text);
-  padding-top: 10px;
-  border-top: 1px solid var(--sv-border);
-  margin-top: 6px;
+  display: flex; justify-content: space-between; font-size: 18px; font-weight: 800; color: var(--sv-blue-l);
+  padding-top: 10px; border-top: 1px solid var(--sv-border); margin-top: 6px;
 }
-.modalFooter {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 10px;
-  padding-top: 12px;
-}
+.modalFooter { display: flex; align-items: center; justify-content: flex-end; gap: 10px; padding-top: 12px; }
+@media (max-width: 460px) { .modalInfoGrid { grid-template-columns: 1fr; } }
 
-/* ── Responsive ── */
-@media (max-width: 640px) {
-  .ordHeader,
-  .ordToolbar,
-  .ordList {
-    padding-left: 16px;
-    padding-right: 16px;
-  }
-  .ordList {
-    margin-bottom: 40px;
-  }
-  .breadcrumbInner {
-    padding: 0 16px;
-  }
-  .cardHead {
-    flex-wrap: wrap;
-  }
-}
-@media (max-width: 600px) {
-  .detailsGrid {
-    grid-template-columns: 1fr;
-  }
-}
+/* ── Responsive (matches design-reference/techvault-orders.html exactly) ── */
+@media (max-width: 680px) { .ordPage :global(.page) { padding: 0; } }

@@ -34,13 +34,13 @@ export const MOCK_ORDERS = [
 ];
 
 export const orderService = {
+  // Deliberately does NOT fall back to MOCK_ORDERS on failure — this is a
+  // real purchase history; a failed request must surface as an error to
+  // the caller (so the page can show a real error/retry state), never a
+  // fabricated order list.
   async listMine(params = {}) {
-    try {
-      const { data, meta } = await api.get(`/orders${qs(params)}`);
-      return { orders: data?.orders ?? data ?? [], meta };
-    } catch {
-      return { orders: MOCK_ORDERS, meta: null };
-    }
+    const { data, meta } = await api.get(`/orders${qs(params)}`);
+    return { orders: data?.orders ?? data ?? [], meta };
   },
 
   // Server-authoritative account stats ({ totalOrders, totalPaidSpend }) —

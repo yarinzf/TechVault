@@ -1,36 +1,86 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import {
-  Clock, CreditCard, Package, Truck, RotateCcw, Eye,
-  ArrowRight, ChevronDown, Search, Monitor, XCircle, Crown,
+  Clock, CreditCard, Package, Truck, RotateCcw, RefreshCw, Eye,
+  ArrowRight, ChevronDown, Monitor, XCircle, Crown, Check, Calendar, MapPin,
 } from 'lucide-react';
 import { orderService } from '../../features/orders/api/order.service';
 import { useToast } from '../../hooks/useToast';
-import { useTranslation } from '../../context/LanguageContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { useCurrency } from '../../features/currency/hooks/useCurrency';
+import { useCart } from '../../hooks/useCart';
 import s from './OrdersPage.module.css';
 
-const STATUS_FILTERS = ['all', 'pending_payment', 'confirmed', 'shipped', 'delivered', 'cancelled'];
+const PAGE_SIZE = 20;
 
-const STATUS_CLASS_MAP = {
-  pending_payment: 'processing',
-  pending:         'processing',
-  confirmed:       'confirmed',
-  shipped:         'shipped',
-  delivered:       'done',
-  cancelled:       'statusCancelled',
+// Sapir's 4 badge states + a "cancelled" state map onto the real backend
+// status field this way — a PRESENTATION mapping only, the real `status`
+// value is never renamed or altered.
+const FILTER_TABS = [
+  { key: 'all',       statuses: null },
+  { key: 'preparing', statuses: 'pending_payment,pending,confirmed,processing' },
+  { key: 'shipping',  statuses: 'shipped' },
+  { key: 'delivered', statuses: 'delivered' },
+  { key: 'cancelled', statuses: 'cancelled' },
+];
+
+const FILTER_LABEL_KEY = {
+  all:       'order.status.all',
+  preparing: 'order.filter.preparing',
+  shipping:  'order.status.shipped',
+  delivered: 'order.status.delivered',
+  cancelled: 'order.status.cancelled',
 };
 
-const fmt = (iso) =>
-  new Date(iso).toLocaleDateString('he-IL', { year: 'numeric', month: 'short', day: 'numeric' });
+const BADGE_META = {
+  preparing: { cls: s.preparing,      Icon: Clock,   labelKey: 'order.filter.preparing' },
+  shipping:  { cls: s.shipping,       Icon: Truck,   labelKey: 'order.status.shipped' },
+  delivered: { cls: s.delivered,      Icon: Check,   labelKey: 'order.status.delivered' },
+  cancelled: { cls: s.cancelledBadge, Icon: XCircle, labelKey: 'order.status.cancelled' },
+};
+
+const getBadgeBucket = (status) => {
+  if (status === 'cancelled') return 'cancelled';
+  if (status === 'delivered') return 'delivered';
+  if (status === 'shipped') return 'shipping';
+  return 'preparing'; // pending_payment, pending, confirmed, processing
+};
+
+// 5 real stages — the reference's 6th stage ("נארזה"/Packed) has no
+// backend-fulfillment equivalent (real statuses jump confirmed→processing
+// →shipped) so it's omitted rather than faked; see the final report.
+const TIMELINE_STAGES = ['received', 'paid', 'preparing', 'shipped', 'delivered'];
+
+// Real statuses jump straight from pending_payment/pending to confirmed once
+// paid, so "payment approved" is never independently observable as its own
+// status — it's implied (done) the moment status reaches confirmed/beyond.
+const STATUS_TO_STAGE_INDEX = {
+  pending_payment: 0,
+  pending: 0,
+  confirmed: 2,
+  processing: 2,
+  shipped: 3,
+  delivered: 4,
+};
+
+const getTimelineSteps = (order) => {
+  const currentIdx = STATUS_TO_STAGE_INDEX[order.status] ?? 0;
+  return TIMELINE_STAGES.map((key, i) => ({
+    key,
+    done: i < currentIdx,
+    current: i === currentIdx,
+  }));
+};
 
 const isMembershipOnlyOrder = (order) =>
   (order.items ?? []).length > 0 && (order.items ?? []).every(item => item.itemType === 'membership');
 
+const CANCELLABLE_STATUSES = ['pending_payment', 'pending', 'confirmed'];
+
 // ── Payment countdown for a single order ─────────────────────────────────────
 
 function PaymentCountdown({ expiresAt }) {
-  const t = useTranslation();
+  const { t } = useLanguage();
   const [remaining, setRemaining] = useState(() => Math.max(0, new Date(expiresAt) - Date.now()));
   const alive = useRef(true);
 
@@ -52,11 +102,7 @@ function PaymentCountdown({ expiresAt }) {
   const urgent = totalSec < 60 && !expired;
 
   if (expired) {
-    return (
-      <span className={s.expiredBadge}>
-        {t('order.payment_expired')}
-      </span>
-    );
+    return <span className={s.expiredBadge}>{t('order.payment_expired')}</span>;
   }
 
   return (
@@ -70,7 +116,7 @@ function PaymentCountdown({ expiresAt }) {
 // ── Return Request Modal ──────────────────────────────────────────────────────
 
 function ReturnRequestModal({ order, existingReturn, onClose, onSubmit, formatPrice }) {
-  const t = useTranslation();
+  const { t } = useLanguage();
 
   const RETURN_REASONS = [
     { key: 'order.return_reason.defect',       value: t('order.return_reason.defect') },
@@ -92,10 +138,10 @@ function ReturnRequestModal({ order, existingReturn, onClose, onSubmit, formatPr
   const [selectedItems, setSelectedItems] = useState(
     () => (order.items ?? []).map(item => ({
       product:   (item.product?._id ?? item.product ?? '').toString(),
-      name:      item.nameAtAdd ?? item.name,
+      name:      item.name,
       sku:       item.sku ?? '',
-      image:     item.imageAtAdd ?? item.image ?? '',
-      unitPrice: item.priceAtAdd ?? item.unitPrice ?? 0,
+      image:     item.image ?? '',
+      unitPrice: item.unitPrice ?? 0,
       maxQty:    item.quantity,
       quantity:  item.quantity,
       reason:    '',
@@ -248,7 +294,7 @@ function ReturnRequestModal({ order, existingReturn, onClose, onSubmit, formatPr
 
         <div className={s.modalFooter}>
           <button
-            className={s.btnReorder}
+            className={s.btnPrimary}
             onClick={handleSubmit}
             disabled={submitting || !selectedItems.some(it => it.selected)}
           >
@@ -263,19 +309,22 @@ function ReturnRequestModal({ order, existingReturn, onClose, onSubmit, formatPr
 
 // ── Order detail modal ────────────────────────────────────────────────────────
 
-function OrderDetail({ order, onClose, onCancel, formatPrice }) {
-  const t = useTranslation();
-  const canCancel = ['pending_payment', 'pending', 'confirmed'].includes(order.status);
+function OrderDetail({ order, onClose, onCancel, cancelling, formatPrice, fmt }) {
+  const { t } = useLanguage();
+  const canCancel = CANCELLABLE_STATUSES.includes(order.status);
   const addr = order.shippingAddress;
+  const couponDiscount = order.couponDiscount ?? 0;
+  const pointsValue = order.pointsRedeemedValue ?? 0;
+  const refundedAmount = order.refundedAmount ?? 0;
 
   return (
     <div className={s.overlay} onClick={onClose}>
       <div className={s.modal} onClick={e => e.stopPropagation()}>
         <div className={s.modalHeader}>
           <div>
-            <div className={s.modalTitle}>{t('order.number_prefix')} {order.orderNumber}</div>
+            <div className={s.modalTitle}>{t('order.number_prefix')} #{order.orderNumber}</div>
             <div style={{ fontSize: 11, color: 'var(--sv-muted)', marginTop: 4 }}>
-              {t('order.detail.ordered_at')}{fmt(order.createdAt)}
+              {t('order.detail.ordered_at')} {fmt(order.createdAt)}
             </div>
             {order.paymentStatus === 'unpaid' && (
               <div style={{ marginTop: 6, fontSize: 11, color: 'var(--sv-gold)', background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.25)', borderRadius: 6, padding: '3px 8px', display: 'inline-block' }}>
@@ -293,10 +342,10 @@ function OrderDetail({ order, onClose, onCancel, formatPrice }) {
               <div className={s.modalItemIcon}>
                 {item.itemType === 'membership' ? <Crown size={22} /> : <Monitor size={22} />}
               </div>
-              <div className={s.modalItemName}>{item.nameAtAdd ?? item.name}</div>
+              <div className={s.modalItemName}>{item.name}</div>
               <div className={s.modalItemQty}>{'×'}{item.quantity}</div>
               <div className={s.modalItemPrice}>
-                {formatPrice((item.priceAtAdd ?? item.unitPrice ?? 0) * item.quantity)}
+                {formatPrice((item.unitPrice ?? 0) * item.quantity)}
               </div>
             </div>
           ))}
@@ -318,6 +367,12 @@ function OrderDetail({ order, onClose, onCancel, formatPrice }) {
           {(order.taxAmount ?? 0) > 0 && (
             <div className={s.summaryRow}><span>{t('order.detail.vat')}</span><span>{formatPrice(order.taxAmount ?? 0)}</span></div>
           )}
+          {couponDiscount > 0 && (
+            <div className={`${s.summaryRow} ${s.summaryRowCoupon}`}><span>{t('checkout.coupon_discount')}</span><span>{'-'}{formatPrice(couponDiscount)}</span></div>
+          )}
+          {pointsValue > 0 && (
+            <div className={`${s.summaryRow} ${s.summaryRowPoints}`}><span>{t('order.points_redeemed')}</span><span>{'-'}{formatPrice(pointsValue)}</span></div>
+          )}
           {!isMembershipOnlyOrder(order) && (
             <div className={s.summaryRow}><span>{t('checkout.shipping')}</span><span style={{ color: 'var(--sv-success)' }}>{t('checkout.free')}</span></div>
           )}
@@ -325,17 +380,51 @@ function OrderDetail({ order, onClose, onCancel, formatPrice }) {
             <span>{t('checkout.to_pay')}</span>
             <span>{formatPrice(order.total ?? 0)}</span>
           </div>
+          {refundedAmount > 0 && (
+            <div className={`${s.summaryRow} ${s.summaryRowRefund}`} style={{ marginTop: 8 }}>
+              <span>{order.paymentStatus === 'refunded' ? t('order.refunded_full') : t('order.refunded_partial')}</span>
+              <span>{formatPrice(refundedAmount)}</span>
+            </div>
+          )}
         </div>
 
         <div className={s.modalFooter}>
           {canCancel && (
-            <button className={s.btnCancel} onClick={() => onCancel(order._id)}>
+            <button className={s.btnDanger} onClick={() => onCancel(order._id)} disabled={cancelling === order._id}>
               <XCircle size={13} />
-              {t('order.detail.cancel')}
+              {cancelling === order._id ? t('order.cancelling') : t('order.detail.cancel')}
             </button>
           )}
           <button className={s.btnSecondary} onClick={onClose}>{t('btn.close')}</button>
         </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Progress timeline ─────────────────────────────────────────────────────────
+
+function OrderTimeline({ order }) {
+  const { t } = useLanguage();
+  const steps = getTimelineSteps(order);
+
+  return (
+    <div className={s.timelineWrap}>
+      <div className={s.timeline}>
+        {steps.map(step => {
+          const cls = [
+            s.step,
+            step.done && !step.current ? s.stepDone : '',
+            step.current ? s.stepCurrent : '',
+            step.current && step.key === 'shipped' ? s.orange : '',
+          ].filter(Boolean).join(' ');
+          return (
+            <div key={step.key} className={cls}>
+              <span className={s.stepDot} />
+              <span className={s.stepLabel}>{t(`order.timeline.${step.key}`)}</span>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -346,24 +435,46 @@ function OrderDetail({ order, onClose, onCancel, formatPrice }) {
 export default function OrdersPage() {
   const { toast }  = useToast();
   const navigate   = useNavigate();
-  const t = useTranslation();
+  const { t, language } = useLanguage();
   const { formatPrice } = useCurrency('Israel');
+  const { addItem } = useCart();
+
+  const fmt = useCallback((iso) =>
+    new Date(iso).toLocaleDateString(language === 'en' ? 'en-US' : 'he-IL', { year: 'numeric', month: 'short', day: 'numeric' }),
+  [language]);
 
   const [orders,      setOrders]      = useState([]);
-  const [loading,     setLoading]     = useState(true);
+  const [meta,        setMeta]        = useState(null);
+  const [page,        setPage]        = useState(1);
   const [filter,      setFilter]      = useState('all');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [openOrders,  setOpenOrders]  = useState(new Set());
+  const [loading,     setLoading]     = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [error,       setError]       = useState(false);
+  const [openItems,   setOpenItems]   = useState(new Set());
   const [selected,    setSelected]    = useState(null);
   const [cancelling,  setCancelling]  = useState(null);
+  const [reordering,  setReordering]  = useState(null);
   const [returnModal, setReturnModal] = useState(null);
 
-  useEffect(() => {
-    orderService.listMine()
-      .then(result => setOrders(Array.isArray(result) ? result : (result?.orders ?? [])))
-      .catch(() => toast.error(t('order.load_error')))
-      .finally(() => setLoading(false));
+  const load = useCallback(async (pageNum, filterKey, append) => {
+    append ? setLoadingMore(true) : setLoading(true);
+    setError(false);
+    try {
+      const tab = FILTER_TABS.find(f => f.key === filterKey);
+      const params = { page: pageNum, limit: PAGE_SIZE };
+      if (tab?.statuses) params.status = tab.statuses;
+      const { orders: fetched, meta: m } = await orderService.listMine(params);
+      setOrders(prev => append ? [...prev, ...fetched] : fetched);
+      setMeta(m);
+      setPage(pageNum);
+    } catch {
+      setError(true);
+    } finally {
+      append ? setLoadingMore(false) : setLoading(false);
+    }
   }, []);
+
+  useEffect(() => { load(1, filter, false); }, [filter, load]);
 
   const handleCancel = async (orderId) => {
     setCancelling(orderId);
@@ -405,13 +516,41 @@ export default function OrdersPage() {
     navigate('/checkout');
   };
 
+  // Reorder currently-purchasable physical items back into the real cart —
+  // uses the same server-validated addItem() the rest of the storefront
+  // uses, so deleted/unpublished/out-of-stock items fail per-item rather
+  // than silently "succeeding". Membership purchases are never re-added.
+  const handleReorder = async (order) => {
+    const productItems = (order.items ?? []).filter(item => item.itemType !== 'membership');
+    if (productItems.length === 0) return;
+
+    setReordering(order._id);
+    let succeeded = 0;
+    let failed = 0;
+    for (const item of productItems) {
+      const productId = item.product?._id ?? item.product;
+      if (!productId) { failed++; continue; }
+      try {
+        await addItem(productId, item.quantity);
+        succeeded++;
+      } catch {
+        failed++;
+      }
+    }
+    setReordering(null);
+
+    if (succeeded > 0 && failed === 0) toast.success(t('order.reorder_success'));
+    else if (succeeded > 0 && failed > 0) toast.info(t('order.reorder_partial'));
+    else toast.error(t('order.reorder_fail'));
+  };
+
   const canRequestReturn = (order) =>
     order.status === 'delivered' &&
     ['paid', 'partially_refunded'].includes(order.paymentStatus) &&
     !isMembershipOnlyOrder(order); // digital purchase — nothing physical to return
 
-  const toggleOrder = (id) => {
-    setOpenOrders(prev => {
+  const toggleItems = (id) => {
+    setOpenItems(prev => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
       else next.add(id);
@@ -420,19 +559,7 @@ export default function OrdersPage() {
   };
 
   const safeOrders = Array.isArray(orders) ? orders : [];
-
-  // Filter by status
-  const statusFiltered = filter === 'all' ? safeOrders : safeOrders.filter(o => o.status === filter);
-
-  // Filter by search query (order number, product names)
-  const visible = searchQuery.trim()
-    ? statusFiltered.filter(o => {
-        const q = searchQuery.trim().toLowerCase();
-        if (String(o.orderNumber).includes(q)) return true;
-        if (o.items?.some(it => ((it.nameAtAdd ?? it.name) || '').toLowerCase().includes(q))) return true;
-        return false;
-      })
-    : statusFiltered;
+  const hasMore = meta && page < meta.pages;
 
   if (loading) {
     return (
@@ -450,7 +577,9 @@ export default function OrdersPage() {
       {/* Breadcrumb */}
       <div className={s.breadcrumb}>
         <div className={s.breadcrumbInner}>
-          <Link to="/" className={s.bcLink}><ArrowRight size={13} /> {'עמוד ראשי'}</Link>
+          <Link to="/" className={s.bcLink}><ArrowRight size={13} /> {t('profile.breadcrumb_home')}</Link>
+          <span className={s.bcSep}>{'›'}</span>
+          <Link to="/profile" className={s.bcLink}>{t('nav.account')}</Link>
           <span className={s.bcSep}>{'›'}</span>
           <span className={s.bcCurrent}>{t('order.page_title')}</span>
         </div>
@@ -459,43 +588,38 @@ export default function OrdersPage() {
       {/* Header */}
       <div className={s.ordHeader}>
         <h1 className={s.ordTitle}>{t('order.page_title')}</h1>
-        <p className={s.ordSubtitle}>
-          {safeOrders.length} {t('order.items') || 'הזמנות'}
-        </p>
+        <p className={s.ordSubtitle}>{t('order.subtitle')}</p>
       </div>
 
-      {/* Toolbar: search + status filter */}
-      <div className={s.ordToolbar}>
-        <div className={s.searchWrap}>
-          <input
-            type="text"
-            className={s.searchInput}
-            placeholder={t('order.search') || 'חיפוש לפי מספר הזמנה...'}
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-          />
-          <Search size={15} className={s.searchIcon} />
-        </div>
-        <select
-          className={s.filterSelect}
-          value={filter}
-          onChange={e => setFilter(e.target.value)}
-        >
-          {STATUS_FILTERS.map(f => (
-            <option key={f} value={f}>{t(`order.status.${f}`)}</option>
-          ))}
-        </select>
+      {/* Filter tabs */}
+      <div className={s.ordFilters}>
+        {FILTER_TABS.map(tab => (
+          <button
+            key={tab.key}
+            className={`${s.filterChip}${filter === tab.key ? ' ' + s.filterChipActive : ''}`}
+            onClick={() => setFilter(tab.key)}
+          >
+            {t(FILTER_LABEL_KEY[tab.key])}
+          </button>
+        ))}
       </div>
 
       {/* Order list */}
       <div className={s.ordList}>
-        {visible.length === 0 ? (
+        {error ? (
           <div className={s.ordEmpty}>
-            <div className={s.ordEmptyIcon}>
-              <Package size={40} />
-            </div>
+            <div className={s.ordEmptyIcon}>{'⚠️'}</div>
+            <div className={s.ordEmptyTitle}>{t('order.load_error')}</div>
+            <button className={s.ordEmptyBtn} onClick={() => load(1, filter, false)}>
+              <RefreshCw size={16} />
+              {t('btn.retry')}
+            </button>
+          </div>
+        ) : safeOrders.length === 0 ? (
+          <div className={s.ordEmpty}>
+            <div className={s.ordEmptyIcon}>{'📦'}</div>
             <div className={s.ordEmptyTitle}>
-              {filter === 'all' ? t('order.no_orders') : `${t('order.no_orders')} "${t(`order.status.${filter}`)}"`}
+              {filter === 'all' ? t('order.no_orders') : `${t('order.no_orders')} — ${t(FILTER_LABEL_KEY[filter])}`}
             </div>
             <div className={s.ordEmptySub}>
               {filter === 'all' ? t('order.no_orders_sub') : t('order.no_status_orders_sub')}
@@ -508,178 +632,188 @@ export default function OrdersPage() {
             )}
           </div>
         ) : (
-          visible.map(order => {
-            const isOpen = openOrders.has(order._id);
-            const statusClass = STATUS_CLASS_MAP[order.status] || 'processing';
-            const statusLabel = t(`order.status.${order.status}`) || order.status;
+          safeOrders.map(order => {
+            const bucket = getBadgeBucket(order.status);
+            const badge = BADGE_META[bucket];
+            const BadgeIcon = badge.Icon;
             const canPay  = order.paymentReservationStatus === 'active';
             const expired = order.paymentReservationStatus === 'expired';
-            const addr = order.shippingAddress;
+            const items = order.items ?? [];
+            const isOpen = openItems.has(order._id);
+            const visibleThumbs = items.slice(0, 3);
+            const extraCount = items.length - visibleThumbs.length;
+            const membershipOnly = isMembershipOnlyOrder(order);
+            const showTimeline = order.status !== 'cancelled' && !membershipOnly;
+            const hasProductItems = items.some(item => item.itemType !== 'membership');
 
             return (
               <div
                 key={order._id}
-                className={`${s.ordCard}${order.status === 'cancelled' ? ' ' + s.cancelled : ''}${isOpen ? ' ' + s.openCard : ''}`}
+                className={`${s.ordCard}${order.status === 'cancelled' ? ' ' + s.cancelled : ''}`}
               >
-                {/* Collapsed head */}
-                <div className={s.cardHead} onClick={() => toggleOrder(order._id)}>
-                  <div className={s.ordNum}>
-                    <span className={s.numLabel}>{t('order.number_prefix') || 'מספר הזמנה'}</span>
-                    #{order.orderNumber}
+                {/* Topbar */}
+                <div className={s.cardTopbar}>
+                  <span className={`${s.badge} ${badge.cls}`}>
+                    <span className={s.badgeIcon}><BadgeIcon size={11} /></span>
+                    {t(badge.labelKey)}
+                  </span>
+                  <div>
+                    <div className={s.cardId}>{t('order.number_prefix')} #{order.orderNumber}</div>
+                    <div className={s.cardDate}><Calendar size={11} />{fmt(order.createdAt)}</div>
                   </div>
-                  <div className={s.dateCol}>{fmt(order.createdAt)}</div>
-                  <div className={s.itemsCol}>{order.items?.length ?? 0} {t('order.items') || 'פריטים'}</div>
-                  <div className={s.totalCol}>{formatPrice(order.total ?? 0)}</div>
-                  <span className={`${s.status} ${s[statusClass]}`}>{statusLabel}</span>
-                  {canPay && order.expiresAt && <PaymentCountdown expiresAt={order.expiresAt} />}
-                  {expired && <span className={s.expiredBadge}>{t('order.payment_expired')}</span>}
-                  <ChevronDown size={18} className={s.toggleIcon} />
+                  <div className={s.cardTotalBlock}>
+                    <div className={s.cardTotalLabel}>{t('checkout.to_pay')}</div>
+                    <div className={s.cardTotalVal}>{formatPrice(order.total ?? 0)}</div>
+                  </div>
                 </div>
 
-                {/* Expanded details */}
-                <div className={s.details}>
-                  <div className={s.detailsInner}>
+                {/* Pending payment bar */}
+                {canPay && (
+                  <div className={s.pendingBar}>
+                    <CreditCard size={16} style={{ color: 'var(--sv-gold)', flexShrink: 0 }} />
+                    <span style={{ fontSize: 13, color: 'var(--sv-gold)', fontWeight: 600 }}>
+                      {t('order.pending_payment_note')}
+                    </span>
+                    {order.expiresAt && <PaymentCountdown expiresAt={order.expiresAt} />}
+                    <button className={s.btnContinuePay} onClick={() => handleContinuePayment(order)}>
+                      <CreditCard size={13} />
+                      {t('order.continue_payment')}
+                    </button>
+                  </div>
+                )}
+                {expired && (
+                  <div className={s.pendingBar}>
+                    <span className={s.expiredBadge}>{t('order.payment_expired')}</span>
+                  </div>
+                )}
 
-                    {/* Pending payment bar */}
-                    {canPay && (
-                      <div className={s.pendingBar}>
-                        <CreditCard size={16} style={{ color: 'var(--sv-gold)', flexShrink: 0 }} />
-                        <span style={{ fontSize: 13, color: 'var(--sv-gold)', fontWeight: 600 }}>
-                          {t('order.pending_payment_note')}
-                        </span>
-                        {order.expiresAt && <PaymentCountdown expiresAt={order.expiresAt} />}
-                        <button className={s.btnContinuePay} onClick={() => handleContinuePayment(order)}>
-                          <CreditCard size={13} />
-                          {t('order.continue_payment')}
-                        </button>
-                      </div>
+                {/* Body: info column + thumbnails */}
+                <div className={s.cardBody}>
+                  <div className={s.infoCol}>
+                    <div className={s.infoRow}><Package size={13} />{items.length} {t('order.items')}</div>
+                    {membershipOnly && order.membershipPlanSnapshot && (
+                      <div className={s.infoRow}><Crown size={13} />{order.membershipPlanSnapshot.name ?? t('order.digital_membership')}</div>
                     )}
+                    {!membershipOnly && order.shippingAddress?.city && (
+                      <div className={s.infoRow}><MapPin size={13} />{t('order.shipping_to')} {order.shippingAddress.city}</div>
+                    )}
+                    {order.paymentStatus === 'refunded' && (
+                      <div className={`${s.infoRow} ${s.infoRowRefund}`}>{t('order.refunded_full')}</div>
+                    )}
+                    {order.paymentStatus === 'partially_refunded' && (
+                      <div className={`${s.infoRow} ${s.infoRowRefund}`}>{t('order.refunded_partial')} {formatPrice(order.refundedAmount ?? 0)}</div>
+                    )}
+                    <button
+                      className={`${s.expandBtn}${isOpen ? ' ' + s.expandBtnOpen : ''}`}
+                      onClick={() => toggleItems(order._id)}
+                    >
+                      {t('order.detail.items')}
+                      <ChevronDown size={12} />
+                    </button>
+                  </div>
 
-                    {/* Details grid */}
-                    <div className={s.detailsGrid}>
-                      <div>
-                        <div className={s.detailLabel}>{t('order.detail.ordered_at') || 'תאריך הזמנה'}</div>
-                        <div className={s.detailVal}>{fmt(order.createdAt)}</div>
-                      </div>
-                      <div>
-                        <div className={s.detailLabel}>{t('order.payment') || 'תשלום'}</div>
-                        <div className={s.detailVal}>{order.paymentMethod || t('order.card')}</div>
-                      </div>
-                      {addr && (
-                        <div>
-                          <div className={s.detailLabel}>{t('order.detail.shipping') || 'כתובת משלוח'}</div>
-                          <div className={s.detailVal}>
-                            {addr.street}, {addr.city}<br />
-                            {addr.zip}, {addr.country}
-                          </div>
-                        </div>
-                      )}
-                      <div>
-                        <div className={s.detailLabel}>{t('order.status_label') || 'סטטוס'}</div>
-                        <div className={s.detailVal}>
-                          <span className={`${s.status} ${s[statusClass]}`}>{statusLabel}</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Products */}
-                    <div className={s.productsTitle}>{t('order.detail.items') || 'פריטים'}</div>
-                    <div className={s.productsList}>
-                      {(order.items ?? []).map((item, i) => (
-                        <div key={i} className={s.productRow}>
-                          <div className={s.productIcon}>
-                            {item.itemType === 'membership' ? <Crown size={20} /> : <Monitor size={20} />}
-                          </div>
-                          <div className={s.productInfo}>
-                            {item.brand && <div className={s.productBrand}>{item.brand}</div>}
-                            <div className={s.productName}>{item.nameAtAdd ?? item.name}</div>
-                            {item.itemType === 'membership' && (
-                              <div className={s.productBrand}>{t('order.digital_membership')}</div>
-                            )}
-                          </div>
-                          <div className={s.productQty}>{'×'}{item.quantity}</div>
-                          <div className={s.productPrice}>
-                            {formatPrice((item.priceAtAdd ?? item.unitPrice ?? 0) * item.quantity)}
-                          </div>
+                  <div className={s.thumbsCol}>
+                    <div className={s.thumbs}>
+                      {visibleThumbs.map((item, i) => (
+                        <div key={i} className={s.thumb}>
+                          {item.image
+                            ? <img src={item.image} alt={item.name} className={s.thumbImg} />
+                            : (item.itemType === 'membership' ? <Crown size={18} /> : <Monitor size={18} />)}
+                          {item.quantity > 1 && <span className={s.thumbQty}>{item.quantity}</span>}
                         </div>
                       ))}
-                    </div>
-
-                    {/* Totals */}
-                    <div className={s.ordTotals}>
-                      <div className={s.ordTotalRow}>
-                        <span>{t('checkout.total_products')}</span>
-                        <span>{formatPrice(order.subtotal ?? 0)}</span>
-                      </div>
-                      {(order.taxAmount ?? 0) > 0 && (
-                        <div className={s.ordTotalRow}>
-                          <span>{t('order.detail.vat')}</span>
-                          <span>{formatPrice(order.taxAmount ?? 0)}</span>
-                        </div>
-                      )}
-                      {!isMembershipOnlyOrder(order) && (
-                        <div className={s.ordTotalRow}>
-                          <span>{t('checkout.shipping')}</span>
-                          <span style={{ color: 'var(--sv-success)' }}>{t('checkout.free')}</span>
-                        </div>
-                      )}
-                      <div className={s.ordTotalFinal}>
-                        <span>{t('checkout.to_pay')}</span>
-                        <span>{formatPrice(order.total ?? 0)}</span>
-                      </div>
-                    </div>
-
-                    {/* Action buttons */}
-                    <div className={s.ordActions}>
-                      <button className={s.btnReorder} onClick={() => setSelected(order)}>
-                        <Eye size={13} />
-                        {t('order.details')}
-                      </button>
-
-                      {['pending_payment', 'pending', 'confirmed'].includes(order.status) && (
-                        <button
-                          className={s.btnCancel}
-                          onClick={() => handleCancel(order._id)}
-                          disabled={cancelling === order._id}
-                        >
-                          <XCircle size={13} />
-                          {cancelling === order._id ? t('order.cancelling') : t('order.cancel_btn')}
-                        </button>
-                      )}
-
-                      {order.status === 'shipped' && (
-                        <button className={s.btnSecondary} onClick={() => {}}>
-                          <Truck size={13} />
-                          {t('order.track_order') || 'Track Order'}
-                        </button>
-                      )}
-
-                      {order.status === 'delivered' && !isMembershipOnlyOrder(order) && (
-                        <button className={s.btnSecondary} onClick={() => navigate('/products')}>
-                          {t('order.write_review')}
-                        </button>
-                      )}
-
-                      {isMembershipOnlyOrder(order) && order.status === 'delivered' && (
-                        <button className={s.btnSecondary} onClick={() => navigate('/club')}>
-                          <Crown size={13} />
-                          {t('nav.club')}
-                        </button>
-                      )}
-
-                      {canRequestReturn(order) && (
-                        <button className={s.btnSecondary} onClick={() => openReturnModal(order)}>
-                          <RotateCcw size={13} />
-                          {order._hasReturn ? t('order.return_status') : t('order.request_return')}
+                      {extraCount > 0 && (
+                        <button className={s.thumbMore} onClick={() => toggleItems(order._id)}>
+                          {'+'}{extraCount}
                         </button>
                       )}
                     </div>
-
                   </div>
+                </div>
+
+                {/* Expanded item rows */}
+                <div className={`${s.itemsPanel}${isOpen ? ' ' + s.itemsPanelOpen : ''}`}>
+                  <div className={s.itemsPanelInner}>
+                    {items.map((item, i) => (
+                      <div key={i} className={s.itemRow}>
+                        <div className={s.itemImg}>
+                          {item.image
+                            ? <img src={item.image} alt={item.name} />
+                            : (item.itemType === 'membership' ? <Crown size={15} /> : <Monitor size={15} />)}
+                        </div>
+                        <div>
+                          <div className={s.itemName}>{item.name}</div>
+                          <div className={s.itemMeta}>{'×'}{item.quantity}</div>
+                        </div>
+                        <div className={s.itemPrice}>{formatPrice((item.unitPrice ?? 0) * item.quantity)}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Progress timeline */}
+                {showTimeline && <OrderTimeline order={order} />}
+
+                {/* Actions */}
+                <div className={s.actionsRow}>
+                  <button className={s.btnPrimary} onClick={() => setSelected(order)}>
+                    <Eye size={13} />
+                    {t('order.view_details')}
+                  </button>
+
+                  {hasProductItems && (
+                    <button
+                      className={s.btnSecondary}
+                      onClick={() => handleReorder(order)}
+                      disabled={reordering === order._id}
+                    >
+                      <RefreshCw size={13} />
+                      {reordering === order._id ? t('order.reordering') : t('order.reorder_btn')}
+                    </button>
+                  )}
+
+                  {CANCELLABLE_STATUSES.includes(order.status) && (
+                    <button
+                      className={s.btnDanger}
+                      onClick={() => handleCancel(order._id)}
+                      disabled={cancelling === order._id}
+                    >
+                      <XCircle size={13} />
+                      {cancelling === order._id ? t('order.cancelling') : t('order.cancel_btn')}
+                    </button>
+                  )}
+
+                  {order.status === 'delivered' && !membershipOnly && (
+                    <button className={s.btnSecondary} onClick={() => navigate('/products')}>
+                      {t('order.write_review')}
+                    </button>
+                  )}
+
+                  {membershipOnly && order.status === 'delivered' && (
+                    <button className={s.btnSecondary} onClick={() => navigate('/club')}>
+                      <Crown size={13} />
+                      {t('nav.club')}
+                    </button>
+                  )}
+
+                  {canRequestReturn(order) && (
+                    <button className={s.btnSecondary} onClick={() => openReturnModal(order)}>
+                      <RotateCcw size={13} />
+                      {order._hasReturn ? t('order.return_status') : t('order.request_return')}
+                    </button>
+                  )}
                 </div>
               </div>
             );
           })
+        )}
+
+        {!error && hasMore && (
+          <div className={s.loadMoreWrap}>
+            <button className={s.loadMoreBtn} onClick={() => load(page + 1, filter, true)} disabled={loadingMore}>
+              {loadingMore ? t('order.loading_more') : t('order.load_more')}
+            </button>
+          </div>
         )}
       </div>
 
@@ -689,7 +823,9 @@ export default function OrdersPage() {
           order={selected}
           onClose={() => setSelected(null)}
           onCancel={handleCancel}
+          cancelling={cancelling}
           formatPrice={formatPrice}
+          fmt={fmt}
         />
       )}
 
