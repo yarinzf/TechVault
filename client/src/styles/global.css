@@ -23,6 +23,14 @@ body,
 #root {
   width: 100%;
   min-height: 100%;
+  /* Off-canvas fixed-position panels (cart drawer, mobile nav) translate
+     themselves fully off-screen via transform when closed — a closed
+     panel's post-transform bounding box can still register as part of the
+     document's scrollable area on some pages, producing a phantom
+     horizontal scrollbar/overflow with nothing visually there. This is the
+     standard guard against that class of bug; it never affects legitimate
+     vertical scrolling or in-flow horizontal layout. */
+  overflow-x: hidden;
 }
 
 html {
