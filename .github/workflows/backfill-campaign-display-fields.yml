@@ -1,0 +1,189 @@
+name: Backfill Campaign Display Fields
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: 'Type BACKFILL_PRODUCTION to continue'
+        required: true
+      mode:
+        description: 'Choose dry-run first. Use apply only after reviewing the production plan.'
+        required: true
+        type: choice
+        options:
+          - dry-run
+          - apply
+        default: dry-run
+
+concurrency:
+  group: production-backfill-campaign-display-fields
+  cancel-in-progress: false
+
+env:
+  SSH_KEY_PATH: /home/runner/.ssh/deploy_key
+
+jobs:
+  backfill:
+    name: Backfill Campaign.title on EC2
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Validate inputs
+        run: |
+          if [ "${{ inputs.confirmation }}" != "BACKFILL_PRODUCTION" ]; then
+            echo "::error::confirmation input must be exactly BACKFILL_PRODUCTION (got: '${{ inputs.confirmation }}')"
+            exit 1
+          fi
+          if [ "${{ inputs.mode }}" != "dry-run" ] && [ "${{ inputs.mode }}" != "apply" ]; then
+            echo "::error::mode must be 'dry-run' or 'apply' (got: '${{ inputs.mode }}')"
+            exit 1
+          fi
+          echo "Confirmation accepted. Mode: ${{ inputs.mode }}"
+
+      # ── Same SSH setup pattern as deploy.yml / curate-production-storefront.yml ──
+      - name: Configure SSH
+        env:
+          _HOST: ${{ secrets.EC2_HOST }}
+          _USER: ${{ secrets.EC2_USER }}
+          _KEY:  ${{ secrets.EC2_SSH_KEY }}
+        run: |
+          MISSING=0
+          if [ -n "$_HOST" ]; then echo "EC2_HOST: present";    else echo "::error::EC2_HOST: MISSING";    MISSING=1; fi
+          if [ -n "$_USER" ]; then echo "EC2_USER: present";    else echo "::error::EC2_USER: MISSING";    MISSING=1; fi
+          if [ -n "$_KEY" ];  then echo "EC2_SSH_KEY: present"; else echo "::error::EC2_SSH_KEY: MISSING"; MISSING=1; fi
+          if [ "$MISSING" -eq 1 ]; then echo "::error::One or more required secrets are missing"; exit 1; fi
+
+          mkdir -p "$(dirname "$SSH_KEY_PATH")"
+          printf '%s\n' "$_KEY" > "$SSH_KEY_PATH"
+          chmod 600 "$SSH_KEY_PATH"
+          ssh-keyscan -H "$_HOST" >> "$(dirname "$SSH_KEY_PATH")/known_hosts" 2>/dev/null || echo "::warning::ssh-keyscan failed (non-fatal)"
+          echo "SSH configured successfully"
+
+      - name: Sync repository to latest main (script must exist on the server)
+        run: |
+          ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
+            cd /opt/techvault &&
+            git fetch origin &&
+            git reset --hard origin/main &&
+            chmod +x devops/scripts/*.sh
+          '
+
+      # ── Same reasoning as curate-production-storefront.yml: `git reset
+      #    --hard` only updates files on the EC2 HOST, never a running
+      #    container's filesystem (baked at the last `docker compose up -d
+      #    --build`). Copy just this one new script into the already-running
+      #    backend container rather than rebuilding/restarting anything. ────
+      - name: Inject backfill script into running backend container
+        run: |
+          ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
+            set -e
+            cd /opt/techvault
+
+            test -f server/scripts/backfillCampaignDisplayFields.js || {
+              echo "::error::Script not found on host after sync: /opt/techvault/server/scripts/backfillCampaignDisplayFields.js"
+              exit 1
+            }
+
+            BACKEND_CONTAINER=$(docker compose ps -q backend)
+            if [ -z "$BACKEND_CONTAINER" ]; then
+              echo "::error::backend container is not running (docker compose ps -q backend returned empty)"
+              exit 1
+            fi
+            echo "Backend container: $BACKEND_CONTAINER"
+
+            docker cp \
+              server/scripts/backfillCampaignDisplayFields.js \
+              "${BACKEND_CONTAINER}:/app/server/scripts/backfillCampaignDisplayFields.js"
+
+            docker compose exec -T backend test -f /app/server/scripts/backfillCampaignDisplayFields.js || {
+              echo "::error::Script missing inside container after docker cp"
+              exit 1
+            }
+            docker compose exec -T backend node --check /app/server/scripts/backfillCampaignDisplayFields.js || {
+              echo "::error::Copied script failed node --check inside the container"
+              exit 1
+            }
+            echo "Script injected and verified inside the running backend container."
+          '
+
+      # ── Dry-run mode: preview only, no backup needed since nothing writes. ──
+      - name: "[dry-run] Backfill dry-run (prints full plan, touches nothing)"
+        if: ${{ inputs.mode == 'dry-run' }}
+        run: |
+          ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
+            cd /opt/techvault &&
+            docker compose exec -T \
+              -e BACKFILL_CONFIRM=TECHVAULT_PRODUCTION \
+              backend node server/scripts/backfillCampaignDisplayFields.js --dry-run
+          '
+
+      # ── Apply mode: backup is mandatory and MUST happen before any write. ──
+      - name: "[apply] Pre-backfill MongoDB backup"
+        if: ${{ inputs.mode == 'apply' }}
+        run: |
+          ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} \
+            'sudo /opt/techvault/devops/scripts/backup-mongo.sh'
+
+      - name: "[apply] Verify backup exists and is non-empty"
+        if: ${{ inputs.mode == 'apply' }}
+        run: |
+          ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
+            LATEST=$(ls -t /opt/techvault/backups/mongodb/techvault_*.gz 2>/dev/null | head -1)
+            if [ -z "$LATEST" ]; then
+              echo "::error::No backup archive found after backup step"
+              exit 1
+            fi
+            SIZE=$(stat -c%s "$LATEST")
+            echo "Latest backup: $LATEST ($SIZE bytes)"
+            if [ "$SIZE" -le 0 ]; then
+              echo "::error::Backup file is empty"
+              exit 1
+            fi
+          '
+
+      # ── Apply mode re-runs the dry-run once more right before writing, so
+      #    the logged plan is guaranteed fresh against the just-backed-up
+      #    state (not a stale plan from a much earlier dry-run dispatch). ────
+      - name: "[apply] Backfill dry-run (final plan review before write)"
+        if: ${{ inputs.mode == 'apply' }}
+        run: |
+          ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
+            cd /opt/techvault &&
+            docker compose exec -T \
+              -e BACKFILL_CONFIRM=TECHVAULT_PRODUCTION \
+              backend node server/scripts/backfillCampaignDisplayFields.js --dry-run
+          '
+
+      - name: "[apply] Backfill apply (writes Campaign.title only, on candidates only)"
+        if: ${{ inputs.mode == 'apply' }}
+        run: |
+          ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
+            cd /opt/techvault &&
+            docker compose exec -T \
+              -e BACKFILL_CONFIRM=TECHVAULT_PRODUCTION \
+              backend node server/scripts/backfillCampaignDisplayFields.js --apply
+          '
+
+      # ── Smoke-check the endpoint the new data actually feeds. ──────────────
+      - name: "[apply] Verify storefront endpoint reflects the backfilled data"
+        if: ${{ inputs.mode == 'apply' }}
+        run: |
+          ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
+            echo "=== Health ===" &&
+            curl -sf --max-time 10 http://localhost:5000/api/v1/health | head -c 500 && echo &&
+            echo "=== Active campaigns (title should now be non-null) ===" &&
+            curl -sf --max-time 10 http://localhost:5000/api/v1/campaigns/active | head -c 800 && echo
+          '
+
+      - name: Cleanup SSH key
+        if: always()
+        run: rm -f "$SSH_KEY_PATH"
