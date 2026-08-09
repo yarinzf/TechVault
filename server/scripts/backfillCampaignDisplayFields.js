@@ -7,14 +7,41 @@
  * Gives every campaign that is missing a customer-facing `title` a safe,
  * honest, generic Hebrew title derived ONLY from real, structural campaign
  * fields (isClearance / membershipOnly) — never from `name` (the internal/
- * admin identifier, e.g. the "Production Curation 2026 — ..." marker some
- * production campaigns already carry, or an ad-hoc QA/staging label) and
- * never an invented per-product marketing claim. This is a data-quality
- * companion to the frontend fix (DealsPage.jsx / ClubPage.jsx / HomePage.jsx
- * already fall back to a safe generic label when `title` is absent, so this
- * script is NOT required for customer-facing safety — it exists to give
- * every campaign a real stored title instead of relying solely on that
- * shared fallback string for all of them at once).
+ * admin identifier) and never an invented per-product marketing claim.
+ * `description` is intentionally NOT backfilled — there's no safe way to
+ * generate a truthful, product-specific description from structural fields
+ * alone, so that field is left for an admin to fill in via the Admin UI at
+ * their discretion.
+ *
+ * ─── Why this talks to the RAW MongoDB collection, never a Mongoose Model ──
+ * This backfill is deliberately meant to run BEFORE the application has been
+ * redeployed with the code that adds `title`/`description` to the Campaign
+ * schema — that's the whole point of doing it as a separate, narrowly-scoped
+ * step. That means the already-running backend container's own
+ * server/models/Campaign.js is the OLD schema, with no `title` field.
+ *
+ * A real incident on this exact script proved why that matters: an earlier
+ * version used `mongoose.model('Campaign').updateOne(...)`. Mongoose's
+ * default `strict: true` schema option applies to update casting, not just
+ * `save()` — any key in `$set` that isn't a declared schema path gets
+ * stripped before the write is even sent. With `title` as the *only* key in
+ * `$set`, stripping it left an empty update; depending on exactly how that
+ * empty update got serialized, this manifested as either (a) Mongoose
+ * short-circuiting entirely, returning a synthetic `{acknowledged:false}`
+ * without ever calling the database, or (b) the driver sending `title` as a
+ * literal `undefined`, which some BSON paths coerce to a stored `null`
+ * instead of the intended string. Both were reproduced locally against a
+ * schema copy matching the running production container. Either way: no
+ * real title value ever persisted, even though nothing threw and the loop
+ * completed.
+ *
+ * The fix is to never route this migration through a Mongoose Model at all.
+ * `mongoose.connection.collection('campaigns')` is the underlying native
+ * MongoDB driver collection — reads and writes through it are NOT cast or
+ * filtered by any Mongoose schema, so they work correctly regardless of
+ * whether the currently-loaded `Campaign` model (in this process, or in the
+ * separately-running application process) knows about `title` yet. This is
+ * exactly what makes it safe to run this backfill before redeploying.
  *
  * This script NEVER touches: `name`, discountPercent, products, startDate,
  * endDate, placement, isActive, isClearance, membershipOnly,
@@ -23,11 +50,6 @@
  * (idempotent; a campaign with any existing non-empty `title`, whether set
  * by an earlier run of this script or authored directly by an admin via the
  * Admin UI, is always left completely untouched, on every future run).
- * `description` is intentionally NOT backfilled — there's no safe way to
- * generate a truthful, product-specific description from structural fields
- * alone, so that field is left for an admin to fill in via the Admin UI
- * (server/validators/campaign.validator.js / AdminCampaignsPage.jsx) at
- * their discretion.
  *
  * Hard safety model (mirrors curateProductionStorefront.js exactly):
  *   - Refuses to run unless NODE_ENV === "production".
@@ -38,9 +60,20 @@
  *     (no flag) and --dry-run print the exact list of affected campaigns —
  *     _id, internal name (read-only, for identification), and the title
  *     that would be written — and touch nothing.
- *   - Re-checks each campaign's title is still empty at write time (a
- *     narrower race-safe filter on the update itself), so a title an admin
- *     sets between dry-run and apply is never clobbered.
+ *   - Re-checks each campaign's title is still empty AT WRITE TIME via the
+ *     update's own filter (never just trusting the earlier plan), so a
+ *     title an admin sets between dry-run and apply is never clobbered, and
+ *     a campaign fixed by a concurrent/earlier partial run is correctly
+ *     reported as skipped, not silently miscounted as newly modified.
+ *   - Every reported count (matched / modified / skipped / failed) comes
+ *     directly from the real MongoDB write result for that exact document —
+ *     never inferred or assumed. If the number of real modifications doesn't
+ *     match what was expected, the script exits non-zero rather than
+ *     printing a misleading "success".
+ *   - Post-write verification re-reads every target directly from the raw
+ *     collection and checks BOTH that `title` now exactly equals the value
+ *     that was planned for it AND that `name` is byte-for-byte unchanged —
+ *     not merely "title is non-empty".
  *
  * Usage (must be run inside the production application context, e.g. via
  * `docker compose exec -T backend node server/scripts/backfillCampaignDisplayFields.js`):
@@ -54,6 +87,7 @@
 const mongoose = require('mongoose');
 
 const REQUIRED_CONFIRM_VALUE = 'TECHVAULT_PRODUCTION';
+const COLLECTION_NAME = 'campaigns';
 
 // Deliberately generic and true for ANY campaign matching the condition —
 // no product-specific, category-specific, or discount-specific claim, so
@@ -95,18 +129,24 @@ function assertConnectionIsNotLocal() {
 
 const MISSING_TITLE_FILTER = { $or: [{ title: { $exists: false } }, { title: null }, { title: '' }] };
 
+// The ONLY way this script ever touches Campaign documents — the native
+// driver collection, never a Mongoose Model. See the file header for why.
+function campaignsCollection() {
+  return mongoose.connection.collection(COLLECTION_NAME);
+}
+
 // ─── Plan ───────────────────────────────────────────────────────────────────
 async function buildPlan() {
-  const Campaign = mongoose.model('Campaign');
   // Every campaign missing a title — not filtered to "currently active", so
   // a scheduled-but-not-yet-started campaign is also fixed before it ever
   // goes live and needs the frontend's shared generic fallback at all.
-  const candidates = await Campaign.find(MISSING_TITLE_FILTER)
-    .select('_id name isActive discountPercent isClearance membershipOnly startDate endDate')
-    .lean();
+  const candidates = await campaignsCollection()
+    .find(MISSING_TITLE_FILTER)
+    .project({ name: 1, isActive: 1, discountPercent: 1, isClearance: 1, membershipOnly: 1 })
+    .toArray();
 
   return candidates.map((c) => ({
-    id:              String(c._id),
+    id:              c._id, // real ObjectId — used for exact-_id targeting on write
     internalName:    c.name,
     isActive:        c.isActive,
     discountPercent: c.discountPercent,
@@ -131,19 +171,77 @@ function printPlan(plan, dbName, host) {
 }
 
 // ─── Apply ──────────────────────────────────────────────────────────────────
+// Every count below comes directly from each document's own real MongoDB
+// write result — never assumed, never derived from the plan alone.
 async function applyPlan(plan) {
-  const Campaign = mongoose.model('Campaign');
-  let updated = 0;
+  const coll = campaignsCollection();
+  const result = { planned: plan.length, matched: 0, modified: 0, skippedAlreadyFixed: 0, failed: [] };
+
   for (const c of plan) {
-    // Re-check the title is still empty at write time — never overwrite a
-    // title an admin set between the dry-run and this apply.
-    const res = await Campaign.updateOne(
-      { _id: c.id, ...MISSING_TITLE_FILTER },
-      { $set: { title: c.computedTitle } }
-    );
-    if (res.modifiedCount > 0) updated++;
+    try {
+      // Re-check at write time: only matches if title is STILL missing.
+      const res = await coll.updateOne(
+        { _id: c.id, ...MISSING_TITLE_FILTER },
+        { $set: { title: c.computedTitle } }
+      );
+
+      if (res.matchedCount === 0) {
+        // Someone (an admin, or an earlier partial run) already set a real
+        // title on this campaign between buildPlan() and now — correctly
+        // left untouched, not a failure.
+        result.skippedAlreadyFixed++;
+        continue;
+      }
+
+      result.matched += res.matchedCount;
+
+      if (res.modifiedCount > 0) {
+        result.modified += res.modifiedCount;
+      } else {
+        // Matched the filter but the database reports nothing actually
+        // changed — should never happen given the filter above, but this is
+        // exactly the class of silent failure this rewrite exists to catch.
+        // Treat it as a real, reported failure, never silent success.
+        result.failed.push({ id: c.id.toString(), reason: 'matched but modifiedCount was 0 — write did not persist' });
+      }
+    } catch (err) {
+      result.failed.push({ id: c.id.toString(), reason: err.message });
+    }
   }
-  return { updated };
+
+  return result;
+}
+
+// ─── Post-write verification ───────────────────────────────────────────────
+// Reads straight from the raw collection (same as buildPlan/applyPlan) —
+// never through a Mongoose Model, so this can never pass or fail based on
+// whether some schema happens to declare `title`. Checks title is exactly
+// the planned value (not merely "non-empty") and that `name` didn't change.
+async function verifyApplied(plan) {
+  const coll = campaignsCollection();
+  const ids = plan.map((c) => c.id);
+  const docs = await coll.find({ _id: { $in: ids } }).project({ name: 1, title: 1 }).toArray();
+  const byId = new Map(docs.map((d) => [String(d._id), d]));
+
+  const problems = [];
+  for (const c of plan) {
+    const doc = byId.get(String(c.id));
+    if (!doc) {
+      problems.push(`Campaign ${c.id} not found after write`);
+      continue;
+    }
+    if (!doc.title || String(doc.title).trim() === '') {
+      problems.push(`Campaign ${c.id} still has no title after write`);
+      continue;
+    }
+    if (doc.title !== c.computedTitle) {
+      problems.push(`Campaign ${c.id} title is "${doc.title}", expected "${c.computedTitle}"`);
+    }
+    if (doc.name !== c.internalName) {
+      problems.push(`Campaign ${c.id} internal name changed unexpectedly: was "${c.internalName}", now "${doc.name}"`);
+    }
+  }
+  return problems;
 }
 
 async function runAsCli() {
@@ -159,7 +257,6 @@ async function runAsCli() {
   assertProductionSafety();
 
   const { connectDB } = require('../config/db');
-  require('../models/Campaign');
   await connectDB();
   assertConnectionIsNotLocal();
 
@@ -178,15 +275,27 @@ async function runAsCli() {
     }
 
     console.log('\nApplying plan...');
-    const { updated } = await applyPlan(plan);
-    console.log(`Campaigns updated: ${updated}/${plan.length}`);
+    const result = await applyPlan(plan);
+    console.log(`Planned:  ${result.planned}`);
+    console.log(`Matched:  ${result.matched}`);
+    console.log(`Modified: ${result.modified}`);
+    console.log(`Skipped (already had a title by write time): ${result.skippedAlreadyFixed}`);
+    console.log(`Failed:   ${result.failed.length}`);
+    if (result.failed.length > 0) {
+      result.failed.forEach((f) => console.error(`  - ${f.id}: ${f.reason}`));
+    }
 
-    const stillMissing = await mongoose.model('Campaign').countDocuments({
-      _id: { $in: plan.map((c) => c.id) },
-      ...MISSING_TITLE_FILTER,
-    });
-    if (stillMissing > 0) {
-      console.error(`\nPOST-WRITE VERIFICATION FAILED: ${stillMissing} campaign(s) still missing a title.`);
+    const expectedModified = result.planned - result.skippedAlreadyFixed;
+    if (result.modified !== expectedModified || result.failed.length > 0) {
+      console.error(`\nAPPLY DID NOT FULLY SUCCEED: expected ${expectedModified} real modification(s), got ${result.modified}, ${result.failed.length} failed.`);
+      process.exitCode = 1;
+      return;
+    }
+
+    const problems = await verifyApplied(plan);
+    if (problems.length) {
+      console.error('\nPOST-WRITE VERIFICATION FAILED:');
+      problems.forEach((p) => console.error('  - ' + p));
       process.exitCode = 1;
       return;
     }
@@ -204,4 +313,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { computeSafeTitle, buildPlan, applyPlan };
+module.exports = { computeSafeTitle, buildPlan, applyPlan, verifyApplied };
