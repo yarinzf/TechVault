@@ -18,6 +18,13 @@ const listMyOrders = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+const getMyStats = async (req, res, next) => {
+  try {
+    const stats = await orderService.getMyOrderStats(req.user._id);
+    sendSuccess(res, stats, 'Order stats retrieved');
+  } catch (err) { next(err); }
+};
+
 const getOrder = async (req, res, next) => {
   try {
     const order = await orderService.getOrder(req.params.id, req.user._id, req.user.role);
@@ -60,4 +67,4 @@ const listAllOrders = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
-module.exports = { createOrder, listMyOrders, getOrder, cancelOrder, updateStatus, listAllOrders, getTimeline };
+module.exports = { createOrder, listMyOrders, getMyStats, getOrder, cancelOrder, updateStatus, listAllOrders, getTimeline };

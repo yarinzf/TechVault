@@ -125,6 +125,21 @@ router.get('/all', authorize(...STAFF_ROLES), ctrl.listAllOrders);
 
 /**
  * @swagger
+ * /orders/stats:
+ *   get:
+ *     summary: Own account order stats (total order count, real net paid spend) — server-authoritative, not pagination-limited
+ *     tags: [Orders]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: "{ totalOrders, totalPaidSpend }"
+ */
+// NOTE: must be declared before /:id for the same reason as /all above.
+router.get('/stats', ctrl.getMyStats);
+
+/**
+ * @swagger
  * /orders/{id}:
  *   get:
  *     summary: Get single order (owner or admin)

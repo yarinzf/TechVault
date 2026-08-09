@@ -19,7 +19,7 @@ const emitter = require('../events/emitter');
 const EVENTS  = require('../events/events');
 const { getActiveDiscountMap, getActivePointsMultiplierMap } = require('./campaign.service');
 const pointsService = require('./points.service');
-const { POINTS_DEFAULT_RATE, POINTS_REDEMPTION_RATE } = require('../config/membership');
+const { POINTS_DEFAULT_RATE, POINTS_REDEMPTION_RATE, MEMBERSHIP_ITEM_TYPE } = require('../config/membership');
 
 // ─── Status transition rules ──────────────────────────────────────────────────
 const ALLOWED_TRANSITIONS = {
@@ -324,6 +324,59 @@ const listMyOrders = async (userId, query) => {
   return { orders, meta: paginateMeta(total, page, limit) };
 };
 
+// ─── Own account order stats — server-authoritative, not pagination-limited ──
+// Powers the Personal Area "Total Spent" / order-count statistic. Computed
+// entirely server-side via MongoDB aggregation (never by fetching every
+// order to the frontend and summing there) so it stays correct regardless
+// of how many orders a customer has.
+//
+// totalOrders: count of every order this user has ever placed, any status —
+// matches "complete order history", not filtered.
+//
+// totalPaidSpend: real net money actually collected and kept, i.e.
+//   sum over orders with paymentStatus in ('paid','partially_refunded','refunded')
+//   of (order.total - order.refundedAmount)
+// — unpaid/authorized/failed orders contribute nothing (no money was ever
+// collected); a fully refunded order's refundedAmount equals its total, so
+// it nets to exactly 0 without needing special-case handling; a partially
+// refunded order counts only the retained portion.
+//
+// Membership (Club) purchase orders are excluded — this stat is presented
+// under "Statistics" alongside order/favorites counts as a merchandise/
+// shopping-spend figure, and including the ₪20/₪200 subscription fee here
+// would conflate subscription revenue with shopping activity. Order count
+// is NOT similarly filtered — it still reflects every order (including
+// membership purchases), matching the pre-existing "Orders" stat's
+// long-standing meaning.
+const getMyOrderStats = async (userId) => {
+  const objectId = new mongoose.Types.ObjectId(userId);
+
+  const [totalOrders, spendAgg] = await Promise.all([
+    Order.countDocuments({ user: objectId }),
+    Order.aggregate([
+      {
+        $match: {
+          user: objectId,
+          paymentStatus: { $in: ['paid', 'partially_refunded', 'refunded'] },
+          'items.itemType': { $ne: MEMBERSHIP_ITEM_TYPE },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalPaidSpend: { $sum: { $subtract: ['$total', { $ifNull: ['$refundedAmount', 0] }] } },
+        },
+      },
+    ]),
+  ]);
+
+  const rawSpend = spendAgg[0]?.totalPaidSpend ?? 0;
+  return {
+    totalOrders,
+    totalPaidSpend: Math.max(0, Math.round(rawSpend * 100) / 100),
+  };
+};
+
 // ─── Get single order — Fix 5: owner or admin only ───────────────────────────
 const getOrder = async (orderId, userId, role) => {
   // Admins can fetch any order; users only their own
@@ -579,7 +632,7 @@ const listAllOrders = async (query) => {
 };
 
 module.exports = {
-  createOrder, listMyOrders, getOrder, cancelOrder, updateStatus, listAllOrders, getOrderTimeline,
+  createOrder, listMyOrders, getMyOrderStats, getOrder, cancelOrder, updateStatus, listAllOrders, getOrderTimeline,
   // Exported for reuse by membership.service.js — the membership checkout
   // flow creates an Order directly (bypassing Cart) but needs the same
   // collision-safe order number generator as the product checkout path.

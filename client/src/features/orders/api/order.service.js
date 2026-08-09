@@ -43,6 +43,15 @@ export const orderService = {
     }
   },
 
+  // Server-authoritative account stats ({ totalOrders, totalPaidSpend }) —
+  // deliberately does NOT fall back to MOCK_ORDERS-derived numbers on
+  // failure like listMine() does; a failed request must surface as a
+  // failure to the caller, never a fabricated statistic.
+  async getStats() {
+    const { data } = await api.get('/orders/stats');
+    return data;
+  },
+
   async getById(id) {
     try {
       const { data } = await api.get(`/orders/${id}`);
