@@ -157,6 +157,14 @@
 .clubTitle { font-size: 15px; font-weight: 700; color: var(--sv-text); margin-bottom: 4px; }
 .clubDesc { font-size: 12px; color: var(--sv-muted); }
 .clubDesc strong { color: var(--sv-success); font-weight: 600; }
+.clubCancelLink {
+  background: none; border: none; padding: 0; margin-top: 6px;
+  font-size: 11px; font-weight: 600; color: var(--sv-muted);
+  text-decoration: underline; cursor: pointer; font-family: var(--sv-font);
+}
+.clubCancelLink:hover { color: var(--sv-text); }
+.clubCancelLink:disabled { opacity: .6; cursor: not-allowed; }
+.clubCancelNote { font-size: 11px; color: var(--sv-muted); margin-top: 6px; }
 .clubCta {
   background: linear-gradient(135deg, var(--sv-blue), var(--sv-violet)); color: #fff; border: none;
   border-radius: 8px; padding: 9px 18px; font-size: 12px; font-weight: 700;

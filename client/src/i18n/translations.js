@@ -965,13 +965,22 @@ export const translations = {
 
     'profile.club_member_title':    'חברות TechVault VIP',
     'profile.club_plan_label':      'מסלול',
+    // "renews on" — reserved for once real recurring billing exists (see the
+    // Club/VIP recurring-billing audit report); not currently used anywhere,
+    // since no Stripe Subscription is ever created and nothing will really
+    // auto-charge yet. Do not use until that integration is real.
     'profile.club_renews_label':    'מתחדש ב-',
+    'profile.club_valid_until_label': 'בתוקף עד',
     'profile.club_points_label':    'נקודות',
     'profile.club_active':          'חברות פעילה',
     'profile.club_nonmember_title': 'עדיין לא חברים במועדון',
     'profile.club_nonmember_desc':  'הצטרפו החל מ-₪20 לחודש · 5% חזרה בנקודות ומחירי VIP',
     'profile.club_cta_details':     'לפרטי המועדון',
     'profile.club_cta_join':        'הצטרפות למועדון',
+    'profile.club_cancel_cta':      'ביטול חידוש אוטומטי',
+    'profile.club_cancel_confirm':  'לבטל את החידוש האוטומטי? תישארו חברי VIP עד תום התקופה הנוכחית ששולמה.',
+    'profile.club_cancel_success':  'החידוש האוטומטי בוטל',
+    'profile.club_autorenew_cancelled_note': 'החידוש האוטומטי בוטל — החברות בתוקף עד תום התקופה הנוכחית',
 
     'profile.recent_activity':      'פעילות אחרונה',
     'profile.loading':              'טוען…',
@@ -2852,13 +2861,20 @@ export const translations = {
 
     'profile.club_member_title':    'TechVault VIP Membership',
     'profile.club_plan_label':      'Plan:',
+    // "renews on" — reserved for once real recurring billing exists (see
+    // the Club/VIP recurring-billing audit report); not currently used.
     'profile.club_renews_label':    'Renews on',
+    'profile.club_valid_until_label': 'valid until',
     'profile.club_points_label':    'points',
     'profile.club_active':          'Active membership',
     'profile.club_nonmember_title': 'Not a Club Member Yet',
     'profile.club_nonmember_desc':  'Join from ₪20/month · 5% back in points and VIP pricing',
     'profile.club_cta_details':     'Club Details',
     'profile.club_cta_join':        'Join the Club',
+    'profile.club_cancel_cta':      'Cancel auto-renewal',
+    'profile.club_cancel_confirm':  "Cancel auto-renewal? You'll stay a VIP member until the end of your current paid period.",
+    'profile.club_cancel_success':  'Auto-renewal cancelled',
+    'profile.club_autorenew_cancelled_note': 'Auto-renewal cancelled — membership valid until the end of the current period',
 
     'profile.recent_activity':      'Recent Activity',
     'profile.loading':              'Loading…',

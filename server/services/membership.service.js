@@ -177,6 +177,14 @@ const activateMembershipForOrder = async ({ userId, orderId }) => {
   user.membership.startedAt = now;
   user.membership.expiresAt = expiresAt;
   if (!user.membership.joinedAt) user.membership.joinedAt = now; // first-ever join date — never overwritten again
+  // A real purchase is a fresh opt-in under the target auto-renew model —
+  // reset any prior cancellation so the new term starts with the default
+  // "will renew unless cancelled again" intent. See cancelAutoRenew below;
+  // note neither flag currently drives any real charge (see the schema
+  // comment on User.js#membershipSchema) — this is state bookkeeping only.
+  user.membership.autoRenew = true;
+  user.membership.cancelAtPeriodEnd = false;
+  user.membership.cancelledAt = null;
   await user.save();
 
   // Atomic, race-safe idempotency stamp — a concurrent replay of this same
@@ -191,6 +199,42 @@ const activateMembershipForOrder = async ({ userId, orderId }) => {
 // themselves. status/plan/points/lifetimePoints/expiresAt are never accepted
 // here — the validator upstream (membership.validator.js) doesn't even
 // parse them.
+// ─── Cancel auto-renewal — "Cancel Membership" ─────────────────────────────────
+// Deliberately NOT a refund and NOT an immediate deactivation. This only
+// records that the customer opted out of the NEXT renewal — expiresAt is
+// untouched, VIP access continues exactly through the current paid term,
+// same as e.g. Netflix/Disney+ cancellation. Idempotent: calling this again
+// while already cancelled is a safe no-op (cancelledAt keeps its original
+// timestamp).
+//
+// No payment-provider call happens here — there is nothing to cancel
+// provider-side yet (see the Club/VIP recurring-billing audit: no Stripe
+// Subscription object exists for this membership to begin with). Once real
+// recurring billing exists, this is also where the corresponding
+// stripe.subscriptions.update(..., { cancel_at_period_end: true }) call
+// would be made.
+const cancelAutoRenew = async (userId) => {
+  const user = await User.findById(userId);
+  if (!user) throw new AppError('User not found', StatusCodes.NOT_FOUND, 'USER_NOT_FOUND');
+
+  if (!isMembershipActive(user.membership)) {
+    throw new AppError(
+      'No active membership to cancel',
+      StatusCodes.BAD_REQUEST,
+      'NOT_A_MEMBER'
+    );
+  }
+
+  if (!user.membership.cancelAtPeriodEnd) {
+    user.membership.autoRenew = false;
+    user.membership.cancelAtPeriodEnd = true;
+    user.membership.cancelledAt = new Date();
+    await user.save();
+  }
+
+  return user;
+};
+
 const updateNotificationPreference = async (userId, notificationPreference) => {
   const user = await User.findByIdAndUpdate(
     userId,
@@ -206,4 +250,5 @@ module.exports = {
   activateMembershipForOrder,
   orderContainsMembership,
   updateNotificationPreference,
+  cancelAutoRenew,
 };

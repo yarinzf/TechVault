@@ -779,3 +779,116 @@ describe('Membership TERM model (monthly/annual, no auto-renewal)', () => {
     expect(second.some(r => String(r.email) === String(user.email))).toBe(false);
   });
 });
+
+// ── Auto-renew cancellation semantics (state-only — no real recurring billing
+// exists yet; see the Club/VIP recurring-billing audit report) ────────────────
+describe('POST /membership/cancel — cancel-at-period-end (Netflix-style, not immediate)', () => {
+  it('a real purchase defaults to autoRenew:true, cancelAtPeriodEnd:false', async () => {
+    const { accessToken, user } = await registerAndLogin();
+    const checkoutRes = await request(app)
+      .post(`${MEMBERSHIP}/checkout`).set('Authorization', `Bearer ${accessToken}`).send({ plan: 'monthly' });
+    await payOrder(accessToken, checkoutRes.body.data.order._id);
+
+    const User = mongoose.model('User');
+    const fresh = await User.findById(user._id);
+    expect(fresh.membership.autoRenew).toBe(true);
+    expect(fresh.membership.cancelAtPeriodEnd).toBe(false);
+    expect(fresh.membership.cancelledAt).toBeNull();
+  });
+
+  it('cancelling disables autoRenew and sets cancelAtPeriodEnd, but does NOT change expiresAt or deactivate the member', async () => {
+    const { accessToken, user } = await registerAndLogin();
+    const checkoutRes = await request(app)
+      .post(`${MEMBERSHIP}/checkout`).set('Authorization', `Bearer ${accessToken}`).send({ plan: 'monthly' });
+    await payOrder(accessToken, checkoutRes.body.data.order._id);
+
+    const User = mongoose.model('User');
+    const before = await User.findById(user._id);
+    const expiresAtBefore = before.membership.expiresAt.toISOString();
+
+    const cancelRes = await request(app).post(`${MEMBERSHIP}/cancel`).set('Authorization', `Bearer ${accessToken}`);
+    expect(cancelRes.status).toBe(200);
+
+    const after = await User.findById(user._id);
+    expect(after.membership.autoRenew).toBe(false);
+    expect(after.membership.cancelAtPeriodEnd).toBe(true);
+    expect(after.membership.cancelledAt).not.toBeNull();
+    expect(after.membership.expiresAt.toISOString()).toBe(expiresAtBefore); // untouched
+    expect(after.membership.status).toBe('active'); // still active — VIP benefits continue
+
+    const { isMembershipActive } = require('../server/models/User');
+    expect(isMembershipActive(after.membership)).toBe(true);
+  });
+
+  it('is idempotent — cancelling twice keeps the original cancelledAt timestamp', async () => {
+    const { accessToken, user } = await registerAndLogin();
+    const checkoutRes = await request(app)
+      .post(`${MEMBERSHIP}/checkout`).set('Authorization', `Bearer ${accessToken}`).send({ plan: 'monthly' });
+    await payOrder(accessToken, checkoutRes.body.data.order._id);
+
+    await request(app).post(`${MEMBERSHIP}/cancel`).set('Authorization', `Bearer ${accessToken}`);
+    const User = mongoose.model('User');
+    const firstCancelledAt = (await User.findById(user._id)).membership.cancelledAt.toISOString();
+
+    await new Promise(r => setTimeout(r, 10));
+    const second = await request(app).post(`${MEMBERSHIP}/cancel`).set('Authorization', `Bearer ${accessToken}`);
+    expect(second.status).toBe(200);
+    const secondCancelledAt = (await User.findById(user._id)).membership.cancelledAt.toISOString();
+    expect(secondCancelledAt).toBe(firstCancelledAt);
+  });
+
+  it('rejects cancellation for a user with no active membership', async () => {
+    const { accessToken } = await registerAndLogin(); // never purchased
+    const res = await request(app).post(`${MEMBERSHIP}/cancel`).set('Authorization', `Bearer ${accessToken}`);
+    expect(res.status).toBe(400);
+    expect(res.body.error.code).toBe('NOT_A_MEMBER');
+  });
+
+  it('rejects cancellation for an already-expired membership', async () => {
+    const { accessToken, user } = await registerAndLogin();
+    const User = mongoose.model('User');
+    await User.findByIdAndUpdate(user._id, {
+      $set: {
+        'membership.status': 'active', 'membership.plan': 'monthly',
+        'membership.expiresAt': new Date(Date.now() - 86400000), // yesterday
+      },
+    });
+    const res = await request(app).post(`${MEMBERSHIP}/cancel`).set('Authorization', `Bearer ${accessToken}`);
+    expect(res.status).toBe(400);
+    expect(res.body.error.code).toBe('NOT_A_MEMBER');
+  });
+
+  it('a fresh renewal purchase after cancellation resets autoRenew:true and clears cancelAtPeriodEnd', async () => {
+    const { accessToken, user } = await registerAndLogin();
+    const checkoutRes = await request(app)
+      .post(`${MEMBERSHIP}/checkout`).set('Authorization', `Bearer ${accessToken}`).send({ plan: 'monthly' });
+    await payOrder(accessToken, checkoutRes.body.data.order._id);
+    await request(app).post(`${MEMBERSHIP}/cancel`).set('Authorization', `Bearer ${accessToken}`);
+
+    const User = mongoose.model('User');
+    expect((await User.findById(user._id)).membership.cancelAtPeriodEnd).toBe(true);
+
+    // Customer decides to renew again before expiry — a fresh real purchase
+    // represents a new opt-in under the target auto-renew model.
+    const renewRes = await request(app)
+      .post(`${MEMBERSHIP}/checkout`).set('Authorization', `Bearer ${accessToken}`).send({ plan: 'monthly' });
+    await payOrder(accessToken, renewRes.body.data.order._id);
+
+    const fresh = await User.findById(user._id);
+    expect(fresh.membership.autoRenew).toBe(true);
+    expect(fresh.membership.cancelAtPeriodEnd).toBe(false);
+    expect(fresh.membership.cancelledAt).toBeNull();
+  });
+
+  it('membership.providerCustomerId/providerSubscriptionId stay null — no real Stripe Customer/Subscription is ever created by this flow', async () => {
+    const { accessToken, user } = await registerAndLogin();
+    const checkoutRes = await request(app)
+      .post(`${MEMBERSHIP}/checkout`).set('Authorization', `Bearer ${accessToken}`).send({ plan: 'annual' });
+    await payOrder(accessToken, checkoutRes.body.data.order._id);
+
+    const User = mongoose.model('User');
+    const fresh = await User.findById(user._id);
+    expect(fresh.membership.providerCustomerId).toBeNull();
+    expect(fresh.membership.providerSubscriptionId).toBeNull();
+  });
+});

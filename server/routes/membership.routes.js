@@ -22,4 +22,7 @@ router.patch(
   ctrl.updateNotificationPreference
 );
 
+// Opts out of the next renewal only — no request body needed.
+router.post('/cancel', ctrl.cancel);
+
 module.exports = router;

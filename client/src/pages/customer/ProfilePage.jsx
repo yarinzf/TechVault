@@ -48,21 +48,30 @@ function PersonalDashboard({ user, refreshProfile, toast, onOpenAddresses, onOpe
   const [form, setForm] = useState(() => splitName(user?.name));
   const [phone, setPhone] = useState(user?.phone ?? '');
   const [saving, setSaving] = useState(false);
+  const [cancellingMembership, setCancellingMembership] = useState(false);
 
   const [stats, setStats] = useState({ orderCount: null, totalSpent: null });
   const [activity, setActivity] = useState({ loading: true, orders: [] });
 
+  // Total Spent / order count come from the server-authoritative
+  // GET /orders/stats aggregation (real net paid spend across the user's
+  // COMPLETE order history) — never derived from a paginated order fetch,
+  // which would silently under-report once a customer has more orders than
+  // a single page. The activity feed below only ever needs the 3 most
+  // recent orders, fetched separately and cheaply.
   useEffect(() => {
     let cancelled = false;
-    orderService.listMine({ limit: 100 }).then(({ orders, meta }) => {
+    orderService.getStats().then(({ totalOrders, totalPaidSpend }) => {
       if (cancelled) return;
-      const paidTotal = (orders || [])
-        .filter(o => o.paymentStatus === 'paid')
-        .reduce((sum, o) => sum + (o.total || 0), 0);
-      setStats({ orderCount: meta?.total ?? orders.length, totalSpent: paidTotal });
-      setActivity({ loading: false, orders: (orders || []).slice(0, 3) });
+      setStats({ orderCount: totalOrders, totalSpent: totalPaidSpend });
     }).catch(() => {
-      if (!cancelled) { setStats({ orderCount: 0, totalSpent: 0 }); setActivity({ loading: false, orders: [] }); }
+      if (!cancelled) setStats({ orderCount: 0, totalSpent: 0 });
+    });
+    orderService.listMine({ limit: 3 }).then(({ orders }) => {
+      if (cancelled) return;
+      setActivity({ loading: false, orders: orders || [] });
+    }).catch(() => {
+      if (!cancelled) setActivity({ loading: false, orders: [] });
     });
     return () => { cancelled = true; };
   }, []);
@@ -87,6 +96,23 @@ function PersonalDashboard({ user, refreshProfile, toast, onOpenAddresses, onOpe
       toast.error(err.message || t('profile.update_failed'));
     } finally {
       setSaving(false);
+    }
+  };
+
+  // Opts out of the next renewal only — the current paid term (expiresAt)
+  // is untouched, VIP access continues unchanged. See
+  // server/services/membership.service.js#cancelAutoRenew.
+  const handleCancelMembership = async () => {
+    if (!window.confirm(t('profile.club_cancel_confirm'))) return;
+    setCancellingMembership(true);
+    try {
+      await membershipService.cancel();
+      await refreshProfile();
+      toast.success(t('profile.club_cancel_success'));
+    } catch (err) {
+      toast.error(err.message || t('profile.update_failed'));
+    } finally {
+      setCancellingMembership(false);
     }
   };
 
@@ -255,12 +281,30 @@ function PersonalDashboard({ user, refreshProfile, toast, onOpenAddresses, onOpe
               <div className={s.clubDesc}>
                 {formatPlanLabel(membership.plan, language) && (
                   <>{t('profile.club_plan_label')} {formatPlanLabel(membership.plan, language)}
-                    {membership.expiresAt && <> · {t('profile.club_renews_label')} {formatExpiryDate(membership.expiresAt, language)}</>}
+                    {/* No real recurring billing exists yet (no Stripe Customer/
+                        Subscription is ever created — see the Club/VIP
+                        recurring-billing audit report), so this always reads
+                        "valid until", never "renews on" — the only claim that's
+                        actually true regardless of the autoRenew/
+                        cancelAtPeriodEnd flags. */}
+                    {membership.expiresAt && <> · {t('profile.club_valid_until_label')} {formatExpiryDate(membership.expiresAt, language)}</>}
                     <br />
                   </>
                 )}
                 {membership.points.toLocaleString()} {t('profile.club_points_label')} · <strong>✔ {t('profile.club_active')}</strong>
               </div>
+              {membership.cancelAtPeriodEnd ? (
+                <div className={s.clubCancelNote}>{t('profile.club_autorenew_cancelled_note')}</div>
+              ) : (
+                <button
+                  type="button"
+                  className={s.clubCancelLink}
+                  onClick={handleCancelMembership}
+                  disabled={cancellingMembership}
+                >
+                  {cancellingMembership ? t('profile.saving') : t('profile.club_cancel_cta')}
+                </button>
+              )}
             </>
           ) : (
             <>

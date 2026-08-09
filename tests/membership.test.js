@@ -92,6 +92,11 @@ describe('Legacy documents without a membership field', () => {
       points: 0,
       lifetimePoints: 0,
       notificationPreference: 'none',
+      autoRenew: true,
+      cancelAtPeriodEnd: false,
+      cancelledAt: null,
+      providerCustomerId: null,
+      providerSubscriptionId: null,
     });
   });
 

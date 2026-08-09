@@ -27,4 +27,14 @@ const updateNotificationPreference = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
-module.exports = { checkout, updateNotificationPreference };
+// ── POST /api/v1/membership/cancel ─────────────────────────────────────────────
+// Opts out of the next renewal only — does not touch the current expiresAt
+// or deactivate anything now. See membershipService.cancelAutoRenew.
+const cancel = async (req, res, next) => {
+  try {
+    const user = await membershipService.cancelAutoRenew(req.user._id);
+    sendSuccess(res, { user }, 'Auto-renewal cancelled');
+  } catch (err) { next(err); }
+};
+
+module.exports = { checkout, updateNotificationPreference, cancel };

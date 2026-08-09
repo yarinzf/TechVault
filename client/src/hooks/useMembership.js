@@ -9,6 +9,9 @@ const DEFAULT_MEMBERSHIP = {
   points: 0,
   lifetimePoints: 0,
   notificationPreference: 'none',
+  autoRenew: true,
+  cancelAtPeriodEnd: false,
+  cancelledAt: null,
 };
 
 // Single source of truth for "is this user a TechVault Club member" — derived
@@ -34,6 +37,9 @@ export function useMembership() {
     points: membership.points ?? 0,
     lifetimePoints: membership.lifetimePoints ?? 0,
     notificationPreference: membership.notificationPreference ?? 'none',
+    autoRenew: membership.autoRenew ?? true,
+    cancelAtPeriodEnd: membership.cancelAtPeriodEnd ?? false,
+    cancelledAt: membership.cancelledAt ?? null,
     loading,
   };
 }

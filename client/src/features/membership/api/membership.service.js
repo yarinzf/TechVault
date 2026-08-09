@@ -28,4 +28,11 @@ export const membershipService = {
     const { data } = await api.patch('/membership/notification-preference', { notificationPreference });
     return data?.user ?? data;
   },
+
+  // Opts out of the next renewal only — does not change expiresAt or
+  // deactivate anything now. See server/services/membership.service.js#cancelAutoRenew.
+  async cancel() {
+    const { data } = await api.post('/membership/cancel', {});
+    return data?.user ?? data;
+  },
 };

@@ -71,6 +71,29 @@ const membershipSchema = new mongoose.Schema(
       },
       default: 'none',
     },
+
+    // ── Subscription-lifecycle state (prep for real recurring billing) ──────
+    // NONE of these fields cause any real charge to happen — no cron, no
+    // webhook, no scheduled job currently reads or acts on them. They exist
+    // so the target "Netflix-style" auto-renew business model (see
+    // membership.service.js#cancelAutoRenew and the Club/VIP recurring-
+    // billing audit report) has somewhere truthful to record customer
+    // intent ahead of the real Stripe Subscription integration described
+    // there. Until that integration exists, the frontend must never display
+    // these as if a real renewal will happen — see
+    // client ProfilePage club banner wording.
+    autoRenew: { type: Boolean, default: true }, // customer's default intent under the target model; not yet acted on by any real billing process
+    cancelAtPeriodEnd: { type: Boolean, default: false }, // true once the customer has opted out of the next renewal — see cancelAutoRenew
+    cancelledAt: { type: Date, default: null }, // when cancelAtPeriodEnd was last set true
+
+    // Stripe Customer / Subscription ids — always null today. No Customer
+    // object is ever created (payment.service.js/stripe.provider.js only
+    // ever call paymentIntents.create with no `customer` param), and no
+    // Subscription object exists anywhere in this codebase. Reserved so a
+    // future real integration has a place to store them without another
+    // schema migration.
+    providerCustomerId:     { type: String, default: null },
+    providerSubscriptionId: { type: String, default: null },
   },
   { _id: false }
 );
@@ -84,6 +107,11 @@ const DEFAULT_MEMBERSHIP = Object.freeze({
   points: 0,
   lifetimePoints: 0,
   notificationPreference: 'none',
+  autoRenew: true,
+  cancelAtPeriodEnd: false,
+  cancelledAt: null,
+  providerCustomerId: null,
+  providerSubscriptionId: null,
 });
 
 // Single source of truth for "is this membership document CURRENTLY VIP" —
