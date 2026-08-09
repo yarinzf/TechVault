@@ -4,7 +4,18 @@ const mongoose = require('mongoose');
 
 const campaignSchema = new mongoose.Schema(
   {
+    // Internal identifier — shown to admins (campaign lists, the production-
+    // curation idempotency marker), NEVER rendered as customer-facing copy.
     name:            { type: String, required: true, trim: true, maxlength: 100 },
+
+    // Customer-facing display copy — deliberately separate from `name`, same
+    // single-string-no-locale-split convention as Product.name (this is a
+    // HE-first storefront; admins author these in Hebrew). Both optional:
+    // when a campaign has no `title`, the storefront falls back to a safe
+    // generic label and never displays the internal `name` to a customer.
+    title:           { type: String, trim: true, maxlength: 150 },
+    description:     { type: String, trim: true, maxlength: 300 },
+
     discountPercent: { type: Number, required: true, min: 1, max: 90 },
     startDate:       { type: Date, required: true },
     endDate:         { type: Date, required: true },

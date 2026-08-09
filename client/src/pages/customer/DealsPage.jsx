@@ -70,17 +70,15 @@ function CountdownBlocks({ secs, size = 'lg' }) {
   );
 }
 
-// One-time production storefront curation (server/scripts/curateProductionStorefront.js)
-// tags every campaign it creates with this fixed prefix so a second run can
-// detect existing curated campaigns (idempotency) — it's an internal marker,
-// never meant to reach a shopper. Strips it (and the optional " — <tag>"
-// segment right after it) so the Hero only ever shows the real, friendly
-// deal name that was always the last segment of the tagged string.
-const CURATION_NAME_PREFIX = /^Production Curation 2026\s*—\s*/;
-function displayCampaignName(rawName) {
-  if (!rawName || !CURATION_NAME_PREFIX.test(rawName)) return rawName;
-  const segments = rawName.split(' — ');
-  return segments[segments.length - 1];
+// `campaign.name` is the internal/admin identifier (admin lists, the
+// production-curation idempotency marker) — it must NEVER be shown to a
+// customer, under any fallback path. `title` is the real customer-facing
+// field (see server/models/Campaign.js); a campaign without one shows a
+// safe, generic, translated label instead — never a derivative of `name`,
+// since there's no reliable way to detect every possible internal-naming
+// convention (QA markers, staging tags, etc.) an admin might type into it.
+function getHeroTitle(t, campaign) {
+  return campaign.title || t('deals.hero_generic_title');
 }
 
 // ── Hero — the single featured active campaign ──────────────────────────────
@@ -115,9 +113,11 @@ function DealsHero({ campaign, product }) {
           </div>
           <h2 className={s.heroTitle}>
             {t('deals.hero_up_to')} <span>{campaign.discountPercent}% {t('deals.hero_off')}</span>
-            <br />{displayCampaignName(campaign.name)}
+            <br />{getHeroTitle(t, campaign)}
           </h2>
-          {product.category?.name && <p className={s.heroSub}>{product.category.name}</p>}
+          {(campaign.description || product.category?.name) && (
+            <p className={s.heroSub}>{campaign.description || product.category.name}</p>
+          )}
           <button className={s.heroCta} onClick={() => navigate(ctaHref)}>
             <ShoppingCart size={16} /> {t('deals.hero_cta')}
           </button>
@@ -344,7 +344,10 @@ export default function DealsPage() {
       c.products.forEach((p) => {
         const existing = map.get(p.id);
         if (!existing || p.discountPercent > existing.discountPercent) {
-          map.set(p.id, { ...p, campaignId: c.id, campaignName: c.name, campaignEndDate: c.endDate });
+          // campaignId/campaignEndDate only — campaign.name is the internal
+          // identifier and is never carried onto a customer-facing object,
+          // so it can't accidentally end up rendered anywhere downstream.
+          map.set(p.id, { ...p, campaignId: c.id, campaignEndDate: c.endDate });
         }
       });
     });

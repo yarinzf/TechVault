@@ -26,8 +26,15 @@ const membershipOnly      = Joi.boolean();
 const pointsMultiplier    = Joi.number().min(1).max(10);
 const vipEarlyAccessHours = Joi.number().integer().min(0).max(168);
 
+// Customer-facing display copy — see Campaign.js. Optional on both create
+// and update; the storefront falls back to a safe generic label when absent.
+const title       = Joi.string().trim().max(150).allow('');
+const description = Joi.string().trim().max(300).allow('');
+
 const createCampaignSchema = Joi.object({
   name:            Joi.string().trim().min(1).max(100).required(),
+  title:           title.optional(),
+  description:     description.optional(),
   discountPercent: Joi.number().integer().min(1).max(90).required(),
   startDate:       Joi.date().iso().required(),
   endDate:         Joi.date().iso().greater(Joi.ref('startDate')).required()
@@ -42,6 +49,8 @@ const createCampaignSchema = Joi.object({
 
 const updateCampaignSchema = Joi.object({
   name:            Joi.string().trim().min(1).max(100).optional(),
+  title:           title.optional(),
+  description:     description.optional(),
   discountPercent: Joi.number().integer().min(1).max(90).optional(),
   startDate:       Joi.date().iso().optional(),
   endDate:         Joi.date().iso().optional(),

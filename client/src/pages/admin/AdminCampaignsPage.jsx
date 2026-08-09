@@ -472,6 +472,8 @@ function CreateEditModal({ campaign, onSave, closeModal }) {
     const isCreate = campaign == null;
     const [form, setForm] = useState({
         name:            campaign?.name     ?? '',
+        title:           campaign?.title       ?? '',
+        description:     campaign?.description ?? '',
         discountPercent: campaign?.discount ?? '',
         startDate:       toDateTimeLocal(campaign?.startDate),
         endDate:         toDateTimeLocal(campaign?.endDate),
@@ -559,6 +561,11 @@ function CreateEditModal({ campaign, onSave, closeModal }) {
         try {
             await onSave({
                 name:            form.name.trim(),
+                // Optional customer-facing fields — always sent (even '') so
+                // clearing one back to blank actually unsets it server-side,
+                // restoring the storefront's generic fallback title.
+                title:           form.title.trim(),
+                description:     form.description.trim(),
                 discountPercent: Number(form.discountPercent),
                 startDate:       fromDateTimeLocalToIso(form.startDate),
                 endDate:         fromDateTimeLocalToIso(form.endDate),
@@ -597,7 +604,35 @@ function CreateEditModal({ campaign, onSave, closeModal }) {
                         </div>
                     )}
 
-                    <ControlledInput label={t('admin.campaigns.name_label')} value={form.name} onChange={handle('name')} placeholder={t('admin.campaigns.name_ph')} required />
+                    <div>
+                        <ControlledInput label={t('admin.campaigns.name_label')} value={form.name} onChange={handle('name')} placeholder={t('admin.campaigns.name_ph')} required />
+                        <p className="text-xs text-muted-foreground mt-1">{t('admin.campaigns.name_hint')}</p>
+                    </div>
+
+                    <div className="pt-1 pb-1">
+                        <div className="flex items-center gap-2">
+                            <span className="h-px flex-1 bg-border" />
+                            <span className="text-xs text-muted-foreground whitespace-nowrap">{t('admin.campaigns.customer_display_section')}</span>
+                            <span className="h-px flex-1 bg-border" />
+                        </div>
+                    </div>
+
+                    <div>
+                        <ControlledInput label={t('admin.campaigns.title_label')} value={form.title} onChange={handle('title')} placeholder={t('admin.campaigns.title_ph')} />
+                        <p className="text-xs text-muted-foreground mt-1">{t('admin.campaigns.title_hint')}</p>
+                    </div>
+
+                    <div>
+                        <label className="block text-xs text-muted-foreground mb-2">{t('admin.campaigns.description_label')}</label>
+                        <textarea
+                            value={form.description}
+                            onChange={handle('description')}
+                            placeholder={t('admin.campaigns.description_ph')}
+                            rows={2}
+                            className="w-full bg-input-background border border-border rounded-lg px-4 py-2.5 text-foreground focus:border-[#2563eb] focus:outline-none transition-colors resize-none"
+                        />
+                    </div>
+
                     <ControlledInput label={t('admin.campaigns.discount_label')} type="number" min="1" max="90" value={form.discountPercent} onChange={handle('discountPercent')} placeholder="1-90" required icon={Percent} />
                     <div className="grid grid-cols-2 gap-3">
                         <ControlledInput label={t('admin.campaigns.start_date')} type="datetime-local" value={form.startDate} onChange={handle('startDate')} required small />

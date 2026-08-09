@@ -664,9 +664,40 @@ describe('GET /campaigns/club-summary', () => {
 
     const res = await request(app).get('/api/v1/campaigns/club-summary'); // no auth at all
     expect(res.status).toBe(200);
-    expect(res.body.data.pointsCampaign.name).toBe('Public 2x Points');
+    // pointsCampaign.name (the internal/admin identifier, 'Public 2x
+    // Points' here) must never reach this public response — title is the
+    // real customer-facing field, null since this campaign was created
+    // without one (see the dedicated leak test below for the title case).
+    expect(res.body.data.pointsCampaign).not.toHaveProperty('name');
+    expect(res.body.data.pointsCampaign.title).toBeNull();
     expect(res.body.data.pointsCampaign.pointsMultiplier).toBe(2);
     expect(res.body.data.vipDeals).toEqual([]); // never exposed to a guest, even though a real VIP deal exists
+  });
+
+  it('pointsCampaign.title reflects the real customer-facing title, never the internal name, and vipDeals never carry a campaign name either', async () => {
+    const product = await seedProduct({ price: 1000 });
+    const Campaign = mongoose.model('Campaign');
+    await Campaign.create({
+      name: 'LOCAL-QA-INTERNAL-MARKER — do not show this', discountPercent: 5,
+      startDate: new Date(Date.now() - 86400000), endDate: new Date(Date.now() + 86400000),
+      isActive: true, products: [product._id], pointsMultiplier: 2,
+      title: 'פי 2 נקודות על מוצרים נבחרים',
+    });
+    await Campaign.create({
+      name: 'LOCAL-QA-VIP-INTERNAL-MARKER', discountPercent: 15,
+      startDate: new Date(Date.now() - 86400000), endDate: new Date(Date.now() + 86400000),
+      isActive: true, products: [product._id], membershipOnly: true,
+    });
+
+    const { accessToken, user } = await registerAndLogin({ email: 'pv-club-summary-title@example.com' });
+    await makeMember(user._id);
+
+    const res = await request(app).get('/api/v1/campaigns/club-summary').set('Authorization', `Bearer ${accessToken}`);
+    expect(res.body.data.pointsCampaign.title).toBe('פי 2 נקודות על מוצרים נבחרים');
+    expect(res.body.data.vipDeals).toHaveLength(1);
+    expect(res.body.data.vipDeals[0]).not.toHaveProperty('campaignName');
+    expect(JSON.stringify(res.body.data)).not.toContain('LOCAL-QA-INTERNAL-MARKER');
+    expect(JSON.stringify(res.body.data)).not.toContain('LOCAL-QA-VIP-INTERNAL-MARKER');
   });
 
   it('a VIP member sees real vipDeals with the correct discounted VIP price', async () => {

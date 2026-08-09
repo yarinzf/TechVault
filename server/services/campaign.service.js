@@ -320,7 +320,10 @@ const getActiveWeeklyDeal = async () => {
 
   return {
     campaignId:      String(campaign._id),
-    campaignTitle:   campaign.name,
+    // The real customer-facing title (never campaign.name, the internal/
+    // admin identifier) — null when unset, and the frontend already treats
+    // a falsy campaignTitle as "omit this badge segment" (HomePage.jsx).
+    campaignTitle:   campaign.title ?? null,
     startDate:       new Date(campaign.startDate).toISOString(),
     endDate:         new Date(campaign.endDate).toISOString(),
     discountPercent: campaign.discountPercent,
@@ -379,7 +382,11 @@ const getActiveCampaigns = async () => {
 
       return {
         id:              String(c._id),
-        name:            c.name,
+        // c.name is the internal/admin identifier — deliberately never
+        // included in this public response; title/description below are
+        // the real customer-facing fields.
+        title:           c.title ?? null,
+        description:     c.description ?? null,
         discountPercent: c.discountPercent,
         startDate:       new Date(c.startDate).toISOString(),
         endDate:         new Date(c.endDate).toISOString(),
@@ -441,7 +448,8 @@ const getVipExclusiveDeals = async (limit = 3) => {
       if (!p) continue;
       deals.push({
         campaignId: String(c._id),
-        campaignName: c.name,
+        // campaign.name is the internal/admin identifier — deliberately
+        // never included in this public response.
         id: String(p._id),
         name: p.name,
         slug: p.slug,
@@ -485,7 +493,10 @@ const getActivePointsCampaign = async ({ isMember = false } = {}) => {
 
   return {
     id: String(campaign._id),
-    name: campaign.name,
+    // campaign.name is the internal/admin identifier — deliberately never
+    // included in this public response; title is the real customer-facing
+    // field, with a safe generic fallback rendered client-side when absent.
+    title: campaign.title ?? null,
     pointsMultiplier: campaign.pointsMultiplier,
     endDate: campaign.endDate,
   };

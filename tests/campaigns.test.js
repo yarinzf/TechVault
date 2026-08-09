@@ -79,6 +79,7 @@ function weeklyDealPayload(productId, overrides = {}) {
     endDate:         (overrides.endDate ?? inDays(6)).toISOString(),
     products:        [productId],
     placement:       'homepage_weekly_deal',
+    ...(overrides.title !== undefined ? { title: overrides.title } : {}),
   };
 }
 
@@ -426,7 +427,10 @@ describe('GET /api/v1/campaigns/weekly-deal (public)', () => {
     expect(res.status).toBe(200);
     const { deal } = res.body.data;
     expect(deal).not.toBeNull();
-    expect(deal.campaignTitle).toBe('This Week Deal');
+    // campaignTitle reflects the real customer-facing `title` field, never
+    // the internal `name` ('This Week Deal' above) — null here since this
+    // campaign was created without one.
+    expect(deal.campaignTitle).toBeNull();
     expect(deal.discountPercent).toBe(25);
     expect(deal.product.id).toBe(product._id.toString());
     expect(deal.product.name).toBe('RTX Card');
@@ -440,6 +444,20 @@ describe('GET /api/v1/campaigns/weekly-deal (public)', () => {
     expect(deal).not.toHaveProperty('__v');
     expect(deal).not.toHaveProperty('isActive');
     expect(deal.product).not.toHaveProperty('products');
+  });
+
+  test('campaignTitle reflects the real customer-facing title, never the internal name, when one is set', async () => {
+    const token = await adminToken();
+    const product = await seedProduct({ name: 'RTX Card', price: 1000 });
+    await request(app).post(ADMIN_BASE).set('Authorization', `Bearer ${token}`)
+      .send(weeklyDealPayload(product._id.toString(), {
+        name: 'LOCAL-QA-INTERNAL-MARKER — do not show this',
+        title: 'עד 30% הנחה על כרטיסי מסך נבחרים',
+      }));
+
+    const res = await request(app).get(`${PUBLIC_BASE}/weekly-deal`);
+    expect(res.body.data.deal.campaignTitle).toBe('עד 30% הנחה על כרטיסי מסך נבחרים');
+    expect(JSON.stringify(res.body.data)).not.toContain('LOCAL-QA-INTERNAL-MARKER');
   });
 
   test('24. product becoming unpublished after creation causes { deal: null }', async () => {
@@ -601,7 +619,12 @@ describe('GET /api/v1/campaigns/active (public)', () => {
     expect(res.status).toBe(200);
     expect(res.body.data.campaigns).toHaveLength(1);
     const [campaign] = res.body.data.campaigns;
-    expect(campaign.name).toBe('Live Campaign');
+    // campaign.name (the internal/admin identifier) is deliberately never
+    // part of this public response — title/description are the real
+    // customer-facing fields, null here since standardPayload doesn't set one.
+    expect(campaign).not.toHaveProperty('name');
+    expect(campaign.title).toBeNull();
+    expect(campaign.description).toBeNull();
     expect(campaign.discountPercent).toBe(30);
     expect(campaign.products).toHaveLength(1);
     const [p] = campaign.products;
@@ -692,6 +715,9 @@ describe('GET /api/v1/campaigns/active (public)', () => {
     expect(campaign).not.toHaveProperty('__v');
     expect(campaign).not.toHaveProperty('updatedAt');
     expect(campaign).not.toHaveProperty('createdAt');
+    // The internal/admin identifier must never reach a customer-facing
+    // response — see server/services/campaign.service.js#getActiveCampaigns.
+    expect(campaign).not.toHaveProperty('name');
   });
 });
 

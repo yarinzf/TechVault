@@ -38,7 +38,22 @@ const app = express();
 
 // ─── Trust proxy (nginx / Docker reverse proxy) ─────────────────────────────
 // Required for correct req.ip, X-Forwarded-Proto awareness, and secure cookies.
-app.set('trust proxy', 1);
+//
+// Production has TWO reverse-proxy hops between the browser and this process:
+//   browser -> host Nginx (devops/nginx/techvault.conf, TLS termination)
+//           -> frontend container's Nginx (client/nginx.conf, /api -> backend:5000)
+//           -> this Express app
+// Both hops append themselves to X-Forwarded-For, so Express must trust 2 hops
+// to correctly peel back to the real client IP. Trusting only 1 (the previous
+// setting) resolved req.ip to the frontend container's internal proxy address
+// instead — identical for every visitor — which made IP-keyed rate limiting
+// (authLimiter, etc.) share a single bucket across all of production traffic
+// instead of one bucket per real visitor.
+// Local dev has zero proxies in front of Express (the browser calls
+// http://localhost:5000 directly), so there's no X-Forwarded-For header to
+// evaluate and this setting is a no-op there — req.ip just falls back to the
+// direct socket address either way.
+app.set('trust proxy', 2);
 app.disable('x-powered-by');
 
 // ─── Correlation ID — must be first so every layer has req.correlationId ─────

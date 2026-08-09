@@ -79,7 +79,9 @@ function CampaignCard({ t, pointsCampaign, navigate }) {
           <span className={s.campaignBadge}>{t('club.page.campaign_badge')}</span>
           <div className={s.campaignEyebrow}>{t('club.page.campaign_title')}</div>
           <div className={s.campaignName}>
-            {t('club.page.campaign_active_name').replace('{multiplier}', pointsCampaign.pointsMultiplier).replace('{name}', pointsCampaign.name)}
+            {pointsCampaign.title
+              ? t('club.page.campaign_active_name').replace('{multiplier}', pointsCampaign.pointsMultiplier).replace('{name}', pointsCampaign.title)
+              : t('club.page.campaign_active_name_generic').replace('{multiplier}', pointsCampaign.pointsMultiplier)}
           </div>
           <p className={s.campaignDesc}>{t('club.page.campaign_active_desc')}</p>
           <button className={s.campaignCta} onClick={() => navigate('/deals')}>
