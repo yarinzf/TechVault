@@ -1,0 +1,44 @@
+.btnPrimary {
+  display: flex; align-items: center; gap: 6px;
+  padding: 9px 16px; border-radius: 9px; font-size: 12px; font-weight: 700;
+  background: var(--sv-blue); border: 1px solid var(--sv-blue); color: #fff;
+  cursor: pointer; font-family: var(--sv-font); transition: background 0.15s;
+}
+.btnPrimary:hover { background: var(--sv-blue-dk); }
+.btnPrimary:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.btnSecondary {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 13px; border-radius: 9px; font-size: 11.5px; font-weight: 600;
+  background: none; border: 1px solid var(--sv-border); color: var(--sv-muted);
+  cursor: pointer; font-family: var(--sv-font); transition: all 0.15s;
+}
+.btnSecondary:hover { border-color: rgba(37, 99, 235, 0.3); color: var(--sv-blue-l); }
+.btnSecondary:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.overlay {
+  position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); z-index: 1000;
+  display: flex; align-items: center; justify-content: center; padding: 16px;
+}
+.modal {
+  background: var(--sv-card); border: 1px solid var(--sv-border); border-radius: 14px;
+  width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; padding: 24px;
+}
+.modalHeader { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+.modalTitle { font-size: 18px; font-weight: 700; color: var(--sv-text); }
+.modalClose {
+  font-size: 18px; color: var(--sv-muted); padding: 4px 8px;
+  background: none; border: none; cursor: pointer; transition: color 0.18s;
+}
+.modalClose:hover { color: var(--sv-text); }
+.modalSection { margin-bottom: 20px; }
+.modalSectionTitle {
+  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+  color: var(--sv-muted); margin-bottom: 12px;
+}
+.modalItemIcon {
+  width: 48px; height: 48px; border-radius: 10px; background: var(--sv-surface); border: 1px solid var(--sv-border);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.modalItemIcon svg { width: 22px; height: 22px; stroke: var(--sv-blue-l); stroke-width: 1.4; }
+.modalFooter { display: flex; align-items: center; justify-content: flex-end; gap: 10px; padding-top: 12px; }

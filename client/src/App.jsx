@@ -19,6 +19,7 @@ const ResetPasswordPage  = lazy(() => import('./pages/shared/ResetPasswordPage')
 const CartPage           = lazy(() => import('./pages/customer/CartPage'));
 const CheckoutPage       = lazy(() => import('./pages/customer/CheckoutPage'));
 const OrdersPage         = lazy(() => import('./pages/customer/OrdersPage'));
+const OrderDetailsPage   = lazy(() => import('./pages/customer/OrderDetailsPage'));
 const OrderSuccessPage   = lazy(() => import('./pages/customer/OrderSuccessPage'));
 const ClubPage               = lazy(() => import('./pages/customer/ClubPage'));
 const DealsPage               = lazy(() => import('./pages/customer/DealsPage'));
@@ -140,6 +141,7 @@ export default function App() {
             <Route path="/checkout" element={<RequireAuth><CheckoutPage /></RequireAuth>} />
             <Route path="/order-success/:orderId" element={<RequireAuth><OrderSuccessPage /></RequireAuth>} />
             <Route path="/orders" element={<RequireAuth><OrdersPage /></RequireAuth>} />
+            <Route path="/orders/:orderId" element={<RequireAuth><OrderDetailsPage /></RequireAuth>} />
             <Route path="/profile" element={<RequireAuth><ProfilePage /></RequireAuth>} />
             <Route path="/wishlist" element={<RequireAuth><WishlistPage /></RequireAuth>} />
             <Route path="/compare" element={<ComparePage />} />

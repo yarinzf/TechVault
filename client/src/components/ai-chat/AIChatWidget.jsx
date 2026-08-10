@@ -68,6 +68,15 @@ export default function AIChatWidget() {
     return () => document.removeEventListener('keydown', handler);
   }, [open, handleClose]);
 
+  // Real, app-wide way for other pages (e.g. the Order Details "Contact
+  // Support" action) to open this same widget — no separate contact page/
+  // route exists, and this is the one real support surface the app has.
+  useEffect(() => {
+    const openHandler = () => setOpen(true);
+    window.addEventListener('techvault:open-support-chat', openHandler);
+    return () => window.removeEventListener('techvault:open-support-chat', openHandler);
+  }, []);
+
   // Focus moves into a meaningful control when the sidebar OPENS — the
   // input if a conversation already exists, or the first primary action on
   // a pristine Home screen. Deliberately keyed to `open` only (not `view`):

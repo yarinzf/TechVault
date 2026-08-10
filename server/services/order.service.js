@@ -393,7 +393,10 @@ const getOrder = async (orderId, userId, role) => {
     ? { _id: orderId }
     : { _id: orderId, user: userId };
 
-  const order = await Order.findOne(filter);
+  // Populated ONLY so the Order Details page can link an item to its real,
+  // still-live product page — never used for price/name/image display,
+  // which must always come from the item's own historical snapshot fields.
+  const order = await Order.findOne(filter).populate('items.product', 'slug isPublished isDeleted');
   if (!order) throw new AppError('Order not found', StatusCodes.NOT_FOUND, 'ORDER_NOT_FOUND');
   return order;
 };
