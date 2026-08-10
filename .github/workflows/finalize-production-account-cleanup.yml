@@ -1,0 +1,277 @@
+name: Finalize Production Account Cleanup
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: 'Type FINALIZE_CLEANUP to continue'
+        required: true
+      mode:
+        description: 'Choose audit first (read-only). Use apply only after reviewing the audit.'
+        required: true
+        type: choice
+        options:
+          - audit
+          - apply
+        default: audit
+
+concurrency:
+  group: production-finalize-account-cleanup
+  cancel-in-progress: false
+
+env:
+  SSH_KEY_PATH: /home/runner/.ssh/deploy_key
+
+jobs:
+  cleanup:
+    name: Reset admin/warehouse passwords and retire unused demo accounts on EC2
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Validate inputs
+        run: |
+          if [ "${{ inputs.confirmation }}" != "FINALIZE_CLEANUP" ]; then
+            echo "::error::confirmation input must be exactly FINALIZE_CLEANUP (got: '${{ inputs.confirmation }}')"
+            exit 1
+          fi
+          if [ "${{ inputs.mode }}" != "audit" ] && [ "${{ inputs.mode }}" != "apply" ]; then
+            echo "::error::mode must be 'audit' or 'apply' (got: '${{ inputs.mode }}')"
+            exit 1
+          fi
+          echo "Confirmation accepted. Mode: ${{ inputs.mode }}"
+
+      # ── Same SSH setup pattern as the other production workflows ───────────
+      - name: Configure SSH
+        env:
+          _HOST: ${{ secrets.EC2_HOST }}
+          _USER: ${{ secrets.EC2_USER }}
+          _KEY:  ${{ secrets.EC2_SSH_KEY }}
+        run: |
+          MISSING=0
+          if [ -n "$_HOST" ]; then echo "EC2_HOST: present";    else echo "::error::EC2_HOST: MISSING";    MISSING=1; fi
+          if [ -n "$_USER" ]; then echo "EC2_USER: present";    else echo "::error::EC2_USER: MISSING";    MISSING=1; fi
+          if [ -n "$_KEY" ];  then echo "EC2_SSH_KEY: present"; else echo "::error::EC2_SSH_KEY: MISSING"; MISSING=1; fi
+          if [ "$MISSING" -eq 1 ]; then echo "::error::One or more required secrets are missing"; exit 1; fi
+
+          mkdir -p "$(dirname "$SSH_KEY_PATH")"
+          printf '%s\n' "$_KEY" > "$SSH_KEY_PATH"
+          chmod 600 "$SSH_KEY_PATH"
+          ssh-keyscan -H "$_HOST" >> "$(dirname "$SSH_KEY_PATH")/known_hosts" 2>/dev/null || echo "::warning::ssh-keyscan failed (non-fatal)"
+          echo "SSH configured successfully"
+
+      - name: Sync repository to latest main (scripts must exist on the server)
+        run: |
+          ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
+            cd /opt/techvault &&
+            git fetch origin &&
+            git reset --hard origin/main &&
+            chmod +x devops/scripts/*.sh
+          '
+
+      # ── Same reasoning as the other production scripts: `git reset --hard`
+      #    only updates files on the EC2 HOST, never a running container's
+      #    filesystem. Copy the three new scripts into the already-running
+      #    backend container. ────────────────────────────────────────────────
+      - name: Inject cleanup scripts into running backend container
+        run: |
+          ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
+            set -e
+            cd /opt/techvault
+
+            for SCRIPT in \
+              server/scripts/forceResetPrivilegedPasswords.js \
+              server/scripts/cleanupDemoUsers.js \
+              server/scripts/reportProductionAccountStatus.js
+            do
+              test -f "$SCRIPT" || {
+                echo "::error::Script not found on host after sync: /opt/techvault/$SCRIPT"
+                exit 1
+              }
+            done
+
+            BACKEND_CONTAINER=$(docker compose ps -q backend)
+            if [ -z "$BACKEND_CONTAINER" ]; then
+              echo "::error::backend container is not running (docker compose ps -q backend returned empty)"
+              exit 1
+            fi
+            echo "Backend container: $BACKEND_CONTAINER"
+
+            for SCRIPT in \
+              server/scripts/forceResetPrivilegedPasswords.js \
+              server/scripts/cleanupDemoUsers.js \
+              server/scripts/reportProductionAccountStatus.js
+            do
+              docker cp "$SCRIPT" "${BACKEND_CONTAINER}:/app/$SCRIPT"
+              docker compose exec -T backend test -f "/app/$SCRIPT" || {
+                echo "::error::$SCRIPT missing inside container after docker cp"
+                exit 1
+              }
+              docker compose exec -T backend node --check "/app/$SCRIPT" || {
+                echo "::error::$SCRIPT failed node --check inside the container"
+                exit 1
+              }
+            done
+            echo "All three scripts injected and verified inside the running backend container."
+          '
+
+      # ── Audit mode: read-only, no secrets needed, no backup needed. ────────
+      - name: "[audit] Admin/warehouse reset eligibility + demo-user reference audit (no writes)"
+        if: ${{ inputs.mode == 'audit' }}
+        run: |
+          ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
+            cd /opt/techvault &&
+            echo "=== Part A: admin/warehouse forced-reset audit ===" &&
+            docker compose exec -T \
+              -e RESET_CONFIRM=TECHVAULT_PRODUCTION \
+              backend node server/scripts/forceResetPrivilegedPasswords.js --audit &&
+            echo "" && echo "=== Part B: demo-user reference audit ===" &&
+            docker compose exec -T \
+              -e CLEANUP_CONFIRM=TECHVAULT_PRODUCTION \
+              backend node server/scripts/cleanupDemoUsers.js --audit &&
+            echo "" && echo "=== Current account status ===" &&
+            docker compose exec -T backend node server/scripts/reportProductionAccountStatus.js
+          '
+
+      # ── Apply mode: backup is mandatory and MUST happen before any write. ──
+      - name: "[apply] Pre-cleanup MongoDB backup"
+        if: ${{ inputs.mode == 'apply' }}
+        run: |
+          ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} \
+            'sudo /opt/techvault/devops/scripts/backup-mongo.sh'
+
+      - name: "[apply] Verify backup exists and is non-empty"
+        if: ${{ inputs.mode == 'apply' }}
+        run: |
+          ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
+            LATEST=$(ls -t /opt/techvault/backups/mongodb/techvault_*.gz 2>/dev/null | head -1)
+            if [ -z "$LATEST" ]; then
+              echo "::error::No backup archive found after backup step"
+              exit 1
+            fi
+            SIZE=$(stat -c%s "$LATEST")
+            echo "Latest backup: $LATEST ($SIZE bytes)"
+            if [ "$SIZE" -le 0 ]; then
+              echo "::error::Backup file is empty"
+              exit 1
+            fi
+          '
+
+      # ── Apply — required-secret presence check only, no values printed. ────
+      - name: "[apply] Report which reset targets are configured (no values printed)"
+        if: ${{ inputs.mode == 'apply' }}
+        env:
+          ADMIN_NEW:     ${{ secrets.ROTATE_ADMIN_NEW_PASSWORD }}
+          WAREHOUSE_NEW: ${{ secrets.ROTATE_WAREHOUSE_NEW_PASSWORD }}
+        run: |
+          for KEY in ADMIN WAREHOUSE; do
+            VAR="${KEY}_NEW"
+            if [ -n "${!VAR:-}" ]; then
+              echo "$KEY: new password present -> will be reset this run"
+            else
+              echo "$KEY: new password unset -> will be SKIPPED this run"
+            fi
+          done
+
+      # ── Part A — forced reset. No old password is required or read; the
+      #    account's CURRENT password is unknown by design. ──────────────────
+      - name: "[apply] Part A — force-reset admin/warehouse passwords (superadmin never touched)"
+        if: ${{ inputs.mode == 'apply' }}
+        run: |
+          ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
+            cd /opt/techvault &&
+            docker compose exec -T \
+              -e RESET_CONFIRM=TECHVAULT_PRODUCTION \
+              -e ROTATE_ADMIN_NEW_PASSWORD="${{ secrets.ROTATE_ADMIN_NEW_PASSWORD }}" \
+              -e ROTATE_WAREHOUSE_NEW_PASSWORD="${{ secrets.ROTATE_WAREHOUSE_NEW_PASSWORD }}" \
+              backend node server/scripts/forceResetPrivilegedPasswords.js --apply
+          '
+
+      # ── Live smoke test — proves each NEW password authenticates and
+      #    returns the expected role. No old-password check exists here: the
+      #    old password is unknown by design, so there is nothing to verify
+      #    it against. Never prints the response body/token. ─────────────────
+      - name: "[apply] Confirm new admin/warehouse passwords authenticate via the real login API"
+        if: ${{ inputs.mode == 'apply' }}
+        env:
+          ADMIN_NEW:     ${{ secrets.ROTATE_ADMIN_NEW_PASSWORD }}
+          WAREHOUSE_NEW: ${{ secrets.ROTATE_WAREHOUSE_NEW_PASSWORD }}
+        run: |
+          set -euo pipefail
+          declare -A EMAILS=( [ADMIN]="admin@techvault.dev" [WAREHOUSE]="warehouse@techvault.dev" )
+          declare -A ROLES=( [ADMIN]="admin" [WAREHOUSE]="warehouse" )
+          FAILED=0
+          for KEY in "${!EMAILS[@]}"; do
+            NEW_VAR="${KEY}_NEW"
+            NEW_VAL="${!NEW_VAR:-}"
+            if [ -z "$NEW_VAL" ]; then
+              echo "$KEY: not targeted this run — skipping login smoke test"
+              continue
+            fi
+            EMAIL="${EMAILS[$KEY]}"
+            RESPONSE=$(curl -sS --max-time 15 \
+              -X POST https://techvault.co.il/api/v1/auth/login \
+              -H "Content-Type: application/json" \
+              -H "Origin: https://techvault.co.il" \
+              -w "\n%{http_code}" \
+              -d "{\"email\":\"${EMAIL}\",\"password\":\"${NEW_VAL}\"}")
+            STATUS=$(echo "$RESPONSE" | tail -n1)
+            BODY=$(echo "$RESPONSE" | sed '$d')
+            echo "$KEY ($EMAIL): login attempt returned HTTP $STATUS"
+            if [ "$STATUS" != "200" ]; then
+              echo "::error::$KEY ($EMAIL): new password does NOT authenticate against the live API"
+              FAILED=1
+              continue
+            fi
+            ROLE=$(echo "$BODY" | node -e "let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{try{const j=JSON.parse(d);console.log(j.data?.user?.role||'');}catch{console.log('');}})")
+            echo "$KEY ($EMAIL): returned role=\"$ROLE\" (expected \"${ROLES[$KEY]}\")"
+            if [ "$ROLE" != "${ROLES[$KEY]}" ]; then
+              echo "::error::$KEY ($EMAIL): returned role \"$ROLE\" does not match expected \"${ROLES[$KEY]}\""
+              FAILED=1
+            fi
+          done
+          if [ "$FAILED" -eq 1 ]; then
+            exit 1
+          fi
+          echo "Confirmed: new password authenticates with the expected role for every reset account checked."
+
+      # ── Part B — retire unused demo accounts. No secrets required: this
+      #    step never sets a password, it only deletes reference-free demo
+      #    users or deactivates ones with real history. ───────────────────────
+      - name: "[apply] Part B — retire unused demo customer accounts (delete if reference-free, else deactivate)"
+        if: ${{ inputs.mode == 'apply' }}
+        run: |
+          ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
+            cd /opt/techvault &&
+            docker compose exec -T \
+              -e CLEANUP_CONFIRM=TECHVAULT_PRODUCTION \
+              backend node server/scripts/cleanupDemoUsers.js --apply
+          '
+
+      # ── Final state report — superadmin/admin/warehouse/alice/bob/carol
+      #    status plus total production user count. Read-only. ───────────────
+      - name: "[apply] Final production account status report"
+        if: ${{ inputs.mode == 'apply' }}
+        run: |
+          ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} \
+            'cd /opt/techvault && docker compose exec -T backend node server/scripts/reportProductionAccountStatus.js'
+
+      # ── Same post-change health check pattern as the other apply workflows. ─
+      - name: "[apply] Post-cleanup production health check"
+        if: ${{ inputs.mode == 'apply' }}
+        run: |
+          ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} \
+            'sudo /opt/techvault/devops/scripts/health-check.sh'
+
+      - name: Cleanup SSH key
+        if: always()
+        run: rm -f "$SSH_KEY_PATH"
