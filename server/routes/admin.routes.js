@@ -20,7 +20,7 @@ const productSalesCtrl  = require('../controllers/productSalesAnalytics.controll
 const { moderateReviewSchema } = require('../validators/review.validator');
 const { authenticate, authorize } = require('../middleware/auth');
 const { validate } = require('../middleware/validate');
-const { adminMutationLimiter } = require('../middleware/rateLimiter');
+const { adminMutationLimiter, adminReadLimiter } = require('../middleware/rateLimiter');
 const { updateUserSchema } = require('../validators/admin.validator');
 const { createCampaignSchema, updateCampaignSchema } = require('../validators/campaign.validator');
 const { refundOrderSchema } = require('../validators/refund.validator');
@@ -45,9 +45,14 @@ const router = Router();
 // All admin routes require authentication
 router.use(authenticate);
 
-// Mutation limiter — applied only to state-changing methods; GET reads are unaffected.
+// Method-split limiter — reads and mutations get separate, independently
+// sized buckets (see server/middleware/rateLimiter.js) rather than sharing
+// one budget with each other or with public customer traffic.
 router.use((req, res, next) => {
-  if (req.method === 'GET' || req.method === 'HEAD' || req.method === 'OPTIONS') {
+  if (req.method === 'GET' || req.method === 'HEAD') {
+    return adminReadLimiter(req, res, next);
+  }
+  if (req.method === 'OPTIONS') {
     return next();
   }
   return adminMutationLimiter(req, res, next);

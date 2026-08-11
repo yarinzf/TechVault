@@ -62,13 +62,28 @@ const schema = Joi.object({
 
   // Rate limiting — global controls
   RATE_LIMIT_ENABLED:  Joi.string().valid('true', 'false').default('true'),
+  // "Strict" window — auth/password/payment/coupon/order-creation/admin-mutation.
+  // These stay on a long window; a genuine attacker retrying slowly should
+  // still eventually hit the cap.
   RATE_LIMIT_WINDOW_MS: Joi.number().integer().min(1000).default(15 * 60 * 1000),
+  // "Generous" window — general/public-read, refresh, admin-read. Short on
+  // purpose: a real user's burst (page-reload spam) must fully recover
+  // within roughly a minute, not be stuck behind a 15-minute lockout window.
+  GENEROUS_RATE_LIMIT_WINDOW_MS: Joi.number().integer().min(1000).default(60 * 1000),
 
   // Per-environment base defaults (requests per window)
+  // See server/middleware/rateLimiter.js for the measured request-pattern
+  // justification behind each of these (products/campaigns/currency on
+  // anonymous load, +auth/me+cart+wishlist when logged in, worst-case
+  // 401->refresh->retry storm on a burst of reloads with an expired token).
   GENERAL_RATE_LIMIT_MAX_DEV:  Joi.number().integer().min(1).default(5000),
-  GENERAL_RATE_LIMIT_MAX_PROD: Joi.number().integer().min(1).default(100),
+  GENERAL_RATE_LIMIT_MAX_PROD: Joi.number().integer().min(1).default(240),
   AUTH_RATE_LIMIT_MAX_DEV:     Joi.number().integer().min(1).default(1000),
   AUTH_RATE_LIMIT_MAX_PROD:    Joi.number().integer().min(1).default(10),
+  REFRESH_RATE_LIMIT_MAX_DEV:     Joi.number().integer().min(1).default(1000),
+  REFRESH_RATE_LIMIT_MAX_PROD:    Joi.number().integer().min(1).default(30),
+  ADMIN_READ_RATE_LIMIT_MAX_DEV:  Joi.number().integer().min(1).default(2000),
+  ADMIN_READ_RATE_LIMIT_MAX_PROD: Joi.number().integer().min(1).default(200),
 
   // Single-value overrides — override the env-specific defaults above when set
   RATE_LIMIT_MAX:                Joi.number().integer().min(1).optional(),
@@ -78,6 +93,8 @@ const schema = Joi.object({
   COUPON_RATE_LIMIT_MAX:         Joi.number().integer().min(1).optional(),
   ORDER_RATE_LIMIT_MAX:          Joi.number().integer().min(1).optional(),
   ADMIN_MUTATION_RATE_LIMIT_MAX: Joi.number().integer().min(1).optional(),
+  REFRESH_RATE_LIMIT_MAX:        Joi.number().integer().min(1).optional(),
+  ADMIN_READ_RATE_LIMIT_MAX:     Joi.number().integer().min(1).optional(),
 
   // Account lockout — failed login attempts before lock
   LOGIN_MAX_ATTEMPTS: Joi.number().integer().min(1).default(5),

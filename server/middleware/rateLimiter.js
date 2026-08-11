@@ -5,13 +5,19 @@ const env    = require('../config/env');
 const logger = require('../config/logger');
 
 const enabled  = env.RATE_LIMIT_ENABLED !== 'false';
-const windowMs = env.RATE_LIMIT_WINDOW_MS;
+const windowMs = env.RATE_LIMIT_WINDOW_MS;          // strict — auth/password/payment/coupon/order/admin-mutation
+const generousWindowMs = env.GENEROUS_RATE_LIMIT_WINDOW_MS; // general/public-read, refresh, admin-read
 
 // Resolve the effective max for a limiter.
-// Priority: test → single-value override → env-specific default.
+// Priority: single-value override → test → env-specific default.
+// An explicit override always wins — this lets a test deliberately construct
+// a small, real limiter (see tests/rateLimiting.test.js) to exercise actual
+// 429 behavior. No override is set anywhere in the default test bootstrap
+// (tests/helpers/testEnv.js), so every OTHER test file is unaffected and
+// still gets the effectively-unlimited 100_000 default.
 const resolveMax = (override, devDefault, prodDefault) => {
-  if (env.NODE_ENV === 'test') return 100_000;
   if (override != null)        return override;
+  if (env.NODE_ENV === 'test') return 100_000;
   return env.NODE_ENV === 'development' ? devDefault : prodDefault;
 };
 
@@ -62,9 +68,9 @@ const makeHandler = (message, category) => (req, res, _next, options) => {
     });
 };
 
-const makeLimiter = (max, message, category, skip = routeSkip) =>
+const makeLimiter = (max, message, category, skip = routeSkip, limiterWindowMs = windowMs) =>
   rateLimit({
-    windowMs,
+    windowMs: limiterWindowMs,
     max,
     standardHeaders: true,
     legacyHeaders:   false,
@@ -74,6 +80,21 @@ const makeLimiter = (max, message, category, skip = routeSkip) =>
 
 // ── General — applied globally under /api ─────────────────────────────────────
 // Skips OPTIONS preflight + health checks; respects RATE_LIMIT_ENABLED.
+//
+// This is the default bucket for every request not covered by a more
+// specific limiter below — in practice that's public catalog reads
+// (products/categories/campaigns/currency/location) plus ordinary
+// authenticated customer traffic (auth/me, cart, wishlist, order/review
+// reads, etc). A real measured page load is 3 API calls anonymous, 6 logged
+// in, and up to ~10 in the worst case where an expired access token causes
+// 3 parallel 401s -> one deduped refresh -> 3 retries. On a short (1-minute,
+// GENEROUS_RATE_LIMIT_WINDOW_MS) window, 240/min gives a wide safety margin
+// over even a user aggressively mashing F5 — while a 15-minute window with
+// the same low cap (the previous behavior) let one short reload burst
+// exhaust the ENTIRE window's budget and lock the visitor out of the whole
+// API for up to 15 minutes. Auth-sensitive/payment/admin-mutation endpoints
+// are NOT loosened by this — they sit behind their own separate, still-
+// strict limiters further below, applied IN ADDITION to this one.
 const generalLimiter = makeLimiter(
   resolveMax(
     env.RATE_LIMIT_MAX,
@@ -83,6 +104,7 @@ const generalLimiter = makeLimiter(
   'Too many requests, please try again later',
   'general',
   globalSkip,
+  generousWindowMs,
 );
 
 // ── Auth — login / register ───────────────────────────────────────────────────
@@ -137,6 +159,40 @@ const adminMutationLimiter = makeLimiter(
   'admin-mutation',
 );
 
+// ── Refresh token — POST /auth/refresh ─────────────────────────────────────────
+// Deliberately separate from authLimiter (login/register): a refresh call is
+// not a credential-guessing surface — it requires an already-valid HttpOnly
+// refresh cookie — and happens automatically as a normal part of browsing
+// (access tokens are short-lived). The frontend's single-flight refresh
+// promise (client/src/services/api/index.js) already collapses any number of
+// concurrent 401s from one reload into exactly ONE refresh call, so real
+// usage — even a burst of rapid reloads with an expired access token — stays
+// far under this budget. A short (1-minute) window means a real transient
+// 429 here recovers almost immediately, instead of leaving a legitimate user
+// unable to refresh their session for up to 15 minutes.
+const refreshLimiter = makeLimiter(
+  resolveMax(env.REFRESH_RATE_LIMIT_MAX, env.REFRESH_RATE_LIMIT_MAX_DEV, env.REFRESH_RATE_LIMIT_MAX_PROD),
+  'Too many session refresh attempts, please try again shortly',
+  'refresh',
+  routeSkip,
+  generousWindowMs,
+);
+
+// ── Admin/warehouse reads (GET/HEAD on /admin routes) ──────────────────────────
+// Applied per-method inside admin.routes.js — mirrors adminMutationLimiter's
+// method split, but for reads. Kept in its OWN bucket rather than sharing
+// generalLimiter's budget with public customer traffic, so a busy admin/
+// warehouse dashboard session (several widgets fetching on one page) can
+// never be crowded out by — or itself crowd out — ordinary storefront
+// browsing sharing the same office/warehouse IP.
+const adminReadLimiter = makeLimiter(
+  resolveMax(env.ADMIN_READ_RATE_LIMIT_MAX, env.ADMIN_READ_RATE_LIMIT_MAX_DEV, env.ADMIN_READ_RATE_LIMIT_MAX_PROD),
+  'Too many admin requests, please try again shortly',
+  'admin-read',
+  routeSkip,
+  generousWindowMs,
+);
+
 module.exports = {
   generalLimiter,
   authLimiter,
@@ -145,4 +201,6 @@ module.exports = {
   couponLimiter,
   orderCreationLimiter,
   adminMutationLimiter,
+  refreshLimiter,
+  adminReadLimiter,
 };

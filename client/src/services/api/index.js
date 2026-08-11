@@ -12,6 +12,14 @@ export const clearToken = () => localStorage.removeItem('accessToken');
 // would get REFRESH_TOKEN_REVOKED and log the user out — this fixes that.
 let _refreshPromise = null;
 
+// A refresh failure is only "authoritative" (the session is genuinely gone)
+// when the server explicitly says so via 401/403 — that's the only case
+// where NO_REFRESH_TOKEN/INVALID_REFRESH_TOKEN/REFRESH_TOKEN_REVOKED/
+// USER_NOT_FOUND/ACCOUNT_DEACTIVATED can be returned (server/services/
+// auth.service.js#refresh, server/middleware/auth.js). A 429 (rate limited),
+// any 5xx, or a raw network failure is transient — the refresh COOKIE and
+// the caller's already-stored access token are both still perfectly valid,
+// the server just couldn't be reached or refused this one attempt.
 function silentRefresh() {
   if (_refreshPromise) return _refreshPromise;
 
@@ -20,7 +28,14 @@ function silentRefresh() {
     credentials: 'include',
   })
     .then(async (rr) => {
-      if (!rr.ok) throw new Error('refresh_failed');
+      if (!rr.ok) {
+        const body = await rr.json().catch(() => null);
+        const err = new Error(body?.error?.message || 'refresh_failed');
+        err.status = rr.status;
+        err.retryAfter = body?.error?.retryAfter;
+        err.authoritative = rr.status === 401 || rr.status === 403;
+        throw err;
+      }
       const json = await rr.json();
       const token = json?.data?.accessToken;
       if (!token) throw new Error('no_token_in_response');
@@ -53,17 +68,30 @@ async function request(path, options = {}) {
     try {
       await silentRefresh();
       return request(path, { ...options, _retry: true });
-    } catch {
-      // Refresh failed — session is genuinely expired. Clean up silently.
+    } catch (refreshErr) {
+      // Only an AUTHORITATIVE refresh failure (the server explicitly said
+      // this refresh session is invalid/revoked/gone) may destroy the
+      // stored session. A transient failure (429/5xx/network error) must
+      // NOT log the user out — surface a distinct, retryable error instead
+      // and leave the token + any in-memory auth state untouched, so the
+      // next successful call (or the caller's own retry) restores normally.
+      if (refreshErr?.authoritative) {
+        clearToken();
+        window.dispatchEvent(new CustomEvent('auth:expired'));
+
+        const err = new Error('Session expired');
+        err.code = 'SESSION_EXPIRED';
+        err.status = 401;
+        throw err;
+      }
+
+      const err = new Error('Temporarily unable to refresh your session — please try again');
+      err.code = 'REFRESH_TEMPORARILY_UNAVAILABLE';
+      err.status = refreshErr?.status ?? 503;
+      err.retryAfter = refreshErr?.retryAfter;
+      err.transient = true;
+      throw err;
     }
-
-    clearToken();
-    window.dispatchEvent(new CustomEvent('auth:expired'));
-
-    const err = new Error('Session expired');
-    err.code = 'SESSION_EXPIRED';
-    err.status = 401;
-    throw err;
   }
 
   // ── Empty body (204) ──────────────────────────────────────────────────────────
@@ -76,6 +104,8 @@ async function request(path, options = {}) {
     err.code = json?.error?.code || 'UNKNOWN_ERROR';
     err.status = res.status;
     err.details = json?.error?.details || [];
+    err.retryAfter = json?.error?.retryAfter;
+    err.transient = res.status === 429 || res.status >= 500;
     throw err;
   }
 

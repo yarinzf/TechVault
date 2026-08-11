@@ -4,7 +4,7 @@ const { Router } = require('express');
 const ctrl = require('../controllers/auth.controller');
 const { authenticate } = require('../middleware/auth');
 const { validate } = require('../middleware/validate');
-const { authLimiter, passwordLimiter } = require('../middleware/rateLimiter');
+const { authLimiter, passwordLimiter, refreshLimiter } = require('../middleware/rateLimiter');
 const {
   registerSchema,
   loginSchema,
@@ -126,7 +126,7 @@ router.post('/login', authLimiter, validate(loginSchema), ctrl.login);
  *       401:
  *         description: Missing or invalid refresh token
  */
-router.post('/refresh', ctrl.refresh);
+router.post('/refresh', refreshLimiter, ctrl.refresh);
 
 /**
  * @swagger
