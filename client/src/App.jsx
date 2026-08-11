@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from './hooks/useAuth';
+import { AUTH_STATUS } from './app/providers/AuthProvider';
 import ErrorBoundary from './components/ErrorBoundary';
 
 import CustomerLayout from './components/layout/customer/CustomerLayout';
@@ -62,25 +63,35 @@ const WarehouseSettingsPage   = lazy(() => import('./pages/warehouse/WarehouseSe
 import AccessibilityWidget from './components/ui/AccessibilityWidget/AccessibilityWidget';
 
 // ─── Route guards ─────────────────────────────────────────────────────────────
+// These consult `authStatus`, NOT plain `user` truthiness — a transient
+// bootstrap failure (429/5xx/network error on /auth/me) resolves to
+// 'unknown', never 'guest' (see AuthProvider.jsx). Treating 'unknown' the
+// same as logged-out here would redirect a genuinely authenticated user
+// (whose token is still perfectly valid) to /login just because their
+// profile couldn't be confirmed on this one page load — exactly the bug
+// this guard design exists to prevent. 'unknown' renders the same pending
+// state as the initial `loading` window: stay put, don't decide yet.
 const RequireAuth = ({ children }) => {
-  const { user, loading } = useAuth();
+  const { loading, authStatus } = useAuth();
   const location = useLocation();
-  if (loading) return null;
-  return user ? children : <Navigate to="/login" state={{ from: location }} replace />;
+  if (loading || authStatus === AUTH_STATUS.UNKNOWN) return <PageLoader />;
+  return authStatus === AUTH_STATUS.AUTHENTICATED
+    ? children
+    : <Navigate to="/login" state={{ from: location }} replace />;
 };
 
 const RequireAdmin = ({ children }) => {
-  const { user, loading } = useAuth();
-  if (loading) return null;
-  if (!user) return <Navigate to="/login" replace />;
+  const { user, loading, authStatus } = useAuth();
+  if (loading || authStatus === AUTH_STATUS.UNKNOWN) return <PageLoader />;
+  if (authStatus !== AUTH_STATUS.AUTHENTICATED) return <Navigate to="/login" replace />;
   if (!['admin', 'superadmin'].includes(user.role)) return <Navigate to="/" replace />;
   return children;
 };
 
 const RequireWarehouse = ({ children }) => {
-  const { user, loading } = useAuth();
-  if (loading) return null;
-  if (!user) return <Navigate to="/login" replace />;
+  const { user, loading, authStatus } = useAuth();
+  if (loading || authStatus === AUTH_STATUS.UNKNOWN) return <PageLoader />;
+  if (authStatus !== AUTH_STATUS.AUTHENTICATED) return <Navigate to="/login" replace />;
   if (!['warehouse', 'admin', 'superadmin'].includes(user.role)) return <Navigate to="/" replace />;
   return children;
 };
@@ -93,12 +104,14 @@ const CategoryRedirect = ({ to }) => {
 };
 
 const GuestOnly = ({ children }) => {
-  const { user, loading } = useAuth();
+  const { loading, authStatus } = useAuth();
   const location = useLocation();
-  if (loading) return null;
+  if (loading || authStatus === AUTH_STATUS.UNKNOWN) return <PageLoader />;
   // Honors the `from` location RequireAuth attaches when it bounces a guest
   // here (e.g. guest → /club/join → /login → back to /club/join after login).
-  return !user ? children : <Navigate to={location.state?.from ?? '/'} replace />;
+  return authStatus !== AUTH_STATUS.AUTHENTICATED
+    ? children
+    : <Navigate to={location.state?.from ?? '/'} replace />;
 };
 
 const PageLoader = () => (

@@ -7,6 +7,7 @@ import {
   Globe, GitCompare, LayoutGrid,
 } from 'lucide-react';
 import { useAuth }     from '../../../hooks/useAuth';
+import { AUTH_STATUS } from '../../../app/providers/AuthProvider';
 import { useCart }     from '../../../hooks/useCart';
 import { useWishlist } from '../../../hooks/useWishlist';
 import { useMembership } from '../../../hooks/useMembership';
@@ -73,7 +74,7 @@ function AccessibilityIcon() {
 }
 
 export default function CustomerNavbar({ onOpenCart = () => {} }) {
-  const { user, logout }   = useAuth();
+  const { user, logout, authStatus } = useAuth();
   const { totalItems }     = useCart();
   const { ids: wishIds }   = useWishlist();
   const { isMember }       = useMembership();
@@ -345,8 +346,12 @@ export default function CustomerNavbar({ onOpenCart = () => {} }) {
           <div className={s.navDivider} aria-hidden="true" />
 
           {/* User menu / Login — no standalone top-level Orders action;
-              Orders lives inside the user menu (see below), matching Sapir. */}
-          {user ? (
+              Orders lives inside the user menu (see below), matching Sapir.
+              While authStatus is 'unknown' (a transient bootstrap failure —
+              see AuthProvider.jsx) we render neither state: showing "Login"
+              would falsely imply a genuinely logged-in visitor isn't, and we
+              don't have confirmed profile data to show the real user menu. */}
+          {authStatus === AUTH_STATUS.UNKNOWN ? null : user ? (
             <>
               <button
                 ref={userBtnRef}
@@ -442,7 +447,7 @@ export default function CustomerNavbar({ onOpenCart = () => {} }) {
             <LayoutGrid size={16} />{t('nav.all_products')}
           </Link>
 
-          {user ? (
+          {authStatus === AUTH_STATUS.UNKNOWN ? null : user ? (
             <>
               <Link to="/profile"  className={s.mobilePanelLink} onClick={() => setMobileOpen(false)}><span className={s.tvUmIcon} aria-hidden="true">👤</span>{t('nav.account')}</Link>
               <Link to="/orders"   className={s.mobilePanelLink} onClick={() => setMobileOpen(false)}><span className={s.tvUmIcon} aria-hidden="true">📦</span>{t('nav.orders')}</Link>
