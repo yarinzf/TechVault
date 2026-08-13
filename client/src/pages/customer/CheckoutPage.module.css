@@ -1,5 +1,11 @@
 /* ── Checkout page ──────────────────────────────────────────────────────────── */
-.checkoutPage { min-height: 100vh; background: var(--sv-bg); }
+/* font-family set here (not per-heading) so it inherits into every plain-text
+   descendant across this page and its child components (DeliverySelector,
+   PaymentForm, CheckoutSummary) in one place — the app's global body rule
+   (global.css) sets font-family: var(--font-sans) ('Assistant'), not Sapir's
+   Inter, and plain text (h1/p/span/div, unlike form controls) inherits
+   font-family from ancestors, so a single root override fixes all of them. */
+.checkoutPage { min-height: 100vh; background: var(--sv-bg); font-family: var(--sv-font); }
 
 /* Override global .input within checkout to use Sapir tokens */
 .checkoutPage :global(.input) {
@@ -21,27 +27,97 @@
   border-color: var(--sv-blue-l);
 }
 
-/* Override SearchableSelect within checkout */
-.checkoutPage [class*="SearchableSelect_input"] {
+/* Sapir's .co-textarea (courier notes) */
+.textarea {
   background: var(--sv-surface);
-  border-color: var(--sv-border);
-  color: var(--sv-text);
+  border: 1px solid var(--sv-border);
   border-radius: 8px;
+  padding: 10px 12px;
+  color: var(--sv-text);
+  font-size: 14px;
+  font-family: var(--sv-font);
+  outline: none;
+  transition: border-color .18s;
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
+  min-height: 72px;
+}
+.textarea::placeholder { color: var(--sv-dim); }
+.textarea:focus { border-color: var(--sv-blue-l); }
+
+/* Sapir's .co-checkbox-row (save details) */
+.checkboxRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--sv-muted);
+  cursor: pointer;
+  margin-top: 4px;
+}
+.checkboxRow input {
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+  accent-color: var(--sv-blue-l);
+}
+
+/* Checkout's SearchableSelect fields (country/city/street) — SearchableSelect
+   renders <SearchableSelect variant="checkout" .../>, which puts a plain,
+   un-hashed `sv-select--checkout` class on its own control/list/option
+   elements (see SearchableSelect.jsx). CSS-module class names are hashed
+   per-file at build time (e.g. `_inputOpen_1fwq8_42`, NOT
+   `SearchableSelect_inputOpen_...`) so a `[class*="SearchableSelect_..."]`
+   guess from this file can never match anything — that was the actual root
+   cause of the purple border persisting. Real component state (open/error/
+   ok/selected/keyboard-active) is exposed via stable attributes
+   (aria-expanded/aria-invalid/data-ok/aria-selected/data-active) instead of
+   relying on those hashed classes, so this targets it precisely. */
+:global(.sv-select--checkout)[role="combobox"] {
+  background: var(--sv-surface);
+  border: 1px solid var(--sv-border);
+  border-radius: 8px;
+  color: var(--sv-text);
   font-size: 14px;
   font-family: var(--sv-font);
   height: 42px;
+  box-shadow: none;
 }
-.checkoutPage [class*="SearchableSelect_list"] {
+:global(.sv-select--checkout)[role="combobox"]:not(:disabled):hover {
+  border-color: var(--sv-blue-l);
+}
+:global(.sv-select--checkout)[role="combobox"][aria-expanded="true"] {
+  border-color: var(--sv-blue-l);
+  box-shadow: none;
+}
+:global(.sv-select--checkout)[role="combobox"][aria-invalid="true"] {
+  border-color: var(--sv-red) !important;
+  box-shadow: none !important;
+}
+:global(.sv-select--checkout)[role="combobox"][data-ok] {
+  border-color: var(--sv-success) !important;
+  box-shadow: none !important;
+}
+:global(.sv-select--checkout)[role="listbox"] {
   background: var(--sv-surface);
   border-color: var(--sv-border);
   border-radius: 10px;
   box-shadow: 0 8px 32px rgba(0,0,0,0.5);
 }
-.checkoutPage [class*="SearchableSelect_option"]:hover {
+:global(.sv-select--checkout)[role="option"]:hover {
   background: rgba(37,99,235,0.08);
   color: var(--sv-text);
 }
-.checkoutPage [class*="SearchableSelect_optionSelected"] {
+:global(.sv-select--checkout)[role="option"][aria-selected="true"] {
+  background: rgba(37,99,235,0.1);
+  color: var(--sv-blue-l);
+}
+:global(.sv-select--checkout)[role="option"][data-active] {
+  background: var(--sv-surface);
+  color: var(--sv-text);
+}
+:global(.sv-select--checkout)[role="option"][aria-selected="true"][data-active] {
   background: rgba(37,99,235,0.1);
   color: var(--sv-blue-l);
 }
@@ -67,74 +143,6 @@
   color: var(--sv-muted);
 }
 
-/* ── Progress steps (card bar) ── */
-.stepsWrap {
-  max-width: 1200px;
-  margin: 24px auto 0;
-  padding: 0 40px;
-}
-.stepsInner {
-  display: flex;
-  align-items: center;
-  gap: 0;
-  background: var(--sv-card);
-  border: 1px solid var(--sv-border);
-  border-radius: 12px;
-  padding: 0;
-  overflow: hidden;
-}
-.step {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 18px;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--sv-muted);
-  transition: all .2s;
-}
-.stepActive {
-  color: var(--sv-blue-l);
-  background: rgba(37,99,235,0.06);
-}
-.stepDone {
-  color: var(--sv-success);
-}
-.stepNum {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  border: 2px solid var(--sv-dim);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
-  font-weight: 700;
-  flex-shrink: 0;
-  transition: all .2s;
-}
-.stepActive .stepNum {
-  border-color: var(--sv-blue-l);
-  color: var(--sv-blue-l);
-  background: rgba(37,99,235,0.1);
-}
-.stepDone .stepNum {
-  border-color: var(--sv-success);
-  color: var(--sv-success);
-  background: rgba(16,185,129,0.1);
-}
-.stepSep {
-  width: 1px;
-  height: 32px;
-  background: var(--sv-border);
-  flex-shrink: 0;
-}
-@media (max-width: 640px) {
-  .stepLabel { display: none; }
-  .step { padding: 12px; justify-content: center; }
-}
-
 /* ── Two-column layout ── */
 .layout {
   max-width: 1200px;
@@ -146,7 +154,7 @@
   align-items: start;
 }
 @media (max-width: 960px) { .layout { grid-template-columns: 1fr; padding: 0 20px; } }
-@media (max-width: 640px) { .header { padding: 20px 20px 0; } .stepsWrap { padding: 0 20px; } .layout { padding: 0 16px; } }
+@media (max-width: 640px) { .header { padding: 20px 20px 0; } .layout { padding: 0 16px; } }
 
 /* ── Left column ── */
 .left {
@@ -223,7 +231,9 @@
 }
 .label span { color: var(--sv-muted); font-weight: 400; }
 
-.req { color: var(--sv-red); }
+/* Sapir's .co-label span is muted for both the required "*" and the
+   "(אופציונלי)" optional marker — never red. */
+.req { color: var(--sv-muted); font-weight: 400; }
 
 .inputErr {
   border-color: var(--sv-red) !important;
@@ -270,13 +280,22 @@
 }
 
 /* ── Right: summary ── */
+/* position:sticky already establishes a positioning context for the
+   ::before gradient bar below — a SECOND `.summary { position: relative; }`
+   rule used to follow this block and, being the same specificity but later
+   in source order, silently won the cascade and downgraded the element from
+   sticky to relative. With `top: 140px` still applied, that turned into a
+   permanent 140px downward offset from the summary's normal grid position
+   (sticky's `top` only matters once scrolling reaches that threshold;
+   relative's `top` is an unconditional static offset) — this is why the
+   summary rendered ~140px lower than the main column on initial load. */
 .summary {
   background: var(--sv-card);
   border: 1px solid var(--sv-border);
+  position: sticky;
   border-radius: 16px;
   padding: 24px;
-  position: sticky;
-  top: 198px;
+  top: 140px;
   max-height: calc(100vh - 218px);
   overflow-y: auto;
   max-width: 380px;
@@ -292,16 +311,4 @@
   background: linear-gradient(90deg, var(--sv-blue), var(--sv-violet));
   border-radius: 16px 16px 0 0;
 }
-.summary { position: relative; }
 @media (max-width: 960px) { .summary { position: static; max-height: none; top: auto; max-width: none; } }
-
-/* ── Spinner icon animation ── */
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
-.spinIcon {
-  animation: spin 700ms linear infinite;
-  display: block;
-}
-@media (prefers-reduced-motion: reduce) { .spinIcon { animation: none; } }

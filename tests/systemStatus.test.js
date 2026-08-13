@@ -32,9 +32,12 @@ async function loginAs(email) {
   return res.body.data?.accessToken;
 }
 
+// System status is now superadmin-only — platform/system health moved
+// exclusively into the dedicated Super Admin area (regular Admin's sidebar
+// no longer has a System Status item; see the role-architecture reorg).
 async function adminGet() {
-  await createUserWithRole('admin');
-  const token = await loginAs('admin@sys-test.com');
+  await createUserWithRole('superadmin');
+  const token = await loginAs('superadmin@sys-test.com');
   return request(app).get(ENDPOINT).set('Authorization', `Bearer ${token}`);
 }
 
@@ -54,7 +57,16 @@ describe('GET /admin/system/status — auth', () => {
     expect(res.status).toBe(403);
   });
 
-  it('allows admin access', async () => {
+  // Plain admin no longer has access — System Status is superadmin-exclusive
+  // under the new role architecture (was ADMIN_ROLES before this reorg).
+  it('returns 403 for a plain admin (superadmin-only since the role-architecture reorg)', async () => {
+    await createUserWithRole('admin');
+    const token = await loginAs('admin@sys-test.com');
+    const res = await request(app).get(ENDPOINT).set('Authorization', `Bearer ${token}`);
+    expect(res.status).toBe(403);
+  });
+
+  it('allows superadmin access', async () => {
     expect((await adminGet()).status).toBe(200);
   });
 });

@@ -59,7 +59,10 @@
   font-weight: 600;
   color: var(--sv-muted);
 }
-.req { color: var(--sv-red); }
+/* Sapir's .co-label span is muted/regular-weight for BOTH the required "*"
+   and the "(אופציונלי)" optional marker — never red (that was an unintended
+   deviation; the real error color only applies to .errMsg, not the label). */
+.req { color: var(--sv-muted); font-weight: 400; }
 
 .errMsg {
   font-size: 11px;
@@ -149,6 +152,70 @@
   flex-shrink: 0;
 }
 
+/* ── Payment method grid (Sapir's co-pm-grid/co-pm-card) ── */
+.pmGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+@media (max-width: 640px) { .pmGrid { grid-template-columns: repeat(2, 1fr); } }
+.pmCard {
+  background: var(--sv-surface);
+  border: 1px solid var(--sv-border);
+  border-radius: 12px;
+  padding: 16px 12px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+  transition: all .18s;
+  position: relative;
+}
+.pmCard:hover { border-color: rgba(37,99,235,0.3); }
+.pmCardSelected { border-color: var(--sv-blue-l); background: rgba(37,99,235,0.06); }
+.pmCardDisabled { opacity: 0.5; cursor: not-allowed; }
+.pmIcon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pmName { font-size: 13px; font-weight: 600; color: var(--sv-text); }
+.pmCheck {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--sv-blue-l);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+
+/* Sapir's .co-pm-placeholder — shown for a selected payment method that
+   isn't credit_card. Real-functionality-safe: informs the customer without
+   pretending a transaction can be completed through it. */
+.pmPlaceholder {
+  margin-top: 14px;
+  padding: 16px;
+  background: rgba(37,99,235,0.06);
+  border: 1px solid rgba(37,99,235,0.18);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--sv-text);
+}
+.pmPlaceholder svg { color: var(--sv-blue-l); flex-shrink: 0; }
+
 /* ── Custom radio dot (Sapir's co-radio-dot) ── */
 .radioDot {
   width: 18px;
@@ -190,6 +257,14 @@
   color: var(--sv-success);
   flex-shrink: 0;
 }
+.deliveryPrice {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--sv-text);
+  flex-shrink: 0;
+  direction: ltr;
+  unicode-bidi: isolate;
+}
 
 /* ── Demo banner ── */
 .demoBanner {
@@ -218,6 +293,15 @@
   gap: 14px;
 }
 @media (max-width: 480px) { .cardRow { grid-template-columns: 1fr; } }
+
+/* Sapir's .co-form-row.triple — used when installments is shown alongside
+   expiry/CVV in the same row (stays 2 columns at <=640px, matching Sapir). */
+.cardRowTriple {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 14px;
+}
+@media (max-width: 640px) { .cardRowTriple { grid-template-columns: 1fr 1fr; } }
 
 /* Card number with inline brand badge */
 .cardNumberWrap { position: relative; }
@@ -457,9 +541,6 @@
   font-size: 12px;
   color: var(--sv-text);
   line-height: 1.4;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 .summaryItemQty {
   font-size: 11px;

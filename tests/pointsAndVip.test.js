@@ -99,9 +99,14 @@ async function addToCart(token, productId, quantity = 1) {
   return request(app).post(`${CART}/items`).set('Authorization', `Bearer ${token}`).send({ productId, quantity });
 }
 
+// shippingMethod defaults to 'store_pickup' (real ₪0 shipping) so this
+// suite's points/coupon dollar-amount assertions stay isolated from
+// Shipping V1's real ₪29.90/₪49.90 costs. See tests/shippingV1.test.js for
+// shipping's own dedicated coverage.
 async function createOrder(token, body = {}) {
   return request(app).post(ORDERS).set('Authorization', `Bearer ${token}`).send({
     shippingAddress: { street: '1 Main St', city: 'Tel Aviv', zip: '61000', country: 'IL' },
+    shippingMethod: 'store_pickup',
     ...body,
   });
 }

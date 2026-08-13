@@ -59,7 +59,7 @@ router.use(authenticate);
  *               data:
  *                 order:
  *                   _id: "665d4c5b1e2f3a4b5c6d7e8f"
- *                   orderNumber: "ORD-20240101-A1B2C3D4"
+ *                   orderNumber: "TV-20240101-A1B2C3D4"
  *                   status: "pending"
  *                   total: 2339.98
  *       400:

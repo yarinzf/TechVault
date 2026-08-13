@@ -66,9 +66,14 @@ router.use((req, res, next) => {
  */
 
 // ─── Role reference ───────────────────────────────────────────────────────────
-// superadmin — full access (analytics + user management + operations)
-// admin      — analytics + operations, no user management
-// warehouse  — fulfillment operations only (order status: confirmed→processing→shipped)
+// superadmin — full access (business analytics/operations + user & role
+//              management + platform/system status — see the dedicated
+//              Super Admin area in the frontend, /admin/superadmin)
+// admin      — business analytics + operations; no user/role management, no
+//              platform/system status
+// warehouse  — fulfillment/logistics operations only (order status:
+//              confirmed→processing→shipped; can view but not
+//              approve/reject/refund returns)
 // user       — no admin access
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -339,7 +344,7 @@ router.patch('/alerts/:id/resolve', authorize(...ADMIN_ROLES), ctrl.resolveAlert
  * @swagger
  * /admin/audit-logs:
  *   get:
- *     summary: List audit logs (superadmin only)
+ *     summary: List audit logs (admin+) — also the data source for Super Admin's privileged/security-scoped audit view
  *     tags: [Admin]
  *     security:
  *       - bearerAuth: []
@@ -408,8 +413,12 @@ router.patch ('/reviews/:id/moderate', authorize(...ADMIN_ROLES), validate(moder
 router.delete('/reviews/:id',          authorize(...ADMIN_ROLES), reviewCtrl.deleteReview);
 
 // ─── Returns management ───────────────────────────────────────────────────────
-router.get  ('/returns',                  authorize(...ADMIN_ROLES), returnCtrl.listReturns);
-router.get  ('/returns/:id',              authorize(...ADMIN_ROLES), returnCtrl.getReturn);
+// list/get: STAFF_ROLES — warehouse needs to see returns awaiting physical
+// inspection/receipt (see the new "Warehouse Returns" screen). Approve/
+// reject/refund remain ADMIN_ROLES-only (business/financial decisions);
+// warehouse's only write action stays markReceived, below.
+router.get  ('/returns',                  authorize(...STAFF_ROLES), returnCtrl.listReturns);
+router.get  ('/returns/:id',              authorize(...STAFF_ROLES), returnCtrl.getReturn);
 router.patch('/returns/:id/approve',      authorize(...ADMIN_ROLES), validate(approveRejectSchema), returnCtrl.approveReturn);
 router.patch('/returns/:id/reject',       authorize(...ADMIN_ROLES), validate(approveRejectSchema), returnCtrl.rejectReturn);
 router.patch('/returns/:id/received',     authorize(...STAFF_ROLES), validate(markReceivedSchema),  returnCtrl.markReceived);
@@ -440,7 +449,9 @@ router.get('/reports/coupons',         authorize(...ADMIN_ROLES), reportCtrl.get
 router.get('/reports/purchase-orders', authorize(...ADMIN_ROLES), reportCtrl.getPurchaseOrdersReport);
 
 // ─── System status (read-only) ────────────────────────────────────────────────
-router.get('/system/status', authorize(...ADMIN_ROLES), systemStatusCtrl.getSystemStatus);
+// Superadmin-only — platform/system health now lives exclusively in the
+// dedicated Super Admin area, not the regular Admin (business) sidebar.
+router.get('/system/status', authorize(ROLES.SUPERADMIN), systemStatusCtrl.getSystemStatus);
 
 // ─── Background jobs ──────────────────────────────────────────────────────────
 // Status: any admin role; manual trigger: superadmin only

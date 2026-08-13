@@ -118,3 +118,68 @@ describe('Warehouse orders listing — role protection', () => {
     expect(res.status).toBe(200);
   });
 });
+
+// ── Admin returns listing (widened to STAFF_ROLES so warehouse can see ────────
+//    returns awaiting physical inspection — write actions stay admin-only) ────
+
+describe('Admin returns listing — role protection (STAFF_ROLES read, ADMIN_ROLES write)', () => {
+  it('returns 401 when unauthenticated', async () => {
+    const res = await request(app).get(`${ADMIN}/returns`);
+    expect(res.status).toBe(401);
+  });
+
+  it('returns 403 for a regular customer', async () => {
+    const reg   = await request(app).post(`${AUTH}/register`).send({
+      name: 'Just a Buyer', email: 'buyer-returns@roles-test.com', password: 'Password123!',
+    });
+    const token = reg.body.data.accessToken;
+
+    const res = await request(app)
+      .get(`${ADMIN}/returns`)
+      .set('Authorization', `Bearer ${token}`);
+    expect(res.status).toBe(403);
+  });
+
+  it('allows warehouse role to list returns (new — was ADMIN_ROLES-only before the reorg)', async () => {
+    await createUserWithRole('warehouse', '-returns');
+    const token = await loginAs('warehouse-returns@roles-test.com');
+
+    const res = await request(app)
+      .get(`${ADMIN}/returns`)
+      .set('Authorization', `Bearer ${token}`);
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+  });
+
+  it('allows admin role to list returns', async () => {
+    await createUserWithRole('admin', '-returns');
+    const token = await loginAs('admin-returns@roles-test.com');
+
+    const res = await request(app)
+      .get(`${ADMIN}/returns`)
+      .set('Authorization', `Bearer ${token}`);
+    expect(res.status).toBe(200);
+  });
+
+  it('blocks warehouse from approving a return (financial/business decision stays ADMIN_ROLES-only)', async () => {
+    await createUserWithRole('warehouse', '-approve');
+    const token = await loginAs('warehouse-approve@roles-test.com');
+
+    const res = await request(app)
+      .patch(`${ADMIN}/returns/${new mongoose.Types.ObjectId()}/approve`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({});
+    expect(res.status).toBe(403);
+  });
+
+  it('blocks warehouse from processing a refund (financial decision stays ADMIN_ROLES-only)', async () => {
+    await createUserWithRole('warehouse', '-refund');
+    const token = await loginAs('warehouse-refund@roles-test.com');
+
+    const res = await request(app)
+      .patch(`${ADMIN}/returns/${new mongoose.Types.ObjectId()}/refund`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({});
+    expect(res.status).toBe(403);
+  });
+});

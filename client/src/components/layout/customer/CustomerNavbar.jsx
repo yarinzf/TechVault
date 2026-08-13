@@ -191,9 +191,12 @@ export default function CustomerNavbar({ onOpenCart = () => {} }) {
   const hasWishItems = wishIds.size > 0;
   const nextLang  = language === 'he' ? 'en' : 'he';
 
-  const isAdmin     = ['admin', 'superadmin'].includes(user?.role);
-  const isWarehouse = ['warehouse', 'admin', 'superadmin'].includes(user?.role);
-  const roleLabel = isAdmin
+  const isAdmin      = ['admin', 'superadmin'].includes(user?.role);
+  const isWarehouse  = ['warehouse', 'admin', 'superadmin'].includes(user?.role);
+  const isSuperadmin = user?.role === 'superadmin';
+  const roleLabel = isSuperadmin
+    ? t('nav.role_superadmin')
+    : isAdmin
     ? t('nav.role_admin')
     : user?.role === 'warehouse'
     ? t('nav.role_warehouse')
@@ -386,14 +389,19 @@ export default function CustomerNavbar({ onOpenCart = () => {} }) {
                     <Link to="/orders"   className={s.tvUmItem} onClick={() => setMenuOpen(false)} role="menuitem"><span className={s.tvUmIcon} aria-hidden="true">📦</span>{t('nav.orders')}</Link>
 
                     {(isAdmin || isWarehouse) && <div className={s.tvUmDivider} role="separator" />}
+                    {isWarehouse && (
+                      <Link to="/admin/inventory" className={`${s.tvUmItem} ${s.tvUmAdmin}`} onClick={() => setMenuOpen(false)} role="menuitem">
+                        <span className={s.tvUmIcon} aria-hidden="true">📦</span>{t('nav.warehouse')}
+                      </Link>
+                    )}
                     {isAdmin && (
                       <Link to="/admin" className={`${s.tvUmItem} ${s.tvUmAdmin}`} onClick={() => setMenuOpen(false)} role="menuitem">
                         <span className={s.tvUmIcon} aria-hidden="true">🛠️</span>{t('nav.admin')}
                       </Link>
                     )}
-                    {isWarehouse && (
-                      <Link to="/admin/inventory" className={`${s.tvUmItem} ${s.tvUmAdmin}`} onClick={() => setMenuOpen(false)} role="menuitem">
-                        <span className={s.tvUmIcon} aria-hidden="true">📦</span>{t('nav.warehouse')}
+                    {isSuperadmin && (
+                      <Link to="/admin/superadmin" className={`${s.tvUmItem} ${s.tvUmAdmin}`} onClick={() => setMenuOpen(false)} role="menuitem">
+                        <span className={s.tvUmIcon} aria-hidden="true">👑</span>{t('nav.superadmin')}
                       </Link>
                     )}
 
@@ -461,11 +469,14 @@ export default function CustomerNavbar({ onOpenCart = () => {} }) {
                 <span className={s.tvUmIcon} aria-hidden="true">⭐</span>{t('nav.club_member')}
               </Link>
               {(isAdmin || isWarehouse) && <div className={s.mobileDivider} />}
+              {isWarehouse && (
+                <Link to="/admin/inventory" className={s.mobilePanelLink} onClick={() => setMobileOpen(false)}><span className={s.tvUmIcon} aria-hidden="true">📦</span>{t('nav.warehouse')}</Link>
+              )}
               {isAdmin && (
                 <Link to="/admin" className={s.mobilePanelLink} onClick={() => setMobileOpen(false)}><span className={s.tvUmIcon} aria-hidden="true">🛠️</span>{t('nav.admin')}</Link>
               )}
-              {isWarehouse && (
-                <Link to="/admin/inventory" className={s.mobilePanelLink} onClick={() => setMobileOpen(false)}><span className={s.tvUmIcon} aria-hidden="true">📦</span>{t('nav.warehouse')}</Link>
+              {isSuperadmin && (
+                <Link to="/admin/superadmin" className={s.mobilePanelLink} onClick={() => setMobileOpen(false)}><span className={s.tvUmIcon} aria-hidden="true">👑</span>{t('nav.superadmin')}</Link>
               )}
               <div className={s.mobileDivider} />
               <button className={`${s.mobilePanelLink} ${s.mobileLogout}`} onClick={() => { setMobileOpen(false); logout(); }}>

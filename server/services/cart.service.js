@@ -6,8 +6,11 @@ const { AppError } = require('../middleware/errorHandler');
 const { StatusCodes } = require('http-status-codes');
 const { getActiveDiscountMap } = require('./campaign.service');
 
-// Minimal populate — snapshot data already stored on each item
-const ITEM_POPULATE = { path: 'items.product', select: 'name slug isPublished isDeleted' };
+// Minimal populate — snapshot data already stored on each item.
+// `brand` is included so the Cart UI can show it (CartPage.jsx reads
+// item.product?.brand) — everything else (name/price/image) already comes
+// from the item's own *AtAdd snapshot fields, never from this populate.
+const ITEM_POPULATE = { path: 'items.product', select: 'name slug isPublished isDeleted brand' };
 
 const getCart = async (userId) => {
   const cart = await Cart.findOne({ user: userId });

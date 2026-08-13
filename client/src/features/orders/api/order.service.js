@@ -25,12 +25,15 @@ export const orderService = {
     return data?.order ?? data;
   },
 
-  async create(shippingAddress, notes, couponCode, pointsToRedeem) {
+  async create(shippingAddress, notes, couponCode, pointsToRedeem, shippingMethod) {
     const body = { shippingAddress, notes };
     if (couponCode) body.couponCode = couponCode.trim().toUpperCase();
     // Server (order.service.js) is the sole authority on the actual
     // redemption amount/discount — this is only the customer's request.
     if (pointsToRedeem) body.pointsToRedeem = pointsToRedeem;
+    // Server (shipping.service.js) is the sole authority on shippingCost —
+    // this is only the customer's method selection, never a price.
+    if (shippingMethod) body.shippingMethod = shippingMethod;
     const { data } = await api.post('/orders', body);
     return data?.order ?? data;
   },

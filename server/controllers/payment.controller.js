@@ -98,10 +98,17 @@ const createIntent = async (req, res, next) => {
       paymentIntentId = `zero_${order._id}`;
       clientSecret    = null;
       provider        = 'zero_payment';
+      order.paymentMethod = 'zero_cash';
       logger.info('zero_cash_intent_created', { orderId: order._id, paymentIntentId });
     } else {
       ({ clientSecret, paymentIntentId } = await paymentService.createIntent(order, { cardNumber, cardHolder, expiry, cvv }));
       provider = paymentService.PROVIDER;
+      // Safe display metadata only — see payment.service.js getCardDisplayMeta.
+      // The raw cardNumber is never persisted or logged, only brand/last4.
+      const { brand, last4 } = paymentService.getCardDisplayMeta(cardNumber);
+      order.paymentMethod    = 'credit_card';
+      order.paymentCardBrand = brand;
+      order.paymentCardLast4 = last4;
       logger.info('payment_intent_created', { provider, orderId: order._id, paymentIntentId });
     }
 

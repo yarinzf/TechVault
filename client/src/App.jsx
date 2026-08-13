@@ -33,32 +33,38 @@ const ComparePage        = lazy(() => import('./pages/customer/ComparePage'));
 const TermsPage          = lazy(() => import('./pages/shared/TermsPage'));
 const PrivacyPage        = lazy(() => import('./pages/shared/PrivacyPage'));
 
-// ─── Lazy: admin pages ──────────────────────────────────────────────────────
+// ─── Lazy: admin pages (business management) ─────────────────────────────────
 const AdminLayout             = lazy(() => import('./components/layout/admin/AdminLayout'));
 const AdminDashboardPage      = lazy(() => import('./pages/admin/AdminDashboardPage'));
 const AdminOrdersPage         = lazy(() => import('./pages/admin/AdminOrdersPage'));
 const AdminProductsPage       = lazy(() => import('./pages/admin/AdminProductsPage'));
-const AdminCustomersPage      = lazy(() => import('./pages/admin/AdminCustomersPage'));
+const AdminCategoriesPage     = lazy(() => import('./pages/admin/AdminCategoriesPage'));
 const AdminReportsPage        = lazy(() => import('./pages/admin/AdminReportsPage'));
 const AdminAlertsPage         = lazy(() => import('./pages/admin/AdminAlertsPage'));
 const AdminCampaignsPage      = lazy(() => import('./pages/admin/AdminCampaignsPage'));
 const AdminCouponsPage        = lazy(() => import('./pages/admin/AdminCouponsPage'));
+const AdminClubPage           = lazy(() => import('./pages/admin/AdminClubPage'));
 const AdminSettingsPage       = lazy(() => import('./pages/admin/AdminSettingsPage'));
 const AdminActivityPage       = lazy(() => import('./pages/admin/AdminActivityPage'));
-const AdminInventoryPage      = lazy(() => import('./pages/admin/AdminInventoryPage'));
-const AdminUsersPage          = lazy(() => import('./pages/admin/AdminUsersPage'));
 const AdminReturnsPage        = lazy(() => import('./pages/admin/AdminReturnsPage'));
-const AdminSystemStatusPage   = lazy(() => import('./pages/admin/AdminSystemStatusPage'));
 
-// ─── Lazy: warehouse pages ──────────────────────────────────────────────────
-const WarehouseAlertsPage     = lazy(() => import('./pages/warehouse/WarehouseAlertsPage'));
-const WarehouseProductsPage   = lazy(() => import('./pages/warehouse/WarehouseProductsPage'));
+// ─── Lazy: warehouse pages (fulfillment / logistics) ─────────────────────────
+const WarehouseDashboardPage  = lazy(() => import('./pages/warehouse/WarehouseDashboardPage'));
 const WarehouseOrdersPage     = lazy(() => import('./pages/warehouse/WarehouseOrdersPage'));
-const WarehouseInventoryPage  = lazy(() => import('./pages/warehouse/WarehouseInventoryPage'));
+const AdminInventoryPage      = lazy(() => import('./pages/admin/AdminInventoryPage')); // "ניהול מלאי" — see App.jsx routing note below
 const SupplierOrdersPage      = lazy(() => import('./pages/warehouse/SupplierOrdersPage'));
 const StockAlertsPage         = lazy(() => import('./pages/warehouse/StockAlertsPage'));
 const BarcodeScannerPage      = lazy(() => import('./pages/warehouse/BarcodeScannerPage'));
+const WarehouseReturnsPage    = lazy(() => import('./pages/warehouse/WarehouseReturnsPage'));
 const WarehouseSettingsPage   = lazy(() => import('./pages/warehouse/WarehouseSettingsPage'));
+
+// ─── Lazy: super admin pages (platform / system) ──────────────────────────────
+const SuperAdminDashboardPage = lazy(() => import('./pages/superadmin/SuperAdminDashboardPage'));
+const AdminUsersPage          = lazy(() => import('./pages/admin/AdminUsersPage'));
+const AdminSystemStatusPage   = lazy(() => import('./pages/admin/AdminSystemStatusPage'));
+const SuperAdminSecurityPage  = lazy(() => import('./pages/superadmin/SuperAdminSecurityPage'));
+const SuperAdminAuditPage     = lazy(() => import('./pages/superadmin/SuperAdminAuditPage'));
+const SuperAdminSettingsPage  = lazy(() => import('./pages/superadmin/SuperAdminSettingsPage'));
 
 import AccessibilityWidget from './components/ui/AccessibilityWidget/AccessibilityWidget';
 
@@ -71,7 +77,7 @@ import AccessibilityWidget from './components/ui/AccessibilityWidget/Accessibili
 // profile couldn't be confirmed on this one page load — exactly the bug
 // this guard design exists to prevent. 'unknown' renders the same pending
 // state as the initial `loading` window: stay put, don't decide yet.
-const RequireAuth = ({ children }) => {
+export const RequireAuth = ({ children }) => {
   const { loading, authStatus } = useAuth();
   const location = useLocation();
   if (loading || authStatus === AUTH_STATUS.UNKNOWN) return <PageLoader />;
@@ -80,7 +86,7 @@ const RequireAuth = ({ children }) => {
     : <Navigate to="/login" state={{ from: location }} replace />;
 };
 
-const RequireAdmin = ({ children }) => {
+export const RequireAdmin = ({ children }) => {
   const { user, loading, authStatus } = useAuth();
   if (loading || authStatus === AUTH_STATUS.UNKNOWN) return <PageLoader />;
   if (authStatus !== AUTH_STATUS.AUTHENTICATED) return <Navigate to="/login" replace />;
@@ -88,11 +94,25 @@ const RequireAdmin = ({ children }) => {
   return children;
 };
 
-const RequireWarehouse = ({ children }) => {
+export const RequireWarehouse = ({ children }) => {
   const { user, loading, authStatus } = useAuth();
   if (loading || authStatus === AUTH_STATUS.UNKNOWN) return <PageLoader />;
   if (authStatus !== AUTH_STATUS.AUTHENTICATED) return <Navigate to="/login" replace />;
   if (!['warehouse', 'admin', 'superadmin'].includes(user.role)) return <Navigate to="/" replace />;
+  return children;
+};
+
+// Dedicated Super Admin area (platform/system: users & roles, system status,
+// security, privileged audit, system settings) — superadmin only. Admin and
+// warehouse are NOT included here, unlike RequireAdmin/RequireWarehouse
+// above, since this area is intentionally exclusive (see role architecture
+// reorg — Super Admin inherits Admin/Warehouse access via the *other* two
+// route trees, not this one).
+export const RequireSuperadmin = ({ children }) => {
+  const { user, loading, authStatus } = useAuth();
+  if (loading || authStatus === AUTH_STATUS.UNKNOWN) return <PageLoader />;
+  if (authStatus !== AUTH_STATUS.AUTHENTICATED) return <Navigate to="/login" replace />;
+  if (user.role !== 'superadmin') return <Navigate to="/" replace />;
   return children;
 };
 
@@ -169,34 +189,47 @@ export default function App() {
           <Route path="/warehouse" element={<Navigate to="/admin/inventory" replace />} />
           <Route path="/warehouse/*" element={<Navigate to="/admin/inventory" replace />} />
 
-          {/* ── Admin panel ── */}
+          {/* ── Admin panel (business management — commerce, catalog, ── */}
+          {/*    promotions, refunds, membership, analytics)          ── */}
           <Route path="/admin" element={<RequireAdmin><ErrorBoundary title="שגיאה בפאנל ניהול"><AdminLayout /></ErrorBoundary></RequireAdmin>}>
             <Route index element={<AdminDashboardPage />} />
             <Route path="orders" element={<AdminOrdersPage />} />
             <Route path="products" element={<AdminProductsPage />} />
-            <Route path="customers" element={<AdminCustomersPage />} />
-            <Route path="analytics" element={<AdminReportsPage />} />
-            <Route path="alerts" element={<AdminAlertsPage />} />
+            <Route path="categories" element={<AdminCategoriesPage />} />
             <Route path="campaigns" element={<AdminCampaignsPage />} />
             <Route path="coupons" element={<AdminCouponsPage />} />
             <Route path="returns" element={<AdminReturnsPage />} />
-            <Route path="settings" element={<AdminSettingsPage />} />
+            <Route path="club" element={<AdminClubPage />} />
+            <Route path="analytics" element={<AdminReportsPage />} />
+            <Route path="alerts" element={<AdminAlertsPage />} />
             <Route path="audit-log" element={<AdminActivityPage />} />
-            <Route path="users" element={<AdminUsersPage />} />
-            <Route path="system-status" element={<AdminSystemStatusPage />} />
+            <Route path="settings" element={<AdminSettingsPage />} />
           </Route>
 
-          {/* ── Inventory workspace (warehouse + admin + superadmin) ── */}
+          {/* ── Warehouse workspace (fulfillment/logistics only — no ── */}
+          {/*    business- or system-administration capability)      ── */}
           <Route path="/admin/inventory" element={<RequireWarehouse><ErrorBoundary title="שגיאה באזור המחסן"><AdminLayout /></ErrorBoundary></RequireWarehouse>}>
-            <Route index element={<AdminInventoryPage />} />
+            <Route index element={<WarehouseDashboardPage />} />
             <Route path="orders" element={<WarehouseOrdersPage />} />
-            <Route path="manage" element={<WarehouseInventoryPage />} />
-            <Route path="alerts" element={<WarehouseAlertsPage />} />
-            <Route path="products" element={<WarehouseProductsPage />} />
+            <Route path="manage" element={<AdminInventoryPage />} />
             <Route path="supplier-orders" element={<SupplierOrdersPage />} />
             <Route path="stock-alerts" element={<StockAlertsPage />} />
             <Route path="barcode-scanner" element={<BarcodeScannerPage />} />
+            <Route path="returns" element={<WarehouseReturnsPage />} />
             <Route path="settings" element={<WarehouseSettingsPage />} />
+          </Route>
+
+          {/* ── Super Admin area (platform/system only — superadmin ── */}
+          {/*    inherits Admin + Warehouse access via the two route ── */}
+          {/*    trees above; this tree is never nested under /admin ── */}
+          {/*    so it isn't reachable by a plain admin/warehouse user) ── */}
+          <Route path="/admin/superadmin" element={<RequireSuperadmin><ErrorBoundary title="שגיאה באזור מנהל ראשי"><AdminLayout /></ErrorBoundary></RequireSuperadmin>}>
+            <Route index element={<SuperAdminDashboardPage />} />
+            <Route path="users" element={<AdminUsersPage />} />
+            <Route path="system-status" element={<AdminSystemStatusPage />} />
+            <Route path="security" element={<SuperAdminSecurityPage />} />
+            <Route path="audit" element={<SuperAdminAuditPage />} />
+            <Route path="settings" element={<SuperAdminSettingsPage />} />
           </Route>
 
           <Route path="*" element={<NotFoundPage />} />

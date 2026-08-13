@@ -1,6 +1,20 @@
 import { useState, useEffect, useCallback } from 'react';
-import { ShoppingCart, AlertCircle, Loader2, Package, ChevronLeft, Crown } from 'lucide-react';
+import { ShoppingCart, AlertCircle, Loader2, Package, ChevronLeft, Crown, Store, Truck, Zap } from 'lucide-react';
 import { adminService } from '../../features/admin/api/admin.service';
+
+// This page intentionally keeps its own self-contained (non-i18n) label
+// maps — matching STATUS_META below — rather than importing the shared
+// customer-facing orderPresentation.js helper, which is i18n-key based and
+// this page has no translation context. A legacy order (shippingMethod:
+// null, created before Shipping V1) falls back to "לא צוין" — never
+// guessed from shippingCost (an old order may show ₪0 for reasons
+// unrelated to Store Pickup).
+const SHIPPING_META = {
+  store_pickup: { label: 'איסוף עצמי',  Icon: Store, color: 'text-orange-400 bg-orange-500/10' },
+  standard:     { label: 'משלוח רגיל', Icon: Truck, color: 'text-blue-400 bg-blue-500/10' },
+  express:      { label: 'משלוח מהיר', Icon: Zap,   color: 'text-purple-400 bg-purple-500/10' },
+};
+const SHIPPING_UNKNOWN = { label: 'לא צוין', Icon: Package, color: 'text-muted-foreground bg-muted/40' };
 
 const STATUS_META = {
   confirmed:  { label: 'ממתין לעיבוד', color: 'text-blue-400 bg-blue-500/10',    next: 'processing', btn: 'כנס לעיבוד' },
@@ -117,7 +131,7 @@ export default function WarehouseOrdersPage() {
             <table className="w-full text-sm min-w-[600px]">
               <thead className="bg-muted/40">
                 <tr>
-                  {['מספר הזמנה', 'לקוח', 'תאריך', 'פריטים', 'סכום', 'סטטוס', 'פעולה'].map(h => (
+                  {['מספר הזמנה', 'לקוח', 'תאריך', 'פריטים', 'משלוח', 'סכום', 'סטטוס', 'פעולה'].map(h => (
                     <th key={h} className="text-right px-4 py-3 text-muted-foreground font-medium whitespace-nowrap">{h}</th>
                   ))}
                 </tr>
@@ -127,6 +141,10 @@ export default function WarehouseOrdersPage() {
                   const statusKey = order.status in STATUS_META ? order.status : 'confirmed';
                   const sm        = STATUS_META[statusKey];
                   const isPending = advancing === order._id;
+                  const isMembershipOnly = (order.items ?? []).length > 0 &&
+                    (order.items ?? []).every(item => item.itemType === 'membership');
+                  const shipMeta = SHIPPING_META[order.shippingMethod] ?? SHIPPING_UNKNOWN;
+                  const ShipIcon = shipMeta.Icon;
                   return (
                     <tr key={order._id} className={`hover:bg-muted/20 transition-colors${order.isVipOrder ? ' bg-[#9E6EF1]/5' : ''}`}>
                       <td className="px-4 py-3 font-mono text-xs text-muted-foreground whitespace-nowrap">
@@ -153,6 +171,17 @@ export default function WarehouseOrdersPage() {
                           <Package className="w-3.5 h-3.5 flex-shrink-0" />
                           {order.items?.length ?? 0}
                         </div>
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap">
+                        {isMembershipOnly ? (
+                          <span className="text-xs text-muted-foreground">—</span>
+                        ) : (
+                          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${shipMeta.color}`}>
+                            <ShipIcon className="w-3 h-3" />
+                            {shipMeta.label}
+                            {order.shippingMethod && order.shippingCost > 0 ? ` · ${fmtPrice(order.shippingCost)}` : ''}
+                          </span>
+                        )}
                       </td>
                       <td className="px-4 py-3 font-medium text-foreground whitespace-nowrap">
                         {fmtPrice(order.total)}

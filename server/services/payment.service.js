@@ -48,6 +48,29 @@ const stripeProvider = require('./stripe.provider');
 const PROVIDERS = { mock: mockProvider, stripe: stripeProvider };
 const provider  = () => PROVIDERS[PROVIDER];
 
+// ── Safe display-metadata derivation ──────────────────────────────────────────
+// Neither provider ever returns a confirmed Stripe PaymentMethod (the current
+// Stripe integration creates a bare PaymentIntent with no attached payment
+// method — see stripe.provider.js createIntent — so there is no real
+// intent.payment_method.card to read brand/last4 from). The only place a real
+// card number ever exists is in this request's own body, for this one call —
+// brand/last4 are derived from it here and returned to the caller; the number
+// itself is never part of this return value, never logged, never persisted.
+const CARD_BRAND_PATTERNS = {
+  visa: /^4/, mastercard: /^5[1-5]/, amex: /^3[47]/, discover: /^6(?:011|5)/,
+};
+
+const getCardDisplayMeta = (cardNumber) => {
+  const raw = String(cardNumber || '').replace(/[\s-]/g, '');
+  if (!raw) return { brand: null, last4: null };
+  let brand = null;
+  for (const [name, re] of Object.entries(CARD_BRAND_PATTERNS)) {
+    if (re.test(raw)) { brand = name; break; }
+  }
+  const last4 = raw.length >= 4 ? raw.slice(-4) : null;
+  return { brand, last4 };
+};
+
 module.exports = {
   PROVIDER,
   createIntent:          (order, cardDetails)        => provider().createIntent(order, cardDetails),
@@ -55,4 +78,5 @@ module.exports = {
   processRefund:         (order, amount, reason)     => provider().processRefund(order, amount, reason),
   // Webhook signature verification is always Stripe — mock never sends webhooks
   constructWebhookEvent: (raw, sig, secret)          => stripeProvider.constructWebhookEvent(raw, sig, secret),
+  getCardDisplayMeta,
 };

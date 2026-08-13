@@ -19,6 +19,7 @@ const emitter = require('../events/emitter');
 const EVENTS  = require('../events/events');
 const { getActiveDiscountMap, getActivePointsMultiplierMap } = require('./campaign.service');
 const pointsService = require('./points.service');
+const shippingService = require('./shipping.service');
 const { POINTS_DEFAULT_RATE, POINTS_REDEMPTION_RATE, MEMBERSHIP_ITEM_TYPE } = require('../config/membership');
 
 // ─── Status transition rules ──────────────────────────────────────────────────
@@ -40,10 +41,13 @@ const WAREHOUSE_TRANSITIONS = {
 };
 
 // ─── Order number generation with collision retry ─────────────────────────────
+// Prefix is "TV" (TechVault) for every NEW order. Historical orders created
+// before this change keep whatever prefix they already have (e.g. "ORD-...")
+// — never rewritten; this only affects what new documents are generated with.
 const generateOrderNumber = async (sess, retries = 3) => {
   const date      = new Date().toISOString().slice(0, 10).replace(/-/g, '');
   const suffix    = crypto.randomBytes(4).toString('hex').toUpperCase();
-  const candidate = `ORD-${date}-${suffix}`;
+  const candidate = `TV-${date}-${suffix}`;
 
   const collision = await Order.findOne({ orderNumber: candidate }, '_id', { session: sess });
   if (!collision) return candidate;
@@ -55,11 +59,19 @@ const generateOrderNumber = async (sess, retries = 3) => {
 // ─── Core order logic — session-agnostic ─────────────────────────────────────
 // sess = Mongoose ClientSession for transactional execution, or null for none.
 // The MongoDB driver treats { session: null } as "no session" — safe either way.
-const _buildAndSaveOrder = async (userId, { shippingAddress, notes, couponCode, pointsToRedeem }, sess) => {
+const _buildAndSaveOrder = async (userId, { shippingAddress, notes, couponCode, pointsToRedeem, shippingMethod }, sess) => {
   const cart = await Cart.findOne({ user: userId }, null, { session: sess });
   if (!cart || cart.items.length === 0) {
     throw new AppError('Cart is empty', StatusCodes.BAD_REQUEST, 'CART_EMPTY');
   }
+
+  // Shipping V1 — validated up front, before any stock is touched, so a
+  // doomed request (bad method / unsupported country) never leaves behind a
+  // partial stock decrement. shippingCost itself is only computable once the
+  // real merchandise subtotal is known below — see shipping.service.js.
+  const resolvedShippingMethod = shippingMethod || 'standard';
+  shippingService.assertValidShippingMethod(resolvedShippingMethod);
+  shippingService.assertShippingCountrySupported(resolvedShippingMethod, shippingAddress?.country);
 
   const user = await User.findById(userId, 'membership', { session: sess });
   if (!user) throw new AppError('User not found', StatusCodes.NOT_FOUND, 'USER_NOT_FOUND');
@@ -128,8 +140,18 @@ const _buildAndSaveOrder = async (userId, { shippingAddress, notes, couponCode, 
     });
   }
 
-  const taxAmount    = 0; // prices are tax-inclusive
-  const shippingCost = 0;
+  const taxAmount = 0; // prices are tax-inclusive
+
+  // Shipping V1 — free-shipping eligibility is decided from the real
+  // merchandise subtotal BEFORE any coupon discount (see Part 7 of the
+  // Shipping V1 spec): a coupon must never retroactively strip an
+  // already-earned free-shipping benefit. isMember is the real,
+  // server-verified Club status resolved above — never a client claim.
+  const { cost: shippingCost } = shippingService.calculateShipping({
+    method:              resolvedShippingMethod,
+    merchandiseSubtotal: subtotal,
+    isActiveClubMember:  isMember,
+  });
 
   // Validate and apply coupon if provided — always server-side, never trust client
   let couponDiscount = 0;
@@ -206,6 +228,7 @@ const _buildAndSaveOrder = async (userId, { shippingAddress, notes, couponCode, 
         shippingAddress,
         subtotal:       parseFloat(subtotal.toFixed(2)),
         taxAmount,
+        shippingMethod: resolvedShippingMethod,
         shippingCost,
         couponCode:     appliedCoupon?.code  ?? null,
         couponType:     appliedCoupon?.type  ?? null,

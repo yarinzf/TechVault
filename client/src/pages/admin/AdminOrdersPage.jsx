@@ -11,6 +11,7 @@ import {
     Copy,
     MessageSquare,
     Package,
+    PackageCheck,
     MapPin,
     XCircle,
     CheckCircle2,
@@ -22,6 +23,7 @@ import {
 import { adminService } from '../../features/admin/api/admin.service';
 import { useTranslation } from '../../context/LanguageContext';
 import { useToast } from '../../hooks/useToast';
+import { getShippingMethodLabel, isMembershipOnlyOrder } from '../../features/orders/orderPresentation';
 
 function getStatusColor(status) {
     switch (status) {
@@ -72,6 +74,7 @@ export default function AdminOrdersPage() {
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [menuOpen, setMenuOpen]           = useState(null);
     const [statusFilter, setStatusFilter]   = useState('all');
+    const [deliveringId, setDeliveringId]   = useState(null);
 
     const ORDER_STATUS_OPTIONS = [
         { value: 'all',             label: t('admin.orders.status.all') },
@@ -173,6 +176,27 @@ export default function AdminOrdersPage() {
             handleOrderUpdate(updated);
         } catch (err) {
             toast.error(err.message || t('admin.orders.cancel_failed'));
+        }
+    };
+
+    // shipped -> delivered — the same real PATCH /orders/:id/status endpoint
+    // every other status change already goes through (adminService.updateOrderStatus).
+    // The backend (order.service.js#updateStatus) is the sole authority on
+    // whether this transition is allowed and on triggering points realization
+    // (pointsService.realizeEarnedPoints) — this handler only ever reflects
+    // whatever the server actually returns, never assumes success.
+    const handleMarkDelivered = async (order) => {
+        if (deliveringId) return; // a transition is already in flight — ignore a stray re-click
+        setMenuOpen(null);
+        setDeliveringId(order._id);
+        try {
+            const updated = await adminService.updateOrderStatus(order._id, 'delivered');
+            handleOrderUpdate(updated);
+            toast.success(t('admin.orders.delivered_success'));
+        } catch (err) {
+            toast.error(err.message || t('admin.orders.delivered_failed'));
+        } finally {
+            setDeliveringId(null);
         }
     };
 
@@ -313,10 +337,13 @@ export default function AdminOrdersPage() {
                                                 <button
                                                     type="button"
                                                     onClick={() => setMenuOpen(menuOpen === order._id ? null : order._id)}
-                                                    className="p-2 hover:bg-secondary rounded-lg transition-colors"
+                                                    className="p-2 hover:bg-secondary rounded-lg transition-colors disabled:opacity-40"
                                                     title={t('admin.orders.more_actions')}
+                                                    disabled={deliveringId === order._id}
                                                 >
-                                                    <MoreVertical className="w-4 h-4 text-muted-foreground" />
+                                                    {deliveringId === order._id
+                                                        ? <Loader2 className="w-4 h-4 text-muted-foreground animate-spin" />
+                                                        : <MoreVertical className="w-4 h-4 text-muted-foreground" />}
                                                 </button>
 
                                                 {menuOpen === order._id && (
@@ -327,6 +354,14 @@ export default function AdminOrdersPage() {
                                                         <MenuButton icon={<MessageSquare className="w-4 h-4 text-[#3b82f6]" />} onClick={() => setMenuOpen(null)}>
                                                             {t('admin.orders.action.add_note')}
                                                         </MenuButton>
+                                                        {order.status === 'shipped' && (
+                                                            <MenuButton
+                                                                icon={<PackageCheck className="w-4 h-4 text-[#10b981]" />}
+                                                                onClick={() => handleMarkDelivered(order)}
+                                                            >
+                                                                {t('admin.orders.mark_delivered')}
+                                                            </MenuButton>
+                                                        )}
                                                         {!['cancelled', 'refunded', 'delivered'].includes(order.status) && (
                                                             <MenuButton
                                                                 icon={<XCircle className="w-4 h-4 text-[#ef4444]" />}
@@ -507,20 +542,38 @@ function OrderDetailsModal({ order, onClose, getStatusColor, getStatusText, getP
                         )}
                     </div>
 
-                    {order.shippingAddress && (
+                    {!isMembershipOnlyOrder(order) && (
                         <div className="bg-secondary/30 rounded-lg p-5">
                             <h3 className="text-foreground mb-4 flex items-center gap-2">
                                 <MapPin className="w-5 h-5 text-[#2563eb]" />
                                 {t('admin.orders.details.shipping_address')}
                             </h3>
-                            <div className="space-y-1 text-foreground text-sm">
-                                {order.shippingAddress.street && <p>{order.shippingAddress.street}</p>}
-                                <p>
-                                    {order.shippingAddress.city}
-                                    {order.shippingAddress.zip ? ` ${order.shippingAddress.zip}` : ''}
-                                </p>
-                                {order.shippingAddress.country && <p>{order.shippingAddress.country}</p>}
+                            <div className="flex items-center gap-6 mb-3 text-sm">
+                                <div>
+                                    <p className="text-xs text-muted-foreground mb-0.5">{t('order.shipping_method_label')}</p>
+                                    <p className="text-foreground">{getShippingMethodLabel(order.shippingMethod, t)}</p>
+                                </div>
+                                <div>
+                                    <p className="text-xs text-muted-foreground mb-0.5">{t('order.shipping_cost_label')}</p>
+                                    <p className="text-foreground">
+                                        {(order.shippingCost ?? 0) === 0 ? t('checkout.free') : formatAmount(order.shippingCost)}
+                                    </p>
+                                </div>
                             </div>
+                            {order.shippingAddress?.street ? (
+                                <div className="space-y-1 text-foreground text-sm border-t border-border/50 pt-3">
+                                    <p>{order.shippingAddress.street}</p>
+                                    <p>
+                                        {order.shippingAddress.city}
+                                        {order.shippingAddress.zip ? ` ${order.shippingAddress.zip}` : ''}
+                                    </p>
+                                    {order.shippingAddress.country && <p>{order.shippingAddress.country}</p>}
+                                </div>
+                            ) : order.shippingAddress ? (
+                                <p className="text-sm text-muted-foreground border-t border-border/50 pt-3">
+                                    {t('order.shipping_pickup_note')}
+                                </p>
+                            ) : null}
                         </div>
                     )}
 

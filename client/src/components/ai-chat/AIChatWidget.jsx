@@ -17,7 +17,11 @@ const ICONS = {
 };
 const MAX_MESSAGE_LENGTH = 500;
 const RESPONSE_DELAY_MS = 800;
-const HIDDEN_ROUTE_PATTERN = /^\/(checkout|order-success)(\/|$)/;
+// Suppressed only on Checkout — an active payment flow shouldn't be
+// interrupted by the launcher. Order Success is a normal storefront page and
+// must use this same global widget (see openSupportChat / the "need help"
+// card there), not a hidden or duplicated one.
+const HIDDEN_ROUTE_PATTERN = /^\/checkout(\/|$)/;
 
 let idCounter = 0;
 const nextId = () => `ai-chat-msg-${++idCounter}`;

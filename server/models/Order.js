@@ -107,10 +107,40 @@ const orderSchema = new mongoose.Schema(
       city:    { type: String, trim: true },
       zip:     { type: String, trim: true },
       country: { type: String, trim: true },
+      // Safe presentation-only labels — the real (often Hebrew) display text
+      // the customer saw and picked in Checkout's city/country SearchableSelect,
+      // captured alongside the canonical value above (which stays whatever
+      // internal business logic/validation needs — e.g. English "Israel").
+      // Absent on orders placed before this field existed; presentation code
+      // must fall back to the canonical field, never fabricate a label.
+      cityLabel:    { type: String, trim: true },
+      countryLabel: { type: String, trim: true },
     },
 
     subtotal:       { type: Number, required: true, min: 0 },
     taxAmount:      { type: Number, required: true, min: 0 },
+
+    // ── Shipping V1 — snapshot, locked at checkout ──────────────────────────
+    // shippingCost is never recomputed later: historical orders must keep
+    // the exact amount charged at the time, even if the rules in
+    // shipping.service.js change afterward.
+    //
+    // default: null (NOT 'standard') is deliberate — order.service.js always
+    // writes an explicit real value for every order it creates, so this
+    // default only ever surfaces for documents Shipping V1 never touched:
+    // pre-Shipping-V1 legacy orders, and membership-purchase orders (built
+    // directly via Order.create in membership.service.js, which has nothing
+    // physical to ship). Defaulting to 'standard' would fabricate a method
+    // that was never actually chosen — the presentation layer must show a
+    // truthful "not specified" state instead (see orderPresentation.js).
+    // null is included in the enum values (matching couponType's existing
+    // pattern below) so hydrating/saving a legacy document never fails
+    // validation.
+    shippingMethod: {
+      type: String,
+      enum: { values: ['store_pickup', 'standard', 'express', null], message: 'Invalid shipping method' },
+      default: null,
+    },
     shippingCost:   { type: Number, default: 0, min: 0 },
 
     // Coupon snapshot — locked at checkout, independent of live coupon state
@@ -156,6 +186,16 @@ const orderSchema = new mongoose.Schema(
       default: 'unpaid',
     },
     paymentRef:     { type: String, default: null },   // Stripe PaymentIntent ID (stub)
+
+    // ── Safe payment display snapshot — set once at create-intent time, never
+    // the full PAN/CVV (never even transiently stored — only brand/last4 are
+    // derived in-memory from the submitted card number and persisted; see
+    // payment.controller.js / payment.service.js). null for legacy orders
+    // placed before this field existed and for any order where no credit
+    // card was actually collected (zero-cash / points-covered orders).
+    paymentMethod:     { type: String, enum: ['credit_card', 'zero_cash', null], default: null },
+    paymentCardBrand:  { type: String, default: null },
+    paymentCardLast4:  { type: String, default: null },
     expiresAt:      { type: Date,   default: null },   // payment deadline for pending_payment orders
     refundedAmount: { type: Number, default: 0, min: 0 }, // cumulative amount refunded so far
 
@@ -193,7 +233,11 @@ const orderSchema = new mongoose.Schema(
 // are unaffected: this only runs on writes, never on reads of old data.
 orderSchema.pre('validate', function (next) {
   const hasPhysicalItem = (this.items || []).some(item => item.itemType !== 'membership');
-  if (hasPhysicalItem) {
+  // Store Pickup has nothing to ship to — no address is required for it,
+  // even on an order that otherwise contains physical items (see Shipping
+  // V1 spec, Part 20). standard/express still require a full address.
+  const requiresAddress = hasPhysicalItem && this.shippingMethod !== 'store_pickup';
+  if (requiresAddress) {
     const addr = this.shippingAddress || {};
     if (!addr.street || !addr.city || !addr.country) {
       this.invalidate(

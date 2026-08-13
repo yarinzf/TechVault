@@ -140,7 +140,7 @@ const options = {
           type: 'object',
           properties: {
             _id:           { type: 'string', example: '665d4c5b1e2f3a4b5c6d7e8f' },
-            orderNumber:   { type: 'string', example: 'ORD-20240101-A1B2C3D4' },
+            orderNumber:   { type: 'string', example: 'TV-20240101-A1B2C3D4' },
             status:        { type: 'string', enum: ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled', 'refunded'], example: 'confirmed' },
             paymentStatus: { type: 'string', enum: ['pending', 'paid', 'failed', 'refunded'], example: 'paid' },
             subtotal:      { type: 'number', example: 1999.99 },
@@ -195,7 +195,7 @@ const options = {
             _id:       { type: 'string' },
             type:      { type: 'string', enum: ['order_confirmed', 'order_shipped', 'order_delivered', 'promotion', 'system'] },
             title:     { type: 'string', example: 'Order Confirmed' },
-            message:   { type: 'string', example: 'Your order ORD-20240101-A1B2C3D4 has been placed.' },
+            message:   { type: 'string', example: 'Your order TV-20240101-A1B2C3D4 has been placed.' },
             isRead:    { type: 'boolean', example: false },
             createdAt: { type: 'string', format: 'date-time' },
           },

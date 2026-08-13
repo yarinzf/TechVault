@@ -14,6 +14,7 @@ import PaymentCountdown from '../../features/orders/components/PaymentCountdown'
 import {
   getBadgeBucket, BADGE_ICON, BADGE_LABEL_KEY, getTimelineSteps,
   isMembershipOnlyOrder, CANCELLABLE_STATUSES, canRequestReturn,
+  getShippingMethodLabel,
 } from '../../features/orders/orderPresentation';
 import s from './OrdersPage.module.css';
 
@@ -305,6 +306,11 @@ export default function OrdersPage() {
                     )}
                     {!membershipOnly && order.shippingAddress?.city && (
                       <div className={s.infoRow}><MapPin size={13} />{t('order.shipping_to')} {order.shippingAddress.city}</div>
+                    )}
+                    {/* Legacy orders (shippingMethod: null) simply omit this
+                        row rather than showing a guessed method. */}
+                    {!membershipOnly && order.shippingMethod && (
+                      <div className={s.infoRow}><Truck size={13} />{getShippingMethodLabel(order.shippingMethod, t)}</div>
                     )}
                     {order.paymentStatus === 'refunded' && (
                       <div className={`${s.infoRow} ${s.infoRowRefund}`}>{t('order.refunded_full')}</div>

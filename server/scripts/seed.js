@@ -43,7 +43,7 @@ const info = (msg) => console.log(c.dim('  ' + msg));
 const randHex = () => crypto.randomBytes(4).toString('hex').toUpperCase();
 const orderNum = () => {
   const date = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-  return `ORD-${date}-${randHex()}`;
+  return `TV-${date}-${randHex()}`;
 };
 const daysAgo = (n) => new Date(Date.now() - n * 24 * 60 * 60 * 1000);
 

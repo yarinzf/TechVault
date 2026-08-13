@@ -15,6 +15,7 @@ import { openSupportChat } from '../../utils/openSupportChat';
 import {
   getBadgeBucket, BADGE_ICON, BADGE_LABEL_KEY, getTimelineSteps,
   isMembershipOnlyOrder, CANCELLABLE_STATUSES, canRequestReturn,
+  getShippingMethodLabel,
 } from '../../features/orders/orderPresentation';
 import s from './OrderDetailsPage.module.css';
 
@@ -300,7 +301,8 @@ export default function OrderDetailsPage() {
             )}
             {!membershipOnly && (
               <div className={s.ordmSumRow}>
-                <span>{t('checkout.shipping')}</span><span>{t('checkout.free')}</span>
+                <span>{t('checkout.shipping')}</span>
+                <span>{(order.shippingCost ?? 0) === 0 ? t('checkout.free') : formatPrice(order.shippingCost)}</span>
               </div>
             )}
             {(order.taxAmount ?? 0) > 0 && (
@@ -326,10 +328,29 @@ export default function OrderDetailsPage() {
           <div className={s.osCard}>
             <div className={s.osCardTitle}><Truck size={16} /> {t('order.details.delivery_title')}</div>
             <div className={s.osInfoGrid}>
-              <div className={`${s.osInfoItem} ${s.span2}`}>
-                <div className={s.osInfoLabel}>{t('order.details.full_address')}</div>
-                <div className={s.osInfoVal} dir="ltr">{addr.street}, {addr.city}, {addr.zip}, {addr.country}</div>
+              <div className={s.osInfoItem}>
+                <div className={s.osInfoLabel}>{t('order.shipping_method_label')}</div>
+                <div className={s.osInfoVal}>{getShippingMethodLabel(order.shippingMethod, t)}</div>
               </div>
+              <div className={s.osInfoItem}>
+                <div className={s.osInfoLabel}>{t('order.shipping_cost_label')}</div>
+                <div className={s.osInfoVal}>
+                  {(order.shippingCost ?? 0) === 0 ? t('checkout.free') : formatPrice(order.shippingCost)}
+                </div>
+              </div>
+              {/* Store Pickup never collects a real delivery address (see
+                  order.validator.js) — show a truthful note instead of a
+                  malformed/blank address line. */}
+              {addr.street ? (
+                <div className={`${s.osInfoItem} ${s.span2}`}>
+                  <div className={s.osInfoLabel}>{t('order.details.full_address')}</div>
+                  <div className={s.osInfoVal} dir="ltr">{addr.street}, {addr.city}, {addr.zip}, {addr.country}</div>
+                </div>
+              ) : (
+                <div className={`${s.osInfoItem} ${s.span2}`}>
+                  <div className={s.osInfoVal}>{t('order.shipping_pickup_note')}</div>
+                </div>
+              )}
             </div>
           </div>
         )}

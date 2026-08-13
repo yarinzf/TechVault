@@ -1,37 +1,40 @@
 import { Loader2, Truck, CreditCard, Lock, ShieldCheck, RotateCcw, Ticket, Monitor, Gift } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useTranslation } from '../../context/LanguageContext';
+import { useLanguage } from '../../context/LanguageContext';
+import { freeShippingThreshold } from '../../features/checkout/shippingEstimate';
+import { formatDiscountAmount } from '../../features/checkout/formatDiscount';
 import s from './checkout.module.css';
-
-const DELIVERY_LABEL_KEYS = {
-  home_delivery: 'checkout.delivery.home',
-  pickup_point:  'checkout.delivery.pickup',
-  store_pickup:  'checkout.delivery.store',
-};
 
 export default function CheckoutSummary({
   items,
   coupon,        // { input, applied, loading, error, onInput, onApply, onRemove }
   points,        // { isMember, available, maxRedeemable, redeem, discount, onRedeemChange }
   totals,        // { totalPrice, displayTotal, installments }
+  shipping,      // { method, cost, isFree, merchandiseSubtotal, isMember }
   currency,      // { formatPrice, loading, fallback, code }
-  delivery,
   placing,
   orderExpired,
   isRetry,
   onPlaceOrder,
 }) {
-  const t = useTranslation();
+  const { t, language } = useLanguage();
   const { formatPrice, loading: loadingCurrency, fallback: currencyFallback, code: currencyCode } = currency;
   const { totalPrice, displayTotal, installments } = totals;
   const showInstallSummary = displayTotal >= 500 && installments > 1;
+
+  // Free-standard-shipping progress note — only meaningful once a method is
+  // chosen and it's Standard (Express is never free; Store Pickup is always
+  // free, so a "spend more" nudge would be misleading for either).
+  const shippingRemaining = shipping?.method === 'standard' && !shipping.isFree
+    ? Math.max(0, freeShippingThreshold(shipping.isMember) - shipping.merchandiseSubtotal)
+    : 0;
 
   return (
     <>
       {/* Coupon at top — matching Sapir's co-summary-coupon */}
       <div className={s.couponSectionTop}>
         <div className={s.couponSectionTitle}>
-          <Ticket size={14} /> {t('checkout.coupon_title') || 'קופון / שובר מתנה'}
+          <Ticket size={14} /> {t('checkout.coupon_title')}
         </div>
         {coupon.applied ? (
           <div className={s.couponApplied}>
@@ -53,7 +56,7 @@ export default function CheckoutSummary({
             <div className={s.couponRow}>
               <input
                 className={`input ${s.couponInput}${coupon.error ? ` ${s.inputErr}` : ''}`}
-                placeholder={t('checkout.coupon_placeholder') || 'הכנס קוד קופון'}
+                placeholder={t('checkout.coupon_placeholder')}
                 value={coupon.input}
                 onChange={e => coupon.onInput(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && coupon.onApply()}
@@ -67,7 +70,7 @@ export default function CheckoutSummary({
                 onClick={coupon.onApply}
                 disabled={placing || coupon.loading || !coupon.input.trim()}
               >
-                {coupon.loading ? '…' : t('checkout.coupon_apply') || 'החל'}
+                {coupon.loading ? '…' : t('checkout.coupon_apply')}
               </button>
             </div>
             {coupon.error && <p className={s.couponError} role="alert">{coupon.error}</p>}
@@ -168,19 +171,38 @@ export default function CheckoutSummary({
       {coupon.applied && (
         <div className={`${s.summaryRow} ${s.discountRow}`}>
           <span>{t('checkout.coupon_discount')} ({coupon.applied.code})</span>
-          <span>−{formatPrice(coupon.applied.discount)}</span>
+          <span>{formatDiscountAmount(coupon.applied.discount, formatPrice, language)}</span>
         </div>
       )}
       {points?.discount > 0 && (
         <div className={`${s.summaryRow} ${s.discountRow}`}>
           <span>{t('checkout.points_discount')} ({points.redeem.toLocaleString()})</span>
-          <span>−{formatPrice(points.discount)}</span>
+          <span>{formatDiscountAmount(points.discount, formatPrice, language)}</span>
         </div>
       )}
       <div className={s.summaryRow}>
         <span className={s.sumLabel}>{t('checkout.shipping')}</span>
-        <span className={s.sumValGreen}>{t('checkout.free')}</span>
+        {!shipping?.method ? (
+          <span className={s.sumVal}>{t('cart.shipping_at_checkout')}</span>
+        ) : shipping.isFree ? (
+          <span className={s.sumValGreen}>{t('checkout.free')}</span>
+        ) : (
+          <span className={s.sumVal}>{formatPrice(shipping.cost)}</span>
+        )}
       </div>
+      {/* Club-note kept OUT of the value cell above (on its own line, like
+          shippingRemaining below) — nesting it inside the value <span> made
+          that row's value text wider than every other row's, so "חינם"
+          rendered shifted inward instead of flush against the same value
+          column every other row's amount sits on. */}
+      {shipping?.isFree && shipping.method === 'standard' && shipping.isMember && (
+        <p className={s.currencyNote}>{t('checkout.free_shipping_club_note')}</p>
+      )}
+      {shippingRemaining > 0 && (
+        <p className={s.currencyNote}>
+          {t('checkout.shipping_progress').replace('{amount}', formatPrice(shippingRemaining))}
+        </p>
+      )}
 
       <hr className={s.divider} />
 
@@ -222,9 +244,9 @@ export default function CheckoutSummary({
       </button>
 
       <div className={s.badges}>
-        <div className={s.badge}><Lock size={12} className={s.badgeIcon} /> {t('trust.pdp_secure') || 'תשלום מאובטח'}</div>
-        <div className={s.badge}><ShieldCheck size={12} className={s.badgeIcon} /> SSL {t('checkout.ssl_full') || 'מלא'}</div>
-        <div className={s.badge}><RotateCcw size={12} className={s.badgeIcon} /> {t('trust.pdp_returns') || 'החזרה ב-30 יום'}</div>
+        <div className={s.badge}><Lock size={12} className={s.badgeIcon} /> {t('trust.pdp_secure')}</div>
+        <div className={s.badge}><ShieldCheck size={12} className={s.badgeIcon} /> SSL {t('checkout.ssl_full')}</div>
+        <div className={s.badge}><RotateCcw size={12} className={s.badgeIcon} /> {t('trust.pdp_returns')}</div>
       </div>
     </>
   );

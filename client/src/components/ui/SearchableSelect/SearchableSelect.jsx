@@ -21,6 +21,12 @@ export default function SearchableSelect({
   ok = false,
   describedBy,
   emptyText = null,
+  // Plain (non-CSS-module) class applied to every part of the component
+  // (control input, dropdown list, options) so a consuming page can style
+  // this instance from its own stylesheet via :global(...) — CSS-module
+  // class names are hashed per-file at build time and can't be targeted
+  // reliably from outside, so this is the supported styling hook instead.
+  variant = null,
 }) {
   const uid       = useId();
   const listId    = `${uid}-list`;
@@ -119,18 +125,21 @@ export default function SearchableSelect({
     }
   };
 
+  const variantCls = variant ? `sv-select--${variant}` : '';
+
   const inputCls = [
     s.input,
     error   ? s.inputError   : '',
     ok      ? s.inputOk      : '',
     open    ? s.inputOpen     : '',
     disabled || loading ? s.inputDisabled : '',
+    variantCls,
   ].filter(Boolean).join(' ');
 
   return (
     <div
       ref={containerRef}
-      className={s.wrap}
+      className={[s.wrap, variantCls].filter(Boolean).join(' ')}
       onKeyDown={handleKeyDown}
     >
       <div className={s.control} onClick={() => open ? closeList() : openList()}>
@@ -143,6 +152,8 @@ export default function SearchableSelect({
           aria-controls={listId}
           aria-activedescendant={activeIdx >= 0 ? `${listId}-opt-${activeIdx}` : undefined}
           aria-describedby={describedBy}
+          aria-invalid={error || undefined}
+          data-ok={ok || undefined}
           autoComplete="off"
           readOnly={!open}
           value={open ? query : currentLabel}
@@ -163,7 +174,7 @@ export default function SearchableSelect({
           ref={listRef}
           id={listId}
           role="listbox"
-          className={s.list}
+          className={[s.list, variantCls].filter(Boolean).join(' ')}
         >
           {visible.length === 0 ? (
             <li className={s.empty}>{resolvedEmptyText}</li>
@@ -174,12 +185,14 @@ export default function SearchableSelect({
                   key={opt.value}
                   id={`${listId}-opt-${i}`}
                   data-idx={i}
+                  data-active={i === activeIdx || undefined}
                   role="option"
                   aria-selected={opt.value === value}
                   className={[
                     s.option,
                     opt.value === value ? s.optionSelected : '',
                     i === activeIdx    ? s.optionActive   : '',
+                    variantCls,
                   ].filter(Boolean).join(' ')}
                   onMouseDown={e => { e.preventDefault(); selectOption(opt); }}
                   onMouseEnter={() => setActiveIdx(i)}
