@@ -1,0 +1,225 @@
+name: Apply Production Category Migration
+
+# ── ONE-TIME / MANUAL production operation ──────────────────────────────────
+# Applies the canonical category taxonomy (server/config/categoryTaxonomy.js)
+# to production via the existing, already-safe/idempotent
+# server/scripts/migrateCatalogCategories.js. This is intentionally NOT part
+# of the regular deploy workflow (.github/workflows/deploy.yml) and must
+# never run automatically on push or on every deployment — workflow_dispatch
+# only, gated behind an explicit typed confirmation input.
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: 'Type APPLY_PRODUCTION_CATEGORY_MIGRATION to continue'
+        required: true
+
+concurrency:
+  group: production-category-migration
+  cancel-in-progress: false
+
+env:
+  SSH_KEY_PATH: /home/runner/.ssh/deploy_key
+
+jobs:
+  migrate-categories:
+    name: Apply canonical category taxonomy to production
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Validate confirmation input
+        run: |
+          if [ "${{ inputs.confirmation }}" != "APPLY_PRODUCTION_CATEGORY_MIGRATION" ]; then
+            echo "::error::confirmation input must be exactly APPLY_PRODUCTION_CATEGORY_MIGRATION (got: '${{ inputs.confirmation }}')"
+            exit 1
+          fi
+          echo "Confirmation accepted."
+
+      # ── Same SSH setup pattern as deploy.yml / rotate-production-credentials.yml ──
+      - name: Configure SSH
+        env:
+          _HOST: ${{ secrets.EC2_HOST }}
+          _USER: ${{ secrets.EC2_USER }}
+          _KEY:  ${{ secrets.EC2_SSH_KEY }}
+        run: |
+          MISSING=0
+          if [ -n "$_HOST" ]; then echo "EC2_HOST: present";    else echo "::error::EC2_HOST: MISSING";    MISSING=1; fi
+          if [ -n "$_USER" ]; then echo "EC2_USER: present";    else echo "::error::EC2_USER: MISSING";    MISSING=1; fi
+          if [ -n "$_KEY" ];  then echo "EC2_SSH_KEY: present"; else echo "::error::EC2_SSH_KEY: MISSING"; MISSING=1; fi
+          if [ "$MISSING" -eq 1 ]; then echo "::error::One or more required secrets are missing"; exit 1; fi
+
+          mkdir -p "$(dirname "$SSH_KEY_PATH")"
+          printf '%s\n' "$_KEY" > "$SSH_KEY_PATH"
+          chmod 600 "$SSH_KEY_PATH"
+          ssh-keyscan -H "$_HOST" >> "$(dirname "$SSH_KEY_PATH")/known_hosts" 2>/dev/null || echo "::warning::ssh-keyscan failed (non-fatal)"
+          echo "SSH configured successfully"
+
+      - name: Sync repository to latest main (scripts must exist on the host)
+        run: |
+          ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
+            cd /opt/techvault &&
+            git fetch origin &&
+            git reset --hard origin/main &&
+            chmod +x devops/scripts/*.sh
+          '
+
+      # ── Same reasoning as rotate-production-credentials.yml: `git reset
+      #    --hard` only updates files on the EC2 HOST, never a running
+      #    container's filesystem (the image was already built and started
+      #    by a prior deploy). Copy both scripts into the already-running
+      #    backend container explicitly, rather than assuming they're
+      #    already baked in from the last deploy. ─────────────────────────
+      - name: Inject migration scripts into running backend container
+        run: |
+          ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
+            set -e
+            cd /opt/techvault
+
+            for f in server/scripts/migrateCatalogCategories.js server/scripts/runCategoryMigrationProd.js server/config/categoryTaxonomy.js; do
+              test -f "$f" || { echo "::error::Not found on host after sync: $f"; exit 1; }
+            done
+
+            BACKEND_CONTAINER=$(docker compose ps -q backend)
+            if [ -z "$BACKEND_CONTAINER" ]; then
+              echo "::error::backend container is not running (docker compose ps -q backend returned empty)"
+              exit 1
+            fi
+            echo "Backend container: $BACKEND_CONTAINER"
+
+            docker cp server/config/categoryTaxonomy.js        "${BACKEND_CONTAINER}:/app/server/config/categoryTaxonomy.js"
+            docker cp server/scripts/migrateCatalogCategories.js "${BACKEND_CONTAINER}:/app/server/scripts/migrateCatalogCategories.js"
+            docker cp server/scripts/runCategoryMigrationProd.js "${BACKEND_CONTAINER}:/app/server/scripts/runCategoryMigrationProd.js"
+
+            docker compose exec -T backend node --check /app/server/config/categoryTaxonomy.js
+            docker compose exec -T backend node --check /app/server/scripts/migrateCatalogCategories.js
+            docker compose exec -T backend node --check /app/server/scripts/runCategoryMigrationProd.js
+            echo "Scripts injected and verified inside the running backend container."
+          '
+
+      # ── Record the pre-migration state for the run log — informational only. ──
+      - name: Pre-migration category snapshot (informational)
+        run: |
+          curl -sS --max-time 15 https://techvault.co.il/api/v1/products/categories \
+            | python3 -c "
+          import json, sys
+          d = json.load(sys.stdin)['data']['categories']
+          roots = [c for c in d if not c.get('parentCategory')]
+          children = [c for c in d if c.get('parentCategory')]
+          print(f'BEFORE — total: {len(d)}, root: {len(roots)}, child: {len(children)}')
+          "
+
+      # ── Backup is mandatory and MUST happen before any write. ──────────────
+      - name: Pre-migration MongoDB backup
+        run: |
+          ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} \
+            'sudo /opt/techvault/devops/scripts/backup-mongo.sh'
+
+      - name: Verify backup exists and is non-empty
+        run: |
+          ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
+            LATEST=$(ls -t /opt/techvault/backups/mongodb/techvault_*.gz 2>/dev/null | head -1)
+            if [ -z "$LATEST" ]; then
+              echo "::error::No backup archive found after backup step"
+              exit 1
+            fi
+            SIZE=$(stat -c%s "$LATEST")
+            echo "Latest backup: $LATEST ($SIZE bytes)"
+            if [ "$SIZE" -le 0 ]; then
+              echo "::error::Backup file is empty"
+              exit 1
+            fi
+          '
+
+      # ── The migration itself. Connects via MONGO_URI_PROD directly (see
+      #    runCategoryMigrationProd.js) — never runs npm run seed, never
+      #    touches users/orders/carts/coupons/memberships, never deletes a
+      #    product or a category (deactivates, keeps _id). Non-zero exit
+      #    here stops the workflow immediately — no later step runs. ───────
+      - name: Apply category migration
+        run: |
+          set -euo pipefail
+          ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
+            cd /opt/techvault &&
+            docker compose exec -T backend node server/scripts/runCategoryMigrationProd.js
+          ' | tee /tmp/migration-output.log
+          grep -q "CATEGORY_MIGRATION_RESULT_JSON:" /tmp/migration-output.log || {
+            echo "::error::No result JSON found in migration output — treating as failure"
+            exit 1
+          }
+
+      # ── Prove the live public API now returns the real hierarchical
+      #    taxonomy, not the old flat 15-category list — checks the exact
+      #    structure from server/config/categoryTaxonomy.js. ────────────────
+      - name: Live API verification — canonical taxonomy is now live
+        run: |
+          curl -sS --max-time 15 https://techvault.co.il/api/v1/products/categories -o /tmp/categories-after.json
+          python3 -c "
+          import json, sys
+
+          with open('/tmp/categories-after.json') as f:
+              cats = json.load(f)['data']['categories']
+
+          by_id = {c['_id']: c for c in cats}
+          roots = [c for c in cats if not c.get('parentCategory')]
+          children = [c for c in cats if c.get('parentCategory')]
+          children_by_parent_slug = {}
+          for c in children:
+              parent = by_id.get(c['parentCategory'])
+              if not parent:
+                  print(f'::error::orphan category \"{c[\"slug\"]}\" references a nonexistent parent {c[\"parentCategory\"]}')
+                  sys.exit(1)
+              children_by_parent_slug.setdefault(parent['slug'], set()).add(c['slug'])
+
+          print(f'AFTER — total: {len(cats)}, root: {len(roots)}, child: {len(children)}')
+
+          EXPECTED = {
+              'computers':     {'laptops', 'desktops', 'mini-pc', 'all-in-one'},
+              'pc-components': {'cpus', 'gpus', 'motherboards', 'ram', 'psus', 'cases', 'cooling', 'fans', 'sound-cards', 'capture-cards', 'network-cards'},
+              'storage':       {'ssd', 'hdd', 'external-drives', 'usb-flash-drives', 'memory-cards'},
+              'peripherals':   {'keyboards', 'mice', 'mouse-pads', 'headsets', 'speakers', 'microphones', 'webcams'},
+              'networking':    {'routers', 'mesh', 'switches', 'access-points', 'network-adapters'},
+              'gaming':        {'gaming-chairs', 'gaming-desks', 'controllers', 'racing-wheels', 'flight-sticks', 'vr', 'streaming-gear'},
+              'consoles':      {'playstation', 'xbox', 'nintendo', 'handheld-consoles'},
+              'printers':      {'scanners', 'ink-toner'},
+          }
+
+          failed = False
+          for parent_slug, expected_children in EXPECTED.items():
+              actual = children_by_parent_slug.get(parent_slug, set())
+              missing = expected_children - actual
+              unexpected = actual - expected_children
+              if missing or unexpected:
+                  failed = True
+                  print(f'::error::\"{parent_slug}\" children mismatch — missing: {sorted(missing)}, unexpected: {sorted(unexpected)}')
+              else:
+                  print(f'OK: \"{parent_slug}\" has exactly the expected {len(expected_children)} children')
+
+          if len(roots) != 15:
+              failed = True
+              print(f'::error::expected 15 active root categories, found {len(roots)}')
+          if len(cats) != 72:
+              failed = True
+              print(f'::error::expected 72 active categories total, found {len(cats)}')
+
+          if failed:
+              sys.exit(1)
+          print('Canonical taxonomy verified live on production.')
+          "
+
+      # ── Same post-change health check pattern as deploy.yml / rotate-production-credentials.yml. ──
+      - name: Post-migration production health check
+        run: |
+          ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} \
+            'sudo /opt/techvault/devops/scripts/health-check.sh'
+
+      - name: Cleanup SSH key
+        if: always()
+        run: rm -f "$SSH_KEY_PATH"
