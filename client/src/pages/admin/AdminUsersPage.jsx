@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Search, Users, ShieldCheck, Warehouse, UserCheck, UserX } from 'lucide-react';
 import { adminService } from '../../features/admin/api/admin.service';
 import { useAuth } from '../../hooks/useAuth';
+import { useToast } from '../../hooks/useToast';
 
 const ROLE_CONFIG = {
   user:       { label: 'לקוח',       badge: 'bg-[#2563eb]/10 text-[#2563eb]' },
@@ -22,6 +23,7 @@ function formatDate(iso) {
 
 export default function AdminUsersPage() {
   const { user: authUser } = useAuth();
+  const { toast } = useToast();
 
   const [users, setUsers]       = useState([]);
   const [loading, setLoading]   = useState(true);
@@ -68,6 +70,37 @@ export default function AdminUsersPage() {
       markSuccess(userId);
     } catch (err) {
       setRowErrors((prev) => ({ ...prev, [userId]: err?.message ?? 'שגיאת עדכון סטטוס' }));
+    } finally {
+      setPendingId(null);
+    }
+  };
+
+  // Force logout / revoke-all-sessions — backend is DELETE /admin/users/:id/
+  // sessions (superadmin-only, already enforced server-side; this page is
+  // itself only reachable by superadmin, see App.jsx's RequireSuperadmin).
+  // Reuses the same pendingId/rowErrors state as the other row actions so
+  // the whole row is consistently disabled while any one action is in
+  // flight, and a second click can never fire a duplicate request.
+  const handleForceLogout = async (userId, userName) => {
+    const confirmed = window.confirm(
+      `פעולה זו תנתק את "${userName}" מכל המכשירים המחוברים. האם להמשיך?`
+    );
+    if (!confirmed) return;
+
+    setPendingId(userId);
+    setRowErrors((prev) => ({ ...prev, [userId]: null }));
+    try {
+      const { revokedSessions } = await adminService.forceLogoutUser(userId);
+      toast.success(
+        revokedSessions > 0
+          ? `המשתמש נותק מכל המכשירים בהצלחה (${revokedSessions} התחברויות פעילות בוטלו)`
+          : 'למשתמש לא היו התחברויות פעילות לניתוק'
+      );
+    } catch (err) {
+      // Safe failure — no success is claimed; the existing per-row error
+      // pattern (visible under the action buttons) surfaces the reason.
+      toast.error(err?.message ?? 'ניתוק המשתמש נכשל');
+      setRowErrors((prev) => ({ ...prev, [userId]: err?.message ?? 'ניתוק נכשל' }));
     } finally {
       setPendingId(null);
     }
@@ -246,7 +279,7 @@ export default function AdminUsersPage() {
 
                       {/* Actions */}
                       <td className="px-4 py-3">
-                        <div className="space-y-1">
+                        <div className="flex flex-wrap gap-1">
                           <button
                             type="button"
                             disabled={isSelf || isPending}
@@ -259,8 +292,26 @@ export default function AdminUsersPage() {
                           >
                             {isPending ? '...' : u.isActive ? 'השבת' : 'הפעל'}
                           </button>
+                          <button
+                            type="button"
+                            // isSelf is disabled here as a UX choice, not a backend
+                            // requirement — the backend does not block a superadmin
+                            // from force-logging out their OWN sessions (verified:
+                            // no self-check in forceLogoutUser/forceRevokeUserSessions).
+                            // Kept consistent with this row's existing pattern of
+                            // disabling self-targeted actions (role change, activate/
+                            // deactivate, both above) rather than letting a superadmin
+                            // accidentally sign themselves out of their own session
+                            // mid-review of this table.
+                            disabled={isSelf || isPending}
+                            title={isSelf ? 'לא ניתן לנתק את החשבון שלך עצמו מכאן' : undefined}
+                            onClick={() => handleForceLogout(u._id, u.name)}
+                            className="text-xs px-3 py-1 rounded-lg border border-amber-500/30 text-amber-500 hover:bg-amber-500/10 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                          >
+                            {isPending ? '...' : 'התנתק מכל המכשירים'}
+                          </button>
                           {rowErrors[u._id] && (
-                            <p className="text-xs text-red-400 max-w-[140px]">{rowErrors[u._id]}</p>
+                            <p className="text-xs text-red-400 max-w-[140px] basis-full">{rowErrors[u._id]}</p>
                           )}
                         </div>
                       </td>

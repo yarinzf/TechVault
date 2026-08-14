@@ -18,6 +18,13 @@ const listMovements = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+const lookup = async (req, res, next) => {
+  try {
+    const product = await warehouseService.lookupProduct(req.query.code);
+    sendSuccess(res, { product }, product ? 'Product found' : 'No matching product');
+  } catch (err) { next(err); }
+};
+
 const restock = async (req, res, next) => {
   try {
     const product = await warehouseService.restockProduct(req.params.id, req.body, req.user, req);
@@ -39,4 +46,4 @@ const damaged = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
-module.exports = { listInventory, listMovements, restock, adjust, damaged };
+module.exports = { listInventory, listMovements, restock, adjust, damaged, lookup };

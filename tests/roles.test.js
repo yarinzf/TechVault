@@ -183,3 +183,124 @@ describe('Admin returns listing — role protection (STAFF_ROLES read, ADMIN_ROL
     expect(res.status).toBe(403);
   });
 });
+
+// ── Direct API authorization matrix ────────────────────────────────────────────
+// Real, existing endpoints only (no invented routes) — proves the boundary is
+// enforced at the API layer itself, not just by hiding a nav link. GET
+// /admin/system/status's superadmin-only gating already has dedicated,
+// thorough coverage in tests/systemStatus.test.js (including a plain-admin
+// 403 case) — not repeated here to avoid duplicating that suite.
+
+describe('Superadmin-only user management API — role protection', () => {
+  it('GET /admin/users returns 401 when unauthenticated', async () => {
+    const res = await request(app).get(`${ADMIN}/users`);
+    expect(res.status).toBe(401);
+  });
+
+  it('GET /admin/users returns 403 for a regular customer', async () => {
+    const reg = await request(app).post(`${AUTH}/register`).send({
+      name: 'Just a Buyer', email: 'buyer-users@roles-test.com', password: 'Password123!',
+    });
+    const res = await request(app)
+      .get(`${ADMIN}/users`)
+      .set('Authorization', `Bearer ${reg.body.data.accessToken}`);
+    expect(res.status).toBe(403);
+  });
+
+  it('GET /admin/users returns 403 for warehouse (staff, but not superadmin)', async () => {
+    await createUserWithRole('warehouse', '-users');
+    const token = await loginAs('warehouse-users@roles-test.com');
+    const res = await request(app).get(`${ADMIN}/users`).set('Authorization', `Bearer ${token}`);
+    expect(res.status).toBe(403);
+  });
+
+  it('GET /admin/users returns 403 for a plain admin — user/role management is superadmin-exclusive', async () => {
+    await createUserWithRole('admin', '-users');
+    const token = await loginAs('admin-users@roles-test.com');
+    const res = await request(app).get(`${ADMIN}/users`).set('Authorization', `Bearer ${token}`);
+    expect(res.status).toBe(403);
+  });
+
+  it('GET /admin/users returns 200 for superadmin', async () => {
+    await createUserWithRole('superadmin', '-users');
+    const token = await loginAs('superadmin-users@roles-test.com');
+    const res = await request(app).get(`${ADMIN}/users`).set('Authorization', `Bearer ${token}`);
+    expect(res.status).toBe(200);
+    expect(Array.isArray(res.body.data.users)).toBe(true);
+  });
+
+  it('PATCH /admin/users/:id returns 403 for a plain admin attempting a role change', async () => {
+    await createUserWithRole('admin', '-patch-actor');
+    const token  = await loginAs('admin-patch-actor@roles-test.com');
+    const target = await createUserWithRole('warehouse', '-patch-target');
+
+    const res = await request(app)
+      .patch(`${ADMIN}/users/${target._id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ role: 'admin' });
+    expect(res.status).toBe(403);
+
+    const fresh = await mongoose.model('User').findById(target._id);
+    expect(fresh.role).toBe('warehouse'); // untouched
+  });
+
+  it('DELETE /admin/users/:id/sessions (force logout) returns 403 for a plain admin', async () => {
+    await createUserWithRole('admin', '-fl-actor');
+    const token  = await loginAs('admin-fl-actor@roles-test.com');
+    const target = await createUserWithRole('warehouse', '-fl-target');
+
+    const res = await request(app)
+      .delete(`${ADMIN}/users/${target._id}/sessions`)
+      .set('Authorization', `Bearer ${token}`);
+    expect(res.status).toBe(403);
+  });
+});
+
+describe('Admin business-management API — blocked for Warehouse, allowed for Admin/Superadmin', () => {
+  it('GET /admin/campaigns returns 403 for warehouse (business management stays out of warehouse scope)', async () => {
+    await createUserWithRole('warehouse', '-campaigns');
+    const token = await loginAs('warehouse-campaigns@roles-test.com');
+    const res = await request(app).get(`${ADMIN}/campaigns`).set('Authorization', `Bearer ${token}`);
+    expect(res.status).toBe(403);
+  });
+
+  it('GET /admin/campaigns returns 200 for admin', async () => {
+    await createUserWithRole('admin', '-campaigns');
+    const token = await loginAs('admin-campaigns@roles-test.com');
+    const res = await request(app).get(`${ADMIN}/campaigns`).set('Authorization', `Bearer ${token}`);
+    expect(res.status).toBe(200);
+  });
+
+  it('GET /admin/campaigns returns 200 for superadmin (inherited Admin access)', async () => {
+    await createUserWithRole('superadmin', '-campaigns');
+    const token = await loginAs('superadmin-campaigns@roles-test.com');
+    const res = await request(app).get(`${ADMIN}/campaigns`).set('Authorization', `Bearer ${token}`);
+    expect(res.status).toBe(200);
+  });
+});
+
+describe('Warehouse operational API — reachable by Warehouse/Admin/Superadmin, blocked for Customer', () => {
+  it('GET /admin/inventory/list returns 401 when unauthenticated', async () => {
+    const res = await request(app).get(`${ADMIN}/inventory/list`);
+    expect(res.status).toBe(401);
+  });
+
+  it('GET /admin/inventory/list returns 403 for a regular customer', async () => {
+    const reg = await request(app).post(`${AUTH}/register`).send({
+      name: 'Just a Buyer', email: 'buyer-inv@roles-test.com', password: 'Password123!',
+    });
+    const res = await request(app)
+      .get(`${ADMIN}/inventory/list`)
+      .set('Authorization', `Bearer ${reg.body.data.accessToken}`);
+    expect(res.status).toBe(403);
+  });
+
+  it('GET /admin/inventory/list returns 200 for warehouse, admin, and superadmin alike', async () => {
+    for (const role of ['warehouse', 'admin', 'superadmin']) {
+      await createUserWithRole(role, `-inv-${role}`);
+      const token = await loginAs(`${role}-inv-${role}@roles-test.com`);
+      const res = await request(app).get(`${ADMIN}/inventory/list`).set('Authorization', `Bearer ${token}`);
+      expect(res.status).toBe(200);
+    }
+  });
+});

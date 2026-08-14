@@ -48,6 +48,20 @@ const orderItemSchema = new mongoose.Schema(
     pointsRate:       { type: Number,  default: 0, min: 0 }, // effective rate used (product override or POINTS_DEFAULT_RATE)
     pointsMultiplier: { type: Number,  default: 1, min: 1 }, // active campaign multiplier applied to this line, if any
     pointsEarned:     { type: Number,  default: 0, min: 0 }, // final points this line contributes — locked at checkout
+
+    // ── Campaign attribution snapshot — locked at checkout, forward-looking
+    // only (see campaign-analytics audit fix). null/absent means either "no
+    // campaign discount applied to this line" OR "this order predates
+    // attribution tracking" — the two are indistinguishable by design, and
+    // campaign analytics must treat both the same way: excluded, never
+    // guessed retroactively from "which campaign contains this product
+    // today" (a product can move between campaigns, so that would be
+    // historically incorrect). Set ONLY by order.service.js at the moment a
+    // campaign discount is actually applied to unitPrice — never editable,
+    // never recomputed later even if the campaign itself later changes.
+    campaignId:              { type: mongoose.Schema.Types.ObjectId, ref: 'Campaign', default: null },
+    campaignTitle:           { type: String, default: null }, // display-name snapshot — survives the campaign being renamed/deleted later
+    campaignDiscountPercent: { type: Number, default: null, min: 0, max: 90 }, // the % actually applied — lets analytics reconstruct the pre-discount price
     // Free-form, item-type-specific immutable purchase info (e.g.
     // { membershipPlan: 'monthly' }). Always server-set (never taken from
     // client input) — no business/security decision reads this field;

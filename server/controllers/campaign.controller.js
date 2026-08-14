@@ -2,6 +2,7 @@
 
 const Campaign        = require('../models/Campaign');
 const campaignService = require('../services/campaign.service');
+const campaignAnalyticsService = require('../services/campaignAnalytics.service');
 const audit           = require('../services/audit.service');
 const { sendSuccess } = require('../utils/response');
 const { StatusCodes } = require('http-status-codes');
@@ -62,4 +63,11 @@ const remove = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
-module.exports = { list, create, update, remove };
+const getAnalytics = async (req, res, next) => {
+  try {
+    const analytics = await campaignAnalyticsService.getCampaignAnalytics(req.params.id);
+    sendSuccess(res, { analytics }, 'Campaign analytics retrieved');
+  } catch (err) { next(err); }
+};
+
+module.exports = { list, create, update, remove, getAnalytics };

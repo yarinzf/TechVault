@@ -239,4 +239,26 @@ const listMovements = async (query) => {
   return { movements, meta: paginateMeta(total, page, limit) };
 };
 
-module.exports = { restockProduct, adjustStock, markDamaged, listInventory, listMovements };
+// ─── Barcode/SKU lookup (scanner) ──────────────────────────────────────────────
+// TechVault products currently persist SKU only — there is no dedicated
+// retail-barcode field (see Product.js). A scanned Code128/QR label encoding
+// the product's SKU therefore resolves the same way a manually typed SKU
+// does: one exact, case-insensitive match. No fuzzy/partial matching — a
+// scanner must never guess at a wrong product from a partial code.
+// Unpublished products are intentionally still findable here: warehouse
+// staff need to locate inventory that isn't yet live on the storefront.
+const lookupProduct = async (code) => {
+  const trimmed = (code || '').trim();
+  if (!trimmed) {
+    throw new AppError('A barcode or SKU is required', StatusCodes.BAD_REQUEST, 'LOOKUP_CODE_REQUIRED');
+  }
+
+  const product = await Product.findOne({ sku: trimmed.toUpperCase(), isDeleted: false })
+    .select('name sku brand price stock minStock images category isPublished')
+    .populate('category', 'name')
+    .lean();
+
+  return product; // null is an honest "no match" — not an error
+};
+
+module.exports = { restockProduct, adjustStock, markDamaged, listInventory, listMovements, lookupProduct };

@@ -50,6 +50,7 @@ const auditLogSchema = new mongoose.Schema(
         'auth.logout_all',      // logout from all devices (self or admin-forced)
         'auth.session_revoked', // single session revoked
         'auth.password_changed',// password change
+        'settings.updated',     // admin or warehouse settings changed (see metadata.scope)
       ],
       required: true,
     },

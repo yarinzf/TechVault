@@ -102,6 +102,28 @@ export const adminService = {
     return data?.user ?? data;
   },
 
+  // Force-logout / revoke all active sessions for a user — superadmin-only
+  // on the backend (DELETE /admin/users/:id/sessions). Returns how many
+  // sessions were actually revoked so the caller can give honest feedback
+  // (e.g. "0" means the user had no active sessions to begin with).
+  async forceLogoutUser(id) {
+    const { data } = await api.delete(`/admin/users/${id}/sessions`);
+    return { revokedSessions: data?.revokedSessions ?? 0 };
+  },
+
+  // Real, persisted admin (business) settings (GET/PATCH /admin/settings) —
+  // no silent fallback: a load/save failure must reach the caller as a real
+  // error, never be swallowed into a fake empty/default result.
+  async getSettings() {
+    const { data } = await api.get('/admin/settings');
+    return data?.settings ?? data;
+  },
+
+  async updateSettings(dto) {
+    const { data } = await api.patch('/admin/settings', dto);
+    return data?.settings ?? data;
+  },
+
   async getOrderTimeline(orderId) {
     try {
       const { data } = await api.get(`/orders/${orderId}/timeline`);
@@ -208,13 +230,18 @@ export const adminService = {
     }
   },
 
+  // No silent [] fallback (unlike this file's usual convention) — a load
+  // failure must be visibly distinguishable from "zero campaigns exist" so
+  // AdminCampaignsPage can show a real error state instead of a fake empty
+  // list (see the campaign-analytics-honesty audit fix).
   async listCampaigns() {
-    try {
-      const { data } = await api.get('/admin/campaigns');
-      return data?.campaigns ?? data ?? [];
-    } catch {
-      return [];
-    }
+    const { data } = await api.get('/admin/campaigns');
+    return data?.campaigns ?? data ?? [];
+  },
+
+  async getCampaignAnalytics(id) {
+    const { data } = await api.get(`/admin/campaigns/${id}/analytics`);
+    return data?.analytics ?? data;
   },
 
   // Reuses the existing warehouse inventory endpoint as the Admin product

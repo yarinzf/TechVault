@@ -17,11 +17,16 @@ const reviewCtrl        = require('../controllers/review.controller');
 const jobsCtrl          = require('../controllers/jobs.controller');
 const systemStatusCtrl  = require('../controllers/systemStatus.controller');
 const productSalesCtrl  = require('../controllers/productSalesAnalytics.controller');
+const settingsCtrl      = require('../controllers/settings.controller');
 const { moderateReviewSchema } = require('../validators/review.validator');
 const { authenticate, authorize } = require('../middleware/auth');
 const { validate } = require('../middleware/validate');
 const { adminMutationLimiter, adminReadLimiter } = require('../middleware/rateLimiter');
 const { updateUserSchema } = require('../validators/admin.validator');
+const {
+  updateAdminSettingsSchema,
+  updateWarehouseSettingsSchema,
+} = require('../validators/settings.validator');
 const { createCampaignSchema, updateCampaignSchema } = require('../validators/campaign.validator');
 const { refundOrderSchema } = require('../validators/refund.validator');
 const {
@@ -93,6 +98,10 @@ router.use((req, res, next) => {
  */
 router.get('/dashboard', authorize(...ADMIN_ROLES), ctrl.getDashboard);
 router.get('/activity',  authorize(...ADMIN_ROLES), ctrl.getActivity);
+
+// ─── Admin (business) settings — persisted, real GET/PATCH ────────────────────
+router.get  ('/settings', authorize(...ADMIN_ROLES), settingsCtrl.getAdminSettings);
+router.patch('/settings', authorize(...ADMIN_ROLES), validate(updateAdminSettingsSchema), settingsCtrl.updateAdminSettings);
 
 /**
  * @swagger
@@ -389,16 +398,28 @@ router.get ('/inventory/health',      authorize(...STAFF_ROLES), inventoryCtrl.g
 
 // ─── Warehouse stock operations ───────────────────────────────────────────────
 router.get ('/inventory/list',                  authorize(...STAFF_ROLES), warehouseCtrl.listInventory);
+router.get ('/inventory/lookup',                authorize(...STAFF_ROLES), warehouseCtrl.lookup);
 router.get ('/inventory/movements',             authorize(...STAFF_ROLES), warehouseCtrl.listMovements);
 router.post('/inventory/products/:id/restock',  authorize(...STAFF_ROLES), warehouseCtrl.restock);
 router.post('/inventory/products/:id/adjust',   authorize(...STAFF_ROLES), warehouseCtrl.adjust);
 router.post('/inventory/products/:id/damaged',  authorize(...STAFF_ROLES), warehouseCtrl.damaged);
+
+// ─── Warehouse (operational) settings — persisted, real GET/PATCH ─────────────
+// STAFF_ROLES (warehouse + admin + superadmin) can read; write is also
+// STAFF_ROLES so a warehouse manager can actually save their own settings —
+// this endpoint only ever touches the 'warehouse' scope document, never the
+// admin one, so this does not grant warehouse any admin-settings access.
+router.get  ('/inventory/settings', authorize(...STAFF_ROLES), settingsCtrl.getWarehouseSettings);
+router.patch('/inventory/settings', authorize(...STAFF_ROLES), validate(updateWarehouseSettingsSchema), settingsCtrl.updateWarehouseSettings);
 
 // ─── Campaigns ────────────────────────────────────────────────────────────────
 router.get   ('/campaigns',     authorize(...ADMIN_ROLES), campaignCtrl.list);
 router.post  ('/campaigns',     authorize(...ADMIN_ROLES), validate(createCampaignSchema), campaignCtrl.create);
 router.patch ('/campaigns/:id', authorize(...ADMIN_ROLES), validate(updateCampaignSchema), campaignCtrl.update);
 router.delete('/campaigns/:id', authorize(...ADMIN_ROLES), campaignCtrl.remove);
+// Real, server-derived analytics only — same authorization as the rest of
+// campaign management (Warehouse never gains campaign access via this route).
+router.get   ('/campaigns/:id/analytics', authorize(...ADMIN_ROLES), campaignCtrl.getAnalytics);
 
 // ─── Admin notification center ────────────────────────────────────────────────
 // read-all must be registered before /:id/read so Express does not treat

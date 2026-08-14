@@ -17,7 +17,7 @@ const audit             = require('./audit.service');
 const InventoryMovement = require('../models/InventoryMovement');
 const emitter = require('../events/emitter');
 const EVENTS  = require('../events/events');
-const { getActiveDiscountMap, getActivePointsMultiplierMap } = require('./campaign.service');
+const { getActiveDiscountAttributionMap, getActivePointsMultiplierMap } = require('./campaign.service');
 const pointsService = require('./points.service');
 const shippingService = require('./shipping.service');
 const { POINTS_DEFAULT_RATE, POINTS_REDEMPTION_RATE, MEMBERSHIP_ITEM_TYPE } = require('../config/membership');
@@ -91,8 +91,8 @@ const _buildAndSaveOrder = async (userId, { shippingAddress, notes, couponCode, 
   // Both maps are VIP-aware (membershipOnly campaigns / vipEarlyAccessHours /
   // pointsMultiplier) — real, server-verified isMember only, never a client
   // claim (see user.membership above).
-  const [discountMap, pointsMultiplierMap] = await Promise.all([
-    getActiveDiscountMap({ isMember }),
+  const [discountAttributionMap, pointsMultiplierMap] = await Promise.all([
+    getActiveDiscountAttributionMap({ isMember }),
     getActivePointsMultiplierMap({ isMember }),
   ]);
 
@@ -116,7 +116,8 @@ const _buildAndSaveOrder = async (userId, { shippingAddress, notes, couponCode, 
       throw new AppError(`Insufficient stock for "${probe.name}" (available: ${probe.stock})`, StatusCodes.BAD_REQUEST, 'INSUFFICIENT_STOCK');
     }
 
-    const discountPct = discountMap.get(updatedProduct._id.toString());
+    const attribution = discountAttributionMap.get(updatedProduct._id.toString());
+    const discountPct = attribution?.discountPercent;
     const unitPrice    = discountPct != null
       ? Math.round(updatedProduct.price * (1 - discountPct / 100) * 100) / 100
       : updatedProduct.price;
@@ -137,6 +138,12 @@ const _buildAndSaveOrder = async (userId, { shippingAddress, notes, couponCode, 
       pointsEligible: updatedProduct.pointsEligible !== false,
       pointsRate:     updatedProduct.pointsRateOverride ?? POINTS_DEFAULT_RATE,
       pointsMultiplier: pointsMultiplierMap.get(updatedProduct._id.toString()) ?? 1,
+      // Campaign attribution snapshot — see Order.js for why this is
+      // forward-looking only (null on both "no campaign applied" and
+      // "predates attribution tracking", deliberately indistinguishable).
+      campaignId:              attribution?.campaignId ?? null,
+      campaignTitle:           attribution?.campaignTitle ?? null,
+      campaignDiscountPercent: discountPct ?? null,
     });
   }
 
@@ -424,22 +431,21 @@ const getOrder = async (orderId, userId, role) => {
   return order;
 };
 
-// ─── Cancel own order ─────────────────────────────────────────────────────────
-// actor: full req.user — needed for timeline changedBy and audit log
-const cancelOrder = async (orderId, actor) => {
-  const order = await Order.findOne({ _id: orderId, user: actor._id });
-  if (!order) throw new AppError('Order not found', StatusCodes.NOT_FOUND, 'ORDER_NOT_FOUND');
-
+// ─── Shared cancellation side effects — THE single authoritative place that ───
+// knows how to safely cancel an order. Every legitimate cancellation path
+// (customer self-service via cancelOrder, staff via updateStatus) calls this
+// AFTER its own authorization/transition checks pass, so a cancellation
+// performed through either path restores stock and reverses points
+// identically — this logic must never be duplicated or reimplemented inline
+// again (see order-cancellation-consistency audit finding).
+//
+// Guards against double-cancellation itself (not just via each caller's own
+// pre-check) because updateStatus lets a superadmin force ANY transition,
+// including re-"cancelling" an already-cancelled order — without this guard
+// that would restore stock and reverse points a second time.
+const performCancellation = async (order, actor, { note = '' } = {}) => {
   if (order.status === 'cancelled') {
     throw new AppError('Order is already cancelled', StatusCodes.BAD_REQUEST, 'ORDER_ALREADY_CANCELLED');
-  }
-
-  if (!ALLOWED_TRANSITIONS[order.status].includes('cancelled')) {
-    throw new AppError(
-      `Cannot cancel an order with status "${order.status}"`,
-      StatusCodes.BAD_REQUEST,
-      'INVALID_STATUS_TRANSITION'
-    );
   }
 
   const prevStatus = order.status;
@@ -452,7 +458,7 @@ const cancelOrder = async (orderId, actor) => {
     toStatus:   'cancelled',
     changedBy:  actor._id,
     changedAt:  new Date(),
-    note:       'ביטול על ידי לקוח',
+    note:       note.trim(),
   });
   order.status = 'cancelled';
   // Release the membership duplicate-purchase lock (no-op for physical
@@ -514,24 +520,47 @@ const cancelOrder = async (orderId, actor) => {
     }).catch(() => {});
   });
 
+  return { order, prevStatus };
+};
+
+// ─── Cancel own order ─────────────────────────────────────────────────────────
+// actor: full req.user — needed for timeline changedBy and audit log
+const cancelOrder = async (orderId, actor) => {
+  const order = await Order.findOne({ _id: orderId, user: actor._id });
+  if (!order) throw new AppError('Order not found', StatusCodes.NOT_FOUND, 'ORDER_NOT_FOUND');
+
+  if (order.status === 'cancelled') {
+    throw new AppError('Order is already cancelled', StatusCodes.BAD_REQUEST, 'ORDER_ALREADY_CANCELLED');
+  }
+
+  if (!ALLOWED_TRANSITIONS[order.status].includes('cancelled')) {
+    throw new AppError(
+      `Cannot cancel an order with status "${order.status}"`,
+      StatusCodes.BAD_REQUEST,
+      'INVALID_STATUS_TRANSITION'
+    );
+  }
+
+  const { order: cancelled, prevStatus } = await performCancellation(order, actor, { note: 'ביטול על ידי לקוח' });
+
   // Non-fatal audit — runs after the transaction commits
   audit.log({
     action:   'order.cancelled',
     entity:   'Order',
-    entityId: order._id,
+    entityId: cancelled._id,
     actor,
     before:   { status: prevStatus },
     after:    { status: 'cancelled' },
   });
 
   emitter.emit(EVENTS.ORDER_CANCELLED, {
-    orderId:     order._id,
-    orderNumber: order.orderNumber,
+    orderId:     cancelled._id,
+    orderNumber: cancelled.orderNumber,
     userId:      actor._id,
     prevStatus,
   });
 
-  return order;
+  return cancelled;
 };
 
 // ─── Admin / Warehouse: update order status ───────────────────────────────────
@@ -565,26 +594,36 @@ const updateStatus = async (orderId, newStatus, actor, req = null, note = '') =>
   }
 
   const prevStatus = order.status;
-  order.statusHistory.push({
-    fromStatus: prevStatus,
-    toStatus:   newStatus,
-    changedBy:  actor._id,
-    changedAt:  new Date(),
-    note:       note.trim(),
-  });
-  order.status = newStatus;
-  await order.save();
 
-  // Club points become earned/available only once the order reaches this
-  // safe, sufficiently-final status — never at cart/checkout/payment-intent
-  // time (see Part D of the Club/VIP spec). 'delivered' is the chosen point
-  // because it is the existing terminal, non-reversible-in-the-ordinary-
-  // course status the fulfillment pipeline already uses (shipped→delivered
-  // is the last normal transition; only a refund reverses it afterward —
-  // see refund.service.js#reverseEarnedPoints). Idempotent — safe even if
-  // called more than once for the same order.
-  if (newStatus === 'delivered') {
-    await pointsService.realizeEarnedPoints(order);
+  if (newStatus === 'cancelled') {
+    // Delegate to the SAME cancellation side effects the customer-initiated
+    // path uses (stock restore + points reversal) — see performCancellation
+    // above. Previously this branch just flipped the status field with none
+    // of that logic, which could leave stock/points un-restored depending
+    // on who cancelled the order (order-cancellation-consistency fix).
+    await performCancellation(order, actor, { note });
+  } else {
+    order.statusHistory.push({
+      fromStatus: prevStatus,
+      toStatus:   newStatus,
+      changedBy:  actor._id,
+      changedAt:  new Date(),
+      note:       note.trim(),
+    });
+    order.status = newStatus;
+    await order.save();
+
+    // Club points become earned/available only once the order reaches this
+    // safe, sufficiently-final status — never at cart/checkout/payment-intent
+    // time (see Part D of the Club/VIP spec). 'delivered' is the chosen point
+    // because it is the existing terminal, non-reversible-in-the-ordinary-
+    // course status the fulfillment pipeline already uses (shipped→delivered
+    // is the last normal transition; only a refund reverses it afterward —
+    // see refund.service.js#reverseEarnedPoints). Idempotent — safe even if
+    // called more than once for the same order.
+    if (newStatus === 'delivered') {
+      await pointsService.realizeEarnedPoints(order);
+    }
   }
 
   // Non-fatal audit log — does not roll back the status change on failure

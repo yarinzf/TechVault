@@ -8,7 +8,7 @@ const { StatusCodes } = require('http-status-codes');
 const WEEKLY_DEAL = 'homepage_weekly_deal';
 
 const listCampaigns = async () => {
-  const campaigns = await Campaign.find().sort({ startDate: -1 }).populate('products', 'name sku price').lean();
+  const campaigns = await Campaign.find().sort({ startDate: -1 }).populate('products', 'name sku price stock').lean();
   // .lean() returns the raw stored document — Mongoose only applies schema
   // defaults when hydrating a real document instance, so a genuinely legacy
   // campaign saved before `placement` existed comes back with the field
@@ -181,7 +181,7 @@ const updateCampaign = async (id, dto) => {
     id,
     { $set: { ...dto, clearanceStockSnapshots } },
     { new: true, runValidators: true }
-  ).populate('products', 'name sku price');
+  ).populate('products', 'name sku price stock');
   return campaign;
 };
 
@@ -231,6 +231,52 @@ const getActiveDiscountMap = async ({ isMember = false } = {}) => {
       const key = pid.toString();
       if (!map.has(key) || map.get(key) < c.discountPercent) {
         map.set(key, c.discountPercent);
+      }
+    }
+  }
+  return map;
+};
+
+// Same selection/tie-break rules as getActiveDiscountMap (highest discount
+// among a product's eligible live campaigns wins) — but ALSO returns which
+// campaign produced that winning discount, so order.service.js can persist
+// an immutable attribution snapshot on the order item at the exact moment
+// the discount is actually applied. Deliberately a separate function rather
+// than changing getActiveDiscountMap's return shape: that function has
+// several other callers (cart/product/recommendation services) that only
+// ever need the plain percent — widening its contract for all of them just
+// to serve this one new caller would be unnecessary risk.
+const getActiveDiscountAttributionMap = async ({ isMember = false } = {}) => {
+  const now = new Date();
+  const query = {
+    isActive: true,
+    endDate:  { $gte: now },
+    $or: [
+      { startDate: { $lte: now } },
+      ...(isMember ? [{
+        vipEarlyAccessHours: { $gt: 0 },
+        $expr: { $lte: [now, { $add: ['$startDate', { $multiply: ['$vipEarlyAccessHours', 3600000] }] }] },
+        startDate: { $gt: now },
+      }] : []),
+    ],
+  };
+  if (!isMember) query.membershipOnly = { $ne: true };
+
+  const active = await Campaign.find(query).select('products discountPercent title name').lean();
+
+  const map = new Map();
+  for (const c of active) {
+    for (const pid of c.products) {
+      const key = pid.toString();
+      const current = map.get(key);
+      if (!current || current.discountPercent < c.discountPercent) {
+        map.set(key, {
+          discountPercent: c.discountPercent,
+          campaignId:      c._id,
+          // Same customer-safe fallback convention as the storefront: prefer
+          // the customer-facing `title`, never expose the internal `name`.
+          campaignTitle:   c.title || c.name,
+        });
       }
     }
   }
@@ -508,6 +554,7 @@ module.exports = {
   updateCampaign,
   deleteCampaign,
   getActiveDiscountMap,
+  getActiveDiscountAttributionMap,
   getActivePointsMultiplierMap,
   getActiveWeeklyDeal,
   getActiveCampaigns,

@@ -4,27 +4,17 @@ import {
     Plus,
     Edit,
     Trash2,
-    TrendingUp,
     Package,
     DollarSign,
     Percent,
     Calendar,
     BarChart3,
-    TrendingDown,
-    Minus,
-    Wallet,
-    Target,
     ShoppingCart,
     Play,
     Pause,
     X,
     AlertCircle,
-    CheckCircle,
     Save,
-    Send,
-    ArrowUpRight,
-    ChevronUp,
-    ChevronDown,
     Check,
     Search,
 } from 'lucide-react';
@@ -71,12 +61,7 @@ const isProductEligibleForWeeklyDeal = (p) => {
     return { eligible: true, reasonKey: null };
 };
 
-const parseMoney = (value) => {
-    const amount = Number.parseFloat(String(value).replace(/[₪,]/g, ''));
-    return Number.isNaN(amount) ? 0 : amount;
-};
-
-const formatMoney = (value) => `₪${Number(value).toLocaleString()}`;
+const formatMoney = (value) => `₪${Number(value ?? 0).toLocaleString()}`;
 
 // Local-timezone display (day/month/year) — avoids the UTC drift that
 // toISOString()-based slicing could introduce for users outside UTC.
@@ -128,42 +113,9 @@ const normalizeCampaign = (c) => ({
     isClearance:    c.isClearance ?? false,
     isActive:       c.isActive,
     status:         deriveCampaignStatus(c),
-    revenue:        '₪0',
-    revenueTarget:  '₪0',
-    budget:         '₪0',
-    spent:          '₪0',
-    ordersCount:    0,
     totalProducts:  c.products?.length ?? 0,
-    productStats:   { growing: 0, stable: 0, declining: 0 },
     products:       c.products ?? [],
 });
-
-const chartData = [
-    { day: '10/04', revenue: 12400, orders: 28 },
-    { day: '11/04', revenue: 15800, orders: 35 },
-    { day: '12/04', revenue: 18200, orders: 42 },
-    { day: '13/04', revenue: 14600, orders: 31 },
-    { day: '14/04', revenue: 21300, orders: 48 },
-    { day: '15/04', revenue: 19800, orders: 44 },
-    { day: '16/04', revenue: 17500, orders: 38 },
-    { day: '17/04', revenue: 22100, orders: 51 },
-    { day: '18/04', revenue: 19400, orders: 43 },
-    { day: '19/04', revenue: 16300, orders: 36 },
-    { day: '20/04', revenue: 10000, orders: 22 },
-];
-
-const getBudgetPercent = (campaign) => {
-    const budget = parseMoney(campaign.budget);
-    if (!budget) return 0;
-    return Math.min((parseMoney(campaign.spent) / budget) * 100, 100);
-};
-
-const getRemainingBudget = (campaign) => parseMoney(campaign.budget) - parseMoney(campaign.spent);
-
-const getProductPercent = (campaign, key) => {
-    if (!campaign.totalProducts) return 0;
-    return (campaign.productStats[key] / campaign.totalProducts) * 100;
-};
 
 const getStatusColor = (status) => {
     switch (status) {
@@ -201,33 +153,43 @@ export default function AdminCampaignsPage() {
     const dir = language === 'he' ? 'rtl' : 'ltr';
     const [campaigns,   setCampaigns]   = useState([]);
     const [loading,     setLoading]     = useState(true);
+    const [listError,   setListError]   = useState(null);
     const [activeModal, setActiveModal] = useState(null);
     const [selectedCampaign, setSelectedCampaign] = useState(null);
     const [pendingId,   setPendingId]   = useState(null);
-    const [budgetRequestSent, setBudgetRequestSent] = useState(false);
 
     useEffect(() => {
         adminService.listCampaigns()
             .then((list) => setCampaigns(list.map(normalizeCampaign)))
+            .catch((err) => setListError(err?.message ?? t('admin.campaigns.err_load')))
             .finally(() => setLoading(false));
-    }, []);
+    }, [t]);
 
-    const activeCampaigns = campaigns.filter((c) => c.status === 'active').length;
-    const totalRevenue    = campaigns.reduce((s, c) => s + parseMoney(c.revenue), 0);
-    const totalBudget     = campaigns.reduce((s, c) => s + parseMoney(c.budget), 0);
-    const totalSpent      = campaigns.reduce((s, c) => s + parseMoney(c.spent), 0);
-    const totalOrders     = campaigns.reduce((s, c) => s + c.ordersCount, 0);
+    // Cheap, real, already-available-from-the-list values only — no
+    // aggregate revenue/budget total here, since real revenue is only
+    // knowable per-campaign via the on-demand analytics endpoint (see
+    // AnalyticsModal), not from this lightweight list response.
+    const activeCampaigns    = campaigns.filter((c) => c.status === 'active').length;
+    const scheduledCampaigns = campaigns.filter((c) => c.status === 'scheduled').length;
+    const totalProducts      = campaigns.reduce((s, c) => s + c.totalProducts, 0);
 
     const openModal = (modal, campaign) => {
         setSelectedCampaign(campaign);
         setActiveModal(modal);
-        setBudgetRequestSent(false);
     };
 
     const closeModal = () => {
         setActiveModal(null);
         setSelectedCampaign(null);
-        setBudgetRequestSent(false);
+    };
+
+    // Bubbles a fresh campaign (e.g. after ProductsModal adds products)
+    // back into the list AND keeps whatever modal is currently showing it
+    // in sync, without a full page reload.
+    const handleCampaignUpdated = (updated) => {
+        const normalized = normalizeCampaign(updated);
+        setCampaigns((prev) => prev.map((c) => c._id === normalized._id ? normalized : c));
+        setSelectedCampaign((prev) => (prev && prev._id === normalized._id ? normalized : prev));
     };
 
     const handleToggle = async (campaign) => {
@@ -283,15 +245,21 @@ export default function AdminCampaignsPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-                <StatBox icon={Tag}          label={t('admin.campaigns.stat_active')}  value={activeCampaigns}          color="#10b981" />
-                <StatBox icon={DollarSign}   label={t('admin.campaigns.stat_revenue')} value={formatMoney(totalRevenue)} color="#2563eb" />
-                <StatBox icon={Wallet}       label={t('admin.campaigns.stat_budget')}  value={formatMoney(totalSpent)} sub={`/ ${formatMoney(totalBudget)}`} color="#7c3aed" />
-                <StatBox icon={ShoppingCart} label={t('admin.campaigns.stat_orders')}  value={totalOrders.toLocaleString()} color="#fbbf24" />
+                <StatBox icon={Tag}     label={t('admin.campaigns.stat_active')}    value={activeCampaigns}     color="#10b981" />
+                <StatBox icon={Package} label={t('admin.campaigns.stat_products')}  value={totalProducts}       color="#2563eb" />
+                <StatBox icon={Calendar} label={t('admin.campaigns.stat_scheduled')} value={scheduledCampaigns} color="#7c3aed" />
+                <StatBox icon={BarChart3} label={t('admin.campaigns.stat_total')}   value={campaigns.length}    color="#fbbf24" />
             </div>
 
             {loading ? (
                 <div className="flex items-center justify-center py-20">
                     <div className="w-8 h-8 border-2 border-[#2563eb] border-t-transparent rounded-full animate-spin" />
+                </div>
+            ) : listError ? (
+                <div className="text-center py-20">
+                    <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-3" />
+                    <p className="text-foreground mb-1">{t('admin.campaigns.err_load')}</p>
+                    <p className="text-sm text-muted-foreground">{listError}</p>
                 </div>
             ) : campaigns.length === 0 ? (
                 <div className="text-center py-20">
@@ -331,20 +299,11 @@ export default function AdminCampaignsPage() {
             )}
 
             {activeModal === 'analytics' && selectedCampaign && (
-                <AnalyticsModal campaign={selectedCampaign} closeModal={closeModal} openModal={openModal} />
+                <AnalyticsModal campaign={selectedCampaign} closeModal={closeModal} />
             )}
 
             {activeModal === 'products' && selectedCampaign && (
-                <ProductsModal campaign={selectedCampaign} closeModal={closeModal} />
-            )}
-
-            {activeModal === 'add-budget' && selectedCampaign && (
-                <AddBudgetModal
-                    campaign={selectedCampaign}
-                    closeModal={closeModal}
-                    budgetRequestSent={budgetRequestSent}
-                    setBudgetRequestSent={setBudgetRequestSent}
-                />
+                <ProductsModal campaign={selectedCampaign} closeModal={closeModal} onUpdated={handleCampaignUpdated} />
             )}
         </div>
     );
@@ -408,47 +367,14 @@ function CampaignCard({ campaign, openModal, onToggle, onDelete, isPending }) {
                 </div>
             </div>
 
-            <div className="mb-4">
-                <p className="text-xs text-muted-foreground mb-1">{t('admin.campaigns.revenue_label')}</p>
-                <p className="text-2xl text-foreground">{campaign.revenue}</p>
-            </div>
-
+            {/* Revenue/budget/orders/product-trend metrics were removed from
+                this card — Campaign has no budget/spend fields, and per-
+                campaign revenue is only meaningful as a real, server-derived
+                figure (see AnalyticsModal), not a cheap list-page preview.
+                Only real, already-available fields stay on the card. */}
             <div className="flex items-center gap-4 mb-4 text-xs flex-wrap">
-                <CompactMetric icon={Target}       label={t('admin.campaigns.target')} value={campaign.revenueTarget}             color="#2563eb" />
-                <CompactMetric icon={ShoppingCart} label={t('admin.campaigns.orders')} value={campaign.ordersCount.toLocaleString()} color="#10b981" />
-                <CompactMetric icon={Percent}      label={t('admin.campaigns.discount')} value={`${campaign.discount}%`}           color="#fbbf24" />
-                <CompactMetric icon={Package}      label={t('admin.campaigns.products')} value={campaign.totalProducts}             color="#7c3aed" />
-            </div>
-
-            <div className="mb-4">
-                <div className="flex items-center justify-between mb-2">
-                    <div>
-                        <p className="text-xs text-muted-foreground mb-0.5">{t('admin.campaigns.budget')}</p>
-                        <p className="text-lg text-foreground font-medium">{campaign.budget}</p>
-                    </div>
-                    <button type="button" onClick={() => openModal('add-budget', campaign)} className="flex items-center gap-1 text-xs text-[#2563eb] hover:text-[#2563eb]/80 transition-colors">
-                        <Plus className="w-3 h-3" />
-                        <span>{t('admin.campaigns.add_budget')}</span>
-                    </button>
-                </div>
-
-                <div className="flex items-center justify-between text-xs mb-2">
-                    <span className="text-muted-foreground">{t('admin.campaigns.spent')} {campaign.spent}</span>
-                </div>
-
-                <ProgressBar value={getBudgetPercent(campaign)} />
-
-                <div className="flex items-center justify-between text-xs">
-                    <span className="text-[#10b981]">{t('admin.campaigns.remaining')} {formatMoney(getRemainingBudget(campaign))}</span>
-                    <span className="text-muted-foreground">{campaign.status !== 'scheduled' ? Math.round(getBudgetPercent(campaign)) : 0}% {t('admin.campaigns.utilized')}</span>
-                </div>
-            </div>
-
-            <div className="flex items-center gap-3 mb-4 text-xs bg-secondary/20 rounded-lg p-3">
-                <span className="text-muted-foreground">{campaign.totalProducts} {t('admin.campaigns.products')}</span>
-                <TrendCount icon={TrendingUp}   value={campaign.productStats.growing}   color="#10b981" />
-                <TrendCount icon={Minus}        value={campaign.productStats.stable}    color="#fbbf24" />
-                <TrendCount icon={TrendingDown} value={campaign.productStats.declining} color="#ef4444" />
+                <CompactMetric icon={Percent} label={t('admin.campaigns.discount')} value={`${campaign.discount}%`} color="#fbbf24" />
+                <CompactMetric icon={Package} label={t('admin.campaigns.products')} value={campaign.totalProducts} color="#7c3aed" />
             </div>
 
             <div className="flex gap-2 pt-3 border-t border-border">
@@ -849,26 +775,6 @@ function CompactMetric({ icon: Icon, label, value, color }) {
     );
 }
 
-function TrendCount({ icon: Icon, value, color }) {
-    return (
-        <div className="flex items-center gap-1.5">
-            <Icon className="w-3 h-3" style={{ color }} />
-            <span className="font-medium" style={{ color }}>{value}</span>
-        </div>
-    );
-}
-
-function ProgressBar({ value }) {
-    return (
-        <div className="w-full bg-secondary rounded-full h-2.5 mb-2">
-            <div
-                className="h-2.5 rounded-full transition-all"
-                style={{ width: `${Math.min(value, 100)}%`, background: 'linear-gradient(90deg, #2563eb 0%, #7c3aed 100%)' }}
-            />
-        </div>
-    );
-}
-
 function ModalShell({ children, closeModal, maxWidth = 'max-w-5xl' }) {
     return (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={closeModal}>
@@ -895,184 +801,301 @@ function ModalHeader({ title, subtitle, closeModal }) {
 
 // ─── Analytics modal ──────────────────────────────────────────────────────────
 
-function AnalyticsModal({ campaign, closeModal, openModal }) {
-    const budgetPercent  = getBudgetPercent(campaign);
-    const averageOrder   = campaign.ordersCount > 0 ? Math.round(parseMoney(campaign.revenue) / campaign.ordersCount) : 0;
+// Real, server-derived campaign analytics only (see
+// server/services/campaignAnalytics.service.js for the exact attribution/
+// revenue formula). No conversion rate (TechVault does not track campaign
+// impressions/views — there is no honest denominator to compute one), no
+// week-over-week trend text (not enough data density to compute one
+// honestly for an arbitrary campaign date range), no budget section
+// (Campaign has no budget/spend fields at all).
+function AnalyticsModal({ campaign, closeModal }) {
+    const t = useTranslation();
+    const [analytics, setAnalytics] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        let alive = true;
+        setLoading(true);
+        setError(null);
+        adminService.getCampaignAnalytics(campaign._id)
+            .then((data) => { if (alive) setAnalytics(data); })
+            .catch((err) => { if (alive) setError(err?.message ?? t('admin.campaigns.err_analytics')); })
+            .finally(() => { if (alive) setLoading(false); });
+        return () => { alive = false; };
+    }, [campaign._id, t]);
 
     return (
         <ModalShell closeModal={closeModal}>
-            <ModalHeader title="ניתוח ביצועים מפורט" subtitle={`${campaign.name}`} closeModal={closeModal} />
+            <ModalHeader title={t('admin.campaigns.analytics_title')} subtitle={campaign.name} closeModal={closeModal} />
 
             <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)] scrollbar-thin">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                    <MetricCard label="הכנסה כוללת"  value={campaign.revenue}                   color="#2563eb" footer={`מתוך ${campaign.revenueTarget}`} icon={Target} />
-                    <MetricCard label="הזמנות"        value={campaign.ordersCount.toLocaleString()} color="#10b981" footer="+12% מהשבוע שעבר"              icon={TrendingUp} />
-                    <MetricCard label="ממוצע הזמנה"   value={formatMoney(averageOrder)}          color="#7c3aed" footer="לכל הזמנה"                        icon={DollarSign} />
-                    <MetricCard label="שיעור המרה"    value="3.8%"                               color="#fbbf24" footer="+0.4%"                             icon={TrendingUp} />
-                </div>
-
-                {parseMoney(campaign.spent) > parseMoney(campaign.budget) * 0.85 && (
-                    <div className="bg-gradient-to-br from-[#ff6b35]/10 to-transparent border border-[#ff6b35]/30 rounded-xl p-4 mb-6">
-                        <div className="flex items-start gap-3 mb-3">
-                            <AlertCircle className="w-5 h-5 text-[#ff6b35] mt-0.5" />
-                            <div>
-                                <p className="text-sm text-foreground font-medium mb-1">התקציב עומד להיגמר!</p>
-                                <p className="text-xs text-muted-foreground">
-                                    נוצלו {Math.round(budgetPercent)}% מהתקציב. נותרו {formatMoney(getRemainingBudget(campaign))}
-                                </p>
-                            </div>
-                        </div>
-                        <button type="button" onClick={() => openModal('add-budget', campaign)} className="w-full bg-[#2563eb] text-white py-3 rounded-xl font-medium hover:bg-[#2563eb]/90 transition-colors flex items-center justify-center gap-2">
-                            <Plus className="w-4 h-4" />
-                            שלח בקשה להגדלת התקציב!
-                        </button>
+                {loading ? (
+                    <div className="flex items-center justify-center py-16">
+                        <div className="w-8 h-8 border-2 border-[#2563eb] border-t-transparent rounded-full animate-spin" />
                     </div>
+                ) : error ? (
+                    <div className="text-center py-16">
+                        <AlertCircle className="w-10 h-10 text-red-400 mx-auto mb-3" />
+                        <p className="text-sm text-red-400">{error}</p>
+                    </div>
+                ) : (
+                    <>
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                            <MetricCard label={t('admin.campaigns.metric_orders')}   value={analytics.summary.attributedOrders.toLocaleString()} color="#10b981" icon={ShoppingCart} />
+                            <MetricCard label={t('admin.campaigns.metric_units')}    value={analytics.summary.unitsSold.toLocaleString()}         color="#2563eb" icon={Package} />
+                            <MetricCard label={t('admin.campaigns.metric_revenue')}  value={formatMoney(analytics.summary.revenue)}                color="#7c3aed" icon={DollarSign} />
+                            <MetricCard label={t('admin.campaigns.metric_discount')} value={formatMoney(analytics.summary.discountGenerated)}     color="#fbbf24" icon={Percent} />
+                        </div>
+
+                        <div className="bg-secondary/20 border border-border rounded-lg p-5 mb-6">
+                            <h3 className="text-base text-foreground mb-4">{t('admin.campaigns.performance_over_time')}</h3>
+
+                            {analytics.timeSeries.length === 0 ? (
+                                <div className="text-center py-10">
+                                    <BarChart3 className="w-10 h-10 text-muted-foreground mx-auto mb-2" />
+                                    <p className="text-sm text-muted-foreground">{t('admin.campaigns.no_sales_yet')}</p>
+                                </div>
+                            ) : (
+                                <ResponsiveContainer width="100%" height={280}>
+                                    <BarChart data={analytics.timeSeries} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
+                                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                                        <XAxis dataKey="date" stroke="#8b8b99" style={{ fontSize: '11px', fill: '#8b8b99' }} />
+                                        <YAxis yAxisId="left" stroke="#8b8b99" style={{ fontSize: '11px', fill: '#8b8b99' }} tickFormatter={(v) => `₪${(v / 1000).toFixed(0)}k`} />
+                                        <YAxis yAxisId="right" orientation="left" stroke="#8b8b99" style={{ fontSize: '11px', fill: '#8b8b99' }} />
+                                        <Tooltip
+                                            contentStyle={{ backgroundColor: '#1a1a24', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', padding: '8px 12px' }}
+                                            labelStyle={{ color: '#e5e5ea', fontSize: '12px', marginBottom: '4px' }}
+                                            itemStyle={{ color: '#e5e5ea', fontSize: '11px' }}
+                                            formatter={(value, name) => {
+                                                if (name === 'revenue') return [`₪${value.toLocaleString()}`, t('admin.campaigns.metric_revenue')];
+                                                if (name === 'orders')  return [value, t('admin.campaigns.metric_orders')];
+                                                return [value, name];
+                                            }}
+                                        />
+                                        <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} formatter={(v) => v === 'revenue' ? t('admin.campaigns.metric_revenue') : v === 'orders' ? t('admin.campaigns.metric_orders') : v} />
+                                        <Bar dataKey="revenue" fill="#2563eb" radius={[4, 4, 0, 0]} yAxisId="left" />
+                                        <Bar dataKey="orders"  fill="#10b981" radius={[4, 4, 0, 0]} yAxisId="right" />
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            )}
+                        </div>
+
+                        <ProductPerformanceTable products={analytics.products} t={t} />
+                    </>
                 )}
-
-                <div className="bg-secondary/20 border border-border rounded-lg p-5 mb-6">
-                    <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-base text-foreground">ביצועים לאורך זמן</h3>
-                        <div className="text-left">
-                            <p className="text-xs text-muted-foreground mb-0.5">הכנסה כוללת</p>
-                            <p className="text-xl text-[#2563eb] font-medium">{campaign.revenue}</p>
-                        </div>
-                    </div>
-
-                    <ResponsiveContainer width="100%" height={280}>
-                        <BarChart data={chartData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                            <XAxis dataKey="day" stroke="#8b8b99" style={{ fontSize: '11px', fill: '#8b8b99' }} />
-                            <YAxis yAxisId="left" stroke="#8b8b99" style={{ fontSize: '11px', fill: '#8b8b99' }} tickFormatter={(v) => `₪${(v / 1000).toFixed(0)}k`} />
-                            <YAxis yAxisId="right" orientation="left" stroke="#8b8b99" style={{ fontSize: '11px', fill: '#8b8b99' }} />
-                            <Tooltip
-                                contentStyle={{ backgroundColor: '#1a1a24', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', padding: '8px 12px' }}
-                                labelStyle={{ color: '#e5e5ea', fontSize: '12px', marginBottom: '4px' }}
-                                itemStyle={{ color: '#e5e5ea', fontSize: '11px' }}
-                                formatter={(value, name) => {
-                                    if (name === 'revenue') return [`₪${value.toLocaleString()}`, 'הכנסה'];
-                                    if (name === 'orders')  return [value, 'הזמנות'];
-                                    return [value, name];
-                                }}
-                            />
-                            <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} formatter={(v) => v === 'revenue' ? 'הכנסה' : v === 'orders' ? 'הזמנות' : v} />
-                            <Bar dataKey="revenue" fill="#2563eb" radius={[4, 4, 0, 0]} yAxisId="left" />
-                            <Bar dataKey="orders"  fill="#10b981" radius={[4, 4, 0, 0]} yAxisId="right" />
-                        </BarChart>
-                    </ResponsiveContainer>
-                </div>
-
-                <ProductBreakdown campaign={campaign} />
-
-                <div className="bg-secondary/20 border border-border rounded-lg p-5">
-                    <h3 className="text-base text-foreground mb-4">ניתוח תקציב</h3>
-                    <div className="grid grid-cols-2 gap-4 mb-4">
-                        <BudgetValue label="תקציב כולל"   value={campaign.budget} />
-                        <BudgetValue label="הוצאו עד כה"  value={campaign.spent}  color="#7c3aed" />
-                    </div>
-                    <ProgressBar value={budgetPercent} />
-                    <div className="flex items-center justify-between text-xs">
-                        <span className="text-[#10b981]">נותר: {formatMoney(getRemainingBudget(campaign))}</span>
-                        <span className="text-muted-foreground">{Math.round(budgetPercent)}% נוצל</span>
-                    </div>
-                </div>
             </div>
         </ModalShell>
     );
 }
 
-function MetricCard({ label, value, color, footer, icon: Icon }) {
+function MetricCard({ label, value, color, icon: Icon }) {
     return (
         <div className="bg-gradient-to-br to-transparent border rounded-lg p-4" style={{ borderColor: `${color}33`, background: `linear-gradient(135deg, ${color}1a, transparent)` }}>
-            <p className="text-xs text-muted-foreground mb-1">{label}</p>
-            <p className="text-2xl mb-1" style={{ color }}>{value}</p>
-            <div className="flex items-center gap-1 text-xs">
-                <Icon className="w-3 h-3" style={{ color }} />
-                <span className="text-muted-foreground">{footer}</span>
+            <div className="flex items-center gap-1.5 mb-1">
+                <Icon className="w-3.5 h-3.5" style={{ color }} />
+                <p className="text-xs text-muted-foreground">{label}</p>
             </div>
+            <p className="text-2xl" style={{ color }}>{value}</p>
         </div>
     );
 }
 
-function ProductBreakdown({ campaign }) {
+// Real per-product breakdown sourced from the analytics endpoint's
+// campaign-attributed order items — replaces the previous fake growing/
+// stable/declining trend breakdown (which used made-up numbers with no
+// data source; a real per-product trend would need a second time-window
+// comparison this task doesn't build).
+function ProductPerformanceTable({ products, t }) {
     return (
-        <div className="bg-secondary/20 border border-border rounded-lg p-5 mb-6">
-            <h3 className="text-base text-foreground mb-4">פילוח ביצועי מוצרים</h3>
-            <div className="space-y-4">
-                <BreakdownRow icon={TrendingUp}   label="מוצרים בצמיחה" value={campaign.productStats.growing}   percent={getProductPercent(campaign, 'growing')}   color="#10b981" />
-                <BreakdownRow icon={Minus}        label="מוצרים יציבים" value={campaign.productStats.stable}    percent={getProductPercent(campaign, 'stable')}    color="#fbbf24" />
-                <BreakdownRow icon={TrendingDown} label="מוצרים בירידה" value={campaign.productStats.declining} percent={getProductPercent(campaign, 'declining')} color="#ef4444" />
-            </div>
-        </div>
-    );
-}
-
-function BreakdownRow({ icon: Icon, label, value, percent, color }) {
-    return (
-        <div>
-            <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                    <Icon className="w-4 h-4" style={{ color }} />
-                    <span className="text-sm text-foreground">{label}</span>
+        <div className="bg-secondary/20 border border-border rounded-lg p-5">
+            <h3 className="text-base text-foreground mb-4">{t('admin.campaigns.product_performance')}</h3>
+            {products.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-6">{t('admin.campaigns.no_sales_yet')}</p>
+            ) : (
+                <div className="overflow-x-auto">
+                    <table className="w-full">
+                        <thead>
+                            <tr className="border-b border-border">
+                                <TableHead>{t('admin.campaigns.col_product')}</TableHead>
+                                <TableHead>SKU</TableHead>
+                                <TableHead>{t('admin.campaigns.col_units')}</TableHead>
+                                <TableHead>{t('admin.campaigns.col_revenue')}</TableHead>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {products.map((p) => (
+                                <tr key={p.productId} className="border-b border-border/50">
+                                    <td className="py-2.5 px-4 text-sm text-foreground">{p.name}</td>
+                                    <td className="py-2.5 px-4 text-sm text-muted-foreground">{p.sku ?? '—'}</td>
+                                    <td className="py-2.5 px-4 text-sm text-foreground">{p.unitsSold.toLocaleString()}</td>
+                                    <td className="py-2.5 px-4 text-sm text-[#10b981] font-medium">{formatMoney(p.revenue)}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
                 </div>
-                <span className="text-sm font-medium" style={{ color }}>{value} מוצרים</span>
-            </div>
-            <div className="w-full bg-secondary rounded-full h-2">
-                <div className="h-2 rounded-full" style={{ width: `${percent}%`, backgroundColor: color }} />
-            </div>
-        </div>
-    );
-}
-
-function BudgetValue({ label, value, color = '#e5e5ea' }) {
-    return (
-        <div>
-            <p className="text-xs text-muted-foreground mb-1">{label}</p>
-            <p className="text-xl" style={{ color }}>{value}</p>
+            )}
         </div>
     );
 }
 
 // ─── Products modal ───────────────────────────────────────────────────────────
 
-function ProductsModal({ campaign, closeModal }) {
+function ProductsModal({ campaign, closeModal, onUpdated }) {
+    const t = useTranslation();
+    const [showAdd, setShowAdd] = useState(false);
+    const [search, setSearch] = useState('');
+    const [searchResults, setSearchResults] = useState([]);
+    const [searchState, setSearchState] = useState('idle');
+    const [toAdd, setToAdd] = useState([]);
+    const [saving, setSaving] = useState(false);
+    const [error, setError] = useState('');
+    const abortRef = useRef(null);
+
+    const existingIds = new Set(campaign.products.map((p) => p._id));
+
+    // Same server-side search source/debounce/abort pattern as
+    // CreateEditModal's product picker — only active while the "add
+    // products" panel is open.
+    useEffect(() => {
+        if (!showAdd) return undefined;
+        const handle = setTimeout(() => {
+            if (abortRef.current) abortRef.current.abort();
+            const controller = new AbortController();
+            abortRef.current = controller;
+            setSearchState('loading');
+            adminService.searchProducts({ search, limit: 20 }, controller.signal)
+                .then(({ products }) => {
+                    setSearchResults(products.filter((p) => /^[0-9a-fA-F]{24}$/.test(p._id)));
+                    setSearchState(products.length === 0 ? 'empty' : 'success');
+                })
+                .catch((err) => {
+                    if (err?.name === 'AbortError') return;
+                    setSearchState('error');
+                });
+        }, 300);
+        return () => clearTimeout(handle);
+    }, [search, showAdd]);
+
+    const toggleToAdd = (product) => {
+        setToAdd((prev) => prev.some((p) => p._id === product._id)
+            ? prev.filter((p) => p._id !== product._id)
+            : [...prev, product]);
+    };
+
+    // Reuses the EXISTING campaign update endpoint (PATCH /admin/campaigns/:id)
+    // — merges the already-selected products with the newly chosen ones,
+    // deduping by _id, so nothing already in the campaign is ever lost.
+    const handleAddProducts = async () => {
+        setSaving(true);
+        setError('');
+        try {
+            const mergedIds = Array.from(new Set([
+                ...campaign.products.map((p) => p._id),
+                ...toAdd.map((p) => p._id),
+            ]));
+            const updated = await adminService.updateCampaign(campaign._id, { products: mergedIds });
+            onUpdated(updated);
+            setShowAdd(false);
+            setToAdd([]);
+            setSearch('');
+            setSearchResults([]);
+        } catch (err) {
+            setError(err?.message ?? t('admin.campaigns.err_save'));
+        } finally {
+            setSaving(false);
+        }
+    };
+
     return (
         <ModalShell closeModal={closeModal} maxWidth="max-w-6xl">
-            <ModalHeader title="מוצרים בקמפיין" subtitle={`${campaign.name} • ${campaign.totalProducts} מוצרים`} closeModal={closeModal} />
+            <ModalHeader title={t('admin.campaigns.products_title')} subtitle={`${campaign.name} • ${campaign.totalProducts} ${t('admin.campaigns.products')}`} closeModal={closeModal} />
 
             <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)] scrollbar-thin">
-                {campaign.products.length > 0 ? (
-                    <div>
-                        <button type="button" className="w-full bg-[#2563eb] text-white py-3.5 rounded-xl font-medium hover:bg-[#2563eb]/90 transition-colors flex items-center justify-center gap-2 mb-6">
-                            <Plus className="w-4 h-4" />
-                            הוסף מוצרים לקמפיין
-                        </button>
-
-                        <div className="overflow-x-auto">
-                            <table className="w-full">
-                                <thead>
-                                    <tr className="border-b border-border">
-                                        <TableHead>מוצר</TableHead>
-                                        <TableHead>SKU</TableHead>
-                                        <TableHead>מחיר</TableHead>
-                                        <TableHead>הכנסה</TableHead>
-                                        <TableHead>הזמנות</TableHead>
-                                        <TableHead>מלאי</TableHead>
-                                        <TableHead>מגמה</TableHead>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {campaign.products.map((product) => (
-                                        <ProductRow key={product._id} product={product} discountPercent={campaign.discount} />
-                                    ))}
-                                </tbody>
-                            </table>
+                {!showAdd ? (
+                    <button type="button" onClick={() => setShowAdd(true)} className="w-full bg-[#2563eb] text-white py-3.5 rounded-xl font-medium hover:bg-[#2563eb]/90 transition-colors flex items-center justify-center gap-2 mb-6">
+                        <Plus className="w-4 h-4" />
+                        {t('admin.campaigns.add_products')}
+                    </button>
+                ) : (
+                    <div className="mb-6 bg-secondary/20 border border-border rounded-lg p-4">
+                        <div className="flex items-center justify-between mb-3">
+                            <h4 className="text-sm text-foreground font-medium">{t('admin.campaigns.add_products')}</h4>
+                            <button type="button" onClick={() => { setShowAdd(false); setToAdd([]); setSearch(''); }} className="text-xs text-muted-foreground hover:text-foreground">
+                                {t('admin.campaigns.cancel')}
+                            </button>
                         </div>
+
+                        <div className="relative mb-3">
+                            <Search className="absolute top-2.5 right-3 w-4 h-4 text-muted-foreground" />
+                            <input
+                                type="text"
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                placeholder={t('admin.campaigns.search_products_placeholder')}
+                                className="w-full pr-9 pl-3 py-2 rounded-lg bg-card border border-border text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-[#2563eb]"
+                            />
+                        </div>
+
+                        {searchState === 'loading' && <p className="text-xs text-muted-foreground py-2">{t('admin.campaigns.searching')}</p>}
+                        {searchState === 'error'   && <p className="text-xs text-red-400 py-2">{t('admin.campaigns.err_search')}</p>}
+                        {searchState === 'empty'   && <p className="text-xs text-muted-foreground py-2">{t('admin.campaigns.no_products_found')}</p>}
+
+                        {searchResults.length > 0 && (
+                            <div className="max-h-48 overflow-y-auto space-y-1 mb-3">
+                                {searchResults.map((p) => {
+                                    const alreadyIn = existingIds.has(p._id);
+                                    const checked = toAdd.some((sp) => sp._id === p._id);
+                                    return (
+                                        <label key={p._id} className={`flex items-center justify-between gap-2 p-2 rounded-lg text-sm ${alreadyIn ? 'opacity-40' : 'hover:bg-secondary/40 cursor-pointer'}`}>
+                                            <span className="flex items-center gap-2">
+                                                <input type="checkbox" checked={checked || alreadyIn} disabled={alreadyIn} onChange={() => toggleToAdd(p)} />
+                                                {p.name} <span className="text-xs text-muted-foreground">{p.sku}</span>
+                                            </span>
+                                            {alreadyIn && <span className="text-xs text-muted-foreground">{t('admin.campaigns.already_in_campaign')}</span>}
+                                        </label>
+                                    );
+                                })}
+                            </div>
+                        )}
+
+                        {error && <p className="text-xs text-red-400 mb-2">{error}</p>}
+
+                        <button
+                            type="button"
+                            onClick={handleAddProducts}
+                            disabled={saving || toAdd.length === 0}
+                            className="w-full bg-[#2563eb] text-white py-2.5 rounded-lg text-sm font-medium hover:bg-[#2563eb]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            {saving ? t('admin.campaigns.saving') : `${t('admin.campaigns.add_selected')} (${toAdd.length})`}
+                        </button>
+                    </div>
+                )}
+
+                {campaign.products.length > 0 ? (
+                    <div className="overflow-x-auto">
+                        <table className="w-full">
+                            <thead>
+                                <tr className="border-b border-border">
+                                    <TableHead>{t('admin.campaigns.col_product')}</TableHead>
+                                    <TableHead>SKU</TableHead>
+                                    <TableHead>{t('admin.campaigns.col_price')}</TableHead>
+                                    <TableHead>{t('admin.campaigns.col_stock')}</TableHead>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {campaign.products.map((product) => (
+                                    <ProductRow key={product._id} product={product} discountPercent={campaign.discount} />
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
                 ) : (
                     <div className="text-center py-12">
                         <Package className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
-                        <p className="text-foreground mb-1">אין מוצרים בקמפיין זה</p>
-                        <p className="text-sm text-muted-foreground">הוסף מוצרים לקמפיין כדי לראות אותם כאן</p>
+                        <p className="text-foreground mb-1">{t('admin.campaigns.no_products_in_campaign')}</p>
+                        <p className="text-sm text-muted-foreground">{t('admin.campaigns.add_products_hint')}</p>
                     </div>
                 )}
             </div>
@@ -1104,122 +1127,7 @@ function ProductRow({ product, discountPercent }) {
                     <span className="text-sm text-foreground font-medium">₪{product.price?.toLocaleString() ?? '—'}</span>
                 )}
             </td>
-            <td className="py-3 px-4 text-sm text-muted-foreground">—</td>
-            <td className="py-3 px-4 text-sm text-muted-foreground">—</td>
-            <td className="py-3 px-4 text-sm text-muted-foreground">—</td>
-            <td className="py-3 px-4">
-                <div className="flex items-center gap-2">
-                    <Minus className="w-4 h-4 text-[#fbbf24]" />
-                    <span className="text-sm text-[#fbbf24]">—</span>
-                </div>
-            </td>
+            <td className="py-3 px-4 text-sm text-muted-foreground">{product.stock ?? '—'}</td>
         </tr>
-    );
-}
-
-// ─── Add budget modal ─────────────────────────────────────────────────────────
-
-function AddBudgetModal({ campaign, closeModal, budgetRequestSent, setBudgetRequestSent }) {
-    const nextBudget = parseMoney(campaign.budget) + 10000;
-
-    return (
-        <ModalShell closeModal={closeModal} maxWidth="max-w-lg">
-            <div className="relative p-6 pb-4">
-                <button type="button" onClick={closeModal} className="absolute top-4 left-4 p-2 hover:bg-secondary/50 rounded-lg transition-colors">
-                    <X className="w-5 h-5 text-muted-foreground" />
-                </button>
-                <div className="text-center">
-                    <div className="w-16 h-16 bg-gradient-to-br from-[#2563eb]/20 to-[#7c3aed]/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <ArrowUpRight className="w-8 h-8 text-[#2563eb]" />
-                    </div>
-                    <h2 className="text-2xl text-foreground mb-2">בקשת תוספת תקציב</h2>
-                    <p className="text-sm text-muted-foreground">{campaign.name}</p>
-                </div>
-            </div>
-
-            {!budgetRequestSent ? (
-                <div className="px-6 pb-6 overflow-y-auto max-h-[calc(90vh-220px)] scrollbar-thin">
-                    <div className="space-y-5">
-                        <div className="bg-secondary/20 border border-border rounded-lg p-4">
-                            <h3 className="text-sm text-foreground font-medium mb-3">מצב תקציב נוכחי</h3>
-                            <div className="grid grid-cols-2 gap-4">
-                                <BudgetValue label="תקציב כולל" value={campaign.budget} />
-                                <BudgetValue label="הוצאו"       value={campaign.spent}  color="#7c3aed" />
-                            </div>
-                            <div className="mt-3">
-                                <ProgressBar value={getBudgetPercent(campaign)} />
-                                <div className="flex items-center justify-between text-xs">
-                                    <span className="text-[#10b981]">נותר: {formatMoney(getRemainingBudget(campaign))}</span>
-                                    <span className="text-muted-foreground">{Math.round(getBudgetPercent(campaign))}% נוצל</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label className="block text-sm text-foreground font-medium mb-2">סכום תוספת תקציב מבוקשת</label>
-                            <div className="relative">
-                                <input type="text" defaultValue="₪10,000" className="w-full bg-input-background border border-[#2563eb]/30 rounded-lg px-4 py-3 text-xl text-foreground font-medium focus:border-[#2563eb] focus:outline-none focus:ring-2 focus:ring-[#2563eb]/20 transition-all" />
-                                <div className="absolute left-3 top-1/2 -translate-y-1/2 flex flex-col gap-0.5">
-                                    <button type="button" className="p-0.5 hover:bg-secondary rounded transition-colors">
-                                        <ChevronUp className="w-4 h-4 text-[#2563eb]" />
-                                    </button>
-                                    <button type="button" className="p-0.5 hover:bg-secondary rounded transition-colors">
-                                        <ChevronDown className="w-4 h-4 text-[#2563eb]" />
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="bg-gradient-to-br from-[#10b981]/10 to-transparent border border-[#10b981]/20 rounded-lg p-4">
-                            <div className="flex items-center justify-between mb-2">
-                                <span className="text-sm text-muted-foreground">תקציב צפוי לאחר אישור</span>
-                                <span className="text-2xl text-[#10b981] font-medium">{formatMoney(nextBudget)}</span>
-                            </div>
-                            <div className="flex items-center gap-2 text-xs text-[#10b981]">
-                                <ArrowUpRight className="w-3.5 h-3.5" />
-                                <span>עלייה של {Math.round((10000 / (parseMoney(campaign.budget) || 1)) * 100)}%</span>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label className="block text-sm text-foreground font-medium mb-2">סיבת הבקשה (אופציונלי)</label>
-                            <textarea rows={3} placeholder="הסבר קצר מדוע דרוש תקציב נוסף..." className="w-full bg-input-background border border-border rounded-lg px-4 py-3 text-foreground focus:border-[#2563eb] focus:outline-none transition-colors resize-none" />
-                        </div>
-
-                        <div className="bg-[#3b82f6]/5 border border-[#3b82f6]/20 rounded-lg p-3">
-                            <div className="flex items-start gap-2">
-                                <AlertCircle className="w-4 h-4 text-[#3b82f6] mt-0.5 flex-shrink-0" />
-                                <div>
-                                    <p className="text-xs text-foreground font-medium mb-1">שים לב</p>
-                                    <p className="text-xs text-muted-foreground">הבקשה תישלח לקמפיינר לאישור. תקבל הודעה לאחר קבלת החלטה על הבקשה.</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <button type="button" onClick={() => setBudgetRequestSent(true)} className="w-full bg-gradient-to-r from-[#2563eb] to-[#7c3aed] text-white py-4 rounded-xl font-medium hover:opacity-90 transition-opacity flex items-center justify-center gap-2 shadow-lg shadow-[#2563eb]/20">
-                            <Send className="w-5 h-5" />
-                            שלח בקשה לקמפיינר
-                        </button>
-                    </div>
-                </div>
-            ) : (
-                <div className="px-6 pb-6">
-                    <div className="text-center py-8">
-                        <div className="w-20 h-20 bg-gradient-to-br from-[#10b981]/20 to-[#10b981]/10 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
-                            <CheckCircle className="w-10 h-10 text-[#10b981]" />
-                        </div>
-                        <h3 className="text-xl text-foreground font-medium mb-2">הבקשה נשלחה בהצלחה!</h3>
-                        <p className="text-sm text-muted-foreground mb-6">
-                            בקשת תוספת תקציב של ₪10,000 נשלחה לקמפיינר.
-                            <br />
-                            תקבל עדכון לאחר בדיקת הבקשה.
-                        </p>
-                        <button type="button" onClick={closeModal} className="w-full bg-[#2563eb] text-white py-3 rounded-xl font-medium hover:bg-[#2563eb]/90 transition-colors">
-                            סגור
-                        </button>
-                    </div>
-                </div>
-            )}
-        </ModalShell>
     );
 }
