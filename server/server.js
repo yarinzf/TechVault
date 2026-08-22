@@ -11,6 +11,7 @@ const { startJobs }      = require('./jobs');
 const { initSocket, getIO } = require('./socket');
 const { registerBridge } = require('./events/socket.bridge');
 const { registerNotificationHandlers } = require('./events/notificationHandlers');
+const { registerAnalyticsHandlers } = require('./events/analyticsHandlers');
 const emailListener = require('./services/email/email.listener');
 
 const PORT   = env.PORT || 5000;
@@ -47,6 +48,14 @@ const start = async () => {
       emailListener.init();               // wire domain events → transactional emails
       startJobs();
     }
+    // Registered unconditionally (unlike the socket/notification/email
+    // handlers above, which are deliberately skipped in test) — this one is
+    // pure internal aggregation with no external side effects. Note this
+    // still only runs when server.js's start() executes (real app boot);
+    // tests require server/app.js directly and register it themselves
+    // where the incremental-rebuild behavior needs to be exercised — see
+    // tests/analyticsContinuity.test.js.
+    registerAnalyticsHandlers();
 
     server.listen(PORT, () => {
       logger.info(`🚀 TechVault4 running on port ${PORT} [${env.NODE_ENV}]`);

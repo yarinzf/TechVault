@@ -5,22 +5,25 @@ const Product = require('../models/Product');
 const User    = require('../models/User');
 const Alert   = require('../models/Alert');
 const { ROLES } = require('../config/roles');
+const { getIsraelDayBoundaries, getIsraelDateParts } = require('../utils/timezone');
+const { getRangeStats, getDailySeries, bucketSeriesByPeriod, ALL_TIME_FLOOR } = require('./analyticsDaily.service');
+const ProductSalesMonthly = require('../models/ProductSalesMonthly');
 
 // ─── Shared helpers ───────────────────────────────────────────────────────────
 const round2    = (n) => Math.round(n * 100) / 100;
 const pct       = (num, den) => den === 0 ? 0 : round2((num / den) * 100);
 const daysAgo   = (n) => new Date(Date.now() - n * 24 * 60 * 60 * 1_000);
-const startOfToday = () => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; };
+// Israel-calendar-day boundary, not server-local/UTC — see server/utils/timezone.js.
+const startOfToday = () => getIsraelDayBoundaries(new Date()).start;
 
 // ─── Shared filter definitions (mirror admin.service.js) ─────────────────────
-// Only paid orders that haven't been cancelled or refunded count as recognized revenue.
+// Only paid orders that haven't been cancelled or refunded count as recognized
+// revenue — still used by getOrderAnalytics#topCustomers below (a live-only,
+// per-customer breakdown; see server/docs/analytics-architecture.md for why
+// that stays live rather than blended with the seeded historical baseline).
 const REVENUE_MATCH = {
   paymentStatus: 'paid',
   status: { $nin: ['cancelled', 'refunded'] },
-};
-// Product sales: exclude pre-fulfillment and terminal-negative statuses.
-const SALES_MATCH = {
-  status: { $nin: ['cancelled', 'refunded', 'pending'] },
 };
 
 // ─── Range resolver ───────────────────────────────────────────────────────────
@@ -50,62 +53,45 @@ const rangeFilter = ({ from, to }) => ({
 
 // ─── 1. Overview — all key KPIs in one call ───────────────────────────────────
 // Returns: { revenue, orders, customers, alerts }
+//
+// revenue/orders (gross/net/refunded/aov/cancellationRate/refundRate/growth)
+// are historical-baseline + live reconciled via analyticsDaily.service.js —
+// the SAME function backing the Dashboard and Reports/CSV export, so this
+// tab can never show a different total for the same range. `byStatus`/
+// `completionRate` (fulfillment-pipeline detail), `customers.unique`/
+// `topCustomers`-style per-customer breakdowns, and `alerts.open` remain
+// live-only real Order/Alert queries — see server/docs/analytics-
+// architecture.md for why per-customer and operational-pipeline figures are
+// not (and cannot honestly be) blended with the seeded historical baseline.
 const getOverview = async (query) => {
   const range = resolveRange(query);
   const createdAtFilter = range.from ? { createdAt: rangeFilter(range) } : {};
-  const revenueFilter   = { ...REVENUE_MATCH, ...createdAtFilter };
 
-  // Previous period for growth % calculation (same length, ending at range.from)
-  const prevFilter = (range.from && range.days)
-    ? {
-        ...REVENUE_MATCH,
-        createdAt: { $gte: daysAgo(range.days * 2), $lt: range.from },
-      }
+  const rangeStats = await getRangeStats(range.from ?? ALL_TIME_FLOOR, range.to);
+  const prevRangeStats = (range.from && range.days)
+    ? await getRangeStats(daysAgo(range.days * 2), range.from)
     : null;
 
-  const [
-    revenueAgg,
-    refundedAgg,
-    prevRevenueAgg,
-    orderStatusAgg,
-    uniqueCustomersAgg,
-    newCustomers,
-    openAlerts,
-  ] = await Promise.all([
-    // Gross revenue + paid order count for current period
-    Order.aggregate([
-      { $match: revenueFilter },
-      { $group: { _id: null, gross: { $sum: '$total' }, count: { $sum: 1 } } },
-    ]),
-
-    // Total refunded money across all orders in range (regardless of payment status)
-    Order.aggregate([
-      { $match: { ...createdAtFilter, refundedAmount: { $gt: 0 } } },
-      { $group: { _id: null, total: { $sum: '$refundedAmount' } } },
-    ]),
-
-    // Previous period gross for growth%
-    prevFilter
-      ? Order.aggregate([
-          { $match: prevFilter },
-          { $group: { _id: null, gross: { $sum: '$total' } } },
-        ])
-      : Promise.resolve([]),
-
-    // Order count by status within range
+  const [orderStatusAgg, uniqueCustomersAgg, newCustomers, openAlerts] = await Promise.all([
+    // Order count by status within range — live, operational breakdown
     Order.aggregate([
       { $match: createdAtFilter },
       { $group: { _id: '$status', count: { $sum: 1 } } },
     ]),
 
-    // Unique paying customers within range
+    // Unique paying customers within range — inherently live-only (no
+    // fake historical Users/Orders exist to derive this from for the
+    // seeded window).
     Order.aggregate([
       { $match: { ...createdAtFilter, paymentStatus: { $in: ['paid', 'partially_refunded', 'refunded'] } } },
       { $group: { _id: '$user' } },
       { $count: 'total' },
     ]),
 
-    // New registered customer accounts in range
+    // New REGISTERED customer accounts in range — deliberately real/live
+    // only, never blended with AnalyticsDaily.newCustomers (a narrative
+    // KPI-trend figure used only by the BusinessTarget goal-tracking
+    // feature — see analytics-architecture.md).
     range.from
       ? User.countDocuments({ role: ROLES.USER, createdAt: rangeFilter(range) })
       : User.countDocuments({ role: ROLES.USER }),
@@ -113,35 +99,32 @@ const getOverview = async (query) => {
     Alert.countDocuments({ isResolved: false }),
   ]);
 
-  const gross     = revenueAgg[0]?.gross ?? 0;
-  const paidCount = revenueAgg[0]?.count ?? 0;
-  const refunded  = refundedAgg[0]?.total ?? 0;
-  const prevGross = prevRevenueAgg[0]?.gross ?? 0;
-
   const byStatus = {};
   for (const { _id, count } of orderStatusAgg) byStatus[_id] = count;
 
   const total       = Object.values(byStatus).reduce((a, b) => a + b, 0);
-  const cancelled   = byStatus.cancelled ?? 0;
-  const refundedOrders = byStatus.refunded ?? 0;
   const delivered   = byStatus.delivered ?? 0;
   const fulfilled   = ['confirmed', 'processing', 'shipped', 'delivered', 'refunded']
     .reduce((s, k) => s + (byStatus[k] ?? 0), 0);
 
   return {
     revenue: {
-      gross:    round2(gross),
-      net:      round2(gross - refunded),
-      refunded: round2(refunded),
-      aov:      paidCount > 0 ? round2(gross / paidCount) : 0,
-      ordersCount: paidCount,
-      growth:   prevGross > 0 ? round2(((gross - prevGross) / prevGross) * 100) : null,
+      gross:    rangeStats.revenue,
+      net:      round2(rangeStats.revenue - rangeStats.refundAmount),
+      refunded: rangeStats.refundAmount,
+      aov:      rangeStats.aov,
+      ordersCount: rangeStats.paidOrders,
+      growth: prevRangeStats && prevRangeStats.revenue > 0
+        ? round2(((rangeStats.revenue - prevRangeStats.revenue) / prevRangeStats.revenue) * 100)
+        : null,
     },
     orders: {
       total,
       byStatus,
-      cancellationRate: pct(cancelled, total),
-      refundRate:       pct(refundedOrders, paidCount + refundedOrders),
+      cancellationRate: rangeStats.cancellationRate,
+      refundRate:       rangeStats.refundedOrders + rangeStats.paidOrders > 0
+        ? round2((rangeStats.refundedOrders / (rangeStats.refundedOrders + rangeStats.paidOrders)) * 100)
+        : 0,
       completionRate:   pct(delivered, fulfilled),
     },
     customers: {
@@ -156,85 +139,53 @@ const getOverview = async (query) => {
 
 // ─── 2. Revenue analytics ─────────────────────────────────────────────────────
 // Returns: { summary: { gross, net, refunded, aov, ordersCount, growth }, series: [...] }
+// Historical-baseline + live reconciled — same getDailySeries/
+// bucketSeriesByPeriod primitive as admin.service.js#getRevenue and
+// report.service.js#getSalesReport.
 const getRevenueAnalytics = async (query) => {
   const range  = resolveRange(query);
   const period = query.period || 'day';
 
-  const match = { ...REVENUE_MATCH };
-  if (range.from) match.createdAt = rangeFilter(range);
-
-  const prevMatch = (range.from && range.days)
-    ? { ...REVENUE_MATCH, createdAt: { $gte: daysAgo(range.days * 2), $lt: range.from } }
+  const rangeStats = await getRangeStats(range.from ?? ALL_TIME_FLOOR, range.to);
+  const prevRangeStats = (range.from && range.days)
+    ? await getRangeStats(daysAgo(range.days * 2), range.from)
     : null;
 
-  const formatMap = { day: '%Y-%m-%d', week: '%Y-%U', month: '%Y-%m' };
-  const dateFmt   = formatMap[period] ?? '%Y-%m-%d';
-
-  const [summaryAgg, refundedAgg, prevAgg, seriesAgg] = await Promise.all([
-    Order.aggregate([
-      { $match: match },
-      { $group: { _id: null, gross: { $sum: '$total' }, count: { $sum: 1 } } },
-    ]),
-
-    Order.aggregate([
-      { $match: { ...(range.from ? { createdAt: rangeFilter(range) } : {}), refundedAmount: { $gt: 0 } } },
-      { $group: { _id: null, total: { $sum: '$refundedAmount' } } },
-    ]),
-
-    prevMatch
-      ? Order.aggregate([
-          { $match: prevMatch },
-          { $group: { _id: null, gross: { $sum: '$total' } } },
-        ])
-      : Promise.resolve([]),
-
-    Order.aggregate([
-      { $match: match },
-      {
-        $group: {
-          _id:     { $dateToString: { format: dateFmt, date: '$createdAt' } },
-          revenue: { $sum: '$total' },
-          orders:  { $sum: 1 },
-        },
-      },
-      { $sort: { _id: 1 } },
-      {
-        $project: {
-          _id:      0,
-          period:   '$_id',
-          revenue:  { $round: ['$revenue', 2] },
-          orders:   1,
-          avgOrder: {
-            $round: [{ $divide: ['$revenue', { $max: ['$orders', 1] }] }, 2],
-          },
-        },
-      },
-    ]),
-  ]);
-
-  const gross    = summaryAgg[0]?.gross   ?? 0;
-  const count    = summaryAgg[0]?.count   ?? 0;
-  const refunded = refundedAgg[0]?.total  ?? 0;
-  const prevGross = prevAgg[0]?.gross     ?? 0;
+  const dailySeries = await getDailySeries(range.from ?? ALL_TIME_FLOOR, range.to);
+  const series = bucketSeriesByPeriod(dailySeries, ['day', 'week', 'month'].includes(period) ? period : 'day');
 
   return {
     summary: {
-      gross:       round2(gross),
-      net:         round2(gross - refunded),
-      refunded:    round2(refunded),
-      aov:         count > 0 ? round2(gross / count) : 0,
-      ordersCount: count,
-      growth:      prevGross > 0 ? round2(((gross - prevGross) / prevGross) * 100) : null,
+      gross:       rangeStats.revenue,
+      net:         round2(rangeStats.revenue - rangeStats.refundAmount),
+      refunded:    rangeStats.refundAmount,
+      aov:         rangeStats.aov,
+      ordersCount: rangeStats.paidOrders,
+      growth: prevRangeStats && prevRangeStats.revenue > 0
+        ? round2(((rangeStats.revenue - prevRangeStats.revenue) / prevRangeStats.revenue) * 100)
+        : null,
     },
-    series: seriesAgg,
+    series,
   };
 };
 
 // ─── 3. Order analytics ───────────────────────────────────────────────────────
 // Returns: { summary, byStatus, trend, topCustomers, repeatCustomers, anomalies }
+// summary.cancellationRate/refundRate and `trend` (revenue/order counts per
+// day) are historical-baseline + live reconciled (getRangeStats/
+// getDailySeries — same primitive as the Dashboard/Reports). `byStatus`/
+// `completionRate` (fulfillment-pipeline stage breakdown), `topCustomers`,
+// `repeatCustomers`, and `anomalies` (always a fixed real-time 24h/7d
+// window, never affected by the requested range) remain live-only real
+// queries — pipeline stage and per-customer detail have no seeded
+// historical equivalent, see server/docs/analytics-architecture.md.
 const getOrderAnalytics = async (query) => {
   const range = resolveRange(query);
   const createdAtFilter = range.from ? { createdAt: rangeFilter(range) } : {};
+
+  const rangeStats = await getRangeStats(range.from ?? ALL_TIME_FLOOR, range.to);
+  const dailySeries = await getDailySeries(range.from ?? ALL_TIME_FLOOR, range.to);
+  const trend = dailySeries.map((d) => ({ period: d.date.toISOString().slice(0, 10), count: d.orders, revenue: d.revenue }));
 
   const [
     // Order counts and groupings
@@ -242,7 +193,6 @@ const getOrderAnalytics = async (query) => {
     topCustomers,
     repeatCustomersAgg,
     uniqueCustomersAgg,
-    trend,
     // Anomaly comparison window: last 24h vs 7d average
     ord24h, can24h, ref24h,
     ord7d,  can7d,  ref7d,
@@ -291,27 +241,6 @@ const getOrderAnalytics = async (query) => {
       { $count: 'total' },
     ]),
 
-    // Daily order trend with per-day revenue snapshot
-    Order.aggregate([
-      { $match: createdAtFilter },
-      {
-        $group: {
-          _id:    { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
-          count:  { $sum: 1 },
-          revenue: {
-            $sum: { $cond: [{ $eq: ['$paymentStatus', 'paid'] }, '$total', 0] },
-          },
-        },
-      },
-      { $sort: { _id: 1 } },
-      {
-        $project: {
-          _id: 0, period: '$_id', count: 1,
-          revenue: { $round: ['$revenue', 2] },
-        },
-      },
-    ]),
-
     // Anomaly window — always compare fixed 24h vs 7d (not affected by range)
     Order.countDocuments({ createdAt: { $gte: daysAgo(1) } }),
     Order.countDocuments({ status: 'cancelled',   createdAt: { $gte: daysAgo(1) } }),
@@ -330,12 +259,7 @@ const getOrderAnalytics = async (query) => {
   const byStatus = {};
   for (const { _id, count } of countByStatus) byStatus[_id] = count;
 
-  const total         = Object.values(byStatus).reduce((a, b) => a + b, 0);
-  const cancelled     = byStatus.cancelled  ?? 0;
-  const refundedOrds  = byStatus.refunded   ?? 0;
   const delivered     = byStatus.delivered  ?? 0;
-  const paidAndRefund = (byStatus.delivered ?? 0) + refundedOrds +
-    (byStatus.shipped ?? 0) + (byStatus.processing ?? 0) + (byStatus.confirmed ?? 0);
   const fulfilled     = ['confirmed', 'processing', 'shipped', 'delivered', 'refunded']
     .reduce((s, k) => s + (byStatus[k] ?? 0), 0);
 
@@ -369,9 +293,11 @@ const getOrderAnalytics = async (query) => {
 
   return {
     summary: {
-      total,
-      cancellationRate: pct(cancelled, total),
-      refundRate:       pct(refundedOrds, paidAndRefund),
+      total: rangeStats.orders,
+      cancellationRate: rangeStats.cancellationRate,
+      refundRate:       rangeStats.refundedOrders + rangeStats.paidOrders > 0
+        ? round2((rangeStats.refundedOrders / (rangeStats.refundedOrders + rangeStats.paidOrders)) * 100)
+        : 0,
       completionRate:   pct(delivered, fulfilled),
     },
     byStatus,
@@ -385,62 +311,80 @@ const getOrderAnalytics = async (query) => {
   };
 };
 
+// Converts an [from, to) instant range into a Mongo $or match over
+// ProductSalesMonthly's {year, month} key (mirrors admin.service.js's
+// identical helper) — a month is included if any part of it overlaps the
+// requested range.
+function buildMonthRangeMatch(from, to) {
+  const start = getIsraelDateParts(from);
+  const endInstant = new Date(to.getTime() - 1);
+  const end = getIsraelDateParts(endInstant);
+
+  const keys = [];
+  let y = start.year, m = start.month;
+  while (y < end.year || (y === end.year && m <= end.month)) {
+    keys.push({ year: y, month: m });
+    m += 1;
+    if (m > 12) { m = 1; y += 1; }
+  }
+  return { $or: keys };
+}
+
 // ─── 4. Product analytics ─────────────────────────────────────────────────────
 // Returns: { topSelling, categoryPerformance, lowConversion, inventoryRisk }
+// topSelling/categoryPerformance are historical-baseline + live reconciled —
+// sourced from ProductSalesMonthly (both 'historical_seed_v1' and 'live'
+// rows, the current month kept fresh by the incremental rebuild), NOT a
+// live-only Order scan — so a range spanning the historical window
+// correctly shows real seeded bestsellers/category mix instead of empty
+// results. lowConversion/inventoryRisk are current-state views (not date-
+// ranged) and now use each product's TRUE lifetime total
+// (historicalSalesCount + salesCount) rather than the live-only salesCount
+// field, so a historically-strong seller is never misclassified as "low
+// conversion" purely because its live counter happens to be small.
 const getProductAnalytics = async (query) => {
   const range = resolveRange(query);
-  const createdAtFilter = range.from ? { createdAt: rangeFilter(range) } : {};
-
   const now = new Date();
+  const monthMatch = buildMonthRangeMatch(range.from ?? ALL_TIME_FLOOR, range.to);
 
   const [topSelling, categoryPerformance, lowConversion, inventoryRisk] = await Promise.all([
 
-    // Top products by revenue from completed orders
-    Order.aggregate([
-      { $match: { ...SALES_MATCH, ...createdAtFilter } },
-      { $unwind: '$items' },
+    // Top products by revenue — ProductSalesMonthly, historical + live
+    ProductSalesMonthly.aggregate([
+      { $match: monthMatch },
       {
         $group: {
-          _id:      '$items.product',
-          name:     { $first: '$items.name' },
-          sku:      { $first: '$items.sku' },
-          totalQty: { $sum: '$items.quantity' },
-          revenue:  { $sum: '$items.totalPrice' },
-          orders:   { $sum: 1 },
+          _id:      '$product',
+          totalQty: { $sum: '$unitsSold' },
+          revenue:  { $sum: '$revenue' },
+          orders:   { $sum: '$orderCount' },
         },
       },
       { $sort: { revenue: -1 } },
       { $limit: 15 },
-      // Enrich with live stock and category from Product
-      {
-        $lookup: {
-          from: 'products', localField: '_id', foreignField: '_id', as: 'prod',
-        },
-      },
-      { $unwind: { path: '$prod', preserveNullAndEmptyArrays: true } },
+      { $lookup: { from: 'products', localField: '_id', foreignField: '_id', as: 'prod' } },
+      { $unwind: '$prod' },
       {
         $project: {
-          _id: 0, product: '$_id', name: 1, sku: 1, totalQty: 1, orders: 1,
+          _id: 0, product: '$_id', name: '$prod.name', sku: '$prod.sku', totalQty: 1, orders: 1,
           revenue:  { $round: ['$revenue', 2] },
-          stock:    { $ifNull: ['$prod.stock', null] },
-          category: { $ifNull: ['$prod.category', null] },
+          stock:    '$prod.stock',
+          category: '$prod.category',
         },
       },
     ]),
 
-    // Revenue and volume by category
-    Order.aggregate([
-      { $match: { ...SALES_MATCH, ...createdAtFilter } },
-      { $unwind: '$items' },
+    // Revenue and volume by category — ProductSalesMonthly, historical + live
+    ProductSalesMonthly.aggregate([
+      { $match: monthMatch },
       {
         $group: {
-          _id:     '$items.product',
-          revenue: { $sum: '$items.totalPrice' },
-          qty:     { $sum: '$items.quantity' },
-          orders:  { $sum: 1 },
+          _id:     '$product',
+          revenue: { $sum: '$revenue' },
+          qty:     { $sum: '$unitsSold' },
+          orders:  { $sum: '$orderCount' },
         },
       },
-      // Join to get the product's category
       {
         $lookup: {
           from: 'products', localField: '_id', foreignField: '_id',
@@ -449,7 +393,6 @@ const getProductAnalytics = async (query) => {
         },
       },
       { $unwind: { path: '$prod', preserveNullAndEmptyArrays: true } },
-      // Collapse by category
       {
         $group: {
           _id:     '$prod.category',
@@ -458,7 +401,6 @@ const getProductAnalytics = async (query) => {
           orders:  { $sum: '$orders' },
         },
       },
-      // Join to get category name
       {
         $lookup: {
           from: 'categories', localField: '_id', foreignField: '_id',
@@ -480,42 +422,42 @@ const getProductAnalytics = async (query) => {
       { $sort: { revenue: -1 } },
     ]),
 
-    // Published products with stock but very few sales (low conversion)
-    // Only surfaces products published for at least 14 days to avoid false positives.
+    // Published products with stock but very few LIFETIME sales (historical +
+    // live). Only surfaces products published for at least 14 days (real
+    // Product.createdAt) to avoid false positives on a genuinely new product.
     Product.aggregate([
       { $match: { isDeleted: false, isPublished: true, stock: { $gt: 0 } } },
       {
         $addFields: {
-          daysPublished: {
-            $divide: [{ $subtract: [now, '$createdAt'] }, 86_400_000],
-          },
+          daysPublished: { $divide: [{ $subtract: [now, '$createdAt'] }, 86_400_000] },
+          totalSold:     { $add: [{ $ifNull: ['$historicalSalesCount', 0] }, '$salesCount'] },
         },
       },
-      { $match: { daysPublished: { $gte: 14 }, salesCount: { $lt: 3 } } },
-      { $sort: { salesCount: 1, daysPublished: -1 } },
+      { $match: { daysPublished: { $gte: 14 }, totalSold: { $lt: 3 } } },
+      { $sort: { totalSold: 1, daysPublished: -1 } },
       { $limit: 15 },
       {
         $project: {
           _id: 0, productId: '$_id', name: 1, sku: 1,
-          salesCount: 1, stock: 1, minStock: 1,
+          salesCount: '$totalSold', stock: 1, minStock: 1,
           daysPublished: { $round: ['$daysPublished', 0] },
         },
       },
     ]),
 
     // Inventory risk: low-stock products ranked by turnover rate
-    // turnoverRate ≈ salesCount / (stock + salesCount) — approaches 1 for fast-movers
+    // turnoverRate ≈ totalSold / (stock + totalSold) — approaches 1 for fast-movers
     Product.aggregate([
       { $match: { isDeleted: false, isPublished: true } },
       {
         $addFields: {
+          totalSold: { $add: [{ $ifNull: ['$historicalSalesCount', 0] }, '$salesCount'] },
+        },
+      },
+      {
+        $addFields: {
           turnoverRate: {
-            $round: [{
-              $divide: [
-                '$salesCount',
-                { $add: ['$stock', '$salesCount', 1] },
-              ],
-            }, 3],
+            $round: [{ $divide: ['$totalSold', { $add: ['$stock', '$totalSold', 1] }] }, 3],
           },
         },
       },
@@ -530,7 +472,7 @@ const getProductAnalytics = async (query) => {
       {
         $project: {
           _id: 0, productId: '$_id', name: 1, sku: 1,
-          stock: 1, minStock: 1, salesCount: 1, turnoverRate: 1,
+          stock: 1, minStock: 1, salesCount: '$totalSold', turnoverRate: 1,
         },
       },
     ]),

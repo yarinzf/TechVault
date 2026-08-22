@@ -1,0 +1,250 @@
+name: Apply Historical Analytics Baseline
+
+# ── ONE-TIME / MANUAL production operation ──────────────────────────────────
+# Initializes TechVault's ~22-month seeded historical analytics baseline
+# (AnalyticsDaily, ProductSalesMonthly, BusinessTarget, Product.
+# historicalSalesCount/historicalRevenue, a small number of historical
+# Campaign documents) in production via
+# server/scripts/generateHistoricalAnalytics.js. This workflow NEVER touches
+# Orders/Users/Carts/Returns/InventoryMovement/PurchaseOrders/etc. and NEVER
+# invokes the normal development seed (npm run seed) — it only writes into
+# the analytics layer described in server/docs/analytics-architecture.md.
+#
+# workflow_dispatch only, gated behind an explicit typed confirmation input —
+# never part of the regular deploy workflow, never runs on push.
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: 'Type APPLY_HISTORICAL_ANALYTICS to continue'
+        required: true
+      mode:
+        description: 'Choose dry-run first. Use apply only after reviewing the production plan.'
+        required: true
+        type: choice
+        options:
+          - dry-run
+          - apply
+        default: dry-run
+
+concurrency:
+  group: production-historical-analytics
+  cancel-in-progress: false
+
+env:
+  SSH_KEY_PATH: /home/runner/.ssh/deploy_key
+
+jobs:
+  apply-historical-analytics:
+    name: Initialize historical analytics baseline on EC2
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Validate inputs
+        run: |
+          if [ "${{ inputs.confirmation }}" != "APPLY_HISTORICAL_ANALYTICS" ]; then
+            echo "::error::confirmation input must be exactly APPLY_HISTORICAL_ANALYTICS (got: '${{ inputs.confirmation }}')"
+            exit 1
+          fi
+          if [ "${{ inputs.mode }}" != "dry-run" ] && [ "${{ inputs.mode }}" != "apply" ]; then
+            echo "::error::mode must be 'dry-run' or 'apply' (got: '${{ inputs.mode }}')"
+            exit 1
+          fi
+          echo "Confirmation accepted. Mode: ${{ inputs.mode }}"
+
+      # ── Same SSH setup pattern as every other production maintenance workflow ──
+      - name: Configure SSH
+        env:
+          _HOST: ${{ secrets.EC2_HOST }}
+          _USER: ${{ secrets.EC2_USER }}
+          _KEY:  ${{ secrets.EC2_SSH_KEY }}
+        run: |
+          MISSING=0
+          if [ -n "$_HOST" ]; then echo "EC2_HOST: present";    else echo "::error::EC2_HOST: MISSING";    MISSING=1; fi
+          if [ -n "$_USER" ]; then echo "EC2_USER: present";    else echo "::error::EC2_USER: MISSING";    MISSING=1; fi
+          if [ -n "$_KEY" ];  then echo "EC2_SSH_KEY: present"; else echo "::error::EC2_SSH_KEY: MISSING"; MISSING=1; fi
+          if [ "$MISSING" -eq 1 ]; then echo "::error::One or more required secrets are missing"; exit 1; fi
+
+          mkdir -p "$(dirname "$SSH_KEY_PATH")"
+          printf '%s\n' "$_KEY" > "$SSH_KEY_PATH"
+          chmod 600 "$SSH_KEY_PATH"
+          ssh-keyscan -H "$_HOST" >> "$(dirname "$SSH_KEY_PATH")/known_hosts" 2>/dev/null || echo "::warning::ssh-keyscan failed (non-fatal)"
+          echo "SSH configured successfully"
+
+      - name: Sync repository to latest main (script must exist on the server)
+        run: |
+          ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
+            cd /opt/techvault &&
+            git fetch origin &&
+            git reset --hard origin/main &&
+            chmod +x devops/scripts/*.sh
+          '
+
+      # ── `git reset --hard` only updates files on the EC2 HOST — it does
+      #    NOT touch a running container's filesystem (baked at the last
+      #    `docker compose up -d --build`). Inject the generator script
+      #    explicitly into the already-running backend container, matching
+      #    curate-production-storefront.yml's exact pattern. ────────────────
+      - name: Inject historical analytics generator into running backend container
+        run: |
+          ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
+            set -e
+            cd /opt/techvault
+
+            test -f server/scripts/generateHistoricalAnalytics.js || {
+              echo "::error::Script not found on host after sync: /opt/techvault/server/scripts/generateHistoricalAnalytics.js"
+              exit 1
+            }
+
+            BACKEND_CONTAINER=$(docker compose ps -q backend)
+            if [ -z "$BACKEND_CONTAINER" ]; then
+              echo "::error::backend container is not running (docker compose ps -q backend returned empty)"
+              exit 1
+            fi
+            echo "Backend container: $BACKEND_CONTAINER"
+
+            for f in server/scripts/generateHistoricalAnalytics.js \
+                     server/config/analytics.js \
+                     server/utils/timezone.js \
+                     server/utils/deterministicRandom.js \
+                     server/models/AnalyticsDaily.js \
+                     server/models/BusinessTarget.js \
+                     server/models/DailyVisit.js \
+                     server/services/analyticsDaily.service.js; do
+              docker cp "$f" "${BACKEND_CONTAINER}:/app/$f"
+            done
+
+            docker compose exec -T backend node --check /app/server/scripts/generateHistoricalAnalytics.js || {
+              echo "::error::Copied script failed node --check inside the container"
+              exit 1
+            }
+            echo "Generator script and its dependencies injected and verified inside the running backend container."
+          '
+
+      # ── Dry-run mode: preview only, no backup needed since nothing writes. ──
+      - name: "[dry-run] Historical analytics dry-run (prints full plan, touches nothing)"
+        if: ${{ inputs.mode == 'dry-run' }}
+        run: |
+          ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
+            cd /opt/techvault &&
+            docker compose exec -T \
+              -e HISTORICAL_SEED_CONFIRM=TECHVAULT_PRODUCTION \
+              backend node server/scripts/generateHistoricalAnalytics.js --dry-run
+          '
+
+      # ── Apply mode: backup is MANDATORY and MUST happen before any write.
+      #    Fails closed — if the backup step itself fails, or the backup
+      #    file cannot be verified non-empty, the workflow stops here and
+      #    no --apply step ever runs. ───────────────────────────────────────
+      - name: "[apply] Pre-migration MongoDB backup"
+        if: ${{ inputs.mode == 'apply' }}
+        run: |
+          ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} \
+            'sudo /opt/techvault/devops/scripts/backup-mongo.sh'
+
+      - name: "[apply] Verify backup exists and is non-empty (fail closed)"
+        if: ${{ inputs.mode == 'apply' }}
+        run: |
+          ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
+            LATEST=$(ls -t /opt/techvault/backups/mongodb/techvault_*.gz 2>/dev/null | head -1)
+            if [ -z "$LATEST" ]; then
+              echo "::error::No backup archive found after backup step — refusing to proceed to apply"
+              exit 1
+            fi
+            SIZE=$(stat -c%s "$LATEST")
+            echo "Latest backup: $LATEST ($SIZE bytes)"
+            if [ "$SIZE" -le 0 ]; then
+              echo "::error::Backup file is empty — refusing to proceed to apply"
+              exit 1
+            fi
+          '
+
+      # ── Re-run the dry-run immediately before writing, so the logged plan
+      #    is guaranteed fresh against the just-backed-up state. ────────────
+      - name: "[apply] Historical analytics dry-run (final plan review before write)"
+        if: ${{ inputs.mode == 'apply' }}
+        run: |
+          ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
+            cd /opt/techvault &&
+            docker compose exec -T \
+              -e HISTORICAL_SEED_CONFIRM=TECHVAULT_PRODUCTION \
+              backend node server/scripts/generateHistoricalAnalytics.js --dry-run
+          '
+
+      - name: "[apply] Historical analytics apply (writes AnalyticsDaily / ProductSalesMonthly / BusinessTarget / Product fields / historical Campaigns)"
+        if: ${{ inputs.mode == 'apply' }}
+        run: |
+          ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
+            cd /opt/techvault &&
+            docker compose exec -T \
+              -e HISTORICAL_SEED_CONFIRM=TECHVAULT_PRODUCTION \
+              backend node server/scripts/generateHistoricalAnalytics.js --apply
+          '
+
+      # ── Idempotency verification — a second --apply MUST refuse to run
+      #    again ("already initialized") rather than duplicate data. A plain
+      #    exit-code check would fail this step (the script intentionally
+      #    exits non-zero on a refused re-apply), so this step inspects the
+      #    actual output for the expected refusal message instead. ─────────
+      - name: "[apply] Verify idempotency — a second apply must be a safe no-op"
+        if: ${{ inputs.mode == 'apply' }}
+        run: |
+          OUTPUT=$(ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
+            cd /opt/techvault &&
+            docker compose exec -T \
+              -e HISTORICAL_SEED_CONFIRM=TECHVAULT_PRODUCTION \
+              backend node server/scripts/generateHistoricalAnalytics.js --apply || true
+          ')
+          echo "$OUTPUT"
+          if echo "$OUTPUT" | grep -q "already initialized\|already applied"; then
+            echo "Idempotency verified: re-apply correctly refused, no data duplicated."
+          else
+            echo "::error::Expected the second --apply to report 'already initialized' — got unexpected output, treating as a possible duplication risk."
+            exit 1
+          fi
+
+      # ── Live API verification — confirms the application itself is still
+      #    healthy/responsive after the write (the migration script's own
+      #    post-write verifyInvariants() already asserted correctness of the
+      #    written data; this step is specifically about the running app).
+      - name: "[apply] Verify live API is healthy after migration"
+        if: ${{ inputs.mode == 'apply' }}
+        run: |
+          ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
+            echo "=== Health ===" &&
+            curl -sf --max-time 10 http://localhost:5000/api/v1/health | head -c 500 && echo
+          '
+
+      - name: "[apply] Run the existing production health-check"
+        if: ${{ inputs.mode == 'apply' }}
+        run: |
+          OUTPUT=$(ssh -i "$SSH_KEY_PATH" -o ConnectTimeout=10 \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} \
+            'sudo /opt/techvault/devops/scripts/health-check.sh')
+          echo "$OUTPUT"
+          RESULT_LINE=$(echo "$OUTPUT" | grep -E "^RESULT:" | tail -1)
+          if echo "$RESULT_LINE" | grep -q "RESULT: HEALTHY"; then
+            echo "FINAL HEALTH: HEALTHY"
+          elif echo "$RESULT_LINE" | grep -q "RESULT: WARNING"; then
+            echo "::warning::health-check.sh reported WARNING, not HEALTHY"
+            echo "::error::Warnings must be explicitly reviewed, not silently accepted. Failing workflow."
+            exit 1
+          else
+            echo "::error::health-check.sh did not return a recognizable RESULT line (expected 'RESULT: HEALTHY')"
+            exit 1
+          fi
+
+      - name: Cleanup SSH key
+        if: always()
+        run: rm -f "$SSH_KEY_PATH"

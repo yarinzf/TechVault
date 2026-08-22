@@ -75,6 +75,27 @@ const campaignSchema = new mongoose.Schema(
     // (default) = no early access — most campaigns are NOT early-access by
     // default, this must be set explicitly per campaign.
     vipEarlyAccessHours: { type: Number, default: 0, min: 0, max: 168 },
+
+    // ── Historical baseline (see server/config/analytics.js) ───────────────
+    // Present ONLY on campaigns the historical generator itself creates
+    // (e.g. a back-dated "Black Friday 2024" campaign whose startDate/
+    // endDate already ended before HISTORICAL_DATA_CUTOFF) — a frozen
+    // summary reconciled against the seeded AnalyticsDaily uplift for those
+    // dates. Never present on a real, admin-created campaign. null for
+    // every live campaign; campaignAnalytics.service.js adds this (when
+    // present) to its existing live Order-aggregation result rather than
+    // replacing it, so a still-active seeded campaign correctly accrues
+    // real attributed orders on top of its historical numbers.
+    historicalStats: {
+      type: {
+        attributedOrders:  { type: Number, min: 0 },
+        unitsSold:         { type: Number, min: 0 },
+        revenue:           { type: Number, min: 0 },
+        discountGenerated: { type: Number, min: 0 },
+        source:            { type: String, enum: ['historical_seed_v1'] },
+      },
+      default: null,
+    },
   },
   { timestamps: true }
 );

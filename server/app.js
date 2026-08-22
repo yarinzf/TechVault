@@ -33,6 +33,7 @@ const wishlistRoutes     = require('./routes/wishlist.routes');
 const couponRoutes       = require('./routes/coupon.routes');
 const notificationRoutes = require('./routes/notification.routes');
 const systemRoutes       = require('./routes/system.routes');
+const trackRoutes        = require('./routes/track.routes');
 
 const app = express();
 
@@ -123,6 +124,7 @@ app.use(`${API}/wishlist`,                      requireFeature('wishlist'), wish
 app.use(`${API}/coupons`,                       requireFeature('coupons'), couponRoutes);
 app.use(`${API}/notifications`,                 requireFeature('notifications'), notificationRoutes);
 app.use(`${API}/payments`,                      paymentRoutes);
+app.use(`${API}/track`,                         trackRoutes);
 app.use(`${API}/admin`,                         adminRoutes);
 app.use(`${API}`,                               systemRoutes);
 

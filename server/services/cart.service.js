@@ -67,6 +67,16 @@ const addItem = async (userId, { productId, quantity }) => {
   let cart = await Cart.findOne({ user: userId });
   if (!cart) cart = new Cart({ user: userId, items: [] });
 
+  // A previously-empty cart just became non-empty — a real "cart started"
+  // event for AnalyticsDaily.cartsStarted (see cleanupCarts.job.js for the
+  // matching "abandoned" side of this same daily counter). Fire-and-forget:
+  // never let a counter-increment failure block the actual cart write.
+  const wasEmpty = cart.items.length === 0;
+  if (wasEmpty) {
+    require('./analyticsDaily.service').incrementDailyCounters({ cartsStarted: 1 })
+      .catch((err) => require('../config/logger').warn('cart_started_counter_failed', { message: err.message, userId }));
+  }
+
   const existing = cart.items.find(i => i.product.toString() === productId);
   if (existing) {
     existing.quantity          += quantity;

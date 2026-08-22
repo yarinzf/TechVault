@@ -18,7 +18,10 @@ const jobsCtrl          = require('../controllers/jobs.controller');
 const systemStatusCtrl  = require('../controllers/systemStatus.controller');
 const productSalesCtrl  = require('../controllers/productSalesAnalytics.controller');
 const settingsCtrl      = require('../controllers/settings.controller');
+const targetCtrl        = require('../controllers/businessTarget.controller');
+const dailyAnalyticsCtrl = require('../controllers/analyticsDaily.controller');
 const { moderateReviewSchema } = require('../validators/review.validator');
+const { upsertTargetSchema } = require('../validators/businessTarget.validator');
 const { authenticate, authorize } = require('../middleware/auth');
 const { validate } = require('../middleware/validate');
 const { adminMutationLimiter, adminReadLimiter } = require('../middleware/rateLimiter');
@@ -28,6 +31,7 @@ const {
   updateWarehouseSettingsSchema,
 } = require('../validators/settings.validator');
 const { createCampaignSchema, updateCampaignSchema } = require('../validators/campaign.validator');
+const { createCategorySchema, updateCategorySchema, reorderCategoriesSchema } = require('../validators/category.validator');
 const { refundOrderSchema } = require('../validators/refund.validator');
 const {
   approveRejectSchema,
@@ -96,8 +100,16 @@ router.use((req, res, next) => {
  *       403:
  *         description: Admin access required
  */
-router.get('/dashboard', authorize(...ADMIN_ROLES), ctrl.getDashboard);
-router.get('/activity',  authorize(...ADMIN_ROLES), ctrl.getActivity);
+router.get('/dashboard',  authorize(...ADMIN_ROLES), ctrl.getDashboard);
+router.get('/activity',   authorize(...ADMIN_ROLES), ctrl.getActivity);
+router.get('/categories', authorize(...ADMIN_ROLES), ctrl.listCategories);
+router.post('/categories', authorize(...ADMIN_ROLES), validate(createCategorySchema), ctrl.createCategory);
+// Must be declared before /categories/:id — otherwise Express would match
+// this path as :id === 'reorder'.
+router.patch('/categories/reorder', authorize(...ADMIN_ROLES), validate(reorderCategoriesSchema), ctrl.reorderCategories);
+router.patch('/categories/:id', authorize(...ADMIN_ROLES), validate(updateCategorySchema), ctrl.updateCategory);
+router.delete('/categories/:id', authorize(...ADMIN_ROLES), ctrl.deleteCategory);
+router.get('/club-members', authorize(...ADMIN_ROLES), ctrl.listClubMembers);
 
 // ─── Admin (business) settings — persisted, real GET/PATCH ────────────────────
 router.get  ('/settings', authorize(...ADMIN_ROLES), settingsCtrl.getAdminSettings);
@@ -209,6 +221,30 @@ router.get('/analytics/orders',    authorize(...ADMIN_ROLES), analyticsCtrl.getO
  */
 router.get('/analytics/products',  authorize(...ADMIN_ROLES), analyticsCtrl.getProducts);
 router.get('/insights',            authorize(...ADMIN_ROLES), insightsCtrl.getInsights);
+
+/**
+ * @swagger
+ * /admin/analytics/daily:
+ *   get:
+ *     summary: Real daily-analytics totals (historical baseline + live) for a range
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: range
+ *         schema: { type: string, enum: [today, 7d, 30d, 90d, 1y, mtd, ytd, all], default: 30d }
+ *     responses:
+ *       200:
+ *         description: Daily analytics totals
+ */
+router.get('/analytics/daily', authorize(...ADMIN_ROLES), dailyAnalyticsCtrl.getDailyAnalytics);
+
+// ─── Business targets / Performance Goals ──────────────────────────────────
+router.get ('/targets',          authorize(...ADMIN_ROLES), targetCtrl.list);
+router.post('/targets',          authorize(...ADMIN_ROLES), validate(upsertTargetSchema), targetCtrl.upsert);
+router.get ('/targets/goals',    authorize(...ADMIN_ROLES), targetCtrl.getGoals);
+router.get ('/targets/progress', authorize(...ADMIN_ROLES), targetCtrl.getProgress);
 
 /**
  * @swagger

@@ -2,6 +2,7 @@
 
 const mongoose = require('mongoose');
 const Order               = require('../models/Order');
+const Product              = require('../models/Product');
 const ProductSalesMonthly = require('../models/ProductSalesMonthly');
 const { SALES_TRUTH_MATCH, getUtcMonthBoundaries } = require('./recommendation.service');
 
@@ -16,8 +17,19 @@ const { SALES_TRUTH_MATCH, getUtcMonthBoundaries } = require('./recommendation.s
 // Re-running it for the same month always converges to the same result —
 // safe to run as many times as needed, including after refunds change the
 // underlying Order data.
-async function rebuildProductSalesMonth(year, month, { dryRun = false } = {}) {
+async function rebuildProductSalesMonth(year, month, { dryRun = false, productIds = null } = {}) {
   const { start, end } = getUtcMonthBoundaries(year, month);
+
+  // productIds (optional): scope the rebuild to a small set of products —
+  // used for the cheap, per-order incremental rebuild triggered by real
+  // order-lifecycle events (see events/analyticsHandlers.js) instead of a
+  // full-month recompute across every product. Stale-row reconciliation
+  // below is likewise scoped to just these products, so an unrelated
+  // product's row is never touched (and never falsely deleted) by a
+  // single order's incremental rebuild.
+  const productMatch = productIds && productIds.length > 0
+    ? { 'items.product': { $in: productIds } }
+    : {};
 
   // Two-stage grouping so orderCount counts DISTINCT orders, not line
   // items: first collapse to one row per (product, order) pair — a
@@ -28,6 +40,7 @@ async function rebuildProductSalesMonth(year, month, { dryRun = false } = {}) {
   const rows = await Order.aggregate([
     { $match: { ...SALES_TRUTH_MATCH, createdAt: { $gte: start, $lt: end } } },
     { $unwind: '$items' },
+    ...(productIds && productIds.length > 0 ? [{ $match: productMatch }] : []),
     { $match: { 'items.itemType': 'product' } },
     {
       $group: {
@@ -54,24 +67,80 @@ async function rebuildProductSalesMonth(year, month, { dryRun = false } = {}) {
   if (!dryRun) {
     await Promise.all(
       rows.map((r) =>
+        // Aggregation-pipeline update ($set as an array, not an object) so
+        // unitsSold/orderCount/revenue are computed as
+        // historicalUnitsSold/historicalOrderCount/historicalRevenue (read
+        // from the CURRENT document, defaulting to 0 if absent/new) PLUS
+        // this real-Order-derived value — never a blind overwrite. This is
+        // what lets the cutoff month (partially historical, partially
+        // live) accumulate real orders on top of its seeded pre-cutoff
+        // baseline instead of losing it the first time a live order
+        // triggers a rebuild for that same month. For a purely-live month
+        // (historicalUnitsSold never set, defaults to 0), this is
+        // equivalent to the old plain $set.
         ProductSalesMonthly.findOneAndUpdate(
           { product: r._id, year, month },
-          { $set: { unitsSold: r.unitsSold, orderCount: r.orderCount, revenue: Math.round(r.revenue * 100) / 100 } },
+          [{
+            $set: {
+              // Pipeline-style ($set-as-array) updates bypass Mongoose's
+              // setDefaultsOnInsert, so historicalUnitsSold/etc. must be
+              // explicitly normalized to 0 here on first insert — otherwise
+              // a brand-new row (no prior historical seed for this
+              // product/month) would persist these as literally undefined
+              // rather than the schema's documented default.
+              historicalUnitsSold:  { $ifNull: ['$historicalUnitsSold', 0] },
+              historicalOrderCount: { $ifNull: ['$historicalOrderCount', 0] },
+              historicalRevenue:    { $ifNull: ['$historicalRevenue', 0] },
+              unitsSold:  { $add: [{ $ifNull: ['$historicalUnitsSold', 0] }, r.unitsSold] },
+              orderCount: { $add: [{ $ifNull: ['$historicalOrderCount', 0] }, r.orderCount] },
+              revenue:    { $round: [{ $add: [{ $ifNull: ['$historicalRevenue', 0] }, r.revenue] }, 2] },
+            },
+          }],
           { upsert: true, new: true, setDefaultsOnInsert: true }
         )
       )
     );
   }
 
-  // Reconcile away stale rows — a product that had a record for this month
-  // from an earlier rebuild but has zero qualifying sales NOW (e.g. its
-  // only order was since cancelled/refunded) must not keep a phantom
-  // positive value.
-  const staleFilter = { year, month, product: { $nin: currentProductIds } };
-  const staleCount = await ProductSalesMonthly.countDocuments(staleFilter);
-  if (!dryRun && staleCount > 0) {
-    await ProductSalesMonthly.deleteMany(staleFilter);
+  // Reconcile products that had a row for this month from an earlier
+  // rebuild but have zero REAL qualifying sales now (e.g. their only order
+  // was since cancelled/refunded). When scoped to productIds (the
+  // incremental-rebuild path), only those specific products are eligible —
+  // never the whole month's catalog, which a single order's rebuild has no
+  // information about one way or the other.
+  //
+  // A row with a real historical-seed baseline (historicalUnitsSold > 0)
+  // must NEVER be deleted just because its live component dropped to zero
+  // — that would erase real pre-cutoff history over a live cancellation
+  // that has nothing to do with it. Such rows are RESET to their historical
+  // baseline only (unitsSold = historicalUnitsSold, etc.) instead. Only a
+  // row with zero historical baseline is deleted outright — the original,
+  // unchanged behavior for an ordinary post-cutoff month.
+  const staleFilter = productIds && productIds.length > 0
+    ? { year, month, product: { $in: productIds, $nin: currentProductIds } }
+    : { year, month, product: { $nin: currentProductIds } };
+  const staleRows = await ProductSalesMonthly.find(staleFilter).select('_id historicalUnitsSold').lean();
+  const toDelete = staleRows.filter((r) => (r.historicalUnitsSold ?? 0) === 0).map((r) => r._id);
+  const toReset  = staleRows.filter((r) => (r.historicalUnitsSold ?? 0) > 0).map((r) => r._id);
+
+  if (!dryRun) {
+    if (toDelete.length > 0) {
+      await ProductSalesMonthly.deleteMany({ _id: { $in: toDelete } });
+    }
+    if (toReset.length > 0) {
+      await ProductSalesMonthly.updateMany(
+        { _id: { $in: toReset } },
+        [{
+          $set: {
+            unitsSold:  { $ifNull: ['$historicalUnitsSold', 0] },
+            orderCount: { $ifNull: ['$historicalOrderCount', 0] },
+            revenue:    { $ifNull: ['$historicalRevenue', 0] },
+          },
+        }]
+      );
+    }
   }
+  const staleCount = toDelete.length + toReset.length;
 
   return {
     year, month,
@@ -103,21 +172,29 @@ async function rebuildProductSalesRange(fromYear, fromMonth, toYear, toMonth, op
 
 // ─── Admin product sales history ───────────────────────────────────────────────
 //
-// totalUnitsSold is derived directly from real Order history (not summed
-// from ProductSalesMonthly), so it's correct even for a product whose
-// analytics haven't been rebuilt yet, or for a month range wider than the
-// requested history window — it never falls back to the old seeded
-// Product.salesCount.
+// The LIVE portion of totalUnitsSold is derived directly from real Order
+// history (not summed from ProductSalesMonthly), so it's correct even for a
+// product whose analytics haven't been rebuilt yet. The historical-baseline
+// portion (Product.historicalSalesCount — see server/config/analytics.js)
+// is added on top, never blended into the live aggregation itself: real
+// Order documents never exist for the seeded historical window, so the two
+// sources can only ever be additive, never double-counted. A product with
+// no historical baseline (created after the seed ran) simply adds 0.
 async function getProductSalesHistory(productId, months = 12) {
   const id = new mongoose.Types.ObjectId(productId);
 
-  const totalAgg = await Order.aggregate([
-    { $match: SALES_TRUTH_MATCH },
-    { $unwind: '$items' },
-    { $match: { 'items.itemType': 'product', 'items.product': id } },
-    { $group: { _id: null, unitsSold: { $sum: '$items.quantity' } } },
+  const [totalAgg, product] = await Promise.all([
+    Order.aggregate([
+      { $match: SALES_TRUTH_MATCH },
+      { $unwind: '$items' },
+      { $match: { 'items.itemType': 'product', 'items.product': id } },
+      { $group: { _id: null, unitsSold: { $sum: '$items.quantity' } } },
+    ]),
+    Product.findById(id).select('historicalSalesCount historicalRevenue').lean(),
   ]);
-  const totalUnitsSold = totalAgg[0]?.unitsSold ?? 0;
+  const liveUnitsSold = totalAgg[0]?.unitsSold ?? 0;
+  const historicalUnitsSold = product?.historicalSalesCount ?? 0;
+  const totalUnitsSold = liveUnitsSold + historicalUnitsSold;
 
   const now = new Date();
   const currentYear  = now.getUTCFullYear();
@@ -163,6 +240,7 @@ async function getProductSalesHistory(productId, months = 12) {
   return {
     productId: String(id),
     totalUnitsSold,
+    historicalUnitsSold, // internal/auditing transparency — not shown as a separate figure to ordinary admin users, just documents the split
     currentMonth: currentMonthEntry,
     previousMonth: previousMonthEntry,
     monthOverMonthPercent,

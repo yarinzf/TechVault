@@ -51,6 +51,7 @@ const auditLogSchema = new mongoose.Schema(
         'auth.session_revoked', // single session revoked
         'auth.password_changed',// password change
         'settings.updated',     // admin or warehouse settings changed (see metadata.scope)
+        'business_target.set',  // admin created/edited a BusinessTarget (see businessTarget.controller.js)
       ],
       required: true,
     },

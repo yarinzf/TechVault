@@ -1,87 +1,67 @@
 import { api, qs, getToken } from '../../../services/api';
 
-// ── Mock fallback data ────────────────────────────────────────────────────────
-const MOCK_DASHBOARD = {
-  orders:  { total: 247, pending: 18, inProgress: 34 },
-  revenue: { total: 184320.50, paidOrders: 194 },
-  users:   { total: 1203, new30d: 87 },
-  recentOrders: [
-    { _id: 'o1', orderNumber: 'ORD-20240701-A1B2', status: 'confirmed',  total: 2339.98, paymentStatus: 'paid', createdAt: new Date().toISOString() },
-    { _id: 'o2', orderNumber: 'ORD-20240701-C3D4', status: 'shipped',    total: 1286.99, paymentStatus: 'paid', createdAt: new Date().toISOString() },
-    { _id: 'o3', orderNumber: 'ORD-20240701-E5F6', status: 'processing', total: 409.49,  paymentStatus: 'paid', createdAt: new Date().toISOString() },
-    { _id: 'o4', orderNumber: 'ORD-20240701-G7H8', status: 'pending',    total: 59.99,   paymentStatus: 'unpaid', createdAt: new Date().toISOString() },
-  ],
-  lowStockProducts: [
-    { _id: 'p1', name: 'Lenovo ThinkPad X1 Carbon', sku: 'TV-A1B2', stock: 3, minStock: 10 },
-    { _id: 'p2', name: 'Google Pixel 8',             sku: 'TV-C3D4', stock: 0, minStock: 8  },
-  ],
-};
-
-const MOCK_TOP_PRODUCTS = [
-  { product: 'p1', name: 'MacBook Pro 14" M3',  sku: 'TV-1', totalQty: 42, revenue: 83999.58, orders: 42 },
-  { product: 'p2', name: 'iPhone 15 Pro',        sku: 'TV-2', totalQty: 88, revenue: 96799.12, orders: 88 },
-  { product: 'p3', name: 'Sony WH-1000XM5',      sku: 'TV-3', totalQty: 55, revenue: 19249.45, orders: 55 },
-  { product: 'p4', name: 'Samsung Galaxy S24',   sku: 'TV-4', totalQty: 61, revenue: 76249.39, orders: 61 },
-  { product: 'p5', name: 'Anker USB-C Hub',      sku: 'TV-5', totalQty: 210, revenue: 10499.90, orders: 210 },
-];
-
-const MOCK_ALERTS = [
-  { _id: 'a1', type: 'low_stock',    severity: 'critical', title: 'Low stock: Google Pixel 8',            message: 'Product has 0 units remaining.',                isResolved: false, createdAt: new Date().toISOString() },
-  { _id: 'a2', type: 'low_stock',    severity: 'warning',  title: 'Low stock: Lenovo ThinkPad X1',        message: 'Product has 3 units remaining.',                isResolved: false, createdAt: new Date().toISOString() },
-  { _id: 'a3', type: 'refund_spike', severity: 'critical', title: 'Refund spike detected',                message: '7 orders refunded in last 24 hours.',            isResolved: false, createdAt: new Date().toISOString() },
-  { _id: 'a4', type: 'ranking_drop', severity: 'info',     title: 'No sales: Dell UltraSharp U2722D',     message: 'Published 30+ days with 0 sales.',              isResolved: true,  createdAt: new Date(Date.now() - 86400000 * 2).toISOString() },
-];
-
-const MOCK_REVENUE = Array.from({ length: 30 }, (_, i) => ({
-  period:  new Date(Date.now() - (29 - i) * 86400000).toISOString().slice(0, 10),
-  revenue: Math.round((2000 + Math.random() * 8000) * 100) / 100,
-  orders:  Math.floor(3 + Math.random() * 12),
-}));
-
 export const adminService = {
+  // No mock fallback — this is the flagship business dashboard. A genuine
+  // API failure must surface to AdminDashboardPage's real error state, never
+  // silently render a fabricated ₪184,320.50/247-orders dashboard that looks
+  // indistinguishable from live data.
   async getDashboard() {
-    try {
-      const { data } = await api.get('/admin/dashboard');
-      return data;
-    } catch {
-      return MOCK_DASHBOARD;
-    }
+    const { data } = await api.get('/admin/dashboard');
+    return data;
   },
 
   async getRevenue(params = {}) {
-    try {
-      const { data } = await api.get(`/admin/analytics/revenue${qs(params)}`);
-      return data?.revenue ?? data ?? [];
-    } catch {
-      return MOCK_REVENUE;
-    }
+    const { data } = await api.get(`/admin/analytics/revenue${qs(params)}`);
+    return data?.revenue ?? data ?? [];
   },
 
   async getTopProducts(params = {}) {
-    try {
-      const { data } = await api.get(`/admin/analytics/top-products${qs(params)}`);
-      return data?.products ?? data ?? [];
-    } catch {
-      return MOCK_TOP_PRODUCTS;
-    }
+    const { data } = await api.get(`/admin/analytics/top-products${qs(params)}`);
+    return data?.products ?? data ?? [];
   },
 
+  async listCategories() {
+    const { data } = await api.get('/admin/categories');
+    return data?.categories ?? [];
+  },
+
+  async createCategory(dto) {
+    const { data } = await api.post('/admin/categories', dto);
+    return data?.category ?? data;
+  },
+
+  async updateCategory(id, dto) {
+    const { data } = await api.patch(`/admin/categories/${id}`, dto);
+    return data?.category ?? data;
+  },
+
+  async reorderCategories(items) {
+    const { data } = await api.patch('/admin/categories/reorder', { items });
+    return data?.categories ?? [];
+  },
+
+  async deleteCategory(id) {
+    await api.delete(`/admin/categories/${id}`);
+  },
+
+  async listClubMembers(params = {}) {
+    const { data, meta } = await api.get(`/admin/club-members${qs(params)}`);
+    return { members: data?.members ?? [], meta };
+  },
+
+  // No mock fallback — every caller of listAlerts/resolveAlert already has
+  // its own real error state (AdminDashboardPage's page-level error screen,
+  // AdminAlertsPage/WarehouseAlertsPage/SuperAdminDashboardPage's own
+  // try/catch), so a genuine failure surfaces honestly instead of showing
+  // fabricated "Low stock: Google Pixel 8" style alerts TechVault never had.
   async listAlerts(params = {}) {
-    try {
-      const { data, meta } = await api.get(`/admin/alerts${qs(params)}`);
-      return { alerts: data?.alerts ?? data ?? [], meta };
-    } catch {
-      return { alerts: MOCK_ALERTS, meta: null };
-    }
+    const { data, meta } = await api.get(`/admin/alerts${qs(params)}`);
+    return { alerts: data?.alerts ?? data ?? [], meta };
   },
 
   async resolveAlert(id) {
-    try {
-      const { data } = await api.patch(`/admin/alerts/${id}/resolve`, {});
-      return data?.alert ?? data;
-    } catch {
-      return MOCK_ALERTS.find(a => a._id === id);
-    }
+    const { data } = await api.patch(`/admin/alerts/${id}/resolve`, {});
+    return data?.alert ?? data;
   },
 
   async listAllOrders(params = {}) {
@@ -178,6 +158,30 @@ export const adminService = {
     }
   },
 
+  // ── Business targets / Performance Goals — real, persisted (server/models/
+  // BusinessTarget.js), never a frontend-hardcoded constant. No mock
+  // fallback: PerformanceGoals.jsx shows its own real unavailable state on
+  // failure rather than fabricated progress numbers.
+  async getGoalsProgress(date) {
+    const { data } = await api.get(`/admin/targets/goals${qs(date ? { date } : {})}`);
+    return data;
+  },
+
+  async listTargets(params = {}) {
+    const { data } = await api.get(`/admin/targets${qs(params)}`);
+    return data?.targets ?? [];
+  },
+
+  async setTarget(dto) {
+    const { data } = await api.post('/admin/targets', dto);
+    return data?.target ?? data;
+  },
+
+  async getDailyAnalytics(params = {}) {
+    const { data } = await api.get(`/admin/analytics/daily${qs(params)}`);
+    return data;
+  },
+
   async refundOrder(id, dto) {
     const { data } = await api.post(`/admin/orders/${id}/refund`, dto);
     return data?.order ?? data;
@@ -191,6 +195,25 @@ export const adminService = {
   async getProductForEdit(id) {
     const { data } = await api.get(`/products/${id}/admin-detail`);
     return data?.product ?? data;
+  },
+
+  // Admin Products catalog browser — the SAME real category/filter/search/
+  // sort/pagination engine the public storefront uses (see
+  // productService.list / server/services/product.service.js#listProducts),
+  // just admin-gated and including unpublished drafts. Never a second/mock
+  // product data source.
+  async listProductsCatalog(params = {}) {
+    const { data, meta } = await api.get(`/products/admin-list${qs(params)}`);
+    return { products: data?.products ?? data ?? [], meta };
+  },
+
+  async getProductFilterCounts(category) {
+    try {
+      const { data } = await api.get(`/products/admin-filter-counts${qs({ category })}`);
+      return data?.counts ?? {};
+    } catch {
+      return {};
+    }
   },
 
   // Real, rebuildable monthly sales history — never a mock fallback (this

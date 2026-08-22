@@ -24,7 +24,6 @@ export default function AdminDashboardPage() {
     const [pendingCount,     setPendingCount]     = useState(0);
     const [activities,       setActivities]       = useState(null);
     const [anomalies,        setAnomalies]        = useState(null);
-    const [ordersThisMonth,  setOrdersThisMonth]  = useState(null);
     const [loading,          setLoading]          = useState(true);
     const [error,            setError]            = useState(null);
 
@@ -44,7 +43,6 @@ export default function AdminDashboardPage() {
         setAlerts(Array.isArray(al) ? al : []);
         setActivities(Array.isArray(acts) ? acts : []);
         setAnomalies(ordersAnalytics?.anomalies ?? []);
-        setOrdersThisMonth(ordersAnalytics?.summary?.total ?? null);
     }, []);
 
     const scheduleRefresh = useCallback(() => {
@@ -198,10 +196,7 @@ export default function AdminDashboardPage() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
                 <div className="lg:col-span-2 space-y-5">
                     <SalesChart />
-                    <PerformanceGoals
-                        dashboard={dashboard}
-                        ordersThisMonth={ordersThisMonth}
-                    />
+                    <PerformanceGoals />
                 </div>
 
                 <div className="space-y-5">

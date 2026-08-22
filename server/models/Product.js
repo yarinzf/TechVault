@@ -44,6 +44,12 @@ const productSchema = new mongoose.Schema(
     },
 
     brand: { type: String, trim: true },
+    // Manufacturer model identifier (e.g. "VP249QGR", "27GP850-B") — distinct
+    // from `name` (TechVault's full display name, often "Brand + Model") and
+    // from `sku` (TechVault's own internal identifier). Optional/additive:
+    // source data has always carried this per-product, but earlier seeding
+    // silently dropped it since no schema field existed to persist it.
+    model: { type: String, trim: true, maxlength: [100, 'Model cannot exceed 100 characters'] },
 
     price: { type: Number, required: [true, 'Price is required'], min: [0, 'Price cannot be negative'] },
     compareAtPrice: { type: Number, min: 0 },
@@ -67,9 +73,24 @@ const productSchema = new mongoose.Schema(
       count:   { type: Number, default: 0, min: 0 },
     },
 
-    // Cumulative count of units sold across confirmed orders.
-    // Incremented on order creation, decremented on cancellation.
+    // Cumulative count of units sold across confirmed REAL orders since this
+    // product started existing in the live system. Incremented on order
+    // creation, decremented on cancellation — completely unchanged by the
+    // historical-analytics redesign.
     salesCount: { type: Number, default: 0, min: 0 },
+
+    // ── Historical baseline (see server/config/analytics.js) ───────────────
+    // Written EXACTLY ONCE, idempotently (an absolute `set`, never an
+    // increment), by the historical analytics generator — never touched by
+    // real order flow. A product's true "units sold since ever" /
+    // "revenue since ever" is historicalSalesCount + salesCount and
+    // historicalRevenue + live revenue, respectively — the concrete
+    // mechanism behind "50 historical + 1 real sale = 51" continuity. A
+    // product created AFTER the historical seed ran (or one whose
+    // deterministic historicalLaunchDate falls after the cutoff) correctly
+    // keeps these at their default 0.
+    historicalSalesCount: { type: Number, default: 0, min: 0 },
+    historicalRevenue:    { type: Number, default: 0, min: 0 },
 
     isFeatured:  { type: Boolean, default: false },
     isPublished: { type: Boolean, default: false },

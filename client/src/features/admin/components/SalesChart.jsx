@@ -40,6 +40,7 @@ export function SalesChart() {
     const [period, setPeriod]       = useState('week');
     const [chartData, setChartData] = useState([]);
     const [loading, setLoading]     = useState(true);
+    const [error, setError]         = useState(false);
 
     const periods = [
         { value: 'week',  label: t('admin.chart.weekly') },
@@ -49,6 +50,7 @@ export function SalesChart() {
 
     useEffect(() => {
         setLoading(true);
+        setError(false);
         adminService
             .getRevenue(getApiParams(period))
             .then((raw) => {
@@ -61,6 +63,7 @@ export function SalesChart() {
                 }));
                 setChartData(mapped);
             })
+            .catch(() => setError(true))
             .finally(() => setLoading(false));
     }, [period, language]);
 
@@ -108,6 +111,10 @@ export function SalesChart() {
             {loading ? (
                 <div className="h-[420px] flex items-center justify-center">
                     <p className="text-muted-foreground text-sm">{t('admin.chart.loading')}</p>
+                </div>
+            ) : error ? (
+                <div className="h-[420px] flex items-center justify-center">
+                    <p className="text-[#ef4444] text-sm">{t('admin.chart.error')}</p>
                 </div>
             ) : chartData.length === 0 ? (
                 <div className="h-[420px] flex items-center justify-center">

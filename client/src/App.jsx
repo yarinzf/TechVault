@@ -1,8 +1,9 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from './hooks/useAuth';
 import { AUTH_STATUS } from './app/providers/AuthProvider';
 import ErrorBoundary from './components/ErrorBoundary';
+import { trackVisit } from './utils/analyticsTracking';
 
 import CustomerLayout from './components/layout/customer/CustomerLayout';
 import HomePage from './pages/customer/HomePage';
@@ -141,7 +142,21 @@ const PageLoader = () => (
   </div>
 );
 
+// Fires the real-traffic beacon on every storefront route change — never for
+// /admin or /admin/superadmin (staff browsing their own tools is not a
+// storefront "session" and would distort the conversion-rate denominator).
+// See client/src/utils/analyticsTracking.js.
+const useStorefrontTracking = () => {
+  const location = useLocation();
+  useEffect(() => {
+    if (location.pathname.startsWith('/admin')) return;
+    const isProductPage = location.pathname.startsWith('/products/');
+    trackVisit(isProductPage);
+  }, [location.pathname]);
+};
+
 export default function App() {
+  useStorefrontTracking();
   return (
     <ErrorBoundary>
       <Suspense fallback={<PageLoader />}>

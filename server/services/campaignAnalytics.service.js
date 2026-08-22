@@ -37,7 +37,7 @@ const round2 = (n) => Math.round((n ?? 0) * 100) / 100;
 
 const getCampaignAnalytics = async (campaignId) => {
   const campaign = await Campaign.findById(campaignId)
-    .select('name title discountPercent startDate endDate isActive products')
+    .select('name title discountPercent startDate endDate isActive products historicalStats')
     .lean();
   if (!campaign) throw new AppError('Campaign not found', StatusCodes.NOT_FOUND, 'CAMPAIGN_NOT_FOUND');
 
@@ -116,18 +116,28 @@ const getCampaignAnalytics = async (campaignId) => {
 
   const summaryRow = result.summary[0];
 
+  // historicalStats — present only on campaigns the historical generator
+  // itself created (see Campaign.js) — is a frozen summary of activity that
+  // predates real Order data for that campaign, added on top of the live
+  // aggregation above rather than replacing it. This is what lets a seeded
+  // historical campaign that's STILL ACTIVE today correctly show its old
+  // baseline plus any real orders attributed to it since the cutoff — never
+  // a reset, exactly the continuity rule this redesign requires everywhere.
+  const h = campaign.historicalStats;
+  const summary = {
+    attributedOrders:  (summaryRow?.orderIds.length ?? 0) + (h?.attributedOrders ?? 0),
+    unitsSold:         (summaryRow?.unitsSold ?? 0) + (h?.unitsSold ?? 0),
+    revenue:           round2((summaryRow?.revenue ?? 0) + (h?.revenue ?? 0)),
+    discountGenerated: round2((summaryRow?.discountGenerated ?? 0) + (h?.discountGenerated ?? 0)),
+  };
+
   return {
     campaign: {
       _id: campaign._id, name: campaign.name, title: campaign.title ?? null,
       discountPercent: campaign.discountPercent,
       startDate: campaign.startDate, endDate: campaign.endDate, isActive: campaign.isActive,
     },
-    summary: {
-      attributedOrders:  summaryRow?.orderIds.length ?? 0,
-      unitsSold:         summaryRow?.unitsSold ?? 0,
-      revenue:            round2(summaryRow?.revenue),
-      discountGenerated:  round2(summaryRow?.discountGenerated),
-    },
+    summary,
     timeSeries: result.timeSeries.map((row) => ({
       date:    row._id,
       orders:  row.orderIds.length,

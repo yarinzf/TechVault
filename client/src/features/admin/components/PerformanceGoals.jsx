@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import {
     Target,
     Settings,
@@ -9,6 +10,8 @@ import {
     XCircle,
 } from 'lucide-react';
 import { useLanguage } from '../../../context/LanguageContext';
+import { adminService } from '../api/admin.service';
+import { BusinessTargetsModal } from './BusinessTargetsModal';
 
 const fmtRevenue = (n) => {
     if (n == null) return '—';
@@ -16,79 +19,53 @@ const fmtRevenue = (n) => {
     if (n >= 1_000) return `₪${Math.round(n / 1_000)}K`;
     return `₪${Math.round(n).toLocaleString('he-IL')}`;
 };
+const fmtPercent = (n) => (n == null ? '—' : `${n.toFixed(1)}%`);
+const fmtCount   = (n) => (n == null ? '—' : n.toLocaleString('he-IL'));
 
 const clamp = (n) => Math.min(100, Math.max(0, Math.round(n)));
 
-export function PerformanceGoals({ dashboard = null, ordersThisMonth = null }) {
+// Builds one tile from a real /admin/targets/goals progress entry — never
+// falls back to a hardcoded number. A metric with no BusinessTarget row yet
+// (progressPercent: null) shows "—" and an empty bar, not a fabricated 87%.
+function tileFrom(entry, { title, color, icon }, formatter) {
+    if (!entry) return null;
+    return {
+        title, color, icon,
+        current:  formatter(entry.actual),
+        target:   entry.target != null ? formatter(entry.target) : '—',
+        progress: entry.progressPercent != null ? clamp(entry.progressPercent) : 0,
+        hasTarget: entry.target != null,
+    };
+}
+
+export function PerformanceGoals() {
     const { language, t } = useLanguage();
+    const [goalsData, setGoalsData] = useState(null);
+    const [loading, setLoading]     = useState(true);
+    const [error, setError]         = useState(false);
+    const [showTargetsModal, setShowTargetsModal] = useState(false);
 
-    const revenue      = dashboard?.revenue ?? {};
-    const orders       = dashboard?.orders  ?? {};
-    const users        = dashboard?.users   ?? {};
+    const load = () => {
+        setLoading(true);
+        setError(false);
+        adminService.getGoalsProgress()
+            .then(setGoalsData)
+            .catch(() => setError(true))
+            .finally(() => setLoading(false));
+    };
 
-    const monthRevenue    = revenue.thisMonthPaid ?? null;
-    const newCustomers    = users.new30d      ?? null;
-    const cancelRate      = orders.cancellationRate ?? null;
-    const orderCount      = ordersThisMonth ?? null;
+    useEffect(load, []);
 
-    const goals = [
-        {
-            id: 1,
-            title: t('admin.goals.conversion'),
-            current: '4.8%',
-            target: '5.5%',
-            progress: 87,
-            color: '#fbbf24',
-            icon: TrendingUp,
-        },
-        {
-            id: 2,
-            title: t('admin.goals.order_count'),
-            current: orderCount != null ? orderCount.toLocaleString('he-IL') : '—',
-            target: '1,500',
-            progress: orderCount != null ? clamp((orderCount / 1500) * 100) : 0,
-            color: '#10b981',
-            icon: ShoppingCart,
-        },
-        {
-            id: 3,
-            title: t('admin.goals.monthly_rev'),
-            current: fmtRevenue(monthRevenue),
-            target: '₪3.5M',
-            progress: monthRevenue != null ? clamp((monthRevenue / 3_500_000) * 100) : 0,
-            color: '#2563eb',
-            icon: DollarSign,
-        },
-        {
-            id: 4,
-            title: t('admin.goals.new_customers'),
-            current: newCustomers != null ? newCustomers.toLocaleString('he-IL') : '—',
-            target: '350',
-            progress: newCustomers != null ? clamp((newCustomers / 350) * 100) : 0,
-            color: '#7c3aed',
-            icon: Users,
-        },
-        {
-            id: 5,
-            title: t('admin.goals.abandoned'),
-            current: '72%',
-            target: '60%',
-            progress: 83,
-            color: '#ef4444',
-            icon: ShoppingBag,
-        },
-        {
-            id: 6,
-            title: t('admin.goals.cancellations'),
-            current: cancelRate != null ? `${cancelRate.toFixed(1)}%` : '—',
-            target: '5.0%',
-            progress: cancelRate != null && cancelRate > 0
-                ? clamp((5 / cancelRate) * 100)
-                : cancelRate === 0 ? 100 : 0,
-            color: '#ef4444',
-            icon: XCircle,
-        },
-    ];
+    const byMetric = (list, metric) => list?.find((g) => g.metric === metric) ?? null;
+
+    const goals = goalsData ? [
+        tileFrom(byMetric(goalsData.daily, 'conversion_rate'),      { title: t('admin.goals.conversion'),    color: '#fbbf24', icon: TrendingUp },  fmtPercent),
+        tileFrom(byMetric(goalsData.monthly, 'monthly_orders'),     { title: t('admin.goals.order_count'),   color: '#10b981', icon: ShoppingCart }, fmtCount),
+        tileFrom(byMetric(goalsData.monthly, 'monthly_revenue'),    { title: t('admin.goals.monthly_rev'),   color: '#2563eb', icon: DollarSign },   fmtRevenue),
+        tileFrom(byMetric(goalsData.monthly, 'new_customers'),      { title: t('admin.goals.new_customers'), color: '#7c3aed', icon: Users },        fmtCount),
+        tileFrom(byMetric(goalsData.daily, 'abandoned_cart_rate'),  { title: t('admin.goals.abandoned'),     color: '#ef4444', icon: ShoppingBag },   fmtPercent),
+        tileFrom(byMetric(goalsData.monthly, 'cancellation_rate'),  { title: t('admin.goals.cancellations'), color: '#ef4444', icon: XCircle },       fmtPercent),
+    ].filter(Boolean) : [];
 
     const now = new Date();
     const monthLabel = new Intl.DateTimeFormat(language === 'en' ? 'en-US' : 'he-IL', { month: 'long' }).format(now);
@@ -105,6 +82,7 @@ export function PerformanceGoals({ dashboard = null, ordersThisMonth = null }) {
 
                 <button
                     type="button"
+                    onClick={() => setShowTargetsModal(true)}
                     className="p-1.5 rounded-lg hover:bg-secondary transition-colors"
                     aria-label={t('admin.goals.settings')}
                 >
@@ -112,44 +90,56 @@ export function PerformanceGoals({ dashboard = null, ordersThisMonth = null }) {
                 </button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {goals.map((goal) => {
-                    const Icon = goal.icon;
+            {showTargetsModal && (
+                <BusinessTargetsModal onClose={() => { setShowTargetsModal(false); load(); }} />
+            )}
 
-                    return (
-                        <div
-                            key={goal.id}
-                            className="flex items-start gap-2.5 p-3 rounded-lg bg-secondary/30 border border-border/50 hover:border-border hover:bg-secondary/40 transition-all group"
-                        >
+            {loading ? (
+                <p className="text-muted-foreground text-xs text-center py-6">{t('admin.chart.loading')}</p>
+            ) : error ? (
+                <p className="text-[#ef4444] text-xs text-center py-6">{t('admin.goals.error')}</p>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {goals.map((goal) => {
+                        const Icon = goal.icon;
+
+                        return (
                             <div
-                                className="p-1.5 rounded-lg flex-shrink-0"
-                                style={{ backgroundColor: `${goal.color}20` }}
+                                key={goal.title}
+                                className="flex items-start gap-2.5 p-3 rounded-lg bg-secondary/30 border border-border/50 hover:border-border hover:bg-secondary/40 transition-all group"
                             >
-                                <Icon className="w-3.5 h-3.5" style={{ color: goal.color }} />
-                            </div>
-
-                            <div className="flex-1 min-w-0">
-                                <p className="text-xs text-muted-foreground mb-1">{goal.title}</p>
-
-                                <div className="flex items-baseline gap-2 mb-2">
-                                    <p className="text-base text-foreground">{goal.current}</p>
-                                    <p className="text-xs text-muted-foreground">/ {goal.target}</p>
+                                <div
+                                    className="p-1.5 rounded-lg flex-shrink-0"
+                                    style={{ backgroundColor: `${goal.color}20` }}
+                                >
+                                    <Icon className="w-3.5 h-3.5" style={{ color: goal.color }} />
                                 </div>
 
-                                <div className="w-full bg-secondary rounded-full h-1.5">
-                                    <div
-                                        className="h-1.5 rounded-full transition-all"
-                                        style={{
-                                            width: `${goal.progress}%`,
-                                            backgroundColor: goal.color,
-                                        }}
-                                    />
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-xs text-muted-foreground mb-1">{goal.title}</p>
+
+                                    <div className="flex items-baseline gap-2 mb-2">
+                                        <p className="text-base text-foreground">{goal.current}</p>
+                                        <p className="text-xs text-muted-foreground">
+                                            {goal.hasTarget ? `/ ${goal.target}` : t('admin.goals.no_target')}
+                                        </p>
+                                    </div>
+
+                                    <div className="w-full bg-secondary rounded-full h-1.5">
+                                        <div
+                                            className="h-1.5 rounded-full transition-all"
+                                            style={{
+                                                width: `${goal.progress}%`,
+                                                backgroundColor: goal.color,
+                                            }}
+                                        />
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    );
-                })}
-            </div>
+                        );
+                    })}
+                </div>
+            )}
         </div>
     );
 }

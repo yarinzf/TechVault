@@ -34,6 +34,32 @@ const productSalesMonthlySchema = new mongoose.Schema(
     // reflecting whatever campaign discount applied at that time), never
     // recomputed from the product's current price.
     revenue: { type: Number, required: true, min: 0, default: 0 },
+
+    // 'live' (default) — this row was produced by rebuildProductSalesMonth
+    // from real Order documents, exactly as before this field existed.
+    // 'historical_seed_v1' — this row was written once by the historical
+    // analytics generator. For a month strictly before
+    // HISTORICAL_DATA_CUTOFF, rebuildProductSalesMonth never touches it (no
+    // real Orders exist there). For the CUTOFF MONTH itself (which can be
+    // partially historical, e.g. Aug 1-21, and partially live, Aug 22+),
+    // this is set to 'historical_seed_v1' even though the row's `unitsSold`/
+    // `revenue`/`orderCount` may later ALSO include a live component — see
+    // historicalUnitsSold/historicalRevenue/historicalOrderCount below.
+    source: { type: String, enum: ['historical_seed_v1', 'live'], default: 'live' },
+
+    // Frozen historical-seed-only contribution for this exact (product,
+    // year, month) — written ONCE by the generator, NEVER modified by
+    // rebuildProductSalesMonth. For a purely historical month these equal
+    // unitsSold/revenue/orderCount exactly; for the cutoff month they hold
+    // only the pre-cutoff (e.g. Aug 1-21) portion. rebuildProductSalesMonth
+    // always computes unitsSold = historicalUnitsSold + (real Orders this
+    // month), so a live order landing in the cutoff month can only ever ADD
+    // to this row, never overwrite/erase its historical portion — the
+    // concrete mechanism preventing the cutoff month from losing its
+    // pre-cutoff baseline the first time a real order triggers a rebuild.
+    historicalUnitsSold:  { type: Number, default: 0, min: 0 },
+    historicalRevenue:    { type: Number, default: 0, min: 0 },
+    historicalOrderCount: { type: Number, default: 0, min: 0 },
   },
   { timestamps: true }
 );

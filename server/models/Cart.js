@@ -19,6 +19,14 @@ const cartSchema = new mongoose.Schema(
   {
     user:  { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, unique: true },
     items: { type: [cartItemSchema], default: [] },
+
+    // Set by cleanupCarts.job.js the first time this cart is observed to
+    // have crossed CART_ABANDONMENT_HOURS of inactivity while still holding
+    // items — lets the job count this cart into AnalyticsDaily.abandonedCarts
+    // exactly once, even though the job runs daily and would otherwise see
+    // the same still-stale cart again on its next run before the 30-day
+    // wipe finally empties it.
+    lastAbandonedCheckAt: { type: Date, default: null },
   },
   { timestamps: true }
 );

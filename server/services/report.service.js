@@ -7,6 +7,9 @@ const ReturnRequest = require('../models/ReturnRequest');
 const PurchaseOrder = require('../models/PurchaseOrder');
 const Coupon        = require('../models/Coupon');
 const Campaign      = require('../models/Campaign');
+const {
+  getRangeStats, getDailySeries, bucketSeriesByPeriod, resolveIsraelRangeParams, ALL_TIME_FLOOR,
+} = require('./analyticsDaily.service');
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -36,94 +39,71 @@ const REVENUE_MATCH = {
 // ── 1. Sales report ───────────────────────────────────────────────────────────
 // Summary: gross, net, refunded, AOV, orderCount
 // Rows: grouped by day/week/month
+//
+// Historical-baseline + live reconciled — uses the SAME getDailySeries/
+// getRangeStats primitive as the Dashboard and Analytics tab
+// (analyticsDaily.service.js), so exporting this report for a date range
+// that includes the seeded historical window can never show a different
+// (or empty) total than what Dashboard/Analytics already showed for that
+// same range. See tests/reportsReconciliation.test.js.
 async function getSalesReport(query) {
-  const range = resolveRange(query);
-  const cf    = dateFilter(range);
+  const { from, to } = resolveIsraelRangeParams({ dateFrom: query.dateFrom, dateTo: query.dateTo });
   const period = query.period || 'day';
 
-  const match = { ...REVENUE_MATCH, ...(cf ? { createdAt: cf } : {}) };
-
-  const formatMap = { day: '%Y-%m-%d', week: '%Y-%U', month: '%Y-%m' };
-  const dateFmt   = formatMap[period] ?? '%Y-%m-%d';
-
-  const [summaryAgg, refundedAgg, seriesAgg] = await Promise.all([
-    Order.aggregate([
-      { $match: match },
-      { $group: { _id: null, gross: { $sum: '$total' }, count: { $sum: 1 } } },
-    ]),
-    Order.aggregate([
-      { $match: { ...(cf ? { createdAt: cf } : {}), refundedAmount: { $gt: 0 } } },
-      { $group: { _id: null, total: { $sum: '$refundedAmount' } } },
-    ]),
-    Order.aggregate([
-      { $match: match },
-      {
-        $group: {
-          _id:      { $dateToString: { format: dateFmt, date: '$createdAt' } },
-          revenue:  { $sum: '$total' },
-          orders:   { $sum: 1 },
-          avgOrder: { $avg: '$total' },
-        },
-      },
-      { $sort: { _id: 1 } },
-      {
-        $project: {
-          _id: 0,
-          period:   '$_id',
-          revenue:  { $round: ['$revenue',  2] },
-          orders:   1,
-          avgOrder: { $round: ['$avgOrder', 2] },
-        },
-      },
-    ]),
+  const [rangeStats, dailySeries] = await Promise.all([
+    getRangeStats(from, to),
+    getDailySeries(from, to),
   ]);
-
-  const gross    = summaryAgg[0]?.gross ?? 0;
-  const count    = summaryAgg[0]?.count ?? 0;
-  const refunded = refundedAgg[0]?.total ?? 0;
+  const rows = bucketSeriesByPeriod(dailySeries, ['day', 'week', 'month'].includes(period) ? period : 'day')
+    .map((r) => ({ period: r.period, revenue: r.revenue, orders: r.orders, avgOrder: r.avgOrder }));
 
   return {
     summary: {
-      gross:       round2(gross),
-      net:         round2(gross - refunded),
-      refunded:    round2(refunded),
-      aov:         count > 0 ? round2(gross / count) : 0,
-      ordersCount: count,
+      gross:       rangeStats.revenue,
+      net:         round2(rangeStats.revenue - rangeStats.refundAmount),
+      refunded:    rangeStats.refundAmount,
+      aov:         rangeStats.aov,
+      ordersCount: rangeStats.paidOrders,
     },
-    rows: seriesAgg,
+    rows,
   };
 }
 
 // ── 2. Orders report ──────────────────────────────────────────────────────────
 // Rows: flat order list (≤500) with customer snapshot
+//
+// `summary` (total/revenue/refunded) is historical-baseline + live
+// reconciled via getRangeStats — matches the Dashboard/Sales Report exactly
+// for the same range. `rows` remain REAL Order documents only — by design,
+// no fake historical Order rows were ever created (see requirement #6), so
+// a date range reaching into the seeded historical window will show fewer
+// (or zero) itemized rows than `summary.total` implies. `historicalNote` is
+// set whenever the range overlaps the pre-cutoff window, so the frontend/
+// CSV can surface this honestly instead of silently looking incomplete.
 async function getOrdersReport(query) {
-  const range = resolveRange(query);
-  const cf    = dateFilter(range);
+  // Israel-aligned boundaries, shared with `summary` below — using a
+  // separate naive UTC range for the row query here would let a real order
+  // near a day boundary appear in `summary.total` (reconciled) but silently
+  // vanish from `rows` (or vice versa), which is exactly the kind of
+  // Dashboard/Reports mismatch this fix exists to prevent.
+  const { HISTORICAL_DATA_CUTOFF } = require('../config/analytics');
+  const { from: reconciledFrom, to: reconciledTo } = resolveIsraelRangeParams({ dateFrom: query.dateFrom, dateTo: query.dateTo });
+  const overlapsHistorical = reconciledFrom < HISTORICAL_DATA_CUTOFF;
 
   const match = {};
-  if (cf)                  match.createdAt     = cf;
+  if (query.dateFrom || query.dateTo) match.createdAt = { $gte: reconciledFrom, $lt: reconciledTo };
   if (query.status)        match.status        = query.status;
   if (query.paymentStatus) match.paymentStatus = query.paymentStatus;
 
   const LIMIT = 500;
 
-  const [orders, countAgg] = await Promise.all([
+  const [orders, rangeStats] = await Promise.all([
     Order.find(match)
       .sort({ createdAt: -1 })
       .limit(LIMIT)
       .populate('user', 'name email')
       .lean(),
-    Order.aggregate([
-      { $match: match },
-      {
-        $group: {
-          _id:      null,
-          total:    { $sum: 1 },
-          revenue:  { $sum: { $cond: [{ $eq: ['$paymentStatus', 'paid'] }, '$total', 0] } },
-          refunded: { $sum: '$refundedAmount' },
-        },
-      },
-    ]),
+    getRangeStats(reconciledFrom, reconciledTo),
   ]);
 
   const rows = orders.map(o => ({
@@ -145,11 +125,17 @@ async function getOrdersReport(query) {
 
   return {
     summary: {
-      total:    countAgg[0]?.total    ?? 0,
-      revenue:  round2(countAgg[0]?.revenue  ?? 0),
-      refunded: round2(countAgg[0]?.refunded ?? 0),
+      total:    rangeStats.orders,
+      revenue:  rangeStats.revenue,
+      refunded: rangeStats.refundAmount,
       limited:  orders.length === LIMIT,
     },
+    // True when the requested range reaches before HISTORICAL_DATA_CUTOFF —
+    // summary.total legitimately exceeds rows.length in that case, since no
+    // fake historical Order documents exist to itemize (see comment above).
+    historicalNote: overlapsHistorical
+      ? 'הטווח המבוקש כולל תקופה היסטורית — הסיכום כולל את נתוני הבסיס ההיסטוריים, אך רשומות מפורטות מוצגות רק עבור הזמנות אמיתיות'
+      : null,
     rows,
   };
 }
@@ -186,7 +172,10 @@ async function getInventoryReport(query) {
     price:       round2(p.price),
     stock:       p.stock,
     minStock:    p.minStock,
-    salesCount:  p.salesCount,
+    // Lifetime total (historical baseline + live), matching Product Sales
+    // History and every other "units sold" figure elsewhere in the app —
+    // never the live-only salesCount field alone.
+    salesCount:  (p.historicalSalesCount ?? 0) + (p.salesCount ?? 0),
     stockValue:  round2(p.stock * p.price),
     stockStatus: p.stock === 0 ? 'out_of_stock' : p.stock <= p.minStock ? 'low_stock' : 'ok',
     isPublished: p.isPublished,
@@ -206,6 +195,13 @@ async function getInventoryReport(query) {
 
 // ── 4. Returns report ─────────────────────────────────────────────────────────
 // Rows: return requests (≤500) with order + customer info
+//
+// Deliberately live-only, unlike Sales/Orders above: ReturnRequest has no
+// seeded historical-baseline equivalent (no fake historical return requests
+// were ever created, matching the "no fake bulk transactional entities"
+// principle), so there is nothing to reconcile against for a pre-cutoff
+// range — this report has always meant "real return requests on file",
+// which is unaffected by this redesign.
 async function getReturnsReport(query) {
   const range = resolveRange(query);
   const cf    = dateFilter(range);
@@ -261,6 +257,10 @@ async function getReturnsReport(query) {
 
 // ── 5. Coupons report ─────────────────────────────────────────────────────────
 // Rows: all coupons enriched with actual order usage from Order collection
+//
+// Deliberately live-only — same reasoning as Returns above: no fake
+// historical coupon usage was seeded (it would require fake historical
+// Orders to attach to, which this redesign explicitly avoids).
 async function getCouponsReport(query) {
   const match = {};
   if (query.isActive !== undefined) match.isActive = query.isActive === 'true';
@@ -312,6 +312,11 @@ async function getCouponsReport(query) {
 
 // ── 6. Purchase orders report ─────────────────────────────────────────────────
 // Rows: POs (≤500) with supplier, cost, and receipt progress
+//
+// Deliberately live-only — PurchaseOrder is a real supplier/warehouse
+// workflow with no seeded historical equivalent (see AnalyticsDaily's
+// coarse restockEvents count for the only historical inventory-event
+// signal this redesign provides).
 async function getPurchaseOrdersReport(query) {
   const range = resolveRange(query);
   const cf    = dateFilter(range);

@@ -1,59 +1,31 @@
 'use strict';
 
-const Order   = require('../models/Order');
-const User    = require('../models/User');
-const Product = require('../models/Product');
-const logger  = require('../config/logger');
+const logger = require('../config/logger');
+const { finalizeDay } = require('../services/analyticsDaily.service');
+const { getIsraelDayBoundaries } = require('../utils/timezone');
 
 /**
- * Daily analytics snapshot — logs a summary of today's key metrics.
- * Runs at 01:00 AM, covering the previous calendar day.
+ * Finalizes YESTERDAY's Israel calendar day into AnalyticsDaily (source:
+ * 'live') — the real live counterpart to the historical generator's seeded
+ * rows. Runs at 01:00 Israel-adjacent server time, comfortably after
+ * yesterday's last possible Israel-local moment has passed.
  *
- * Placeholder: in a future iteration this can write to an AnalyticsSnapshot
- * collection for the Admin Reports page to query instead of re-aggregating.
+ * Deliberately never touches TODAY's row — this redesign's read path
+ * (analyticsDaily.service.js#getRangeStats/getDayStats) always computes
+ * "today" live instead, so there is nothing to fix up if this job runs a
+ * few minutes early/late relative to true Israel midnight.
  */
 module.exports = async function dailySnapshot() {
-  const now      = new Date();
-  const dayStart = new Date(now);
-  dayStart.setDate(dayStart.getDate() - 1);
-  dayStart.setHours(0, 0, 0, 0);
-  const dayEnd = new Date(dayStart);
-  dayEnd.setHours(23, 59, 59, 999);
+  const yesterdayInstant = new Date(Date.now() - 24 * 60 * 60 * 1000);
+  const { start, end } = getIsraelDayBoundaries(yesterdayInstant);
 
-  const dateLabel = dayStart.toISOString().slice(0, 10);
-
-  const [orderStats, newUsers, lowStockCount] = await Promise.all([
-    Order.aggregate([
-      {
-        $match: {
-          createdAt: { $gte: dayStart, $lte: dayEnd },
-          status:    { $nin: ['cancelled', 'pending_payment'] },
-        },
-      },
-      {
-        $group: {
-          _id:      null,
-          count:    { $sum: 1 },
-          revenue:  { $sum: '$total' },
-          avgOrder: { $avg: '$total' },
-        },
-      },
-    ]),
-    User.countDocuments({ createdAt: { $gte: dayStart, $lte: dayEnd } }),
-    Product.countDocuments({
-      isDeleted: false, isPublished: true,
-      $expr: { $lte: ['$stock', '$minStock'] },
-    }),
-  ]);
-
-  const stats = orderStats[0] ?? { count: 0, revenue: 0, avgOrder: 0 };
+  const row = await finalizeDay(start, end);
 
   logger.info(
-    `[dailySnapshot] ${dateLabel}: ` +
-    `orders=${stats.count}, ` +
-    `revenue=₪${stats.revenue.toFixed(2)}, ` +
-    `avgOrder=₪${(stats.avgOrder || 0).toFixed(2)}, ` +
-    `newUsers=${newUsers}, ` +
-    `lowStockProducts=${lowStockCount}`
+    `[dailySnapshot] ${start.toISOString().slice(0, 10)}: ` +
+    `orders=${row.orders}, paidOrders=${row.paidOrders}, revenue=₪${row.revenue.toFixed(2)}, ` +
+    `aov=₪${row.aov.toFixed(2)}, newCustomers=${row.newCustomers}, ` +
+    `sessions=${row.sessions}, conversionRate=${row.conversionRate}%, ` +
+    `abandonedCarts=${row.abandonedCarts}`
   );
 };

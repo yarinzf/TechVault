@@ -530,6 +530,7 @@ export const translations = {
     'product.breadcrumb_store':  'חנות',
     'product.image_prefix':      'תמונה',
     'product.reviews_label':     'ביקורות',
+    'product.model_label':       'דגם',
     'product.add_to_cart_btn':   'הוסף לעגלה',
     'product.qty_label':         'כמות:',
     'product.buy_now':           'קנה עכשיו',
@@ -640,6 +641,99 @@ export const translations = {
     'catalog.remove_sale':       'הסר סינון מבצע',
     'catalog.remove_featured':   'הסר סינון מומלצים',
     'catalog.error_loading':     'שגיאה בטעינת מוצרים',
+
+    /* ── Category hero (root categories only — see categoryHeroConfig.js) ── */
+    'catHero.monitors.eyebrow': 'קטגוריית מסכים',
+    'catHero.monitors.title':   'מסכים',
+    'catHero.monitors.desc':    'מצאו את המסך המתאים לגיימינג, עבודה ויצירת תוכן.',
+    'catHero.monitors.action_gaming': 'מסכי גיימינג',
+    'catHero.monitors.action_work':   'מסכי עבודה',
+    'catHero.monitors.action_oled':   'מסכי OLED',
+
+    'catHero.computers.eyebrow': 'קטגוריית מחשבים',
+    'catHero.computers.title':   'מחשבים',
+    'catHero.computers.desc':    'מחשבים ניידים ונייחים לעבודה, גיימינג ויצירה.',
+
+    'catHero.pcComponents.eyebrow': 'קטגוריית רכיבי מחשב',
+    'catHero.pcComponents.title':   'רכיבי מחשב',
+    'catHero.pcComponents.desc':    'מעבדים, כרטיסי מסך ורכיבים לבניית והשדרוג המחשב שלכם.',
+
+    'catHero.storage.eyebrow': 'קטגוריית אחסון',
+    'catHero.storage.title':   'אחסון',
+    'catHero.storage.desc':    'כוננים ופתרונות אחסון מהירים ואמינים לכל צורך.',
+
+    'catHero.peripherals.eyebrow': 'קטגוריית ציוד היקפי',
+    'catHero.peripherals.title':   'ציוד היקפי',
+    'catHero.peripherals.desc':    'מקלדות, עכברים, אוזניות ואביזרים נוספים לתחנת העבודה שלכם.',
+
+    'catHero.networking.eyebrow': 'קטגוריית רשת ותקשורת',
+    'catHero.networking.title':   'רשת ותקשורת',
+    'catHero.networking.desc':    'ראוטרים ופתרונות רשת לחיבור מהיר ויציב בבית ובעסק.',
+
+    'catHero.gaming.eyebrow': 'קטגוריית גיימינג',
+    'catHero.gaming.title':   'גיימינג',
+    'catHero.gaming.desc':    'כיסאות, בקרים וציוד גיימינג לשדרוג חוויית המשחק.',
+
+    'catHero.consoles.eyebrow': 'קטגוריית קונסולות',
+    'catHero.consoles.title':   'קונסולות',
+    'catHero.consoles.desc':    'קונסולות משחק ואביזרים נלווים מהמותגים המובילים.',
+
+    'catHero.smartphones.eyebrow': 'קטגוריית סמארטפונים',
+    'catHero.smartphones.title':   'סמארטפונים',
+    'catHero.smartphones.desc':    'הדגמים העדכניים ביותר מהיצרנים המובילים.',
+
+    'catHero.tablets.eyebrow': 'קטגוריית טאבלטים',
+    'catHero.tablets.title':   'טאבלטים',
+    'catHero.tablets.desc':    'טאבלטים לעבודה, לימוד ובידור בכל מקום.',
+
+    'catHero.tvs.eyebrow': 'קטגוריית טלוויזיות',
+    'catHero.tvs.title':   'טלוויזיות',
+    'catHero.tvs.desc':    'מסכי טלוויזיה חכמים באיכות תמונה גבוהה לכל סלון.',
+
+    'catHero.printers.eyebrow': 'קטגוריית מדפסות',
+    'catHero.printers.title':   'מדפסות',
+    'catHero.printers.desc':    'מדפסות, סורקים וציוד דיו וטונר לבית ולמשרד.',
+
+    'catHero.smartwatches.eyebrow': 'קטגוריית שעונים חכמים',
+    'catHero.smartwatches.title':   'שעונים חכמים',
+    'catHero.smartwatches.desc':    'מעקב בריאות וכושר, התראות ועוד — ישירות מפרק היד.',
+
+    'catHero.camerasPhotography.eyebrow': 'קטגוריית מצלמות וצילום',
+    'catHero.camerasPhotography.title':   'מצלמות וצילום',
+    'catHero.camerasPhotography.desc':    'מצלמות וציוד צילום לכל רמת ניסיון, מאבטחה ועד אקסטרים.',
+
+    'catHero.smartHome.eyebrow': 'קטגוריית בית חכם',
+    'catHero.smartHome.title':   'בית חכם',
+    'catHero.smartHome.desc':    'תאורה, אבטחה ומכשירים חכמים לבית מחובר ונוח יותר.',
+
+    // Child-category hero descriptions (H1 itself comes from
+    // categoryLabels.js, not from here — see categoryHeroConfig.js).
+    'catHero.child.keyboards.desc':  'מקלדות מכניות וממברן, לגיימינג ולמשרד, במגוון פריסות.',
+    'catHero.child.mice.desc':       'עכברי גיימינג ומשרד, עם ובלי חוט, לדיוק ונוחות מרביים.',
+    'catHero.child.mousePads.desc':  'משטחי עכבר בגדלים ומרקמים שונים לגיימינג ולעבודה.',
+    'catHero.child.headsets.desc':   'אוזניות גיימינג ותקשורת באיכות שמע גבוהה.',
+    'catHero.child.speakers.desc':   'רמקולים למחשב ולמולטימדיה בכל תקציב.',
+    'catHero.child.microphones.desc':'מיקרופונים להקלטה, סטרימינג ושיחות ועידה.',
+    'catHero.child.webcams.desc':    'מצלמות רשת לשיחות וידאו וסטרימינג באיכות גבוהה.',
+    'catHero.child.laptops.desc':    'מחשבים ניידים לעבודה, לימודים וגיימינג בכל תקציב.',
+    'catHero.child.desktops.desc':   'מחשבים נייחים חזקים לעבודה, יצירה וגיימינג.',
+    'catHero.child.miniPc.desc':     'מחשבי Mini PC קומפקטיים וחסכוניים במקום.',
+    'catHero.child.allInOne.desc':   'מחשבי All-in-One המשלבים מסך ומחשב ביחידה קומפקטית אחת.',
+    'catHero.child.genericDesc':     'מגוון מוצרים איכותיים בקטגוריה זו, במחירים תחרותיים.',
+
+    /* ── Club promotional card (category pages) — real rules only, see
+       final report for exact source: points.service.js POINTS_DEFAULT_RATE,
+       campaign.service.js membershipOnly pricing,
+       shipping.service.js FREE_SHIPPING_THRESHOLD_MEMBER ── */
+    'catalog.club.eyebrow':          'מועדון TechVault',
+    'catalog.club.headline':         'כל ההטבות במקום אחד',
+    'catalog.club.desc':             'הצטרפו למועדון TechVault וקבלו הטבות אמיתיות בכל קנייה.',
+    'catalog.club.benefit_points':   'צוברים 5% בנקודות בכל קנייה',
+    'catalog.club.benefit_vip':      'מחירי VIP במבצעים בלעדיים לחברים',
+    'catalog.club.benefit_shipping': 'משלוח רגיל חינם בקנייה מעל ₪299',
+    'catalog.club.price_label':      'מנוי מועדון',
+    'catalog.club.price_value':      'החל מ-₪20 לחודש',
+    'catalog.club.cta':              'להצטרפות',
 
     /* ── Keyboard category filters ────────────────────────────────────── */
     'catalog.kb_filters':    'סינון מקלדות',
@@ -823,7 +917,7 @@ export const translations = {
     'admin.subtitle.inventory':   'ניהול מלאי',
     'admin.subtitle.full_access': 'גישה מלאה',
     'admin.subtitle.superadmin':  'ניהול פלטפורמה ומערכת',
-    'admin.role.inventory':       'צוות מחסן',
+    'admin.role.inventory':       'מנהל מחסן',
     'admin.role.admin':           'מנהל מערכת',
     'admin.role.superadmin':      'מנהל ראשי',
     'admin.sidebar.toggle':       'תפריט',
@@ -950,7 +1044,7 @@ export const translations = {
     'order.points_redeemed':     'ניצול נקודות מועדון',
 
     /* ── Order detail modal ──────────────────────────────────────────── */
-    'order.detail.ordered_at':    'הוזמן ב-',
+    'order.detail.ordered_at':    'תאריך הזמנה',
     'order.detail.items':         'פריטים',
     'order.detail.shipping':      'כתובת משלוח',
     'order.detail.summary':       'סיכום',
@@ -963,6 +1057,7 @@ export const translations = {
     'order.details.summary_title':   'סיכום ההזמנה',
     'order.details.progress_title':  'מעקב ההזמנה',
     'order.details.order_number':    'מספר הזמנה',
+    'order.details.shipping_address_top_label': 'כתובת למשלוח',
     'order.details.qty_label':       'כמות:',
     'order.details.unit_price_label':'מחיר ליחידה:',
     'order.details.payment_title':   'פרטי תשלום',
@@ -1160,11 +1255,15 @@ export const translations = {
     'profile.password_oauth_notice': 'אתם מחוברים דרך {provider} — אין סיסמה לניהול',
 
     'profile.notifications_title':  'העדפות הודעות',
+    'profile.notifications_subtitle': 'נהלו את הדרך בה TechVault יוצרת איתכם קשר לגבי ההזמנות והחשבון שלכם',
     'profile.pref_vip_note':        'חלות גם על עדכוני VIP',
     'profile.pref_prompt':          'איך תרצו לקבל עדכונים?',
     'profile.pref_email':           'במייל',
+    'profile.pref_email_desc':      'עדכונים ישירות לתיבת המייל',
     'profile.pref_sms':             'ב-SMS',
+    'profile.pref_sms_desc':        'הודעות טקסט קצרות לנייד',
     'profile.pref_both':            'בשניהם',
+    'profile.pref_both_desc':       'גם מייל וגם SMS',
     'profile.pref_saved':           'ההעדפות עודכנו',
     'profile.save_preferences':     'שמירת ההעדפות',
 
@@ -1397,6 +1496,7 @@ export const translations = {
     'admin.chart.heading':        'מכירות והכנסות',
     'admin.chart.subtitle':       'מעקב אחר הכנסות והזמנות לאורך זמן',
     'admin.chart.loading':        'טוען נתונים...',
+    'admin.chart.error':          'שגיאה בטעינת נתוני מכירות',
     'admin.chart.empty':          'אין נתוני מכירות לתקופה זו',
     'admin.chart.revenue':        'הכנסות',
     'admin.chart.orders':         'הזמנות',
@@ -1426,6 +1526,14 @@ export const translations = {
     'admin.goals.new_customers':  'לקוחות חדשים',
     'admin.goals.abandoned':      'עגלות נטושות',
     'admin.goals.cancellations':  'ביטולים',
+    'admin.goals.error':          'שגיאה בטעינת היעדים',
+    'admin.goals.no_target':      'לא הוגדר יעד',
+    'admin.targets.heading':      'ניהול יעדים עסקיים',
+    'admin.targets.description':  'עריכת יעד אינה משנה את הנתונים בפועל — היא רק את מה שמושווים אליו. יעדים של תקופות שהסתיימו אינם ניתנים לעריכה.',
+    'admin.targets.daily':        'יעדים יומיים (היום)',
+    'admin.targets.monthly':      'יעדים חודשיים (החודש)',
+    'admin.targets.saved':        'היעד נשמר בהצלחה',
+    'admin.targets.save_error':   'שמירת היעד נכשלה',
 
     'admin.sip.heading':          'תובנות חכמות',
     'admin.sip.loading':          'טוען תובנות...',
@@ -2673,6 +2781,7 @@ export const translations = {
     'product.breadcrumb_store':  'Store',
     'product.image_prefix':      'Image',
     'product.reviews_label':     'reviews',
+    'product.model_label':       'Model',
     'product.add_to_cart_btn':   'Add to cart',
     'product.qty_label':         'Qty:',
     'product.buy_now':           'Buy Now',
@@ -2783,6 +2892,99 @@ export const translations = {
     'catalog.remove_sale':       'Remove sale filter',
     'catalog.remove_featured':   'Remove featured filter',
     'catalog.error_loading':     'Error loading products',
+
+    /* ── Category hero (root categories only — see categoryHeroConfig.js) ── */
+    'catHero.monitors.eyebrow': 'Monitors Category',
+    'catHero.monitors.title':   'Monitors',
+    'catHero.monitors.desc':    'Find the right monitor for gaming, work, and content creation.',
+    'catHero.monitors.action_gaming': 'Gaming Monitors',
+    'catHero.monitors.action_work':   'Work Monitors',
+    'catHero.monitors.action_oled':   'OLED Monitors',
+
+    'catHero.computers.eyebrow': 'Computers Category',
+    'catHero.computers.title':   'Computers',
+    'catHero.computers.desc':    'Laptops and desktops for work, gaming, and creation.',
+
+    'catHero.pcComponents.eyebrow': 'PC Components Category',
+    'catHero.pcComponents.title':   'PC Components',
+    'catHero.pcComponents.desc':    'CPUs, GPUs, and components to build and upgrade your PC.',
+
+    'catHero.storage.eyebrow': 'Storage Category',
+    'catHero.storage.title':   'Storage',
+    'catHero.storage.desc':    'Fast, reliable drives and storage solutions for any need.',
+
+    'catHero.peripherals.eyebrow': 'Peripherals Category',
+    'catHero.peripherals.title':   'Peripherals',
+    'catHero.peripherals.desc':    'Keyboards, mice, headsets, and more for your setup.',
+
+    'catHero.networking.eyebrow': 'Networking Category',
+    'catHero.networking.title':   'Networking',
+    'catHero.networking.desc':    'Routers and networking gear for fast, stable connections at home and work.',
+
+    'catHero.gaming.eyebrow': 'Gaming Category',
+    'catHero.gaming.title':   'Gaming',
+    'catHero.gaming.desc':    'Chairs, controllers, and gear to upgrade your gaming setup.',
+
+    'catHero.consoles.eyebrow': 'Consoles Category',
+    'catHero.consoles.title':   'Consoles',
+    'catHero.consoles.desc':    'Gaming consoles and accessories from the leading brands.',
+
+    'catHero.smartphones.eyebrow': 'Smartphones Category',
+    'catHero.smartphones.title':   'Smartphones',
+    'catHero.smartphones.desc':    'The latest models from the leading manufacturers.',
+
+    'catHero.tablets.eyebrow': 'Tablets Category',
+    'catHero.tablets.title':   'Tablets',
+    'catHero.tablets.desc':    'Tablets for work, study, and entertainment anywhere.',
+
+    'catHero.tvs.eyebrow': 'TVs Category',
+    'catHero.tvs.title':   'TVs',
+    'catHero.tvs.desc':    'Smart TVs with high picture quality for every living room.',
+
+    'catHero.printers.eyebrow': 'Printers Category',
+    'catHero.printers.title':   'Printers',
+    'catHero.printers.desc':    'Printers, scanners, and ink & toner for home and office.',
+
+    'catHero.smartwatches.eyebrow': 'Smartwatches Category',
+    'catHero.smartwatches.title':   'Smartwatches',
+    'catHero.smartwatches.desc':    'Health and fitness tracking, notifications, and more — right on your wrist.',
+
+    'catHero.camerasPhotography.eyebrow': 'Cameras & Photography Category',
+    'catHero.camerasPhotography.title':   'Cameras & Photography',
+    'catHero.camerasPhotography.desc':    'Cameras and photography gear for every skill level, from security to action.',
+
+    'catHero.smartHome.eyebrow': 'Smart Home Category',
+    'catHero.smartHome.title':   'Smart Home',
+    'catHero.smartHome.desc':    'Lighting, security, and smart devices for a more connected home.',
+
+    // Child-category hero descriptions (H1 itself comes from
+    // categoryLabels.js, not from here — see categoryHeroConfig.js).
+    'catHero.child.keyboards.desc':  'Mechanical and membrane keyboards for gaming and office use, in a range of layouts.',
+    'catHero.child.mice.desc':       'Gaming and office mice, wired and wireless, for precision and comfort.',
+    'catHero.child.mousePads.desc':  'Mouse pads in a range of sizes and surfaces for gaming and work.',
+    'catHero.child.headsets.desc':   'Gaming and communication headsets with high-quality audio.',
+    'catHero.child.speakers.desc':   'Computer and multimedia speakers for every budget.',
+    'catHero.child.microphones.desc':'Microphones for recording, streaming, and video calls.',
+    'catHero.child.webcams.desc':    'Webcams for high-quality video calls and streaming.',
+    'catHero.child.laptops.desc':    'Laptops for work, study, and gaming at every budget.',
+    'catHero.child.desktops.desc':   'Powerful desktop computers for work, creation, and gaming.',
+    'catHero.child.miniPc.desc':     'Compact, space-saving Mini PCs.',
+    'catHero.child.allInOne.desc':   'All-in-One computers combining screen and PC in a single compact unit.',
+    'catHero.child.genericDesc':     'A range of quality products in this category, at competitive prices.',
+
+    /* ── Club promotional card (category pages) — real rules only, see
+       final report for exact source: points.service.js POINTS_DEFAULT_RATE,
+       campaign.service.js membershipOnly pricing,
+       shipping.service.js FREE_SHIPPING_THRESHOLD_MEMBER ── */
+    'catalog.club.eyebrow':          'TechVault Club',
+    'catalog.club.headline':         'All the benefits in one place',
+    'catalog.club.desc':             'Join TechVault Club and get real benefits on every purchase.',
+    'catalog.club.benefit_points':   'Earn 5% back in points on every purchase',
+    'catalog.club.benefit_vip':      'VIP prices on member-exclusive deals',
+    'catalog.club.benefit_shipping': 'Free Standard shipping on orders over ₪299',
+    'catalog.club.price_label':      'Club membership',
+    'catalog.club.price_value':      'From ₪20/month',
+    'catalog.club.cta':              'Join now',
 
     /* ── Keyboard category filters ────────────────────────────────────── */
     'catalog.kb_filters':    'Keyboard Filters',
@@ -2966,7 +3168,7 @@ export const translations = {
     'admin.subtitle.inventory':   'Inventory Management',
     'admin.subtitle.full_access': 'Full Access',
     'admin.subtitle.superadmin':  'Platform & System Management',
-    'admin.role.inventory':       'Warehouse Staff',
+    'admin.role.inventory':       'Warehouse Manager',
     'admin.role.admin':           'System Admin',
     'admin.role.superadmin':      'Main Admin',
     'admin.sidebar.toggle':       'Toggle menu',
@@ -3106,6 +3308,7 @@ export const translations = {
     'order.details.summary_title':   'Order Summary',
     'order.details.progress_title':  'Order Tracking',
     'order.details.order_number':    'Order Number',
+    'order.details.shipping_address_top_label': 'Shipping Address',
     'order.details.qty_label':       'Qty:',
     'order.details.unit_price_label':'Unit price:',
     'order.details.payment_title':   'Payment Details',
@@ -3301,11 +3504,15 @@ export const translations = {
     'profile.password_oauth_notice': "You're signed in via {provider} — no password to manage",
 
     'profile.notifications_title':  'Notification Preferences',
+    'profile.notifications_subtitle': 'Manage how TechVault contacts you about your orders and account',
     'profile.pref_vip_note':        'Also applies to VIP updates',
     'profile.pref_prompt':          'How would you like to receive updates?',
     'profile.pref_email':           'Email',
+    'profile.pref_email_desc':      'Updates straight to your inbox',
     'profile.pref_sms':             'SMS',
+    'profile.pref_sms_desc':        'Short text messages to your phone',
     'profile.pref_both':            'Both',
+    'profile.pref_both_desc':       'Both email and SMS',
     'profile.pref_saved':           'Preferences updated',
     'profile.save_preferences':     'Save Preferences',
 
@@ -3538,6 +3745,7 @@ export const translations = {
     'admin.chart.heading':        'Sales & Revenue',
     'admin.chart.subtitle':       'Track revenue and orders over time',
     'admin.chart.loading':        'Loading data...',
+    'admin.chart.error':          'Error loading sales data',
     'admin.chart.empty':          'No sales data for this period',
     'admin.chart.revenue':        'Revenue',
     'admin.chart.orders':         'Orders',
@@ -3567,6 +3775,14 @@ export const translations = {
     'admin.goals.new_customers':  'New Customers',
     'admin.goals.abandoned':      'Abandoned Carts',
     'admin.goals.cancellations':  'Cancellations',
+    'admin.goals.error':          'Error loading goals',
+    'admin.goals.no_target':      'No target set',
+    'admin.targets.heading':      'Manage Business Targets',
+    'admin.targets.description':  'Editing a target never changes the actual metric — only what it is measured against. Targets for periods that have already closed cannot be edited.',
+    'admin.targets.daily':        'Daily Targets (Today)',
+    'admin.targets.monthly':      'Monthly Targets (This Month)',
+    'admin.targets.saved':        'Target saved successfully',
+    'admin.targets.save_error':   'Failed to save target',
 
     'admin.sip.heading':          'Smart Insights',
     'admin.sip.loading':          'Loading insights...',
