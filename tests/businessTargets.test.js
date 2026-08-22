@@ -2,7 +2,7 @@
 
 const request = require('supertest');
 const mongoose = require('mongoose');
-const { connect, clearAll } = require('./helpers/db');
+const { connect, clearAll, waitFor } = require('./helpers/db');
 const { getIsraelDayBoundaries } = require('../server/utils/timezone');
 const { generateAccessToken } = require('../server/utils/jwt');
 const targetService = require('../server/services/businessTarget.service');
@@ -211,12 +211,14 @@ describe('POST/GET /admin/targets — RBAC + audit (requirement #3)', () => {
     expect(res.body.data.target.targetValue).toBe(42000);
 
     // audit.log() is intentionally fire-and-forget (non-fatal logging, same
-    // convention as settings.service.js/campaign.controller.js) — give its
-    // write a moment to land before asserting on it.
-    await new Promise((r) => setTimeout(r, 100));
-
+    // convention as settings.service.js/campaign.controller.js) — poll for
+    // its write to land rather than trusting a fixed delay, since a delay
+    // long enough on a fast dev machine is not guaranteed to be long enough
+    // on a slower/loaded CI runner.
     const AuditLog = mongoose.model('AuditLog');
-    const entry = await AuditLog.findOne({ action: 'business_target.set', actorId: admin._id }).lean();
+    const entry = await waitFor(() =>
+      AuditLog.findOne({ action: 'business_target.set', actorId: admin._id }).lean()
+    );
     expect(entry).toBeTruthy();
     expect(entry.after.targetValue).toBe(42000);
   });

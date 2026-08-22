@@ -1,7 +1,7 @@
 'use strict';
 
 const mongoose = require('mongoose');
-const { connect, clearAll } = require('./helpers/db');
+const { connect, clearAll, waitFor } = require('./helpers/db');
 const emitter = require('../server/events/emitter');
 const EVENTS  = require('../server/events/events');
 
@@ -75,11 +75,22 @@ async function seedPaidOrder({ user, product, unitPrice = 250 }) {
   });
 }
 
-// Waits for the (non-blocking, fire-and-forget) analyticsHandlers.js
-// listener to finish its async rebuild (a real DB round trip: Order.findById
-// + an aggregation + an upsert) before assertions run — a single
-// setImmediate tick is not enough for that chain to settle.
+// Gives the (non-blocking, fire-and-forget) analyticsHandlers.js listener a
+// moment to start its async rebuild before the next event in a sequence
+// fires, so duplicate/retried events exercise the dedup logic rather than
+// racing each other. This is just pacing, not a correctness wait — the
+// actual assertions below poll for the settled state via waitFor, since a
+// fixed delay long enough for a fast dev machine is not guaranteed to be
+// long enough on a slower/loaded CI runner.
 const flush = () => new Promise((r) => setTimeout(r, 150));
+
+function findProductSalesRow(productId) {
+  const ProductSalesMonthly = mongoose.model('ProductSalesMonthly');
+  const now = new Date();
+  return ProductSalesMonthly.findOne({
+    product: productId, year: now.getUTCFullYear(), month: now.getUTCMonth() + 1,
+  }).lean();
+}
 
 describe('Event idempotency — replayed events must never double-count (requirement #7)', () => {
   test('PAYMENT_PAID emitted twice for the SAME order (simulating a retried webhook delivery) increments ProductSalesMonthly exactly once', async () => {
@@ -93,11 +104,10 @@ describe('Event idempotency — replayed events must never double-count (require
     emitter.emit(EVENTS.PAYMENT_PAID, payload); // exact duplicate delivery
     await flush();
 
-    const ProductSalesMonthly = mongoose.model('ProductSalesMonthly');
-    const now = new Date();
-    const row = await ProductSalesMonthly.findOne({
-      product: product._id, year: now.getUTCFullYear(), month: now.getUTCMonth() + 1,
-    }).lean();
+    const row = await waitFor(async () => {
+      const r = await findProductSalesRow(product._id);
+      return r && r.unitsSold > 0 ? r : null;
+    });
     expect(row.unitsSold).toBe(1); // not 2
     expect(row.orderCount).toBe(1);
   });
@@ -108,9 +118,14 @@ describe('Event idempotency — replayed events must never double-count (require
     const order = await seedPaidOrder({ user, product });
     const payload = { orderId: order._id, orderNumber: order.orderNumber };
 
-    // Establish the paid baseline first.
+    // Establish the paid baseline first, and confirm it actually landed
+    // before cancelling — otherwise a slow-to-settle paid write could race
+    // with the cancellation below and produce a false pass.
     emitter.emit(EVENTS.PAYMENT_PAID, payload);
-    await flush();
+    await waitFor(async () => {
+      const r = await findProductSalesRow(product._id);
+      return r && r.unitsSold > 0;
+    });
 
     // Now the order is cancelled in the DB (as the real cancellation flow
     // would do), and the event fires twice — a retried cancellation event
@@ -121,15 +136,15 @@ describe('Event idempotency — replayed events must never double-count (require
     emitter.emit(EVENTS.ORDER_CANCELLED, payload);
     await flush();
 
-    const ProductSalesMonthly = mongoose.model('ProductSalesMonthly');
-    const now = new Date();
-    const row = await ProductSalesMonthly.findOne({
-      product: product._id, year: now.getUTCFullYear(), month: now.getUTCMonth() + 1,
-    }).lean();
     // A cancelled order is excluded from SALES_TRUTH_MATCH entirely — the
     // row is either absent or reset to its historical baseline (0 here,
     // no historical seed in this test), never a phantom positive value,
-    // regardless of how many times the event replayed.
+    // regardless of how many times the event replayed. Poll for settlement
+    // since the cancellation rebuild is also async fire-and-forget.
+    const row = await waitFor(async () => {
+      const r = await findProductSalesRow(product._id);
+      return (r?.unitsSold ?? 0) === 0 ? (r ?? { unitsSold: 0 }) : null;
+    });
     expect(row?.unitsSold ?? 0).toBe(0);
   });
 
@@ -144,11 +159,10 @@ describe('Event idempotency — replayed events must never double-count (require
       await flush();
     }
 
-    const ProductSalesMonthly = mongoose.model('ProductSalesMonthly');
-    const now = new Date();
-    const row = await ProductSalesMonthly.findOne({
-      product: product._id, year: now.getUTCFullYear(), month: now.getUTCMonth() + 1,
-    }).lean();
+    const row = await waitFor(async () => {
+      const r = await findProductSalesRow(product._id);
+      return r && r.unitsSold > 0 ? r : null;
+    });
     expect(row.unitsSold).toBe(1);
   });
 
