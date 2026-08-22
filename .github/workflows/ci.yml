@@ -12,6 +12,21 @@ jobs:
     name: Backend Tests
     runs-on: ubuntu-latest
 
+    # tests/helpers/globalSetup.js normally spins up mongodb-memory-server,
+    # which downloads a ~600MB MongoDB binary — that download has been the
+    # cause of repeated CI failures on this runner pool. Run a real MongoDB
+    # service container instead (pulled from Docker Hub, not that binary
+    # CDN) and point the tests at it directly via MONGO_URI_TEST, which
+    # globalSetup.js honors by skipping the download entirely.
+    services:
+      mongodb:
+        image: mongo:7
+        ports:
+          - 27017:27017
+
+    env:
+      MONGO_URI_TEST: mongodb://127.0.0.1:27017/techvault-ci-test
+
     steps:
       - uses: actions/checkout@v4
 
@@ -19,18 +34,6 @@ jobs:
         with:
           node-version: 20
           cache: npm
-
-      # mongodb-memory-server (used by tests/helpers/globalSetup.js) downloads
-      # a ~600MB MongoDB binary on every uncached run. Caching it here removes
-      # that download — and its associated network flakiness — from the
-      # critical path once the cache is warm.
-      - name: Cache mongodb-memory-server binary
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/mongodb-binaries
-          key: ${{ runner.os }}-mongodb-binaries-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-mongodb-binaries-
 
       - name: Install dependencies
         run: npm ci
