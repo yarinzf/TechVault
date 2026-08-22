@@ -3,6 +3,7 @@
 const adminService = require('../services/admin.service');
 const authService  = require('../services/auth.service');
 const audit        = require('../services/audit.service');
+const Category     = require('../models/Category');
 const { sendSuccess } = require('../utils/response');
 const { StatusCodes } = require('http-status-codes');
 
@@ -41,6 +42,13 @@ const updateUser = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+const listClubMembers = async (req, res, next) => {
+  try {
+    const { members, meta } = await adminService.listClubMembers(req.query);
+    sendSuccess(res, { members }, 'Club members retrieved', StatusCodes.OK, meta);
+  } catch (err) { next(err); }
+};
+
 // ─── Alerts ───────────────────────────────────────────────────────────────────
 const listAlerts = async (req, res, next) => {
   try {
@@ -68,6 +76,77 @@ const getActivity = async (req, res, next) => {
   try {
     const activities = await adminService.getRecentActivity(12);
     sendSuccess(res, { activities }, 'Recent activity retrieved');
+  } catch (err) { next(err); }
+};
+
+const listCategories = async (req, res, next) => {
+  try {
+    const categories = await adminService.listCategoriesWithCounts();
+    sendSuccess(res, { categories }, 'Categories retrieved');
+  } catch (err) { next(err); }
+};
+
+const createCategory = async (req, res, next) => {
+  try {
+    const category = await adminService.createCategory(req.body);
+    audit.log({
+      action:   'category.created',
+      entity:   'Category',
+      entityId: category._id,
+      actor:    req.user,
+      after:    { name: category.name, slug: category.slug, parentCategory: category.parentCategory, isActive: category.isActive },
+      req,
+    });
+    sendSuccess(res, { category }, 'Category created', StatusCodes.CREATED);
+  } catch (err) { next(err); }
+};
+
+const updateCategory = async (req, res, next) => {
+  try {
+    const before = await Category.findById(req.params.id).select('name isActive description').lean();
+    const category = await adminService.updateCategory(req.params.id, req.body);
+    audit.log({
+      action:   'category.updated',
+      entity:   'Category',
+      entityId: category._id,
+      actor:    req.user,
+      before:   before ? { name: before.name, isActive: before.isActive, description: before.description } : null,
+      after:    { name: category.name, isActive: category.isActive, description: category.description },
+      req,
+    });
+    sendSuccess(res, { category }, 'Category updated');
+  } catch (err) { next(err); }
+};
+
+const reorderCategories = async (req, res, next) => {
+  try {
+    const categories = await adminService.reorderCategories(req.body.items);
+    audit.log({
+      action:   'category.reordered',
+      entity:   'Category',
+      entityId: null,
+      actor:    req.user,
+      after:    { items: req.body.items },
+      req,
+    });
+    sendSuccess(res, { categories }, 'Category order updated');
+  } catch (err) { next(err); }
+};
+
+const deleteCategory = async (req, res, next) => {
+  try {
+    const before = await Category.findById(req.params.id).select('name slug parentCategory').lean();
+    await adminService.deleteCategory(req.params.id);
+    audit.log({
+      action:   'category.deleted',
+      entity:   'Category',
+      entityId: req.params.id,
+      actor:    req.user,
+      before:   before ? { name: before.name, slug: before.slug, parentCategory: before.parentCategory } : null,
+      after:    null,
+      req,
+    });
+    res.status(StatusCodes.NO_CONTENT).send();
   } catch (err) { next(err); }
 };
 
@@ -99,8 +178,9 @@ const forceLogoutUser = async (req, res, next) => {
 
 module.exports = {
   getDashboard, getRevenue, getTopProducts, getActivity,
-  listUsers, updateUser,
+  listUsers, updateUser, listClubMembers,
   listAlerts, resolveAlert,
   listAuditLogs,
+  listCategories, createCategory, updateCategory, reorderCategories, deleteCategory,
   getUserSessions, forceLogoutUser,
 };

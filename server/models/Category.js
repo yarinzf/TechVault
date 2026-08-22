@@ -26,6 +26,13 @@ const categorySchema = new mongoose.Schema(
     },
     image: { type: String }, // URL
     isActive: { type: Boolean, default: true },
+    // Admin-controlled display order — siblings (same parentCategory) are
+    // sorted by this ascending, name as a tiebreaker. Main categories and
+    // each parent's subcategories are ordered independently (sortOrder is
+    // only ever compared within the same parentCategory group). Never
+    // inferred from insertion order — MongoDB's natural document order is
+    // not a stable/intentional sort and must never be relied on for this.
+    sortOrder: { type: Number, default: 0 },
   },
   { timestamps: true }
 );
